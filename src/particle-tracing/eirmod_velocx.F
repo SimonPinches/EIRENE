@@ -27,14 +27,14 @@
      .          VR, VRQ, ELMAX, ELMIN
 C      REAL(DP) :: ELB
 
-      INTEGER :: IFLAG, IRL, IREAC, ICOUNT, J, JJ
+      INTEGER :: IFLAG, IREAC, ICOUNT, JJ
 
 !HJL      SAVE
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$omp threadprivate(ifirst,vxn,vyn,vzn,vx,vy,vz,vn,vxi,vyi,vzi,
 !$OMP& zargx,zargy,zargz,vxdr,vydr,vzdr,vrelq,test,vrel,elab,
-!$OMP& cxs,vr,vrq,elmax,elmin,icount,j,jj,irl,ireac)
+!$OMP& cxs,vr,vrq,elmax,elmin,icount,jj,ireac)
 #endif
 
 
@@ -112,11 +112,16 @@ C
       REAL(DP), INTENT(OUT) :: VELQ
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IRCX
       REAL(DP) :: EIRENE_CROSS
+      INTEGER :: J, IRL
       EXTERNAL :: EIRENE_MASJ1R, EIRENE_MASJ4, EIRENE_MASJ5,
      .            EIRENE_LEER, EIRENE_FGAUSS, EIRENE_VECUSR,
      .            EIRENE_CROSS, EIRENE_EXIT_OWN
 
-cpg      SAVE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE( J, IRL )
+#endif
+
+      SAVE
 C
 c initialize arrays for "on the fly" rejection efficiency estimates
 C NFLAG=1 AND NFLAG=3 OPTIONS

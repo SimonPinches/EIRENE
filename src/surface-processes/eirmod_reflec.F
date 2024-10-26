@@ -136,17 +136,15 @@ C---------------------------------------------------------------------
      .          RFFFF1, RFFFF2
 
       INTEGER :: IRANGE, IRM, INDR2, INDR3P, MSS,
-     .           IBOX, ILIM, JP, ISP, ISTS, I, MODREF,
+     .           IBOX, JP, MODREF,
      .           NRE, NREP,
-     .           ICOANGL,
-     .           J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P,
+     .           NRI, ISAVE, INDEP, INDWP, INDE, INDR2P,
      .           INDR1P, INDR1, ISPZO, INDW, IDUMMY, IRET
 
       LOGICAL :: NLDATA, NLBEHR
-      integer , save :: ifile
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
-!$OMP THREADPRIVATE (IFILE,
+!$OMP THREADPRIVATE (
 !$OMP& ZRANGES, ZENGYS, ZRS, ZIDES,
 !$OMP& ZRANGE, ZDE, ZDEL, ZENGY, ZR, ZIDE,
 !$OMP& ZIDED, XSP, YSP, ASP, BSP, CSP, DSP,
@@ -171,10 +169,10 @@ C---------------------------------------------------------------------
 !$OMP& RFFF1, RFFF2, RFFF3, RFFF4,
 !$OMP& RFFFF1,RFFFF2,
 !$OMP& NPANOLD, IDIM, IRANGE, IRM, INDR2, INDR3P, MSS,
-!$OMP& IBOX, ILIM, JP, ISP, ISTS, I, MODREF,
+!$OMP& IBOX, JP, MODREF,
 !$OMP& NRE, NREP,
-!$OMP& ICOUNT, IFIRST, ICOANGL,
-!$OMP& J, NRI, INDR3, ISAVE, INDEP, INDWP, INDE, INDR2P,
+!$OMP& ICOUNT, IFIRST,
+!$OMP& NRI, ISAVE, INDEP, INDWP, INDE, INDR2P,
 !$OMP& INDR1P, INDR1, ISPZO, INDW, IDUMMY, IRET)
 #endif
 
@@ -208,9 +206,13 @@ C
       IMPLICIT NONE
       INTEGER :: EIRENE_LEARCA
       EXTERNAL :: EIRENE_LEARCA
+      INTEGER :: I, J, ILIM, INDR3, ISP, ISTS
       EXTERNAL :: EIRENE_RDTRIM, EIRENE_REFDAT, EIRENE_SPLINE,
      .            EIRENE_LEER, EIRENE_MASR3, EIRENE_EXIT_OWN
 CYM/HJL Moved variables to module scope
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE( I, J, ILIM, INDR3, ISP, ISTS )
+#endif
       SAVE
 C
       IF (.NOT.ALLOCATED(EREDUC)) ALLOCATE(EREDUC(NSPZ,0:NLIMPS))
@@ -461,8 +463,13 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       IMPLICIT NONE
       REAL(DP) :: WMIN, XMP, XCP
       INTEGER :: NPRIN, IGASF, IGAST
+      INTEGER :: I, J, IFILE, INDR3
       EXTERNAL :: EIRENE_FCOSIN, EIRENE_ROTATE, EIRENE_ROTATF,
      .            EIRENE_VELOCS, EIRENE_LEER, EIRENE_EXIT_OWN
+
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE (I,J,IFILE,INDR3)
+#endif
 
 c DATA FOR REDUCED ENERGY SCALING
 CYM/HJL Moved variables to module scope

@@ -66,7 +66,7 @@ cym CHKTRC variables - need to be threadprivate & there is a SAVE ...
 
       REAL(DP) :: XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP, XN,
      .          YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL, ZWN, XN0
-      INTEGER :: IA, I, J, ICP, ISTR, IC, NTDUM, NTT,
+      INTEGER :: ICP, ISTR, IC, NTDUM, NTT,
      .           NT, ICOLOR, ISP, IAA
       LOGICAL :: LWR
 
@@ -74,7 +74,7 @@ cym CHKTRC variables - need to be threadprivate & there is a SAVE ...
 !$OMP THREADPRIVATE(XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP,
 !$OMP&              XN, YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL,
 !$OMP&              ZWN, XN0,
-!$OMP&              IA, I, J, ICP, ISTR, IC, NTDUM, NTT,
+!$OMP&              ICP, ISTR, IC, NTDUM, NTT,
 !$OMP&              NT, ICOLOR,ISP, IAA, LWR,
 !$OMP&              IN)
 #endif
@@ -1504,7 +1504,7 @@ cym cccccccc  need to be private, SAVE requires action ... ccccccccccccccc
 cym      REAL(DP) :: XNP05, YYIA, XN1, YN, FX, FY, XN2, Z1, XN3, YNP, XN,
 cym     .          YWO, XWO, XR, THET, PPHI, XPL, RWN, YPL, ZPL, ZWN,
 cym     .          XN0
-cym      INTEGER :: IA, I, J
+      INTEGER :: IA, I, J
 cym      INTEGER :: ICP, ISTR, IC, NTDUM, NTT,
 cym     .           NT, ICOLOR, ISP, IAA
 cym      LOGICAL :: LWR

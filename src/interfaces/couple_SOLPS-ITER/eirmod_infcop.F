@@ -273,11 +273,11 @@ C
       INTEGER, ALLOCATABLE :: XNMTI_BUF(:), YNMTI_BUF(:), TNMTI_BUF(:)
 C
       INTEGER, SAVE :: IO29, IO, IMF
-      INTEGER :: N, I, J, K, L, IX, IY, IXI, IXE, IXNI, IPL, JPLS, JUN,
+      INTEGER :: N, I, J, K, L, IX, IY, IXI, IXE, IXNI, JPLS, JUN,
      I           IREAD, IS, IS1, ISC, ISC1, ISC2, ISCS, ISTS, ISTR,
      I           IT, IN, IP, IP1, IR, IR1, IPRT, NTGPRI,
      I           ICOADD, ICOSCR, ICOG, ICOU, IDUMMY, IERROR,
-     I           IAIN, IAOT, ITRI, NBAR, NUMSI, NBARSI,
+     I           ITRI, NBAR, NUMSI, NBARSI,
      I           IUNIN_SAVE, IUSROUT, JS
       REAL(DP) :: PX, PY, TX, TY, VS, VT,
      R            VSX, VSY, VTX, VTY, VPRO, XMUE, TEST,
@@ -1394,7 +1394,11 @@ csw
 
 
        SUBROUTINE EIRENE_READ14_FIXED
+       USE EIRMOD_CCOUPL
+       USE EIRMOD_COMUSR
+       USE EIRMOD_CTEXT
        IMPLICIT NONE
+       INTEGER :: J, IAIN, IAOT, IPL, IPRT, IT
        INTEGER :: JL
        LOGICAL :: LDUMMY
        EXTERNAL :: EIRENE_MASPRM, EIRENE_MASR4,
@@ -1642,7 +1646,7 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
      .                             prts, prt, padds, padd
 !pgf       character(kind=CK,len=:), allocatable :: txt
        character(kind=json_CK,len=:), allocatable :: txt
-       integer :: j, npl, ntrg
+       integer :: j, iain, iaot, ipl, npl, ntrg
        integer, allocatable :: ihelp(:)
        logical :: found, foundi, foundo, ldummy
        external :: eirene_masprm, eirene_masr4

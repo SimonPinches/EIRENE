@@ -41,7 +41,7 @@ cym  once this is done, it makes more sense to include fi&rtsaf here too
      .          VR, CEL, VRQ
 
       REAL(DP) :: P(9)
-      INTEGER :: IFLAG, IRL, IREAC, JM, J, ICOUNT
+      INTEGER :: IFLAG, IREAC, JM, ICOUNT
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(IFIRST,
@@ -57,7 +57,7 @@ cym  once this is done, it makes more sense to include fi&rtsaf here too
 !$OMP&  VX, VY, VZ, ELAB,
 !$OMP&  VR, CEL, VRQ,
 !$OMP&  P,
-!$OMP& IFLAG, IRL, IREAC, JM, J, ICOUNT)
+!$OMP& IFLAG, IREAC, JM, ICOUNT)
 #endif
 
 cym ccccccccccccccccccccc variables from RSTERN ccccccccccccccccccccccccccc
@@ -91,7 +91,6 @@ cym common to be treated
 C
       REAL(DP) :: XG10A(10),XG10B(10)
       REAL(DP) :: SUM, F, X
-      INTEGER :: I, IFI
 
 cym      DATA IFIRST1 /0/
 cym CHECK THIS
@@ -101,7 +100,7 @@ C
 !$OMP THREADPRIVATE(X5A,X5B,X10A,X10B,X20A,X20B,
 !$OMP&       XG10A,XG10B,
 !$OMP&       SUM, F, X,
-!$OMP&       I, IFIRST1, IFI)
+!$OMP&       IFIRST1)
 #endif
 
 cym      integer :: icll
@@ -191,10 +190,15 @@ cym this is because of SAVE attribute
       REAL(DP), INTENT(IN) :: VXO, VYO, VZO, VLO
       REAL(DP), INTENT(OUT) :: VELQ
       INTEGER, INTENT(IN) :: K, IOLD, NOLD, NFLAG, IREL
+      INTEGER :: IRL, J
       REAL(DP) :: EIRENE_CROSS
       EXTERNAL :: EIRENE_CROSS, EIRENE_FGAUSS, EIRENE_VECUSR,
      .            EIRENE_MASJ1R, EIRENE_MASJ4, EIRENE_MASJ5,
      .            EIRENE_LEER, EIRENE_EXIT_OWN
+
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE( IRL, J )
+#endif
 
 CYM/HJL Variables moved to module scope
 
@@ -713,6 +717,7 @@ C
       REAL(DP), INTENT(IN) :: RS, ER, B, P(*)
       REAL(DP), INTENT(OUT) :: RESULT
       INTEGER, INTENT(IN) :: IFLAGI, N, IGAUS
+      INTEGER :: I, IFI
       EXTERNAL :: EIRENE_EXIT_OWN
 
 cym ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

@@ -83,7 +83,7 @@ C
       REAL(DP) :: TTT, PHI0, X001, TO, AA, SUM, TU, XTO, EPSTST, XTU,
      .          F, ZRADS, BB, ZRD, DUM, Z001, X0TEST, Z0TEST, DZ,
      .          Y0TEST, z01_cell
-      INTEGER :: ITT, ITEST, J2, NERR, IN, J, ICOU, MTTEST, ISTS,
+      INTEGER :: ITT, ITEST, J2, NERR, IN, J, ICOU, MTTEST,
      .           NZSAVE, INCZ, J1, IRSAVE, IRET
       INTEGER, SAVE :: MTSAVE=-1
 #ifdef TRACE
@@ -219,6 +219,7 @@ C
       REAL(DP), INTENT(INOUT) :: ZRAD
       INTEGER, INTENT(OUT) :: IRET
       INTEGER :: EIRENE_LEARCA
+      INTEGER :: ISTS
       EXTERNAL :: EIRENE_LEARCA, EIRENE_EXIT_OWN
 #ifdef TRACE
       EXTERNAL :: EIRENE_MASR3
@@ -461,6 +462,7 @@ C
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: ZRAD
       INTEGER, INTENT(OUT) :: IRET
+      INTEGER :: ISTS
 C
 C  BLOCK 2B: DISCRETE TOROIDAL APPROXIMATION,
 C            also: default toroidal periodicity model.

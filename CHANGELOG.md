@@ -27,6 +27,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Pointing to modified set of examples with .F file extensions
 - Removed forced usage of OpenMP compiler options
 - Used the module provided NREACI, NATMI, NMOLI, NIONI, and NPHOTI in EIRENE_BROWSE_BLOCK_5 inside FIND_PARAM_JSON
+- Added ITYP_OLD assignments in EIRMOD_LOCAT1
 - Added IFIRST initialization to zero in READ_COLRAD
 - Moved EIRENE_EXPINT, EIRENE_LAX_M and EIRENE_MMDEI to their own files
 - Added TRCMELD output switch
@@ -68,11 +69,13 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added G95 pre-processor pragmas to deal with g95 compiler errors
 - Added NAGFOR pre-processor pragmas to deal with NAG compiler specific warnings
 - Replaced F2003 pre-processor (the compiler supports the Fortran 2003 standard) pragma with LEGACYCOMP (the compiler does not support the Fortran 2003 standard)
+- Avoided use of module variables as loop indices
 - Added EXTERNAL definitions for called subroutines and functions
 - Using RETURN and END SUBROUTINE <SUB_NAME> statements to close subroutines
 - Added IMPLICIT NONE statements
 - Added some INTENT(IN) declarations
 - Added pre-processor pragmas around relevant variables only used if the pragma is declared
+- Moved declarations of loop index variables inside contained routines when appropriate
 - Add IGNORE comments to MPI and JSON modules use statements for SOLPS-style dependencies build
 - Removed superfluous MPI interface routines
 - Removed unused variables and modules

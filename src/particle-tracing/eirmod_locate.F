@@ -85,18 +85,17 @@ c     .            CUMDIS(0:NREC), ZIWL(NPLS)
       REAL(DP) :: SHWL, TEWL
 cym end change
 
-      INTEGER :: ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
-     .           ISOUR, ISRFS, I, ISTEP,
-     .           IDUMM, NFLAG,
-     .           IPLV, IDUM, IO, NO, IPL, IPP,
-     .           IPLTI, IRPH, KK, JSPZ,
-     .           ITYP_OLD, IGASP_OLD, IGASC_OLD
+      INTEGER :: ISSPTP, ISSPTC, ISTS, ISPZS, IRRC,
+     .           ISTEP,
+     .           NFLAG,
+     .           IPLV, IDUM, IO, NO, IPL,
+     .           IPLTI, KK,
+     .           ITYP_OLD, IOLD, IGASP_OLD, IGASC_OLD
       LOGICAL :: NLSPUT, NLTST, NL_add_Doppler
 
-      INTEGER :: NPANUO, NCELLT, IPOINT,
+      INTEGER :: NPANUO, NCELLT,
      .           ityp_b1,ityp_b2,ipls_b1,ipls_b2,ISECT, I1, I2, IM, IMP,
-     .           ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
-     .           JATM, JMOL, JION, JPLS, JPHOT
+     .           ILINE, ITRSF, ICOS, ISOR, INDTEC
 
       INTEGER :: IRET, IDIMM
 
@@ -125,17 +124,16 @@ cym - ITER case
 !$OMP& WEISPZ,
 cym
 !$OMP& CUMDIS,
-!$OMP& ISSPTP, ISSPTC, ISTS, IP, ISPZS, IRC, IIRC, IRRC,
-!$OMP& ISOUR, ISRFS, I, ISTEP,
-!$OMP& IDUMM, NFLAG,
-!$OMP& IPLV, IDUM, IO, NO, IPL, IPP,
-!$OMP& IPLTI, IRPH, KK, JSPZ,
-!$OMP& ITYP_OLD, IGASP_OLD, IGASC_OLD,
+!$OMP& ISSPTP, ISSPTC, ISTS, ISPZS, IRRC,
+!$OMP& ISTEP,
+!$OMP& NFLAG,
+!$OMP& IPLV, IDUM, IO, NO, IPL,
+!$OMP& IPLTI, KK,
+!$OMP& ITYP_OLD, IOLD, IGASP_OLD, IGASC_OLD,
 !$OMP& NLSPUT, NLTST, NL_add_Doppler,
-!$OMP& NPANUO, NCELLT, IPOINT,
+!$OMP& NPANUO, NCELLT,
 !$OMP& ityp_b1,ityp_b2,ipls_b1,ipls_b2,ISECT, I1, I2, IM, IMP,
-!$OMP& ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
-!$OMP& JATM, JMOL, JION, JPLS, JPHOT,
+!$OMP& ILINE, ITRSF, ICOS, ISOR, INDTEC,
 !$OMP& IRET, IDIMM)
 
 !HJL      save
@@ -250,7 +248,7 @@ C
       INTEGER :: JSPZ, ISOUR, ISRFS, IDUMM, I
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
-!$OMP THREADPRIVATE( SUM1 )
+!$OMP THREADPRIVATE( SUM1, JSPZ, ISOUR, ISRFS, IDUMM, I )
 #endif
       SAVE
 C
@@ -376,6 +374,8 @@ cym      INTEGER :: NPANUO, NCELLT, IPOINT,
 cym     .           ityp_b1,ityp_b2,ipls_b1,ipls_b2,ISECT, I1, I2, IM, IMP,
 cym     .           ILINE, ISURF, ITRSF, ICOS, IVOLM, ISOR, INDTEC,
 cym     .           JATM, JMOL, JION, JPLS, JPHOT
+      INTEGER :: I, IPOINT, ISURF, IVOLM, IP, IPP, IIRC, IRC,
+     .           JATM, JMOL, JION, JPLS, JPHOT
       EXTERNAL :: EIRENE_CLLTST, EIRENE_CNSUSR, EIRENE_FISOTR,
      .            EIRENE_NCELLN, EIRENE_REFANG, EIRENE_SAMPNT,
      .            EIRENE_UPDATE_SPECTRUM, EIRENE_UPDATE_SPTFLX,
@@ -383,6 +383,10 @@ cym     .           JATM, JMOL, JION, JPLS, JPHOT
      .            EIRENE_MASJ6, EIRENE_MASR1, EIRENE_MASR6,
      .            EIRENE_EXIT_OWN
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE( I, IPOINT, ISURF, IVOLM, IP, IPP, IIRC, IRC,
+!$OMP& JATM, JMOL, JION, JPLS, JPHOT )
+#endif
       save
 
 cym allocate newly allocatable arrays
@@ -1299,6 +1303,7 @@ C           E0_MEAN=1.5*TIWD+0.
             GOTO 998
           ENDIF
 C
+          ITYP_OLD=1
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
@@ -1392,6 +1397,7 @@ C
             GOTO 998
           ENDIF
 C
+          ITYP_OLD=2
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
@@ -1527,6 +1533,7 @@ C
             GOTO 998
           ENDIF
 C
+          ITYP_OLD=3
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif

@@ -104,10 +104,9 @@ cdr          tbd: for PI, EL, processes
      .          VX, VY, VZ, VPLASP,
      .          RMXIO, BF, ZEP
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
-      INTEGER :: IXCX, IXEI, IXPI, IXEL, !IXPH,
-     .           IOLD, NOLD, INEW, NNEW, ITYPO, ITYPN, IPLSO,
+      INTEGER :: IOLD, NOLD, INEW, NNEW, ITYPO, ITYPN, IPLSO,
      .           IRCX, IREI, IRPI, IREL, !IRPH,
-     .           IBGK, IP, NFLAG,
+     .           IBGK, NFLAG,
      .           IATMN, IPLSN,
      .           NCLLO, IPLSV, IPL,
      .           IPTYPO, IPTYPN
@@ -132,10 +131,9 @@ cym IAPH, RMMIO, RMIIO and IRPH removed during merge
 !$OMP& VX, VY, VZ, VPLASP,
 !$OMP& RMXIO, BF, ZEP,
 !$OMP& SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST,
-!$OMP& IXCX, IXEI, IXPI, IXEL,
 !$OMP& IOLD, NOLD, INEW, NNEW, ITYPO, ITYPN, IPLSO,
 !$OMP& IRCX, IREI, IRPI, IREL,
-!$OMP& IBGK, IP, NFLAG, IATMN, IPLSN, IPLSV, IPL, NCLLO,
+!$OMP& IBGK, NFLAG, IATMN, IPLSN, IPLSV, IPL, NCLLO,
 !$OMP& NAMIEI, NAMIPI, IPTYPO, IPTYPN, CCOLEST)
 #endif
 
@@ -165,9 +163,11 @@ C
       INTEGER, INTENT(OUT) :: KK
       INTEGER :: NEII_RED, LGEI_RED(0:NREI)
       REAL(DP) :: ZEP1
-      INTEGER :: I, J
-      REAL(DP), POINTER :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),
-     .                     PXML2(:,:), PXIO2(:,:)
+      INTEGER :: I, J, IP, ICO, KKK, IXCX, IXEL, IXEI, IXPI !, IXPH
+      REAL(DP), POINTER, SAVE :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE(PXX2, PXPL2, PXAT2)
+#endif
       EXTERNAL :: EIRENE_BFIELD, EIRENE_VELOEI, EIRENE_EXIT_OWN
 
 C  INIT
