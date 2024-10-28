@@ -2611,12 +2611,12 @@ c To calculate the FADDEEVA function with relative error less than 10^(-R).
 c R0=1.51*EXP(1.144*R) and R1=1.60*EXP(0.554*R) can be set by the the user
 c subject to the constraints 14.88<R0<460.4 and 4.85<R1<25.5
       REAL(dp) :: K,L
-      real(dp), PARAMETER :: R0 = 146.7, R1 = 14.67 ! for R=4,
+      real(dp), PARAMETER :: R0 = 146.7_DP, R1 = 14.67_DP ! for R=4,
                                                     ! region boundaries
 
 c Constants
-      real(dp), PARAMETER :: RRTPI = 0.56418958     ! 1/sqrt(pi)
-      real(dp), PARAMETER :: Y0 = 1.5, Y0PY0 = Y0+Y0, Y0Q = Y0*Y0
+      real(dp), PARAMETER :: RRTPI = 0.56418958_DP  ! 1/sqrt(pi)
+      real(dp), PARAMETER :: Y0 = 1.5_DP, Y0PY0 = Y0+Y0, Y0Q = Y0*Y0
                                                     ! for cpf12 algor.
       REAL(dp), save :: C(0:5), S(0:5), T(0:5)
 c SAVE preserves values of C, S and T (static) arrays between procedure calls
@@ -2654,11 +2654,11 @@ c**** Start of executable code *****************************************
 c Region boundaries when both K and L are required or when R<>4
       XLIM0 = R0 - Y
       XLIM1 = R1 - Y
-      XLIM3 = 3.097*Y - 0.45
+      XLIM3 = 3.097_DP*Y - 0.45_DP
 
-      XLIM2 = 6.8 - Y
-      XLIM4 = 18.1*Y + 1.65
-      IF ( Y .LE. 0.000001 ) THEN ! When y<10^-6
+      XLIM2 = 6.8_DP - Y
+      XLIM4 = 18.1_DP*Y + 1.65_DP
+      IF ( Y .LE. 0.000001_DP ) THEN ! When y<10^-6
          XLIM1 = XLIM0          ! avoid W4 algorithm
          XLIM2 = XLIM0
       ENDIF
@@ -2671,10 +2671,10 @@ c.....
       ELSEIF ( ABX .GT. XLIM1 ) THEN ! Humlicek W4 Region 1
          IF ( RG1 .NE. 0 ) THEN ! First point in Region 1
             RG1 = 0
-            A0 = YQ + 0.5       ! Region 1 y-dependence
+            A0 = YQ + 0.5_DP    ! Region 1 y-dependence
             D0 = A0*A0
-            D2 = YQ + YQ - 1.0
-            b1 = yq - 0.5
+            D2 = YQ + YQ - 1.0_DP
+            b1 = yq - 0.5_DP
          ENDIF
          D = RRTPI / (D0 + XQ*(D2 + XQ))
          K = D*Y * (A0 + XQ)
@@ -2682,18 +2682,18 @@ c.....
       ELSEIF ( ABX .GT. XLIM2 ) THEN ! Humlicek W4 Region 2
          IF ( RG2 .NE. 0 ) THEN ! First point in Region 2
             RG2 = 0
-            H0 =  0.5625 + YQ*(4.5 +
-     &                     YQ*(10.5 + YQ*(6.0 + YQ)))
+            H0 =  0.5625_DP + YQ*(4.5_DP +
+     &                        YQ*(10.5_DP + YQ*(6.0_DP + YQ)))
                                 ! Region 2 y-dependence
-            H2 = -4.5    + YQ*(9.0 + YQ*( 6.0 + YQ* 4.0))
-            H4 = 10.5    - YQ*(6.0 - YQ*  6.0)
-            H6 = -6.0    + YQ* 4.0
-            E0 =  1.875  + YQ*(8.25 + YQ*(5.5 + YQ))
-            E2 =  5.25   + YQ*(1.0  + YQ* 3.0)
-            E4 =  0.75*H6
-            f1 = -1.875 + yq*(5.25 + yq*(4.5 + yq))
-            f3 =  8.25  - yq*(1.0  - yq* 3.0)
-            f5 = -5.5   + yq* 3.0
+            H2 = -4.5_DP   + YQ*(9.0_DP + YQ*( 6.0_DP + YQ* 4.0_DP))
+            H4 = 10.5_DP   - YQ*(6.0_DP - YQ*  6.0_DP)
+            H6 = -6.0_DP   + YQ* 4.0_DP
+            E0 =  1.875_DP + YQ*(8.25_DP + YQ*(5.5_DP + YQ))
+            E2 =  5.25_DP  + YQ*(1.0_DP  + YQ* 3.0_DP)
+            E4 =  0.75_DP*H6
+            f1 = -1.875_DP + yq*(5.25_DP + yq*(4.5_DP + yq))
+            f3 =  8.25_DP  - yq*(1.0_DP  - yq* 3.0_DP)
+            f5 = -5.5_DP   + yq* 3.0_DP
          ENDIF
          D = RRTPI / (H0 + XQ*(H2 + XQ*(H4 + XQ*(H6 + XQ))))
          K = D*Y   *(E0 + XQ*(E2 + XQ*(E4 + XQ)))
@@ -2701,56 +2701,56 @@ c.....
       ELSEIF ( ABX .LT. XLIM3 ) THEN ! Humlicek W4 Region 3
          IF ( RG3 .NE. 0 ) THEN ! First point in Region 3
             RG3 = 0 ! Region 3 y-dependence
-            Z0 = 272.1014     + Y*(1280.829 + Y*(2802.870
-     &           + Y*(3764.966 + Y*(3447.629
-     &           + Y*(2256.981 + Y*(1074.409
-     &           + Y*(369.1989 + Y*(88.26741
-     &           + Y*(13.39880 + Y)))))))))
-            Z2 = 211.678      + Y*(902.3066 + Y*(1758.336
-     &           + Y*(2037.310 + Y*(1549.675
-     &           + Y*(793.4273 + Y*(266.2987
-     &           + Y*(53.59518 + Y*5.0)))))))
-            Z4 = 78.86585     + Y*(308.1852 + Y*(497.3014
-     &           + Y*(479.2576 + Y*(269.2916
-     &           + Y*(80.39278 + Y*10.0)))))
-            Z6 = 22.03523     + Y*(55.02933 + Y*(92.75679
-     &           + Y*(53.59518 + Y*10.0)))
-            Z8 = 1.496460     + Y*(13.39880 + Y*5.0)
-            P0 = 153.5168     + Y*(549.3954 + Y*(919.4955
-     &           + Y*(946.8970 + Y*(662.8097
-     &           + Y*(328.2151 + Y*(115.3772
-     &           + Y*(27.93941 + Y*(4.264678
-     &           + Y*0.3183291))))))))
-            P2 = -34.16955    + Y*(-1.322256 + Y*(124.5975
-     &           + Y*(189.7730 + Y*(139.4665
-     &           + Y*(56.81652 + Y*(12.79458
-     &           + Y*1.2733163))))))
-            P4 = 2.584042     + Y*(10.46332 + Y*(24.01655
-     &           + Y*(29.81482 + Y*(12.79568
-     &           + Y*1.9099744))))
-            P6= -0.07272979   + Y*(0.9377051+ Y*(4.266322
-     &           + Y*1.273316))
-            P8 = 0.0005480304 + Y*0.3183291
-            q1 = 173.2355  + y*(508.2585 + y*(685.8378
-     .           + y*(557.5178 + y*(301.3208
-     .           + y*(111.0528 + y*(27.62940
-     .           + y*(4.264130 + y*0.3183291)))))))
-            q3 = 18.97431  + y*(100.7375 + y*(160.4013
-     .           + y*(130.8905 + y*(55.88650
-     .           + y*(12.79239 + y*1.273316)))))
-            q5 = 7.985877  + y*(19.83766 + y*(28.88480
-     .           + y*(12.79239 + y*1.909974)))
-            q7 = 0.6276985 + y*(4.264130 + y*1.273316)
+            Z0 = 272.1014_DP  + Y*(1280.829_DP + Y*(2802.870_DP
+     &           + Y*(3764.966_DP + Y*(3447.629_DP
+     &           + Y*(2256.981_DP + Y*(1074.409_DP
+     &           + Y*(369.1989_DP + Y*(88.26741_DP
+     &           + Y*(13.39880_DP + Y)))))))))
+            Z2 = 211.678_DP   + Y*(902.3066_DP + Y*(1758.336_DP
+     &           + Y*(2037.310_DP + Y*(1549.675_DP
+     &           + Y*(793.4273_DP + Y*(266.2987_DP
+     &           + Y*(53.59518_DP + Y*5.0_DP)))))))
+            Z4 = 78.86585_DP  + Y*(308.1852_DP + Y*(497.3014_DP
+     &           + Y*(479.2576_DP + Y*(269.2916_DP
+     &           + Y*(80.39278_DP + Y*10.0_DP)))))
+            Z6 = 22.03523_DP  + Y*(55.02933_DP + Y*(92.75679_DP
+     &           + Y*(53.59518_DP + Y*10.0_DP)))
+            Z8 = 1.496460_DP  + Y*(13.39880_DP + Y*5.0_DP)
+            P0 = 153.5168_DP  + Y*(549.3954_DP + Y*(919.4955_DP
+     &           + Y*(946.8970_DP + Y*(662.8097_DP
+     &           + Y*(328.2151_DP + Y*(115.3772_DP
+     &           + Y*(27.93941_DP + Y*(4.264678_DP
+     &           + Y*0.3183291_DP))))))))
+            P2 = -34.16955_DP + Y*(-1.322256_DP + Y*(124.5975_DP
+     &           + Y*(189.7730_DP + Y*(139.4665_DP
+     &           + Y*(56.81652_DP + Y*(12.79458_DP
+     &           + Y*1.2733163_DP))))))
+            P4 = 2.584042_DP  + Y*(10.46332_DP + Y*(24.01655_DP
+     &           + Y*(29.81482_DP + Y*(12.79568_DP
+     &           + Y*1.9099744_DP))))
+            P6= -0.07272979_DP + Y*(0.9377051_DP + Y*(4.266322_DP
+     &           + Y*1.273316_DP))
+            P8 = 0.0005480304_DP + Y*0.3183291_DP
+            q1 = 173.2355_DP  + y*(508.2585_DP + y*(685.8378_DP
+     .           + y*(557.5178_DP + y*(301.3208_DP
+     .           + y*(111.0528_DP + y*(27.62940_DP
+     .           + y*(4.264130_DP + y*0.3183291_DP)))))))
+            q3 = 18.97431_DP  + y*(100.7375_DP + y*(160.4013_DP
+     .           + y*(130.8905_DP + y*(55.88650_DP
+     .           + y*(12.79239_DP + y*1.273316_DP)))))
+            q5 = 7.985877_DP  + y*(19.83766_DP + y*(28.88480_DP
+     .           + y*(12.79239_DP + y*1.909974_DP)))
+            q7 = 0.6276985_DP + y*(4.264130_DP + y*1.273316_DP)
          ENDIF
-         D = 1.7724538 /
+         D = 1.7724538_DP /
      .       (Z0 + XQ*(Z2 + XQ*(Z4 + XQ*(Z6 + XQ*(Z8+XQ)))))
          K = D*(P0 + XQ*(P2 + XQ*(P4 + XQ*(P6 + XQ*P8))))
-         L = d*x*(q1+xq*(q3+xq*(q5+xq*(q7 + xq*0.3183291))))
+         L = d*x*(q1+xq*(q3+xq*(q5+xq*(q7 + xq*0.3183291_DP))))
       ELSE                      ! Humlicek CPF12 algorithm
          YPY0 = Y + Y0
          YPY0Q = YPY0*YPY0
-         K = 0.0
-         L = 0.0
+         K = 0.0_DP
+         L = 0.0_DP
          DO J = 0, 5
             D = X - T(J)
             MQ(J) = D*D
