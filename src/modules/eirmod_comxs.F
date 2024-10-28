@@ -1592,6 +1592,7 @@ cdr  read and write A&M data onto fort.13, controlled by NFILEL option (input bl
      . NAELIM ,NMELIM ,NIELIM ,NPHELIM ,
      . NAPIIM ,NMPIIM ,NIPIIM ,NPHPIIM ,
      . NPRCIM ,
+     . NPBGKA ,NPBGKM ,NPBGKI ,NPBGKP ,
      . NATPRC ,NMLPRC ,NIOPRC ,NPLPRC ,NPHPRC ,
      . NATPRC_2 ,NMLPRC_2 ,NIOPRC_2 ,NPLPRC_2 ,NPHPRC_2 ,
      . N1STX  ,N2NDX  ,
