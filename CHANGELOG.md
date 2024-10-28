@@ -71,6 +71,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Some aesthetic output changes
 - Corrected format statements
 - Refactored reading of fort.13 file
+- Rewrote EIRENE_FTHOMP to avoid a fatal round-off error
 - Use of EVKEL instead of approximate value
 - Generalized usaged of FORT and FORT_LC variables
 - Introduced usage of EIRENE_OPENFILE in all interface routines
