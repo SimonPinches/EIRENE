@@ -48,6 +48,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Adding safety for incorrect algebraic manipulation of intensive tallies in ALGTAL
 - Added calls to flush out buffers
 - Added allocated status safeties
+- Used NPLSI instead of NPLS in READ_FIXFORM
 - Replaced NPHOT by NPHOTI in SCALE_TALLIES
 - Making NDXD, etc... PUBLIC in EIRMOD_EIRBRA
 - Removed NDXP, NDYP, NFL from EIRMOD_BRAEIR
