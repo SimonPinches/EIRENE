@@ -50,7 +50,7 @@ C
       INTEGER :: NFTI, NFTE, K, ITAL, I, ISTR, MXSPZ, IOUT, ICELL, KK
       INTEGER :: ISP, ISIG
       LOGICAL :: LFIRST
-      CHARACTER(6) :: CITAL, CISP
+      CHARACTER(6) :: CISTR, CITAL, CISP, CNFTI, CNFTE
 C
       CHARACTER(50) :: FNAME, FORMA, FORME, FORME2
       EXTERNAL :: EIRENE_RSTRT, EIRENE_SYMET, EIRENE_LEER
@@ -135,6 +135,7 @@ cdr  Totals (outau, fort.11) are still on storage.
 C
 C
 C  PRINT VOLUME-AVERAGED TALLIES, STRATUM: ISTRA
+        write (cistr,'(I0)') istra
 
         DO 100 ITAL = 1, NTALV
 
@@ -182,8 +183,12 @@ C
             TALAV(K)=TALTOT(K)/VOLTOT
   119     CONTINUE
 C
-          FNAME = 'outtal_   '
-          WRITE (FNAME(8:10),'(i0)') ITAL
+          write (cital,'(I0)') ital
+          write (cnfti,'(I0)') nfti
+          write (cnfte,'(I0)') nfte
+          FNAME =
+     .     'outtal_'//trim(cistr)//'_'//trim(cital)//
+     .           '_'//trim(cnfti)//'-'//trim(cnfte)
 
           IF (LFIRST) THEN
             OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',

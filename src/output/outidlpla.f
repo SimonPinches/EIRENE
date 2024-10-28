@@ -43,6 +43,7 @@ C
       INTEGER :: IR, IP, IT, I, NBLCKA, IB, ITAL, NXM, NYM, NZM,
      .           K, KK,
      .           NFTI, NFTE, MXSPZ, IOUT, NTAL
+      CHARACTER(6) :: CITAL, CNFTI, CNFTE
       CHARACTER(50) :: FNAME, FORMA, FORME, FORME2
       EXTERNAL :: EIRENE_INTTAL, EIRENE_INTVOL, EIRENE_LEER
 C
@@ -375,8 +376,11 @@ C
 
   119   CONTINUE
 C
-        FNAME = 'intal_  '
-        WRITE (FNAME(7:8),'(I0)') ITAL
+        write (cital,'(I0)') ital
+        write (cnfti,'(I0)') nfti
+        write (cnfte,'(I0)') nfte
+        FNAME =
+     .   'intal_'//trim(cital)//'_'//trim(cnfti)//'-'//trim(cnfte)
 
         OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',
      .        ACCESS='SEQUENTIAL')
