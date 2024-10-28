@@ -102,12 +102,11 @@ c
       LOGICAL, INTENT(IN) :: LSTOP_in, LTIME_in
       integer :: rank_mpi,ierr_mpi,size_mpi
 C
-      REAL(DP) :: FLUXES(NSTRA)
+      REAL(DP), ALLOCATABLE :: FLUXES(:), FLUXS(:)
       REAL(DP) :: DELTAT, B2BRM, B2RD, B2Q, B2VP, STEP_CPU
       LOGICAL :: LSTOP, LTIME
       logical :: ltrigger
 
-      REAL(DP) :: FLUXS(NSTRA)
       REAL(DP) :: EIRENE_FTABEI1, EIRENE_FEELEI1, ESIG,
      .            DUMMY, DTIMVO, EN
       INTEGER :: IN, IAEI, IMEI, IIEI, IREI, IFIRST, NDXY,
@@ -135,6 +134,7 @@ C
       SAVE
       DATA IFIRST/0/, ifrst_save/0/
 csw 28feb2011 mpi
+      if(.not.allocated(fluxes)) allocate(fluxes(nstra),fluxs(nstra))
       call mpi_comm_rank(MPI_COMM_WORLD,rank_mpi,ierr_mpi)
       call mpi_comm_size(MPI_COMM_WORLD,size_mpi,ierr_mpi)
       if(rank_mpi == 0) then
@@ -706,7 +706,7 @@ csw
           CALL EIRENE_DEALLOC_BRASCL
           CALL EIRENE_DEALLOC_RATE_ARRAY
           CALL EIRENE_DEALLOC_BRASPOI
-
+          DEALLOCATE(FLUXES,FLUXS)
           CALL EIRENE_PLEND
         END IF
 
@@ -999,7 +999,7 @@ C
           CALL EIRENE_DEALLOC_BRASCL
           CALL EIRENE_DEALLOC_RATE_ARRAY
           CALL EIRENE_DEALLOC_BRASPOI
-
+          DEALLOCATE(FLUXES,FLUXS)
           CALL EIRENE_PLEND
         END IF
         CALL EIRENE_LEER(2)

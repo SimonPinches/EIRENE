@@ -706,14 +706,14 @@ C
                   EDRIFT(IPLS,J)=CVRSSP(IPLS)*EIRENE_VDION(J)**2
                 ELSE
 C                 WRITE(iunout,*)'WARNING PLASMA_DERIV: IPLS>1 NO DRIFT!'
-                  EDRIFT(IPLS,J)=0.D0
+                  EDRIFT(IPLS,J)=0._DP
                 END IF
               ELSE
                 EDRIFT(IPLS,J)=CVRSSP(IPLS)*
      .              (VXIN(IPLSV,J)**2+VYIN(IPLSV,J)**2+VZIN(IPLSV,J)**2)
               END IF
             ELSE
-              EDRIFT(IPLS,J)=0.D0
+              EDRIFT(IPLS,J)=0._DP
             ENDIF
           END DO
         END DO

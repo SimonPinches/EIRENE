@@ -488,7 +488,7 @@ C     READ IN THE NUMBER OF TRIANGLES
         endif
       enddo
 
-      volcel = 0.d0
+      volcel = 0.0_dp
       do in=1,ntrii
         ix=ixtri(in)
         iy=iytri(in)
@@ -511,7 +511,7 @@ C     READ IN THE NUMBER OF TRIANGLES
             inc=iy+(ix-1)*nr1tal_save
             vl = vol(in)/volcel(ix,iy)
             if (lpdena) dab2(ix,iy,jatm,1)=dab2(ix,iy,jatm,1)+
-     &                         pdena(jatm,in)*1e6*vl
+     &                         pdena(jatm,in)*1.0e6_dp*vl
 !   IYS 20.01.2017
 ! rfluxa, pfluxa and tfluxa are cell-centered mass flux densities
 ! converted from g*(cm/s)/cm^3 to kg*(m/s)/m^3
@@ -519,21 +519,21 @@ C     READ IN THE NUMBER OF TRIANGLES
               rfluxa(ix,iy,jatm,1)=rfluxa(ix,iy,jatm,1)+
      &             (-VXDENA(jatm,in)*PUY(inc)+
      &               VYDENA(jatm,in)*PVY(inc))*
-     &          vl*10.0/NMASSA(jatm)/AMUAKG
+     &          vl*10.0_dp/NMASSA(jatm)/AMUAKG
               pfluxa(ix,iy,jatm,1)=pfluxa(ix,iy,jatm,1)+
      &             (VXDENA(jatm,in)*PUX(inc)-
      &              VYDENA(jatm,in)*PVX(inc))*
-     &          vl*10.0/NMASSA(jatm)/AMUAKG
+     &          vl*10.0_dp/NMASSA(jatm)/AMUAKG
             else if (laddv) then
              if(ia0+jatm.le.nadv)
      >        rfluxa(ix,iy,jatm,1)=rfluxa(ix,iy,jatm,1)+
-     &                                   addv(ia0+jatm,in)*1.0e4
+     &                                   addv(ia0+jatm,in)*1.0e4_dp
              if(ia2+jatm.le.nadv)
      >        pfluxa(ix,iy,jatm,1)=pfluxa(ix,iy,jatm,1)+
-     &                                   addv(ia2+jatm,in)*1.0e4
+     &                                   addv(ia2+jatm,in)*1.0e4_dp
             end if
             if (LVZDENA) tfluxa(ix,iy,jatm,1)=tfluxa(ix,iy,jatm,1)+
-     &             VZDENA(jatm,in)*vl*10.0/NMASSA(jatm)/AMUAKG
+     &             VZDENA(jatm,in)*vl*10.0_dp/NMASSA(jatm)/AMUAKG
 
 !   IYS 20.01.2017
 !   refluxa and pefluxa - energy flux density components -
@@ -544,10 +544,10 @@ C     READ IN THE NUMBER OF TRIANGLES
             if (laddv) then
               if(ia1+jatm.le.nadv)
      >         refluxa(ix,iy,jatm,1)=refluxa(ix,iy,jatm,1)+
-     &                            addv(ia1+jatm,in)*1.0e4*elcha
+     &                            addv(ia1+jatm,in)*1.0e4_dp*elcha
               if(ia3+jatm.le.nadv)
      >         pefluxa(ix,iy,jatm,1)=pefluxa(ix,iy,jatm,1)+
-     &                            addv(ia3+jatm,in)*1.0e4*elcha
+     &                            addv(ia3+jatm,in)*1.0e4_dp*elcha
             end if
             if (ledena) tab2(ix,iy,jatm,1)=tab2(ix,iy,jatm,1)+
      &                            edena(jatm,in)*vl
@@ -555,7 +555,7 @@ C     READ IN THE NUMBER OF TRIANGLES
         end do
       end do
       do jmol=1,nmoli
-        edissml(:,:,jmol,istra) = 0.d0
+        edissml(:,:,jmol,istra) = 0.0_dp
         do in=1,ntrii
           ix=ixtri(in)
           iy=iytri(in)
@@ -563,7 +563,7 @@ C     READ IN THE NUMBER OF TRIANGLES
             inc=iy+(ix-1)*nr1tal_save
             vl = vol(in)/volcel(ix,iy)
             if (lpdenm) dmb2(ix,iy,jmol,1)=dmb2(ix,iy,jmol,1)+
-     &                         pdenm(jmol,in)*1e6*vl
+     &                         pdenm(jmol,in)*1.0e6_dp*vl
 !   IYS 20.01.2017
 ! rfluxm, pfluxm and tfluxm are cell-centered mass flux densities
 ! converted from g*(cm/s)/cm^3 to kg*(m/s)/m^3
@@ -571,22 +571,22 @@ C     READ IN THE NUMBER OF TRIANGLES
               rfluxm(ix,iy,jmol,1)=rfluxm(ix,iy,jmol,1)+
      &             (-VXDENM(jmol,in)*PUY(inc)+
      &               VYDENM(jmol,in)*PVY(inc))*
-     &           vl*10.0/NMASSM(jmol)/AMUAKG
+     &           vl*10.0_dp/NMASSM(jmol)/AMUAKG
 
               pfluxm(ix,iy,jmol,1)=pfluxm(ix,iy,jmol,1)+
      &             (VXDENM(jmol,in)*PUX(inc)-
      &              VYDENM(jmol,in)*PVX(inc))*
-     &           vl*10.0/NMASSM(jmol)/AMUAKG
+     &           vl*10.0_dp/NMASSM(jmol)/AMUAKG
             else if (laddv) then
              if(ia0+natmi+jmol.le.nadv)
      >         rfluxm(ix,iy,jmol,1)=rfluxm(ix,iy,jmol,1)+
-     &                                 addv(ia0+natmi+jmol,in)*1.0e4
+     &                                 addv(ia0+natmi+jmol,in)*1.0e4_dp
              if(ia2+natmi+jmol.le.nadv)
      >         pfluxm(ix,iy,jmol,1)=pfluxm(ix,iy,jmol,1)+
-     &                                 addv(ia2+natmi+jmol,in)*1.0e4
+     &                                 addv(ia2+natmi+jmol,in)*1.0e4_dp
             end if
             if (LVZDENM) tfluxm(ix,iy,jmol,1)=tfluxm(ix,iy,jmol,1)+
-     &             VZDENM(jmol,in)*vl*10.0/NMASSM(jmol)/AMUAKG
+     &             VZDENM(jmol,in)*vl*10.0_dp/NMASSM(jmol)/AMUAKG
 
 !   IYS 20.01.2017
 !   refluxm and pefluxm - energy flux density components -
@@ -596,10 +596,10 @@ C     READ IN THE NUMBER OF TRIANGLES
 
             if(ia1+natmi+jmol.le.nadv .and. laddv)
      >       refluxm(ix,iy,jmol,1)=refluxm(ix,iy,jmol,1)+
-     &                      addv(ia1+natmi+jmol,in)*1.0e4*elcha
+     &                      addv(ia1+natmi+jmol,in)*1.0e4_dp*elcha
             if(ia3+natmi+jmol.le.nadv .and. laddv)
      >       pefluxm(ix,iy,jmol,1)=pefluxm(ix,iy,jmol,1)+
-     &                      addv(ia3+natmi+jmol,in)*1.0e4*elcha
+     &                      addv(ia3+natmi+jmol,in)*1.0e4_dp*elcha
             if (ledenm) tmb2(ix,iy,jmol,1)=tmb2(ix,iy,jmol,1)+
      &                      edenm(jmol,in)*vl
             if (lpmml) srcml(ix,iy,jmol,1)=srcml(ix,iy,jmol,1)+
@@ -619,7 +619,7 @@ C     READ IN THE NUMBER OF TRIANGLES
           if(b2_cell(ix,iy)) then
             vl = vol(in)/volcel(ix,iy)
             if (lpdeni) dib2(ix,iy,jion,1)=dib2(ix,iy,jion,1)+
-     &                         pdeni(jion,in)*1e6*vl
+     &                         pdeni(jion,in)*1.0e6_dp*vl
             if (ledeni) tib2(ix,iy,jion,1)=tib2(ix,iy,jion,1)+
      &                         edeni(jion,in)*vl
           endif
@@ -630,9 +630,9 @@ C     READ IN THE NUMBER OF TRIANGLES
 !c*** Rescale the surface data from A to 1/sec and average the energy
 !c
       do i=1,nlimps
-        wldnek(i,istra)=0.
-        wldnep(i,istra)=0.
-        wldpeb(i,istra)=0.
+        wldnek(i,istra)=0.0_dp
+        wldnep(i,istra)=0.0_dp
+        wldpeb(i,istra)=0.0_dp
 !c*** hlp accumulates the power taken away with re-emitted particles
         hlp=0.
         do j=1,natmi
@@ -646,10 +646,10 @@ C     READ IN THE NUMBER OF TRIANGLES
             if(potat(j,i).gt.0.) then
               ewlda(i,j,istra)=eotat(j,i)/potat(j,i)
             else
-              ewlda(i,j,istra)=0.
+              ewlda(i,j,istra)=0.0_dp
             end if
           else
-            ewlda(i,j,istra)=0.
+            ewlda(i,j,istra)=0.0_dp
           end if
           if (lpotat) wldna(i,j,istra)=hlp_cnv*potat(j,i)
           wldra(i,j,istra)=0.
@@ -667,16 +667,16 @@ C     READ IN THE NUMBER OF TRIANGLES
           if (lerfiml) hlp=hlp+erfiml(j,i)
           if (lerfphml) hlp=hlp+erfphml(j,i)
           if (lpotml.and.leotml) then
-            if(potml(j,i).gt.0.) then
+            if(potml(j,i).gt.0.0_dp) then
               ewldm(i,j,istra)=eotml(j,i)/potml(j,i)
             else
-              ewldm(i,j,istra)=0.
+              ewldm(i,j,istra)=0.0_dp
             end if
           else
-            ewldm(i,j,istra)=0.
+            ewldm(i,j,istra)=0.0_dp
           end if
           if (lpotml) wldnm(i,j,istra)=hlp_cnv*potml(j,i)
-          wldrm(i,j,istra)=0.
+          wldrm(i,j,istra)=0.0_dp
           if (lprfaml) wldrm(i,j,istra)=wldrm(i,j,istra)+prfaml(j,i)
           if (lprfmml) wldrm(i,j,istra)=wldrm(i,j,istra)+prfmml(j,i)
           if (lprfiml) wldrm(i,j,istra)=wldrm(i,j,istra)+prfiml(j,i)
@@ -753,40 +753,40 @@ C     READ IN THE NUMBER OF TRIANGLES
       ! Zero out arrays for inactive strata
       do k=1,nstrai
          if (.not. nlsron(k)) then
-            wldnek(:,k) = 0._DP
-            wldnep(:,k) = 0._DP
-            wldpeb(:,k) = 0._DP
-            wldspt(:,k) = 0._DP
-            ewlda(:,:,k) = 0._DP
-            wldna(:,:,k) = 0._DP
-            wldra(:,:,k) = 0._DP
-            wldpa(:,:,k) = 0._DP
-            wldspta(:,:,k) = 0._DP
-            ewldm(:,:,k) = 0._DP
-            wldnm(:,:,k) = 0._DP
-            wldrm(:,:,k) = 0._DP
-            wldpm(:,:,k) = 0._DP
-            wldsptm(:,:,k) = 0._DP
-            wldpp(:,:,k) = 0._DP
+            wldnek(:,k) = 0.0_DP
+            wldnep(:,k) = 0.0_DP
+            wldpeb(:,k) = 0.0_DP
+            wldspt(:,k) = 0.0_DP
+            ewlda(:,:,k) = 0.0_DP
+            wldna(:,:,k) = 0.0_DP
+            wldra(:,:,k) = 0.0_DP
+            wldpa(:,:,k) = 0.0_DP
+            wldspta(:,:,k) = 0.0_DP
+            ewldm(:,:,k) = 0.0_DP
+            wldnm(:,:,k) = 0.0_DP
+            wldrm(:,:,k) = 0.0_DP
+            wldpm(:,:,k) = 0.0_DP
+            wldsptm(:,:,k) = 0.0_DP
+            wldpp(:,:,k) = 0.0_DP
             eneutrad(:,:,:,k) = 0.0_DP
             emolrad(:,:,:,k) = 0.0_DP
             eionrad(:,:,:,k) = 0.0_DP
             edissml(:,:,:,k) = 0.0_DP
-            wldnek_aver(:,k) = 0._DP
-            wldnep_aver(:,k) = 0._DP
-            wldna_aver(:,:,k) = 0._DP
-            ewlda_aver(:,:,k) = 0._DP
-            wldnm_aver(:,:,k) = 0._DP
-            ewldm_aver(:,:,k) = 0._DP
-            wldra_aver(:,:,k) = 0._DP
-            wldrm_aver(:,:,k) = 0._DP
-            wldpp_aver(:,:,k) = 0._DP
-            wldpa_aver(:,:,k) = 0._DP
-            wldpm_aver(:,:,k) = 0._DP
-            wldpeb_aver(:,k) = 0._DP
-            wldspt_aver(:,k) = 0._DP
-            wldspta_aver(:,:,k) = 0._DP
-            wldsptm_aver(:,:,k) = 0._DP
+            wldnek_aver(:,k) = 0.0_DP
+            wldnep_aver(:,k) = 0.0_DP
+            wldna_aver(:,:,k) = 0.0_DP
+            ewlda_aver(:,:,k) = 0.0_DP
+            wldnm_aver(:,:,k) = 0.0_DP
+            ewldm_aver(:,:,k) = 0.0_DP
+            wldra_aver(:,:,k) = 0.0_DP
+            wldrm_aver(:,:,k) = 0.0_DP
+            wldpp_aver(:,:,k) = 0.0_DP
+            wldpa_aver(:,:,k) = 0.0_DP
+            wldpm_aver(:,:,k) = 0.0_DP
+            wldpeb_aver(:,k) = 0.0_DP
+            wldspt_aver(:,k) = 0.0_DP
+            wldspta_aver(:,:,k) = 0.0_DP
+            wldsptm_aver(:,:,k) = 0.0_DP
          end if
       end do
 
@@ -974,7 +974,7 @@ C     READ IN THE NUMBER OF TRIANGLES
       do ix=1,ndxa
         do iy=1,ndya
           do jatm=1,natmi
-            if (dab2(ix,iy,jatm,1).gt.0.) then
+            if (dab2(ix,iy,jatm,1).gt.0.0_DP) then
               tab2(ix,iy,jatm,1)=tab2(ix,iy,jatm,1)/dab2(ix,iy,jatm,1)*
      &                            elcha*2./3.*1.e6
             else
@@ -982,7 +982,7 @@ C     READ IN THE NUMBER OF TRIANGLES
             end if
           end do
           do jmol=1,nmoli
-            if (dmb2(ix,iy,jmol,1).gt.0.) then
+            if (dmb2(ix,iy,jmol,1).gt.0.0_DP) then
               tmb2(ix,iy,jmol,1)=tmb2(ix,iy,jmol,1)/dmb2(ix,iy,jmol,1)*
      &                            elcha*2./3.*1.e6
             else
@@ -990,7 +990,7 @@ C     READ IN THE NUMBER OF TRIANGLES
             end if
           end do
           do jion=1,nioni
-            if (dib2(ix,iy,jion,1).gt.0.) then
+            if (dib2(ix,iy,jion,1).gt.0.0_DP) then
               tib2(ix,iy,jion,1)=tib2(ix,iy,jion,1)/dib2(ix,iy,jion,1)*
      &                            elcha*2./3.*1.e6
             else
@@ -1012,19 +1012,19 @@ C     READ IN THE NUMBER OF TRIANGLES
       do i=1,nstsi
         j=nlim+i
         do k=1,nfla
-          wldpp(j,k,0)=0.
+          wldpp(j,k,0)=0.0_DP
           do l=1,nstrai
             wldpp(j,k,0)=wldpp(j,k,0)+wldpp(j,k,l)
           end do
         end do
         do k=1,natmi
-          wldpa(j,k,0)=0.
+          wldpa(j,k,0)=0.0_DP
           do l=1,nstrai
             wldpa(j,k,0)=wldpa(j,k,0)+wldpa(j,k,l)
           end do
         end do
         do k=1,nmoli
-          wldpm(j,k,0)=0.
+          wldpm(j,k,0)=0.0_DP
           do l=1,nstrai
             wldpm(j,k,0)=wldpm(j,k,0)+wldpm(j,k,l)
           end do
@@ -1033,11 +1033,11 @@ C     READ IN THE NUMBER OF TRIANGLES
         write(hlp_frm,'(a,i3,a)')
      .   '(a,i4,1p,',2+3*(natmi+nmoli)+nfla,'e11.3)'
         if (nmoli.gt.0) then
-          if(wldnek(j,0).ne.0. .or.
-     &       wldna(j,1,0).ne.0 .or. wldnm(j,1,0).ne.0 .or.
-     &       wldra(j,1,0).ne.0 .or. wldrm(j,1,0).ne.0 .or.
-     &       wldpa(j,1,0).ne.0 .or. wldpm(j,1,0).ne.0 .or.
-     &       wldpp(j,1,0).ne.0)
+          if(wldnek(j,0).ne.0.0_DP .or.
+     &       wldna(j,1,0).ne.0.0_DP .or. wldnm(j,1,0).ne.0.0_DP .or.
+     &       wldra(j,1,0).ne.0.0_DP .or. wldrm(j,1,0).ne.0.0_DP .or.
+     &       wldpa(j,1,0).ne.0.0_DP .or. wldpm(j,1,0).ne.0.0_DP .or.
+     &       wldpp(j,1,0).ne.0.0_DP)
      >        write(iunout,hlp_frm)
      &          'non-def-surf ',i, 1.e-4*sarea(j),
      &               1.e-6*wldnek(j,0),
@@ -1046,9 +1046,9 @@ C     READ IN THE NUMBER OF TRIANGLES
      &              (wldpa(j,k,0),k=1,natmi),(wldpm(j,k,0),k=1,nmoli),
      &              (wldpp(j,k,0),k=1,nfla)
         else
-          if(wldnek(j,0).ne.0. .or.
-     &       wldna(j,1,0).ne.0 .or. wldra(j,1,0).ne.0 .or.
-     &       wldpa(j,1,0).ne.0 .or. wldpp(j,1,0).ne.0)
+          if(wldnek(j,0).ne.0.0_DP .or.
+     &       wldna(j,1,0).ne.0.0_DP .or. wldra(j,1,0).ne.0.0_DP .or.
+     &       wldpa(j,1,0).ne.0.0_DP .or. wldpp(j,1,0).ne.0.0_DP)
      >        write(iunout,hlp_frm)
      &          'non-def-surf ',i, 1.e-4*sarea(j),
      &               1.e-6*wldnek(j,0),
@@ -1136,47 +1136,47 @@ C     READ IN THE NUMBER OF TRIANGLES
       implicit none
       logical, intent(in) :: fullclean
       if(allocated(dab2)) then
-        dab2=0._DP
-        dmb2=0._DP
-        dib2=0._DP
-        tab2=0._DP
-        tmb2=0._DP
-        tib2=0._DP
-        rfluxa=0._DP
-        rfluxm=0._DP
-        refluxa=0._DP
-        refluxm=0._DP
-        pfluxa=0._DP
-        pfluxm=0._DP
-        pefluxa=0._DP
-        pefluxm=0._DP
-        tfluxa=0._DP
-        tfluxm=0._DP
-        tefluxa=0._DP
-        tefluxm=0._DP
-        emiss=0._DP
-        emissmol=0._DP
-        srcml=0._DP
-        edissml=0._DP
+        dab2=0.0_DP
+        dmb2=0.0_DP
+        dib2=0.0_DP
+        tab2=0.0_DP
+        tmb2=0.0_DP
+        tib2=0.0_DP
+        rfluxa=0.0_DP
+        rfluxm=0.0_DP
+        refluxa=0.0_DP
+        refluxm=0.0_DP
+        pfluxa=0.0_DP
+        pfluxm=0.0_DP
+        pefluxa=0.0_DP
+        pefluxm=0.0_DP
+        tfluxa=0.0_DP
+        tfluxm=0.0_DP
+        tefluxa=0.0_DP
+        tefluxm=0.0_DP
+        emiss=0.0_DP
+        emissmol=0.0_DP
+        srcml=0.0_DP
+        edissml=0.0_DP
         if (fullclean) then
-          wldnek=0._DP
-          wldnep=0._DP
-          wldna=0._DP
-          ewlda=0._DP
-          wldnm=0._DP
-          ewldm=0._DP
-          wldra=0._DP
-          wldrm=0._DP
-          wldpp=0._DP
-          wldpa=0._DP
-          wldpm=0._DP
-          wldpeb=0._DP
-          wldspt=0._DP
-          wldspta=0._DP
-          wldsptm=0._DP
-          eneutrad=0._DP
-          emolrad=0._DP
-          eionrad=0._DP
+          wldnek=0.0_DP
+          wldnep=0.0_DP
+          wldna=0.0_DP
+          ewlda=0.0_DP
+          wldnm=0.0_DP
+          ewldm=0.0_DP
+          wldra=0.0_DP
+          wldrm=0.0_DP
+          wldpp=0.0_DP
+          wldpa=0.0_DP
+          wldpm=0.0_DP
+          wldpeb=0.0_DP
+          wldspt=0.0_DP
+          wldspta=0.0_DP
+          wldsptm=0.0_DP
+          eneutrad=0.0_DP
+          emolrad=0.0_DP
+          eionrad=0.0_DP
           pdena_int=0.0_DP
           pdena_int_b2=0.0_DP
           pdenm_int=0.0_DP

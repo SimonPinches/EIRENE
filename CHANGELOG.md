@@ -53,6 +53,9 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added information about thread number in error state in EIRENE_EXIT_OWN
 - Added census score output in TMSTEP
 - Added SHSTEP output in EIRMOD_INFCOP from SOLPS-ITER interface
+- Made FLUXES and FLUXS arrays in EIRSRT allocatable to avoid a segmentation fault
+- Made DUMMY allocatable in INTEGRATE_TALLIES
+- Made arrays in EIRMOD_PLTEIR allocatable
 - Removed misleading superfluous output from CMakeLists.txt
 - Added standard deviation output in OUTIDLTAL
 - Removed redundant output in OUTIDLPLA
@@ -65,6 +68,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Generalized usaged of FORT and FORT_LC variables
 - Introduced usage of EIRENE_OPENFILE in all interface routines
 - Avoiding obsolescent shared labels END DO statements, replaced with CONTINUE
+- Added some _DP type declarations for floating-point constants
 - Added TRIM operations and character ranges to avoid string length overflows
 - Added USE_OPENMP and USE_EXT_OPENMP pragmas to avoid compiler warnings from !$OMP instructions when compiling without OpenMP
 - Removed double definition of USE_OPENMP and USE_EXT_OPENMP in CMakeLists.txt

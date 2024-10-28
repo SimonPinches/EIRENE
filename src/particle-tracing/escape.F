@@ -1167,7 +1167,7 @@ cdr only if ispz .ne. ispz_old:
         CALL EIRENE_SWITCH_PARTINFO
 C
         E0TERM=EWALL(MSURF)
-        IF (E0TERM.GT.0) THEN
+        IF (E0TERM.GT.0.0_DP) THEN
 C  MONOENERGETIC DISTRIBUTION
           E0=E0TERM
           VEL=RSQDVM(IMOL)*SQRT(E0)
@@ -1179,15 +1179,15 @@ C   POLAR ANGLE: COSINE
           VZ=FC3(INIV4)
           INIV4=INIV4-1
           CALL EIRENE_ROTATF (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ)
-        ELSEIF (E0TERM.LT.0.D0) THEN
+        ELSEIF (E0TERM.LT.0.0_DP) THEN
 C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
           TW=-E0TERM
 c these variables are necessary as the corresponding arguments in velocs
 c are INTENT(IN) !
-          VXR = 0._DP
-          VYR = 0._DP
-          VZR = 0._DP
-          VWL = 0._DP  !  INDICATE: NON-DRIFTING MAXWELLIAN FLUX,
+          VXR = 0.0_DP
+          VYR = 0.0_DP
+          VZR = 0.0_DP
+          VWL = 0.0_DP !  INDICATE: NON-DRIFTING MAXWELLIAN FLUX,
                        !            WEIGHT IS NOT MODIFIED
           WGHTVS= WEIGHT
           CALL EIRENE_VELOCS(WGHTVS,

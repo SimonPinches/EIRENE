@@ -149,7 +149,7 @@
 
       ntcpu_orig = ntcpu
       if (abs(mpts_comsou-1._dp) > eps10)
-     .   ntcpu_orig = ntcpu_orig / mpts_comsou
+     .   ntcpu_orig = nint( real(ntcpu_orig,dp) / mpts_comsou )
 
       call json%add(me,'MANUAL',
      .     "http://www.eirene.de/eirene.pdf#section.2.1")
@@ -1365,8 +1365,8 @@ C       call json%add(src,'NLRAY',nlray(istra))
         npts_orig = npts(istra)
         nminpts_orig = nminpts(istra)
         if (abs(ampts-1._dp) > eps10) then
-          npts_orig = npts_orig / ampts
-          nminpts_orig = nminpts_orig / ampts
+          npts_orig = nint( real(npts_orig,dp) / ampts )
+          nminpts_orig = nint( real(nminpts_orig,dp) / ampts )
         end if
 
 !  999999 is the largest number of particles in input

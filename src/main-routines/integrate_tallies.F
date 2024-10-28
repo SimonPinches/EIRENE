@@ -20,7 +20,10 @@ C
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: ISTRA
-      REAL(DP) :: DUMMY(NRTAL)
+      REAL(DP), SAVE, ALLOCATABLE :: DUMMY(:)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE(DUMMY)
+#endif
       INTEGER :: IATM, IMOL, IION, IPHOT, IPLS, IADV, ICLV, ISNV,
      .           ICPV, IBGV,
      .           JATM, JMOL, JION, JPHOT
@@ -33,6 +36,8 @@ C   INTEGRATE VOLUME-AVERAGED PROFILES   450 --- 459
 
 cdr  electron source rates, particles. missing: photon contributions PPHEL
 C
+      ALLOCATE(DUMMY(NRTAL))
+
       IF (LPAEL) THEN
         DUMMY(1:NSBOX_TAL) = PAEL(1:NSBOX_TAL)
         CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,PAELI(ISTRA),
@@ -1117,6 +1122,8 @@ cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
           BGKV(IBGV,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
   459   CONTINUE
       END IF
+
+      DEALLOCATE(DUMMY)
 
       RETURN
       END SUBROUTINE EIRENE_INTEGRATE_TALLIES
