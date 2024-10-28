@@ -27,6 +27,7 @@ C
       USE EIRMOD_CCONA
       USE EIRMOD_CESTIM
       USE EIRMOD_CSPEZ
+      USE EIRMOD_CCOUPL
 
       IMPLICIT NONE
 
@@ -342,7 +343,7 @@ cdr  ?? scaling with bulk flux ??
           IF (NLSPCSCL) THEN
             PPHATI2(0:NATM,LB_PHOT:NPHOT) => PPHATI(:,ISTRA)
             PRFPHAI2(0:NATM,LB_PHOT:NPHOT) => PRFPHAI(:,ISTRA)
-            DO IPHOT=LB_PHOT,NPHOT
+            DO IPHOT=LB_PHOT,NPHOTI
               PPHATI2(0,IPHOT) = SUM(PPHATI2(1:NATMI,IPHOT))
               PRFPHAI2(0,IPHOT) = SUM(PRFPHAI2(1:NATMI,IPHOT))
             END DO
@@ -1431,7 +1432,7 @@ cdr  sum over species IPLS
 
         IF (NLSPCSCL) THEN
           PPHPLI2(0:NPLS,LB_PHOT:NPHOT) => PPHPLI(:,ISTRA)
-          DO IPHOT = LB_PHOT,NPHOT
+          DO IPHOT = LB_PHOT,NPHOTI
             PPHPLI2(0,IPHOT) = SUM(PPHPLI2(1:NPLSI,IPHOT))
           END DO
         ELSE
