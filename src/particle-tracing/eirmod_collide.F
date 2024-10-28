@@ -847,7 +847,7 @@ C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = PRE-COLLISION BULK (
                 V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
                 V0_PARB=V0_PARB*AMUA*RMASSX
                 IF (INDPRO(4) == 8) THEN
-                  CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
+                  CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLSO,
      .                               .TRUE.)
                   VPLASP=VX*BX+VY*BY+VZ*BZ
                   SIGNUM=SIGN(1._DP,VPLASP)
@@ -862,7 +862,7 @@ C  remove its momentum from field particles
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                MXPL(IPLS,NCELL)=MXPL(IPLS,NCELL)-
+                MXPL(IPLSO,NCELL)=MXPL(IPLSO,NCELL)-
      .                           WEIGHT*V0_PARB
      .                           *SIGNUM
                 LMETSP(NSPAMI+IPLS)=.TRUE.
