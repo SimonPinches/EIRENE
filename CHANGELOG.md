@@ -33,6 +33,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added IFIRST initialization to zero in READ_COLRAD
 - Adding COUPLE_INIT routine in B2.5 interface
 - Moved EIRENE_EXPINT, EIRENE_LAX_M and EIRENE_MMDEI to their own files
+- Apply separate scaling to additional, algebraic and pumping tallies
 - Added TRCMELD output switch
 - Do not use IUNOUT in EIRENE_MAIN before it is defined or after it has been deallocated
 - Added MPI_VERSION and MPI_MOD pragmas to handle older MPI implementations

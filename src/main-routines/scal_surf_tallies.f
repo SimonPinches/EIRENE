@@ -18,8 +18,16 @@ cdr          Not ready, but ZWW, ZW are already here?
       REAL(DP) :: DEL, DELI, ELEFT, ERIGHT
 
 cdr  surface flux tallies
-      ESTIMS=ESTIMS*FLXFAC(ISTR)
+cdr  prepare special treatment for tallies 82, (adds), 83, (algs) and 84, (spump)
+      ESTIMS(1:NADDW(82),:)=ESTIMS(1:NADDW(82),:)*FLXFAC(ISTR)
 
+cdr tbd:  apply the scaling flags from input block 10D,E here:
+cdr  scale additional surface tally 82: ADDS
+      adds=adds*flxfac(istr)
+cdr  scale algebraic surface tally 83: ALGS
+      algs=algs*flxfac(istr)
+cdr  scale pumped fluxes 84: SPUMP
+      spump=spump*flxfac(istr)
 C
 C  these next tallies are not surface tallies.
 C  We scale them here anyway.
