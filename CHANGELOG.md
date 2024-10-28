@@ -66,6 +66,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Removed misleading superfluous output from CMakeLists.txt
 - Added standard deviation output in OUTIDLTAL
 - Removed redundant output in OUTIDLPLA
+- Corrected sizes of tally output arrays in SETTXT_INTAL
 - Conditioned some debugging output
 - Rewrote some output formats to avoid creation of temporary arrays
 - Clarified some code output
