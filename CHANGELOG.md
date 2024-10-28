@@ -35,6 +35,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Moved EIRENE_EXPINT, EIRENE_LAX_M and EIRENE_MMDEI to their own files
 - Apply separate scaling to additional, algebraic and pumping tallies
 - Added TRCMELD output switch
+- Refactored computation of random seeds to be compatible with both OpenMP and MPI parallelization schemes
 - Do not use IUNOUT in EIRENE_MAIN before it is defined or after it has been deallocated
 - Added MPI_VERSION and MPI_MOD pragmas to handle older MPI implementations
 - Ensuring MPI_STATUSES has consistent size for MPI runs

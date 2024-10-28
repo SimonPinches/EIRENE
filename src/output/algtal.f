@@ -34,7 +34,7 @@ C
       REAL(DP) :: CONST(20)
       INTEGER :: IIND(20), IZIF(4,20)
       INTEGER :: I, ITL, IALV, NOP, IOP, K, ILIMPS,
-     .           II, J, IALS, IN, NF, IC, IER
+     .           II, J, IALS, IN, NF, NFR, IC, IER
       LOGICAL :: LFREE1, LFREE2
       LOGICAL, ALLOCATABLE :: LLIMPS(:)
       LOGICAL :: LLMPS
@@ -140,9 +140,15 @@ c  1ST OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
 cdr use physical species index NFSTPI,
 cdr not the reduced "storage species index" NFRSTP
             K=IZIF(1,IOP)
-            IF (K.GT.NFRSTP(ITL)) GOTO 91
+            IF (K.GT.NFSTPI(ITL)) GOTO 91
 
-            NF=NFRSTP(ITL)
+            NF=NFSTPI(ITL)
+            NFR=NFRSTP(ITL)
+            if (NF .NE. NFR) then
+cdr deal with input tally with indirect species index addressing
+            endif
+cdr perhaps unfinished, for input tallies with indirect species index addressing
+cdr TI, VX,VY,VZ
 
             CALL EIRENE_GET_INTAL
             IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
@@ -227,8 +233,8 @@ c  2nd OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             IF (ITL.GT.NTALI) GOTO 90
 cdr use physical species index NFSTPI,
 cdr not the reduced "storage species index" NFRSTP
-            IF (K.GT.NFRSTP(ITL)) GOTO 91
-            NF=NFRSTP(ITL)
+            IF (K.GT.NFSTPI(ITL)) GOTO 91
+            NF=NFSTPI(ITL)
 
             CALL EIRENE_GET_INTAL
             IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
