@@ -883,7 +883,7 @@ C     READ IN THE NUMBER OF TRIANGLES
       eirsptm = 0.0_DP
       do i=1,nlim+nsts
         isrftype(i)=iliin(i)
-        wlarea(i)=1.e-4*sarea(i)
+        wlarea(i)=1.0e-4_DP*sarea(i)
         if(iliin(i).eq.1) then !{
           do j=1,nspz !{
             wlabsrp(j,i)=1.0_DP-recyct(j,i)
@@ -976,25 +976,25 @@ C     READ IN THE NUMBER OF TRIANGLES
           do jatm=1,natmi
             if (dab2(ix,iy,jatm,1).gt.0.0_DP) then
               tab2(ix,iy,jatm,1)=tab2(ix,iy,jatm,1)/dab2(ix,iy,jatm,1)*
-     &                            elcha*2./3.*1.e6
+     &                            elcha*2.0_DP/3.0_DP*1.0e6_DP
             else
-              tab2(ix,iy,jatm,1)=1.e-6*elcha
+              tab2(ix,iy,jatm,1)=1.0e-6_DP*elcha
             end if
           end do
           do jmol=1,nmoli
             if (dmb2(ix,iy,jmol,1).gt.0.0_DP) then
               tmb2(ix,iy,jmol,1)=tmb2(ix,iy,jmol,1)/dmb2(ix,iy,jmol,1)*
-     &                            elcha*2./3.*1.e6
+     &                            elcha*2.0_DP/3.0_DP*1.0e6_DP
             else
-              tmb2(ix,iy,jmol,1)=1.e-6*elcha
+              tmb2(ix,iy,jmol,1)=1.0e-6_DP*elcha
             end if
           end do
           do jion=1,nioni
             if (dib2(ix,iy,jion,1).gt.0.0_DP) then
               tib2(ix,iy,jion,1)=tib2(ix,iy,jion,1)/dib2(ix,iy,jion,1)*
-     &                            elcha*2./3.*1.e6
+     &                            elcha*2.0_DP/3.0_DP*1.0e6_DP
             else
-              tib2(ix,iy,jion,1)=1.e-6*elcha
+              tib2(ix,iy,jion,1)=1.0e-6_DP*elcha
             end if
           end do
         end do
@@ -1039,8 +1039,8 @@ C     READ IN THE NUMBER OF TRIANGLES
      &       wldpa(j,1,0).ne.0.0_DP .or. wldpm(j,1,0).ne.0.0_DP .or.
      &       wldpp(j,1,0).ne.0.0_DP)
      >        write(iunout,hlp_frm)
-     &          'non-def-surf ',i, 1.e-4*sarea(j),
-     &               1.e-6*wldnek(j,0),
+     &          'non-def-surf ',i, 1.0e-4_DP*sarea(j),
+     &               1.0e-6_DP*wldnek(j,0),
      &              (wldna(j,k,0),k=1,natmi),(wldnm(j,k,0),k=1,nmoli),
      &              (wldra(j,k,0),k=1,natmi),(wldrm(j,k,0),k=1,nmoli),
      &              (wldpa(j,k,0),k=1,natmi),(wldpm(j,k,0),k=1,nmoli),
@@ -1050,8 +1050,8 @@ C     READ IN THE NUMBER OF TRIANGLES
      &       wldna(j,1,0).ne.0.0_DP .or. wldra(j,1,0).ne.0.0_DP .or.
      &       wldpa(j,1,0).ne.0.0_DP .or. wldpp(j,1,0).ne.0.0_DP)
      >        write(iunout,hlp_frm)
-     &          'non-def-surf ',i, 1.e-4*sarea(j),
-     &               1.e-6*wldnek(j,0),
+     &          'non-def-surf ',i, 1.0e-4_DP*sarea(j),
+     &               1.0e-6_DP*wldnek(j,0),
      &              (wldna(j,k,0),k=1,natmi),(wldra(j,k,0),k=1,natmi),
      &              (wldpa(j,k,0),k=1,natmi),(wldpp(j,k,0),k=1,nfla)
         end if
@@ -2246,7 +2246,7 @@ C TOTAL AREAS OF THE SURFACES
        ISS=NLIM+IS
        SAREA_RES(IND)=SAREA(ISS)
       END DO
-      SAREA_RES=SAREA_RES*1e-4 !CONVERTING FROM CM**2 TO M**2
+      SAREA_RES=SAREA_RES*1.0e-4_DP !CONVERTING FROM CM**2 TO M**2
 
       END SUBROUTINE SAREA_POSTPROC
 
