@@ -591,7 +591,7 @@ cdr nsbox rather than nsurf? Otherwise this will not work in additional cells
               TE=TEIN(IR)
               DE=DEIN(IR)
               DEF=LOG(DE)
-              TEF=max(-2.30,LOG(TE)) ! cut off at 0.1 eV
+              TEF=max(-2.3_DP,LOG(TE)) ! cut off at 0.1 eV
 
               RCOLRAD=EIRENE_OTHER_RATE_COEFF(IRC,IR,TEF,DEF,.TRUE.,1)
 
