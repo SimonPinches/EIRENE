@@ -176,7 +176,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           JATM, JMOL, JION, JPHOT, JPLS, JSTRA,
      .           IRPTA3, IRPTE2, IRPTE3, IH, IDIMP,
      .           JDUMMY, IRPTA1, IRPTA2, IRPTE1, NLJ, I1, I2, I3,
-     .           NTIME0, IREAD, I, ISTS, J, IST, IMSG,
+     .           IREAD, I, ISTS, J, IST, IMSG,
      .           IPOS2, IPOS0, NM, K, IPOS1, NRGEN, INUM, NTLSF,
      .           L, INILGJ, INI, ICO, IS, NTLV, ID, NSC,
      .           INELGJ, NPRCSF, MXL, NSPZV1, NSPZV2, NFLGV,
@@ -2896,9 +2896,9 @@ C    .                   ,NRAYEN(I)   !CDR  NOT IN USE
 c...................................................................
 
 C APPLY MULTIPLIER AMPTS TO THE SELECTED MC PARTICLE NUMBER RANGE
-        IF(AMPTS.NE.1.0.AND.AMPTS.GT.0) THEN
-         NPTS(JSTRA)=INT(NPTS(JSTRA)*AMPTS)
-         NMINPTS(JSTRA)=INT(NMINPTS(JSTRA)*AMPTS)
+        IF(AMPTS.NE.1.0_DP.AND.AMPTS.GT.0.0_DP) THEN
+         NPTS(JSTRA)=INT(REAL(NPTS(JSTRA))*AMPTS)
+         NMINPTS(JSTRA)=INT(REAL(NMINPTS(JSTRA))*AMPTS)
         END IF
 C
 
@@ -3981,7 +3981,6 @@ cdr  from here: time dep mode is ON: NTIME.NE.0. and also: NPRNLI GT 0
       IF (ZEILE(1:1).EQ.'*') THEN
 cdr no time-horizon found in block 13.
 C  DATA FOR DEFAULT TIME HORIZON
-        NTIME0=0
         NTIME=1
         DTIMV=1.D0
         TIME0=0.D0

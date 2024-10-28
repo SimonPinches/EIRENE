@@ -87,6 +87,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added NAGFOR pre-processor pragmas to deal with NAG compiler specific warnings
 - Replaced F2003 pre-processor (the compiler supports the Fortran 2003 standard) pragma with LEGACYCOMP (the compiler does not support the Fortran 2003 standard)
 - Removed unused IFOFF argument in EIRENE_FIND_TRIANG_DIM
+- Removed usage of obsolete variables NITER0 in INPUT and NTIME0 in READ_FIXFORM
 - Removed conflicting DIMENSION statements
 - Avoided use of module variables as loop indices
 - Added EXTERNAL definitions for called subroutines and functions

@@ -146,7 +146,7 @@ cdr   REAL(DP) :: timea
      .           JPLS, IRE, JSPZ, JTRJ, ISTRAI, NLJ, IENTRY,
      .           IO13
 
-      INTEGER, SAVE :: NITER0, IUSROUT=0
+      INTEGER, SAVE :: IUSROUT=0
 #ifdef USE_MPI
       INTEGER :: IER
 #endif
@@ -805,7 +805,7 @@ C
       IF (ANY(INDPRO(1:12) == 6) .or. ANY(INDPRO(1:12) == 7))
      .   CALL EIRENE_ALLOC_BCKGRND
 
-      IF ((NMODE.NE.0.AND.IITER.LE.MAX(1,NITER0)) .OR.
+      IF ((NMODE.NE.0.AND.IITER.LE.1) .OR.
      .    (ABS(NMODE).EQ.2)) THEN  !dr: for EMC3 coupling?
                                    !    in case IITER .GT. 1
 C  READ PLASMA BACKGROUND
