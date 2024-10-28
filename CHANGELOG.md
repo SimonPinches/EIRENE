@@ -91,6 +91,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Avoided use of module variables as loop indices
 - Added EXTERNAL definitions for called subroutines and functions
 - Using RETURN and END SUBROUTINE <SUB_NAME> statements to close subroutines
+- Moved statement functions to become contained subroutines
 - Added IMPLICIT NONE statements
 - Added some INTENT(IN) declarations
 - Added pre-processor pragmas around relevant variables only used if the pragma is declared
