@@ -45,6 +45,8 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Adding safety for incorrect algebraic manipulation of intensive tallies in ALGTAL
 - Added calls to flush out buffers
 - Added allocated status safeties
+- Making NDXD, etc... PUBLIC in EIRMOD_EIRBRA
+- Removed NDXP, NDYP, NFL from EIRMOD_BRAEIR
 - Removed MAXPOIN from EIRMOD_SOLPS
 - Rearranged OpenMP critical region in EIRMOD_UPTBGK
 - Added OpenMP compliant error handling
