@@ -385,11 +385,12 @@ cdr
           IHELP(1+NREF:2*NREF) = TDMPAR(IPLS)%TDM%ITP(1:NREF)
           IHELP(1+2*NREF:3*NREF) = TDMPAR(IPLS)%TDM%ISTR(1:NREF)
           IHELP(1+3*NREF:4*NREF) = TDMPAR(IPLS)%TDM%IRC(1:NREF)
+          IAN = 0
         END IF
 
         CALL MPI_BCAST(RHELP,4,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST(IHELP,3*NREF,MPI_INTEGER,0,
+        CALL MPI_BCAST(IHELP,4*NREF,MPI_INTEGER,0,
      .                MPI_COMM_WORLD,ier)
 
         IF (ME > 0) THEN
@@ -414,6 +415,7 @@ cdr
           TDMPAR(IPLS)%TDM%ITP(1:NREF)  = IHELP(1+NREF:2*NREF)
           TDMPAR(IPLS)%TDM%ISTR(1:NREF) = IHELP(1+2*NREF:3*NREF)
           TDMPAR(IPLS)%TDM%IRC(1:NREF)  = IHELP(1+3*NREF:4*NREF)
+          IAN = 0
         END IF
 
         DEALLOCATE (IHELP)
