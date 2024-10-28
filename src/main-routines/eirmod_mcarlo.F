@@ -113,6 +113,9 @@ cdr           under scoring/updlin.f.
 !pb 18.01.16: for totally random particle trajectories avoid usage of same random numbers in consecutive calls to mcarlo
 cdr april 16: use: nstrai rather than nstra in do-loops. Bug fix from ITER-IO
 !pb may 16  : for NPRS<NSTRAI call to IF3COP moved out of strata loop
+cdr Nov. 20 : Do RANMAR random generator test only once, not per stratum.
+cdr           It uses its own (Marsagia-) seed for initialization, independent
+cdr           of eirene seed per stratum.
 c
       SUBROUTINE EIRENE_MCARLO
 C
@@ -165,8 +168,8 @@ cpg
 !$OMP THREADPRIVATE(CIS)
 #endif
 C     INTEGER :: N2
-!pb 28012016
-      INTEGER, SAVE :: ICO_CALL=0
+cdr 4.11.20
+      INTEGER, SAVE :: ICO_CALL=0, IRAN_TEST=0
 
       real(dp) :: timused
       integer :: itimstart, itimend, itimrate
@@ -702,25 +705,27 @@ c  and otherwise enforces that or stops the run.
 cdr
 cdr  RANMAR is a fully portable generator.
 cdr  Here we test if that is the case indeed in this run, on this machine.
-            if (nlranmar) then
-              iadd=0
-              call ranmar_test(iadd,ierr,ran)
-              if (ierr.eq.0) then
-                write (iunout,*) 'RANMAR test passed.'
-                if (IADD.eq.0) then
-                  write (iunout,*) 'Next random number will be: ',RAN
-                else
-                  write (iunout,*) 'Skip next IADD rand. numbers: ',IADD
-                  write (iunout,*) 'Last random number used in test: ',
-     .                              RAN
-                endif
+cdr  Testing once should suffice.
+            iadd=0
+            ierr=0
+            if (nlranmar .and. iran_test.eq.0) then
+             call ranmar_test(iadd,ierr,ran)
+             iran_test=iran_test+1
+             if (ierr.eq.0) then
+              write (iunout,*) 'RANMAR test passed.'
+              if (IADD.eq.0) then
+                write (iunout,*) 'Next random number will be: ',RAN
               else
-                write (iunout,*) 'RANMAR test failed. Error code:'
-                write (iunout,'(I7)') IERR
+                write (iunout,*) 'Skip next IADD rand. numbers: ',IADD
                 write (iunout,*) 'Last random number used in test: ',RAN
               endif
-              call eirene_leer(1)
+             else
+              write (iunout,*) 'RANMAR test failed. Error code:'
+              write (iunout,'(I7)') IERR
+              write (iunout,*) 'Last random number used in test: ',RAN
+             endif
             endif
+            call eirene_leer(1)
 
 c  find random number seed from truly random procedure from wall clock time (use date and time)
 cdr  This is quite arbitrary. And probably even wrong:
