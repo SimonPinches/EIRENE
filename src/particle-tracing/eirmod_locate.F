@@ -272,11 +272,11 @@ C
 
 cym - do this on all threads, this is a private variable
       IF (.NOT.ALLOCATED(WEISPZ)) THEN
-        ALLOCATE (WEISPZ(NSPZ))      
-        DO 1 JSPZ=1,NSPZ
-          WEISPZ(JSPZ)=-1.
-    1   CONTINUE
-      ENDIF
+        ALLOCATE (WEISPZ(NSPZ))
+      END IF
+      DO 1 JSPZ=1,NSPZ
+        WEISPZ(JSPZ)=-1.
+    1 CONTINUE
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP MASTER

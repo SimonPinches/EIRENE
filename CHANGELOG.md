@@ -29,6 +29,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added GRAPHICS option in CMakeLists.txt for compilation with or without plotting enabled
 - Added EIRENE_ALLOC_CGRID call in COUPLE_PARAM from SOLPS-ITER routine
 - Used the module provided NREACI, NATMI, NMOLI, NIONI, and NPHOTI in EIRENE_BROWSE_BLOCK_5 inside FIND_PARAM_JSON
+- Corrected initialization of WEISPZ in EIRMOD_LOCAT0
 - Added ITYP_OLD assignments in EIRMOD_LOCAT1
 - Added IFIRST initialization to zero in READ_COLRAD
 - Adding COUPLE_INIT routine in B2.5 interface
