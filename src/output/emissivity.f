@@ -264,14 +264,15 @@ cdr      to turn it into an intensive score: [...] per cm**3
      .                    ' SOURCE RATE '
           TXTSPC(IADV,NTALA) =TRIM(EMIS_LINES(I)%COMPO(J)%COMPO_NAME)
           TXTUNT(IADV,NTALA) ='PHOTONS/S/CM**3         '
-          IF (TRCSIG)
-     .      WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADV
+          IF (TRCSIG) THEN
+            WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADV
+            CALL EIRENE_LEER(1)
+          END IF
 
         end do ! j components of line ILINE are done
 
 cdr  now sum over components: on tally ADDV(IADS)
 
-        call eirene_leer(1)
         addv(iads,1:nsbox_tal) = addv(iads,1:nsbox_tal)
      .                           / voltal(1:nsbox_tal)
         IF (TRCSIG .AND. ICALL.EQ.0)
@@ -289,10 +290,10 @@ cdr  now sum over components: on tally ADDV(IADS)
         TXTTAL(IADS,NTALA) ='SUM OVER COMPONENTS  '
         TXTSPC(IADS,NTALA) ='ALL COMPONENTS'
         TXTUNT(IADS,NTALA) ='PHOTONS/S/CM**3         '
-        IF (TRCSIG)
-     .    WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADS
-
-        CALL EIRENE_LEER(2)
+        IF (TRCSIG) THEN
+          WRITE (iunout,*) ' TALLY ADDV(IADV) prepared. IADV=',IADS
+          CALL EIRENE_LEER(2)
+        END IF
 
       end do ! line no. ILINE
 

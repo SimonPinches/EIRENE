@@ -49,7 +49,7 @@ cdr  via iterative loops or stepping.
 #ifdef USE_OPENMP
 #ifndef USE_EXT_OPENMP
 cym these variables need copyin
-      USE EIRMOD_SPUTER, ONLY: ETH,Q,M2M1,ES,ETF
+      USE EIRMOD_SPUTER, ONLY: ETH, Q, M2M1, ES, ETF
 #endif
 #endif
       USE EIRMOD_STATIS, ONLY: EIRENE_STATS0, EIRENE_STATS1,

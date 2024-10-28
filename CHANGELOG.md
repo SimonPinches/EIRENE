@@ -316,10 +316,10 @@ This commit is meant is decrease the distance between the SOLPS Eirene branch an
     - cylinder
   - CREACD changed significantly
     - 2D-D_polygon,  2D-D_slab,  2D-D_slab_finite_cylinder_11x11,  2D-D_triang,  3D_slab_11x11x11,  3D-D_tetra,  3D-D_tetra
-  - TABEI1 (AVR) changed significantly 
+  - TABEI1 (AVR) changed significantly
     - 2D-D_polygon
-  - EELEI1 (AVR) changes slightly 
-    - 2D-D_polygon_NLPLG 
+  - EELEI1 (AVR) changes slightly
+    - 2D-D_polygon_NLPLG
   - More warnings from SLREAC extrapolation
     - 2D-D_slab_finite_cylinder_11x11, 2D-D_triang, 3D_slab_11x11x11,  3D-D_tetra,
 

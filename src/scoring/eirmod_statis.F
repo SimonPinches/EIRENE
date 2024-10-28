@@ -62,13 +62,12 @@ C
 
       IMPLICIT NONE
 
-      INTEGER :: IIN, IR, J
+      INTEGER, SAVE :: IIN, IR, J
       EXTERNAL :: EIRENE_INDTAL
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE ( IIN, IR, J )
 #endif
-      SAVE
 
       IMETCL = 0
       NCLMT = 0
@@ -150,11 +149,10 @@ cym      REAL(DP) :: SAV, SD1S, SD1, SD2S
 cym      INTEGER :: NR1, NP2, NT3, I, J, IRU, IGS, IC, IIN, INP, IGF, ITL,
 cym     .           ISCO, IGE, IGI, NSYM, NSYH, J1, J2, IR, IP, IG, IT,
 cym     .           ICO, ISCO2, ITL2, ISCO1, ITL1
-      INTEGER :: I, IC, ICO, IG, IIN, IR, IS, IP, IT
+      INTEGER, SAVE :: I, IC, ICO, IG, IIN, IR, IS, IP, IT
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE( I, IC, ICO, IG, IIN, IR, IS, IP, IT )
 #endif
-      SAVE
 
       NSB=NBIN
       NR1=NRIN
@@ -515,12 +513,11 @@ cym      REAL(DP) :: D1, DS1, D2S, DS2, DSA, DD22, DD11, D2, DD12,
 cym     .          ZFLUXQ, DS, SG2, SG, DA, D, DD,
 cym     .          D2S11, D2S22, D2S12, SG12, SG1,
 cym     .          XNM, SD1
-      INTEGER :: IC, IR, IS, IIN, I
+      INTEGER, SAVE :: IC, IR, IS, IIN, I
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE( IC, IR, IS, IIN, I )
 #endif
-      SAVE
 
 C
 C  1. FALL  ALLE BEITRAEGE GLEICHES VORZEICHEN: SIG ZWISCHEN 0 UND 1

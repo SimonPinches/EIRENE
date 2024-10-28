@@ -223,7 +223,7 @@ csw 03sep2013
       REAL(DP) :: XCOOR,YCOOR,ZCOOR !VK
       real(dp) ::  XN, YN
       integer ixn,iyn
-      character*72 zeile
+      character*80 zeile
       EXTERNAL :: EIRENE_BITSET, FIX_INTEGER_INPUT, EIRENE_EXIT_OWN
 csw
       save first,onetwo,limpos
@@ -340,7 +340,7 @@ cdr either read onetwo, limpos
 cdr or     read limpos, onetwo
 
 csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
-          read(iunin,'(a72)') zeile
+          read(iunin,'(a80)') zeile
           call fix_integer_input(zeile,3)
           read(zeile,*,err=91) limpos(i),onetwo(i),icoor(i)
           goto 92

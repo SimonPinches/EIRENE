@@ -661,7 +661,7 @@ c  then 2nd: sample uniformly within this triangle
         END DO
       end select
 C
-
+      RETURN
       END SUBROUTINE EIRENE_SAMVL0
 C
 C  AT THIS POINT: CALLED FROM PARTICLE LOOP TO INITIALIZE TEST FLIGHT

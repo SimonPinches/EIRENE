@@ -3,10 +3,7 @@ bin*
 build*
 doc*
 lib*
-TAGS
 
-# Ignore local user files
-src.local/
 
 # backup files
 *.bak
@@ -15,13 +12,20 @@ src.local/
 # Ignore temporary files
 *~
 
+# local files and directories
+local/
+*.local
+*.local/
+
 # object, archive,... files
 *.[oa]
 *.mod
-TAGS
 
 # error messages from compiler etc.
 *.error
+
+# files produced by the Makefile
+TAGS
 
 # Ignore eclipse files
 .cproject

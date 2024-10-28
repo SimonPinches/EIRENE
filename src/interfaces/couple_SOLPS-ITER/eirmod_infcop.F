@@ -6450,6 +6450,7 @@ csw mpi 09jun2010
      .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
      .              ier)
       ressmo(istrr,1:nfl) = dumvec(1:nfl)
+      deallocate(dumvec)
 
       call mpi_recv(ressee(istrr),   1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
@@ -6458,8 +6459,6 @@ csw mpi 09jun2010
       call mpi_recv(ressei(istrr),   1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
      .              ier)
-
-      deallocate(dumvec)
 
       call mpi_recv(see(0,0,istrr), size(see(:,:,istrr)),
      &              MPI_DOUBLE_PRECISION, irank, istrr,
@@ -6620,14 +6619,13 @@ cdjm Jan2017
       dumvec(1:nfl) = ressmo(istrr,1:nfl)
       call mpi_send(dumvec, nfl+1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, ier)
+      deallocate(dumvec)
 
       call mpi_send(ressee(istrr),   1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, ier)
 
       call mpi_send(ressei(istrr),   1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, ier)
-
-      deallocate(dumvec)
 
       call mpi_send(see(0,0,istrr), size(see(:,:,istrr)),
      &         MPI_DOUBLE_PRECISION, irank, istrr, MPI_COMM_WORLD, ier)

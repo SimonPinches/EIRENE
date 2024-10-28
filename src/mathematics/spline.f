@@ -74,4 +74,4 @@ C  SETZE A,B,C UND D ARRAY UND STEIGUNG BEI X=X(N)
       A(N)=Y(N)
       B(N)=B(NM1)+2.*C(NM1)*(X(N)-X(NM1))+3.*D(NM1)*(X(N)-X(NM1))**2
       RETURN
-      END
+      END SUBROUTINE EIRENE_SPLINE

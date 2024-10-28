@@ -686,6 +686,7 @@
         write(46,'(6e15.7)') (PVX(j),j=1,ntrii)
         call write_title(46,'pvy',ntrii)
         write(46,'(6e15.7)') (PVY(j),j=1,ntrii)
+
         rewind(46)
         close (46)
 

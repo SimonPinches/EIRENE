@@ -125,7 +125,7 @@ C PI PROCESSES
 C EI PROCESSES
       INTEGER :: IXEI,IREI
 
-      REAL(DP) :: EIRENE_VDION
+      REAL(DP), EXTERNAL :: EIRENE_VDION
       REAL(DP), POINTER, SAVE :: PXX2(:,:), PXPL2(:,:), PXAT2(:,:),
      .                           PXML2(:,:), PXIO2(:,:)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )

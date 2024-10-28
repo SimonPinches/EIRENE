@@ -357,10 +357,12 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
         CLOSE (UNIT=13+ifoff)
       END IF
 
-      IF (ALLOCATED(NFLA_ISWR) .AND. (SIZE(NFLA_ISWR) < NREA_VIRT)) THEN
+      IF (ALLOCATED(NFLA_ISWR)) THEN
+       IF (SIZE(NFLA_ISWR) < NREA_VIRT) THEN
         DEALLOCATE (NFLA_ISWR)
         DEALLOCATE (NFLA_IR)
         DEALLOCATE (NFLA_IPLS)
+       END IF
       END IF
 
       IF (.NOT.ALLOCATED(NFLA_ISWR)) THEN
@@ -378,15 +380,19 @@ cdr  next: read the NFLA_VIRT collisional process data related to these virtual 
 #endif
       END IF
 
-      IF (ALLOCATED(TAB_STORE) .AND. SIZE(TAB_STORE,1) < NREA_VIRT) THEN
+      IF (ALLOCATED(TAB_STORE)) THEN
+       IF (SIZE(TAB_STORE,1) < NREA_VIRT) THEN
         DEALLOCATE (TAB_STORE)
         DEALLOCATE (E_STORE)
         DEALLOCATE (RTAB)
         DEALLOCATE (ETAB)
+       END IF
       END IF
 
-      IF (ALLOCATED(LG_STORE) .AND. SIZE(LG_STORE,2) < NFLA_VIRT) THEN
+      IF (ALLOCATED(LG_STORE)) THEN
+       IF (SIZE(LG_STORE,2) < NFLA_VIRT) THEN
         DEALLOCATE (LG_STORE)
+       END IF
       END IF
 
       IF (.NOT.ALLOCATED(TAB_STORE)) THEN
