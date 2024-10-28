@@ -1,5 +1,5 @@
       subroutine eirene_find_triang_dim(nr1st,ntri,ntrii,nknot,ngitt,
-     .                                  casename,ifoff)
+     .                                  casename)
 
       use eirmod_precision
       USE EIRMOD_COMPRT, ONLY: IUNOUT
@@ -8,7 +8,6 @@
       implicit none
 
       integer, intent(inout) :: nr1st,ntri,ntrii,nknot,ngitt
-      integer, intent(in) :: ifoff
       character(*), intent(in) :: casename
       integer :: ll, nrknot, i, id, nb1, ns1, inm1, nb2, ns2, inm2,
      .           nb3, ns3, inm3, iunco, iunel, iunng

@@ -170,7 +170,7 @@ C  READ DATA FOR TRIANGULAR MESH
 C
 C
       nr1st = n1st
-      call eirene_find_triang_dim(nr1st,ntri,ntrii,nknot,ngitt,' ',0)
+      call eirene_find_triang_dim(nr1st,ntri,ntrii,nknot,ngitt,' ')
 
 csw 09jan2012
       IF(NOPTIM.LT.0) NOPTIM=(NTRII+1)*N3RD !VK no storage optimization

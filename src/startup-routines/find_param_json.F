@@ -531,7 +531,7 @@ C
 
           IF (NLFEM) THEN
             CALL EIRENE_FIND_TRIANG_DIM(NR1ST, NTRI, NTRII, NKNOT,
-     .                                  NGITT, CASENAME, IFOFF)
+     .                                  NGITT, CASENAME)
           ENDIF
 
           IF (NLTET) THEN

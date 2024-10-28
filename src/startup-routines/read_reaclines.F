@@ -390,15 +390,15 @@ cdr   default asymp: means: no asympt. at all. fp1, fp2 never needed !
 C  CURRENT DEFAULT ASYMPTOTICS: SET SUCH THAT "NO ASYMPTOTICS" IS USED
       IF (INDEX(H123,'P.').eq.0) then
 c  single parametric data, or for first parameter in 2-parametric data
-        RC1MIN = -20.  ! lower ln(E), ln(T) default limit;
-                       ! E,T in eV (2E-9 EV)
-        RC1MAX =  20.  ! upper ln(E), ln(T) default limit;
-                       ! E,T in eV (5E8  EV)
+        RC1MIN = -20._DP ! lower ln(E), ln(T) default limit;
+                         ! E,T in eV (2E-9 EV)
+        RC1MAX =  20._DP ! upper ln(E), ln(T) default limit;
+                         ! E,T in eV (5E8  EV)
 c  2nd parameter in 2 parametric data
-        RC2MIN = -20.  ! lower ln(E0), ln(N) default limit;
-                       ! E0 in eV, N in cm**-3
-        RC2MAX = 100.  ! upper ln(E0), ln(N) default limit;
-                       ! E0 in eV, N in cm**-3
+        RC2MIN = -20._DP ! lower ln(E0), ln(N) default limit;
+                         ! E0 in eV, N in cm**-3
+        RC2MAX = 100._DP ! upper ln(E0), ln(N) default limit;
+                         ! E0 in eV, N in cm**-3
 
 C  ARE PARAMETERS FOR ASYMPTOTICS FOR THIS REACTION IR SPECIFIED
 C  EXPLICITLY IN input file?
