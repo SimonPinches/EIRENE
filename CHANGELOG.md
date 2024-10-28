@@ -50,6 +50,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Making NDXD, etc... PUBLIC in EIRMOD_EIRBRA
 - Removed NDXP, NDYP, NFL from EIRMOD_BRAEIR
 - Removed MAXPOIN from EIRMOD_SOLPS
+- Making LMETSP2 and LMETSPW2 threadprivate
 - Rearranged OpenMP critical region in EIRMOD_UPTBGK
 - Added OpenMP compliant error handling
 - Added information about thread number in error state in EIRENE_EXIT_OWN
