@@ -1,6 +1,6 @@
 # EIRENE coding and versioning rules for the AD community “JuelichOrigin”
 
-Version: 1.0.10
+Version: 1.1.0
 
 ## Introduction
 
