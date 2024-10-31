@@ -17,17 +17,18 @@
 
 ---
 
-## D. Harting - New EIRENE version: Release-V1.1.0 - 7e1a3746a62266e93d8584dce947e52bc9e766d0
+## D. Harting - New EIRENE version: Release-V1.1.0 - e4854eae6e6f6a49897570c8d76969754ea31d5d
 
 New_EIRENE_Version=1.1.0
 
 ```
-+========================================+
-|                                        |
-|   New EIRENE version: Release-V1.1.0   |
-|   Date: 31st October 2024              |
-|                                        |
-+========================================+
++===============================================+
+|                                               |
+|   New EIRENE version: Release-V1.1.0          |
+|   Date: 31st October 2024                     |
+|   MsV:  MsV-JuelichOrigin_1.0-Oct2024-V1.1.0  |
+|                                               |
++===============================================+
 ```
 1. Added new JSON input file format fro EIRENE.
    - See EIRENE manual for more details.
