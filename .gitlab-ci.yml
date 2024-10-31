@@ -83,7 +83,7 @@ build_library:
           when: never
         - if: $EXCLUDE_SERIAL == 'true'
           when: never
-        - when: always
+        - when: on_success
     script:
         - mkdir buildRelease
         - cd buildRelease
@@ -106,7 +106,7 @@ prepare_testcases:
           when: never
         - if: $EXCLUDE_SERIAL == 'true'
           when: never
-        - when: always
+        - when: on_success
     script:
         # Make only shallow clone (fetch) of single commit defined by SHA key
         - mkdir EIRENE-sample-cases
