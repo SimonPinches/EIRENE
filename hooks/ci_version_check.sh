@@ -12,23 +12,38 @@ ver=$(head -n 1 version.txt)
 
 echo "Running check for consistent EIRENE version" $ver
 
+# get the last two commits which changed the first line of file version.txt
+tmp=($(git blame -L1,1 -- version.txt))
+last_changed_commit1=${tmp[0]}
+tmp=($(git blame -L1,1 -- version.txt "$last_changed_commit1^"))
+last_changed_commit2=${tmp[0]}
+
+# if last change to version.txt is not the current version number throw error
+test_ver=$(git show $last_changed_commit1:version.txt | head -n 1)
+if [ $ver != $test_ver ]; then
+    printf "Test failed\nCurrent version number and last chagned version number do not match $ver $test_ver\n"
+    exit 1
+fi
+
 # Check that the version is not smaller than the previous maj, min or patch versions
-oldver=$(git show HEAD^:version.txt | head -n 1)
+oldver=$(git show $last_changed_commit2:version.txt | head -n 1)
+echo "Found previous EIRENE version: " $oldver
 newversplit=( ${ver//./ } )
 oldversplit=( ${oldver//./ } )
 if [ ${newversplit[0]} -lt ${oldversplit[0]} ]; then
     printf "Test failed.\nThe new major version (${newversplit[0]}) is lower than the previous major version(${oldversplit[0]}).\n"
     exit 1
+else
+    if [ ${newversplit[1]} -lt ${oldversplit[1]} ]; then
+	printf "Test failed.\nThe new minor version(${newversplit[1]}) is lower than the previous minor version(${oldversplit[1]}).\n"
+	exit 1
+    else
+	if [ ${newversplit[2]} -lt ${oldversplit[2]} ]; then
+	    printf "Test failed.\nThe new patch version(${newversplit[2]}) is lower than the previous patch version(${oldversplit[2]}).\n"
+	    exit 1
+	fi
+    fi
 fi
-if [ ${newversplit[1]} -lt ${oldversplit[1]} ]; then
-    printf "Test failed.\nThe new minor version(${newversplit[1]}) is lower than the previous minor version(${oldversplit[1]}).\n"
-    exit 1
-fi
-if [ ${newversplit[2]} -lt ${oldversplit[2]} ]; then
-    printf "Test failed.\nThe new patch version(${newversplit[2]}) is lower than the previous patch version(${oldversplit[2]}).\n"
-    exit 1
-fi
-
 
 # Get the version text from  modules/eirmod_parmmod.f90
 src_file="src/modules/eirmod_parmmod.f"
