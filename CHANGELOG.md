@@ -16,10 +16,41 @@
 ---
 
 ---
+
+## D. Harting - New EIRENE version: Release-V1.1.0 - e4854eae6e6f6a49897570c8d76969754ea31d5d
+
+New_EIRENE_Version=1.1.0
+
+```
++===============================================+
+|                                               |
+|   New EIRENE version: Release-V1.1.0          |
+|   Date: 31st October 2024                     |
+|   MsV:  MsV-JuelichOrigin_1.0-Oct2024-V1.1.0  |
+|                                               |
++===============================================+
+```
+1. Added new JSON input file format fro EIRENE.
+   - See EIRENE manual for more details.
+2. Added OpenMP capability for EIRENE.
+3. Updates to EIRENE database
+   - Changes to coefficients
+      - amjuel.tex: Reactions 2.2.9 (e + H_2 -> 2e + H_2^+), 2.3.6A0 (C^+ + e -> C), 2.6A0 (e + C -> C^+ + 2e (ADAS 93 -> ADAS 96)), 2.8A0 (e + O -> O^+ + 2e)
+      - hydhel.tex: Reaction 3.2.2 (p + H_2(v=0) -> p + H_2(v > 0))
+      - methane.tex: Reaction 3.2 (p + C -> C^+ + H)
+      - h2vibr.tex: Reaction 2.4l1T
+   - Changes in several reactions to T1MIN, T1MAX, N2MIN, N2MAX and Eth
+4. Unification of internal EIRENE versions.
+5. Preparations for unification of EIRENE with SOLPS-ITER version.
+6. Internal code restructuring with some minor impacts on coupling/user-routines.
+7. Restructuring of GitLab CI.
+
+---
+
 ## D. Harting - DMH/fix_ci_version_check - b6e4b2df6d71f4195faa1e23fa1dd79a0f56a5c8
 **Changes**
 
-- Stope the CI pipeline if the compliance_check failed
+- Stop the CI pipeline if the compliance_check failed
 - Corrected logic for version check in compliance_check
    - compliance_check failed when e.g. minor version number decreased and patch number decreased. This is now fixed
    - Check not only the last commit if version number increased but check the last two commits which changed the first line of version.txt if the version number increased
