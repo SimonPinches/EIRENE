@@ -32,8 +32,8 @@ then:
 5. Please commit often, even a few code lines. Also the merge requests should follow promptly – we should avoid long-term branching with painful effort on merging in the end. Each new feature should have an individual branch.
 
 ### Log for changes (‘CHANGELOG.md’ file)
-Whenever a new feature or bug-fix is merged back to the official distribution branches (e.g. ‘develop’, ‘release’, ‘feature’…) an entry at the top of the ‘change_log.md’ file must be made. This makes it much easier for the Reviewer of the merge request to understand the new development. Also, any code-releases should be logged in this file, which makes it easier to compile ‘Release-Notes’ for the user community.
-The entries in the ‘change_log.md’ file must contain:
+Whenever a new feature or bug-fix is merged back to the official distribution branches (e.g. ‘develop’, ‘release’, ‘feature’…) an entry at the top of the ‘CHANGELOG.md’ file must be made. This makes it much easier for the Reviewer of the merge request to understand the new development. Also, any code-releases should be logged in this file, which makes it easier to compile ‘Release-Notes’ for the user community.
+The entries in the ‘CHANGELOG.md’ file must contain:
 
 1. The author(s) of the changes.
 2. The git hash key of the last code commit.
@@ -50,7 +50,7 @@ The entries in the ‘change_log.md’ file must contain:
 See ‘Example_change_log_from_edge2d.txt’ file on INDICO as an example for a change-log used by EDGE2D.
 
 ### Merge requests
-1. Whenever the developer requests a merge back to one of the official distribution branches (mainly the ‘develop’ branch), one must update the ‘change_log.txt’ at the top of the file.
+1. Whenever the developer requests a merge back to one of the official distribution branches (mainly the ‘develop’ branch), one must update the ‘CHANGELOG.md’ at the top of the file.
 2. Merge requests should be as compact as possible. E.g., do not include three different features in one merge request, rather do three different merge requests. If merge requests build on top of each other mention this in the merge request to the Assignee and Reviewer.
 3. Before the merge request, the developer should first merge any changes from the parent branch (which were committed since the moment he/she branched off) into his/her own feature branch and resolve conflicts.
 4. If major new features are introduced, also a CI test-case must be provided to test these new features (preferably as computationally inexpensive as possible to keep the CI pipeline slim). The developer must provide updated test-cases for the CI if code results are changed, and make sure that the CI pipeline runs succesfully.
