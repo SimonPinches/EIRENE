@@ -12,9 +12,22 @@ ver=$(head -n 1 version.txt)
 
 echo "Running check for consistent EIRENE version" $ver
 
+# get the last two commits which changed the first line of file version.txt
+tmp=($(git blame -L1,1 -- version.txt))
+last_changed_commit1=${tmp[0]}
+tmp=($(git blame -L1,1 -- version.txt "$last_changed_commit1^"))
+last_changed_commit2=${tmp[0]}
+
+# if last change to version.txt is not the current version number throw error
+test_ver=$(git show $last_changed_commit1:version.txt | head -n 1)
+if [ $ver != $test_ver ]; then
+    printf "Test failed\nCurrent version number and last chagned version number do not match $ver $test_ver\n"
+    exit 1
+fi
+
 # Check that the version is not smaller than the previous maj, min or patch versions
-oldver=$(git show HEAD^:version.txt | head -n 1)
-echo "Found in previous commit EIRENE version: " $oldver
+oldver=$(git show $last_changed_commit2:version.txt | head -n 1)
+echo "Found previous EIRENE version: " $oldver
 newversplit=( ${ver//./ } )
 oldversplit=( ${oldver//./ } )
 if [ ${newversplit[0]} -lt ${oldversplit[0]} ]; then
