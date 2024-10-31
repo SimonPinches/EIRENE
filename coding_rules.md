@@ -60,12 +60,14 @@ See ‘Example_change_log_from_edge2d.txt’ file on INDICO as an example for a 
 
 ### Release Procedure
 1. Each Release must be tagged with an immutable tag. The format of the release-tag should always be the same, namely of the self-ordering type, using Semantic Versioning ("semver"), ref. (4): Relese-VMAJOR.MINOR.PATCH, e.g. Release-V1.2.1, Release-V1.3.0, Release-V1.3.1.
-This format of the release tag "Release-Vx.y.z" and also "Vx.y.z" are reserved and can not be used for private tags.
+This format of the release-tag "Release-Vx.y.z" and also "Vx.y.z" are reserved and can not be used for private tags.
 However, since tags are in principle free to use, additional separate tags can be used for comparison.
-2. Bugfixes to releases should be tagged individually by an immutable tag (using semver).
-3. For each release and bugfix, a “Release Note” must be compiled and distributed to the user-community.
-4. Aim for at least one or two official releases per year.
-5. The “develop” branch must be kept in a working state, so that it is good for productive simulations and for being a starting point for new branches at any time.
+2. The release-tag must be an "annotated tag" (contain a commit message). In contrasts to "lightweight tags", which are just a pointer to a specific commit, "annotated tags" are stored as full objects in the Git database. They’re check-summed, contain the tagger name, email and date and have a tagging message.
+3. Change the new version number consistently in the files: `version.txt`, `src/modules/eirmod_parmmod.f`, `EPL.md`, `Manual/eirene.tex`, `coding_rules.md` and `CHANGELOG.md`. The first line in the `CHANGELOG.md` entry for the realese should be in the format "New_EIRENE_Version=x.y.z" to be picked up by the compliance_check of the CI pipeline.
+4. Bugfixes to releases should be tagged individually by an immutable tag (using semver).
+5. For each release and bugfix, a “Release Note” must be compiled and distributed to the user-community.
+6. Aim for at least one or two official releases per year.
+7. The “develop” branch must be kept in a working state, so that it is good for productive simulations and for being a starting point for new branches at any time.
 
 ## Coding
 The following concerns newly (i.e. with respect to Milestone version…) added code.
