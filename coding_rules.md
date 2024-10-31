@@ -68,6 +68,7 @@ However, since tags are in principle free to use, additional separate tags can b
 5. For each release and bugfix, a “Release Note” must be compiled and distributed to the user-community.
 6. Aim for at least one or two official releases per year.
 7. The “develop” branch must be kept in a working state, so that it is good for productive simulations and for being a starting point for new branches at any time.
+8. Some releases (see 1.) will be additionally tagged as "Mile Stone Versions" ("MsV-") in accordence to the EIRENE licence (EPL) contained in the same directory providing reference points for repositiories maitained by various associated developer (AD) communities.
 
 ## Coding
 The following concerns newly (i.e. with respect to Milestone version…) added code.
@@ -106,18 +107,24 @@ Use ***capitals for all Fortran keywords***, e.g. PROGRAM, END, TYPE, IMPLICIT N
 
 #### Format of constructs, procedures, functions, modules
 Format loops and procedures as follows:
-1. DO
+```
+1.
+DO
 (…)
 END DO
-2. MODULE *name*
+2.
+MODULE *name*
 (…)
 END MODULE *name*
-3. SUBROUTINE *name* (argument list)
+3.
+SUBROUTINE *name* (argument list)
 (…)
 END SUBROUTINE *name*
-4. TYPE FUNCTION *name* (argument list)
+4.
+TYPE FUNCTION *name* (argument list)
 (…)
 END FUNCTION *name*
+```
 
 #### Derived type components
 Components of derived types are selected by using the percent sign (%): e.g.
@@ -162,7 +169,7 @@ Separate functionality is put in modules that reside in the 'src/modules' direct
 
 Start each module with the IMPLICIT NONE statement. The file that imports the module uses the IMPLICIT NONE statement immediately after the USE eirmod_name statement.
 
-Whenever adding the use of modules in the code, explicitly state with “ONLY” which variables/functions are used from the module (“USE *eirmod_name*, ONLY: *var_name*” statement)). This avoids name-clashes and makes it much more understandable from where certain variables are originating (especially for new developers/users).
+Whenever adding the use of modules in the code, explicitly state with “ONLY” which variables/functions are used from the module (“USE *eirmod_name*, ONLY: *var_name*” statement). This avoids name-clashes and makes it much more understandable from where certain variables are originating (especially for new developers/users).
 
 #### Module names
 Use a clear name, eventually with underscores, in lower case, starting with the prefix '*eirmod_*' e.g. *eirmod_json*.
