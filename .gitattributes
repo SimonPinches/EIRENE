@@ -1,3 +1,5 @@
 # Enforce Unix-style line endings
 * text=auto
 
+*.md  whitespace=space-before-tab
+

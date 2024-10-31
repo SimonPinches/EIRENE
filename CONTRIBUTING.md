@@ -26,7 +26,10 @@ Especially, new features require simple test cases that can be run automatically
 
 The EIRENE repository contains git hooks to ensure certain rules are followed. You should instruct git to use these hooks with this command
 
+```console
+cd <eirene root>
 git config core.hooksPath hooks
+```
 
 Not doing this may result in code being rejected by the Gitlab server. At present only a pre-commit hook is
 present, this can be run at any time by running the script hooks/pre-commit but will always run with a new commit.
