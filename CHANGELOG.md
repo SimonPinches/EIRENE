@@ -21,7 +21,7 @@
 
 - Stope the CI pipeline if the compliance_check failed
 - Corrected logic for version check in compliance_check
-   - compliance_check failed when e.g. minor version number decreased and patch number decreased. This now fixed
+   - compliance_check failed when e.g. minor version number decreased and patch number decreased. This is now fixed
    - Check not only the last commit if version number increased but check the last two commits which changed the first line of version.txt if the version number increased
 
 ## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 5cc860bae983754e7aaabb8797f8b340e80e2ac7
