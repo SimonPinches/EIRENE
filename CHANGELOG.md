@@ -16,6 +16,13 @@
 ---
 
 ---
+## D. Harting - DMH/fix_ci_version_check - b6e4b2df6d71f4195faa1e23fa1dd79a0f56a5c8
+**Changes**
+
+- Stope the CI pipeline if the compliance_check failed
+- Corrected logic for version check in compliance_check
+   - compliance_check failed when e.g. minor version number decreased and patch number decreased. This now fixed
+   - Check not only the last commit if version number increased but check the last two commits which changed the first line of version.txt if the version number increased
 
 ## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 5cc860bae983754e7aaabb8797f8b340e80e2ac7
 
@@ -23,7 +30,7 @@
 
 New_EIRENE_Version=1.0.10
 
-** Changes
+**Changes**
 
 This adds further checks on versions at various points in the code and adds a coding rules document
 
