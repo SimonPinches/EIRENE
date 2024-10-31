@@ -14,21 +14,23 @@ echo "Running check for consistent EIRENE version" $ver
 
 # Check that the version is not smaller than the previous maj, min or patch versions
 oldver=$(git show HEAD^:version.txt | head -n 1)
+echo "Found in previous commit EIRENE version: " $oldver
 newversplit=( ${ver//./ } )
 oldversplit=( ${oldver//./ } )
 if [ ${newversplit[0]} -lt ${oldversplit[0]} ]; then
     printf "Test failed.\nThe new major version (${newversplit[0]}) is lower than the previous major version(${oldversplit[0]}).\n"
     exit 1
+else
+    if [ ${newversplit[1]} -lt ${oldversplit[1]} ]; then
+	printf "Test failed.\nThe new minor version(${newversplit[1]}) is lower than the previous minor version(${oldversplit[1]}).\n"
+	exit 1
+    else
+	if [ ${newversplit[2]} -lt ${oldversplit[2]} ]; then
+	    printf "Test failed.\nThe new patch version(${newversplit[2]}) is lower than the previous patch version(${oldversplit[2]}).\n"
+	    exit 1
+	fi
+    fi
 fi
-if [ ${newversplit[1]} -lt ${oldversplit[1]} ]; then
-    printf "Test failed.\nThe new minor version(${newversplit[1]}) is lower than the previous minor version(${oldversplit[1]}).\n"
-    exit 1
-fi
-if [ ${newversplit[2]} -lt ${oldversplit[2]} ]; then
-    printf "Test failed.\nThe new patch version(${newversplit[2]}) is lower than the previous patch version(${oldversplit[2]}).\n"
-    exit 1
-fi
-
 
 # Get the version text from  modules/eirmod_parmmod.f90
 src_file="src/modules/eirmod_parmmod.f"
