@@ -33,11 +33,11 @@ oldversplit=( ${oldver//./ } )
 if [ ${newversplit[0]} -lt ${oldversplit[0]} ]; then
     printf "Test failed.\nThe new major version (${newversplit[0]}) is lower than the previous major version(${oldversplit[0]}).\n"
     exit 1
-else
+elif [ ${newversplit[0]} -eq ${oldversplit[0]} ]; then
     if [ ${newversplit[1]} -lt ${oldversplit[1]} ]; then
 	printf "Test failed.\nThe new minor version(${newversplit[1]}) is lower than the previous minor version(${oldversplit[1]}).\n"
 	exit 1
-    else
+    elif [ ${newversplit[1]} -eq ${oldversplit[1]} ]; then
 	if [ ${newversplit[2]} -lt ${oldversplit[2]} ]; then
 	    printf "Test failed.\nThe new patch version(${newversplit[2]}) is lower than the previous patch version(${oldversplit[2]}).\n"
 	    exit 1
@@ -65,7 +65,9 @@ cod_ver=$(awk '/Version: /{print $2}' $cod_file )
 
 # Get the version text in change_log.md
 cha_file="CHANGELOG.md"
-cha_ver=$(awk -F'[/=]' '/New_EIRENE_Version/{print $2}' $cha_file)
+# just get latest version number
+tmp=($(awk -F'[/=]' '/New_EIRENE_Version/{print $2}' $cha_file))
+cha_ver=${tmp[0]}
 
 if [ "$ver" != "$src_ver" ] || [ "$ver" != "$epl_ver" ]  || [ "$ver" != "$man_ver" ] || [ "$ver" != "$cod_ver" ] || [ "$ver" != "$cha_ver" ]; then
 
