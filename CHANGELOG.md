@@ -118,13 +118,51 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added Cray compiler support
 ---
 
+## D. Harting - New EIRENE version: Release-V1.1.0 - a339c4b70032409286e399b59f01e6bcb6940f06
+
+New_EIRENE_Version=1.1.0
+
+```
++===============================================+
+|                                               |
+|   New EIRENE version: Release-V1.1.0          |
+|   Date: 31st October 2024                     |
+|   MsV:  MsV-JuelichOrigin_1.0-Oct2024-V1.1.0  |
+|                                               |
++===============================================+
+```
+1. Added new JSON input file format fro EIRENE.
+   - See EIRENE manual for more details.
+2. Added OpenMP capability for EIRENE.
+3. Updates to EIRENE database
+   - Changes to coefficients
+      - amjuel.tex: Reactions 2.2.9 (e + H_2 -> 2e + H_2^+), 2.3.6A0 (C^+ + e -> C), 2.6A0 (e + C -> C^+ + 2e (ADAS 93 -> ADAS 96)), 2.8A0 (e + O -> O^+ + 2e)
+      - hydhel.tex: Reaction 3.2.2 (p + H_2(v=0) -> p + H_2(v > 0))
+      - methane.tex: Reaction 3.2 (p + C -> C^+ + H)
+      - h2vibr.tex: Reaction 2.4l1T
+   - Changes in several reactions to T1MIN, T1MAX, N2MIN, N2MAX and Eth
+4. Unification of internal EIRENE versions.
+5. Preparations for unification of EIRENE with SOLPS-ITER version.
+6. Internal code restructuring with some minor impacts on coupling/user-routines.
+7. Restructuring of GitLab CI.
+
+---
+
+## D. Harting - DMH/fix_ci_version_check - b6e4b2df6d71f4195faa1e23fa1dd79a0f56a5c8
+**Changes**
+
+- Stop the CI pipeline if the compliance_check failed
+- Corrected logic for version check in compliance_check
+   - compliance_check failed when e.g. minor version number decreased and patch number decreased. This is now fixed
+   - Check not only the last commit if version number increased but check the last two commits which changed the first line of version.txt if the version number increased
+
 ## H. Leggate - HJL/add_changelog_and_coding_rules_version_check - 5cc860bae983754e7aaabb8797f8b340e80e2ac7
 
 #### Based on Vx.y.z(undefined before this commit - use instead develop - 375c8f50e4e5641fed3654c9b59a41e429f590f9)
 
 New_EIRENE_Version=1.0.10
 
-** Changes
+**Changes**
 
 This adds further checks on versions at various points in the code and adds a coding rules document
 
