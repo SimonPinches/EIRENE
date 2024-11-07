@@ -1,6 +1,6 @@
 # EIRENE coding and versioning rules for the AD community “JuelichOrigin”
 
-Version: 1.0.10
+Version: 1.1.0
 
 ## Introduction
 
@@ -32,8 +32,8 @@ then:
 5. Please commit often, even a few code lines. Also the merge requests should follow promptly – we should avoid long-term branching with painful effort on merging in the end. Each new feature should have an individual branch.
 
 ### Log for changes (‘CHANGELOG.md’ file)
-Whenever a new feature or bug-fix is merged back to the official distribution branches (e.g. ‘develop’, ‘release’, ‘feature’…) an entry at the top of the ‘change_log.md’ file must be made. This makes it much easier for the Reviewer of the merge request to understand the new development. Also, any code-releases should be logged in this file, which makes it easier to compile ‘Release-Notes’ for the user community.
-The entries in the ‘change_log.md’ file must contain:
+Whenever a new feature or bug-fix is merged back to the official distribution branches (e.g. ‘develop’, ‘release’, ‘feature’…) an entry at the top of the ‘CHANGELOG.md’ file must be made. This makes it much easier for the Reviewer of the merge request to understand the new development. Also, any code-releases should be logged in this file, which makes it easier to compile ‘Release-Notes’ for the user community.
+The entries in the ‘CHANGELOG.md’ file must contain:
 
 1. The author(s) of the changes.
 2. The git hash key of the last code commit.
@@ -50,7 +50,7 @@ The entries in the ‘change_log.md’ file must contain:
 See ‘Example_change_log_from_edge2d.txt’ file on INDICO as an example for a change-log used by EDGE2D.
 
 ### Merge requests
-1. Whenever the developer requests a merge back to one of the official distribution branches (mainly the ‘develop’ branch), one must update the ‘change_log.txt’ at the top of the file.
+1. Whenever the developer requests a merge back to one of the official distribution branches (mainly the ‘develop’ branch), one must update the ‘CHANGELOG.md’ at the top of the file.
 2. Merge requests should be as compact as possible. E.g., do not include three different features in one merge request, rather do three different merge requests. If merge requests build on top of each other mention this in the merge request to the Assignee and Reviewer.
 3. Before the merge request, the developer should first merge any changes from the parent branch (which were committed since the moment he/she branched off) into his/her own feature branch and resolve conflicts.
 4. If major new features are introduced, also a CI test-case must be provided to test these new features (preferably as computationally inexpensive as possible to keep the CI pipeline slim). The developer must provide updated test-cases for the CI if code results are changed, and make sure that the CI pipeline runs succesfully.
@@ -59,12 +59,16 @@ See ‘Example_change_log_from_edge2d.txt’ file on INDICO as an example for a 
 7. The version should be updated using the “version.txt” file in the EIRENE root and the git hook.
 
 ### Release Procedure
-1. Each Release must be tagged with an immutable tag. The format of the release-tag should always be the same, namely of the self-ordering type, using Semantic Versioning ("semver"), ref. (4): MAJOR.MINOR.PATCH, e.g. V1.2.1, V1.3.0, V1.3.1.
+1. Each Release must be tagged with an immutable tag. The format of the release-tag should always be the same, namely of the self-ordering type, using Semantic Versioning ("semver"), ref. (4): Relese-VMAJOR.MINOR.PATCH, e.g. Release-V1.2.1, Release-V1.3.0, Release-V1.3.1.
+This format of the release-tag "Release-Vx.y.z" and also "Vx.y.z" are reserved and can not be used for private tags.
 However, since tags are in principle free to use, additional separate tags can be used for comparison.
-2. Bugfixes to releases should be tagged individually by an immutable tag (using semver).
-3. For each release and bugfix, a “Release Note” must be compiled and distributed to the user-community.
-4. Aim for at least one or two official releases per year.
-5. The “develop” branch must be kept in a working state, so that it is good for productive simulations and for being a starting point for new branches at any time.
+2. The release-tag must be an "annotated tag" (contain a commit message). In contrasts to "lightweight tags", which are just a pointer to a specific commit, "annotated tags" are stored as full objects in the Git database. They’re check-summed, contain the tagger name, email and date and have a tagging message.
+3. Change the new version number consistently in the files: `version.txt`, `src/modules/eirmod_parmmod.f`, `EPL.md`, `Manual/eirene.tex`, `coding_rules.md` and `CHANGELOG.md`. The first line in the `CHANGELOG.md` entry for the realese should be in the format "New_EIRENE_Version=x.y.z" to be picked up by the compliance_check of the CI pipeline.
+4. Bugfixes to releases should be tagged individually by an immutable tag (using semver).
+5. For each release and bugfix, a “Release Note” must be compiled and distributed to the user-community.
+6. Aim for at least one or two official releases per year.
+7. The “develop” branch must be kept in a working state, so that it is good for productive simulations and for being a starting point for new branches at any time.
+8. Some releases (see 1.) will be additionally tagged as "Mile Stone Versions" ("MsV-") in accordence to the EIRENE licence (EPL) contained in the same directory providing reference points for repositiories maitained by various associated developer (AD) communities.
 
 ## Coding
 The following concerns newly (i.e. with respect to Milestone version…) added code.
@@ -103,18 +107,24 @@ Use ***capitals for all Fortran keywords***, e.g. PROGRAM, END, TYPE, IMPLICIT N
 
 #### Format of constructs, procedures, functions, modules
 Format loops and procedures as follows:
-1. DO
+```
+1.
+DO
 (…)
 END DO
-2. MODULE *name*
+2.
+MODULE *name*
 (…)
 END MODULE *name*
-3. SUBROUTINE *name* (argument list)
+3.
+SUBROUTINE *name* (argument list)
 (…)
 END SUBROUTINE *name*
-4. TYPE FUNCTION *name* (argument list)
+4.
+TYPE FUNCTION *name* (argument list)
 (…)
 END FUNCTION *name*
+```
 
 #### Derived type components
 Components of derived types are selected by using the percent sign (%): e.g.
@@ -159,7 +169,7 @@ Separate functionality is put in modules that reside in the 'src/modules' direct
 
 Start each module with the IMPLICIT NONE statement. The file that imports the module uses the IMPLICIT NONE statement immediately after the USE eirmod_name statement.
 
-Whenever adding the use of modules in the code, explicitly state with “ONLY” which variables/functions are used from the module (“USE *eirmod_name*, ONLY: *var_name*” statement)). This avoids name-clashes and makes it much more understandable from where certain variables are originating (especially for new developers/users).
+Whenever adding the use of modules in the code, explicitly state with “ONLY” which variables/functions are used from the module (“USE *eirmod_name*, ONLY: *var_name*” statement). This avoids name-clashes and makes it much more understandable from where certain variables are originating (especially for new developers/users).
 
 #### Module names
 Use a clear name, eventually with underscores, in lower case, starting with the prefix '*eirmod_*' e.g. *eirmod_json*.

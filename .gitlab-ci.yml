@@ -87,7 +87,7 @@ build_library:
           when: never
         - if: $EXCLUDE_SERIAL == 'true'
           when: never
-        - when: always
+        - when: on_success
     script:
         - mkdir buildRelease
         - cd buildRelease
@@ -101,7 +101,7 @@ build_library:
             - src
         when: always
     needs:
-            - compliance_check
+        - compliance_check
 
 prepare_testcases:
     stage: preparation
@@ -110,7 +110,7 @@ prepare_testcases:
           when: never
         - if: $EXCLUDE_SERIAL == 'true'
           when: never
-        - when: always
+        - when: on_success
     script:
         # Make only shallow clone (fetch) of single commit defined by SHA key
         - mkdir EIRENE-sample-cases
@@ -127,7 +127,7 @@ prepare_testcases:
             - EIRENE-sample-cases/.git/**
         when: always
     needs:
-            - compliance_check
+        - compliance_check
 
 .build_executable: &build_executable
     stage: build:executable
@@ -972,7 +972,7 @@ build_openmp_library:
             - src
         when: always
     needs:
-            - compliance_check
+        - compliance_check
 
 prepare_openmp_testcases:
     stage: preparation:openmp
@@ -998,7 +998,7 @@ prepare_openmp_testcases:
             - EIRENE-sample-cases/.git/**
         when: always
     needs:
-            - compliance_check
+        - compliance_check
 
 .build_openmp_executable: &build_openmp_executable
     stage: build:openmp_executable
