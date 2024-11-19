@@ -16,6 +16,7 @@ cym
       LOGICAL, INTENT(IN) :: LSTORE
       REAL(DP) :: XT, YT, XTN, YTN, XT2, YT2, TESTN
       INTEGER :: IN, IFL, I
+      EXTERNAL :: GRDRW, GRJMP
 c
       DO 148 I=1,NRET
         IFL=I-1

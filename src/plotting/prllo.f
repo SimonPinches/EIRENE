@@ -11,6 +11,7 @@ C
       LOGICAL, INTENT(IN) :: NF
       REAL(DP) :: CORD(15)
       INTEGER :: I
+      EXTERNAL :: EIRENE_PL3Q
 
       DO I=1,3
         CORD(I)=P1(I)

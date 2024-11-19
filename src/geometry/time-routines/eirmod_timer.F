@@ -51,6 +51,7 @@ cym
 
       INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
       INTEGER, SAVE :: NSTS_CELL
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE (ICALL, ITFRST,
 !$OMP& ITRINO, ISIDNO, NSTS_CELL)
 
@@ -70,7 +71,7 @@ cym
 !!$OMP& MPOL, IPOLGO, IP, ICELLR, MSAVE, ITRI,
 !!$OMP& ISTS_CELL, ISD, nclpb, icts,
 !!$OMP& ITRINO, ISIDNO, NSTS_CELL)
-
+#endif
 cpg      SAVE
 
       CONTAINS
@@ -78,6 +79,10 @@ cpg      SAVE
       SUBROUTINE EIRENE_TIMER (PT)
       IMPLICIT NONE
       REAL(DP), INTENT(OUT) :: PT
+      EXTERNAL :: EIRENE_EXIT_OWN
+#ifdef TRACE
+      EXTERNAL :: EIRENE_LEER
+#endif
 C
 C  THIS SUBROUTINE CALCULATES DISTANCES TO INTERSECTION POINTS IN THE 1ST STANDARD
 C  MESH "RSURF" (X- OR RADIAL DIRECTION)
@@ -166,13 +171,17 @@ C
 
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'TIMER, INIT.: NRCELL,NLSRFX,MRSURF,TT,TL'
         WRITE (iunout,*)                NRCELL,NLSRFX,MRSURF,TT,TL
         WRITE (iunout,*) '              NPCELL,NLSRFY,MPSURF'
         WRITE (iunout,*)                NPCELL,NLSRFY,MPSURF
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
 C
@@ -259,7 +268,9 @@ C
       REAL(DP), SAVE :: XA
       REAL(DP) :: DXA, TST, Y0TEST, Z0TEST
       INTEGER :: IR
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE (XA)
+#endif
 C
 C****SLAB MODEL IN X DIRECTION: FOR TESTING, ANALYTICAL REFERENCE CASES, ETC..
 C
@@ -329,10 +340,14 @@ C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON-DEFAULT RADIAL SURFACES
       ENDIF
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) 'TIMER, OUT: PT,MRSURF,NINCX'
         WRITE (iunout,*)              PT,MRSURF,NINCX
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
       RETURN
@@ -347,17 +362,23 @@ C  TRY TO FIND REENTRY SURFACE. CHECK ONLY NON-DEFAULT RADIAL SURFACES
       REAL(DP), INTENT(INOUT) :: PT
       REAL(DP) :: ZR, ZSQRT, ZT1, ZT2, ZEP1
       REAL(DP), SAVE :: ZA, ZB, ZB2, ZAB, ZAB2, ZC1, PS
-      INTEGER :: IR, IS, MS, NRI
+      INTEGER :: IR, MS, NRI
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(ZA, ZB, ZB2, ZAB, ZAB2, ZC1, PS)
+#endif
 C
 C****CIRCULAR MESH   (CONCENTRIC)
 C
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) 'NJUMP,NINCX,NRCELL'
         WRITE (iunout,*)  NJUMP,NINCX,NRCELL
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
       IF (NJUMP.EQ.0) THEN
@@ -396,7 +417,6 @@ C  FIND NEXT SURFACE MRSURF
       NRI=1
       PS=PT
       MS=0
-      IS=0
   200 DO 205 IR=NRI,NR1ST
         IF (INMP1I(IR,0,0).NE.0) THEN
           MRSURF=IR
@@ -460,7 +480,6 @@ C
         RETURN
       ELSE
         IF (PT.GT.0.AND.PT.LT.PS) THEN
-          IS=MRSURF-MAX(0,NINCX)
           MS=MRSURF
           PS=PT
         ENDIF
@@ -468,6 +487,7 @@ C
         GOTO 200
       ENDIF
 
+      RETURN
       END SUBROUTINE EIRENE_TIMER_CIRCULAR_MESH
 
 !-------------------------------------------------------------------------
@@ -482,8 +502,11 @@ C
       INTEGER, SAVE :: MSAVE
       INTEGER :: NRI
       INTEGER :: EIRENE_LEARC2
+      EXTERNAL :: EIRENE_EXIT_OWN, EIRENE_LEARC2
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(YVY, VELXQ, VELYQ, XX0, VVELX, X0SURF, DSRF, ZR,
 !$OMP& Y0Q, ZA, ZB, ZB2, ZAB, ZAB2, ZC1, ZEP1, MSAVE)
+#endif
 C
 C****ELLIPTICAL MESH (NOT NECESSARILY CONCENTRIC NOR CONFOCAL)
 C
@@ -602,10 +625,14 @@ C
       YTEST=Y0+PT*VELY
       IF (NLPOL) IPOLGN=EIRENE_LEARC2(XTEST,YTEST,NRCELL,NPANU,'TIMER')
 #ifdef TRACE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
       IF (NLTRC)
      .  WRITE (iunout,*) 'IPOLGN,NRCELL FROM TIMER ',IPOLGN,NRCELL
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
 #endif
       IF (NRI.EQ.0) THEN
         RETURN
@@ -614,7 +641,6 @@ C
      .                   'TIMER_ELLIPTICAL_MESH '
         CALL EIRENE_EXIT_OWN(1)
 CPB        IF (PT.GT.0.AND.PT.LT.PS) THEN
-CPB          IS=MRSURF-MAX(0,NINCX)
 CPB          MS=MRSURF
 CPB          PS=PT
 CPB        ENDIF
@@ -631,16 +657,18 @@ CPB        GOTO 2000
       IMPLICIT NONE
       REAL(DP), INTENT(INOUT) :: PT
       REAL(DP) :: T, T1, T2, T3, T4, V1, V2, HELP
-      INTEGER :: NCLPB, MMSURF, I, J, K, JPOL, MPOL, ISW, ISTS, ISD, IR,
+      INTEGER :: NCLPB, I, J, K, JPOL, MPOL, ISW, ISTS, ISD, IR,
      .           IP, IHELP, ICTS
       INTEGER, SAVE :: IPOLGO, ICELLR
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(IPOLGO, ICELLR)
+#endif
 cym - replace equivalence statement
       REAL(DP), TARGET :: PTS(4)
       REAL(DP), POINTER :: PT1, PT2, PT3, PT4
 
 #ifdef TRACE
-      INTEGER :: ICOUP
+      INTEGER :: ICOUP, MMSURF
 #endif
 
       LOGICAL, TARGET :: LCTS(4)
@@ -667,9 +695,13 @@ C
       IF (NRCELL.NE.0) THEN
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) ' TIMER: IN NEIGHBOR PART'
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
         LNGB1=.TRUE.
@@ -716,12 +748,16 @@ C  CALCULATE INTERSECTIONS OF FLIGHT WITH CELL BOUNDARIES
  6001   CONTINUE
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) ' IR,IP,LNGB1,LNGB2,LNGB3,LNGB4',
      .                       IR,IP,LNGB1,LNGB2,LNGB3,LNGB4
           WRITE (iunout,*) ' velx, vely, velz ',
      .                       velx, vely, velz
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
         T1=-1.D30
@@ -770,12 +806,16 @@ C  TO THE BOUNDARY OF THE PRESENT CELL
         LCT4 = LCT4 .AND. PT4.GE.0.D0
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) ' LCT1,LCT2,LCT3,LCT4 ',
      .                       LCT1,LCT2,LCT3,LCT4
           WRITE (iunout,*) ' PT1,PT2,PT3,PT4 ',
      .                       PT1,PT2,PT3,PT4
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
 
@@ -799,9 +839,13 @@ C  SO SOME FURTHER ATTEMPTS WILL BE MADE BELOW.....
         END IF
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) ' T = ',T
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
 
@@ -870,19 +914,25 @@ C  NO INTERSECTION FOUND
 C  PLAY SAFE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
 #ifdef TRACE
             IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
               WRITE (iunout,*)
      .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN'
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
-            ENDIF
 #endif
+            ENDIF
             MMSURF=MSURF
             IF (MSURF.GT.NLIM) MMSURF=-MSURF+NLIM
-#ifdef TRACE
             IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
               WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
             ENDIF
 #endif
             IF (.NOT.LNGB1) THEN
@@ -908,19 +958,25 @@ C  PLAY SAFE: TRY ONCE AGAIN, IF PARTICLE ON RAD. SURFACE
 C  PLAY SAFE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
 #ifdef TRACE
             IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
               WRITE (iunout,*)
      .        ' NO INTERSECTION IN TIMER. TRY ONCE AGAIN'
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
-            ENDIF
 #endif
+            ENDIF
             MMSURF=MSURF
             IF (MSURF.GT.NLIM) MMSURF=-MSURF+NLIM
-#ifdef TRACE
             IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
               WRITE (iunout,*) 'NPANU, MSURF ',NPANU,MMSURF
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
             ENDIF
 #endif
             IF (.NOT.LNGB4) THEN
@@ -948,14 +1004,18 @@ C  PLAY SAFE: TRY ONCE AGAIN, IF PARTICLE ON POL. SURFACE
         NJUMP=1
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) ' PT,MRSURF,NINCX,IPOLGN ',
      .                       PT,MRSURF,NINCX,IPOLGN
           WRITE (iunout,*) 'NCOUP ',NCOUP
           DO ICOUP=1,NCOUP
             WRITE (iunout,*) 'ICOUP,ALPD(ICOUP) ',ICOUP,ALPD(ICOUP)
           ENDDO
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
         RETURN
@@ -1084,7 +1144,12 @@ C
       REAL(DP) :: AX, AY, RICHTX, RICHTY, T, TM, V, XX, YY
       INTEGER :: I, J, ISTS, ITRI, JPOL, MPOL, ISTS_CELL
       INTEGER, SAVE :: IPOLGO, IZELL, IZELLO
+#ifdef TRACE
+      EXTERNAL :: EIRENE_LEER
+#endif
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(IPOLGO, IZELL, IZELLO)
+#endif
 C
 C   FINITE ELEMENT DISCRETISATION (MESH TRIANGLES IN X-Y- PLANE)
 C
@@ -1278,10 +1343,14 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
           ENDIF
 #ifdef TRACE
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             WRITE (IUNOUT,*) ' INTERSECTION WITH TRIANGLE ',IZELL,
      .                       ' SIDE ',J,' FOUND, PT,T = ',PT,T
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 #endif
           IF ((T .GT. 0.) .AND. ( T < PT)) THEN
@@ -1300,11 +1369,15 @@ C PARTICLE OUTSIDE STANDARD MESH IN CELL NACELL, NRCELL=0
         NINCX = ITRINO(ISTS_CELL)
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
          WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
      .    ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
      .      NRCELL,MRSURF,PT,NINCX,IPOLGN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
       END IF
@@ -1341,9 +1414,13 @@ C
       INTEGER :: I, I1, I2, IL, IOB, IS, ISTS, IT, ITET,
      .           J, NTIMT, NTMS, NTMZ
       INTEGER, SAVE :: IPOLGO, IZELL, IZELLO
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(IPOLGO, IZELL, IZELLO)
+#endif
       REAL(DP) :: EIRENE_SARRUS
       LOGICAL :: EIRENE_BITGET
+      EXTERNAL :: EIRENE_BITGET, EIRENE_BITSET, EIRENE_SARRUS,
+     .            EIRENE_EXIT_OWN
       INTEGER, SAVE :: IRICH(2,4), ITSIDE(3,4)
 
       DATA ITSIDE /1,2,3,
@@ -1368,11 +1445,15 @@ C       ELSEIF (NJUMP.EQ.1) THEN
         ENDIF
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) ' IZELL,IPOLGO ',IZELL,IPOLGO
           WRITE (iunout,*) ' X0,Y0,Z0 ',X0,Y0,Z0
           WRITE (iunout,*) ' VELX,VELY,VELZ,VEL ',VELX,VELY,VELZ,VEL
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
 
@@ -1446,7 +1527,9 @@ C
                   ZZ = ZZ + T * VELZ
 #ifdef TRACE
                   if (nltrc) then
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
                      write(iunout,*) ' i1, i2 ',i1,i2
                      write(iunout,'(1x,a,4es14.7)') ' velxyz ',
      .                     velx,vely,velz,vel
@@ -1460,7 +1543,9 @@ C
      .                     b(1),b(2),b(3)
                      write(iunout,'(1x,a,3es14.7)') ' det, xmu ',
      .                     det,xmu
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
                   end if
 #endif
                   TM = TM + T
@@ -1482,10 +1567,14 @@ C  SEITENNUMMER DES NEUEN DREIECKS
                   IPOLGO = NTSEITE(J,IZELLO)
 #ifdef TRACE
                   IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
                     WRITE(iunout,*) 'GEHE IN ZELLE ',IZELL,' TM= ',TM
                     WRITE(iunout,*) 'DORT AUF SEITE IPOLGO ',IPOLGO
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
                   ENDIF
 #endif
                   GOTO 11050
@@ -1497,9 +1586,13 @@ C  SEITENNUMMER DES NEUEN DREIECKS
 C
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
           WRITE (iunout,*) ' NO INTERSECTION FOUND IN TETRAHEDRON'
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
         PT=1.D30
@@ -1544,11 +1637,15 @@ C  ON NON-DEFAULT SURFACE (ADD. OR STD.) ISTS=INMTI(IPOLGN,NRCELL)
         ENDIF
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
          WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
      .    ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
      .      NRCELL,MRSURF,PT,NINCX,IPOLGN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
 
@@ -1686,10 +1783,14 @@ C  SEITENNUMMER DES NEUEN DREIECKS
           IPOLGO = NTMS
 #ifdef TRACE
           IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
             WRITE(iunout,*) 'OUTSIDE; GEHE IN ZELLE ',NTMZ,' TM= ',TM
             WRITE(iunout,*) 'DORT AUF SEITE IPOLGO ',IPOLGO
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
           ENDIF
 #endif
         END IF
@@ -1701,11 +1802,15 @@ C  SEITENNUMMER DES NEUEN DREIECKS
         NINCX=NTMZ-NRCELL
 #ifdef TRACE
         IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
          WRITE (iunout,'(A,I6,1X,I6,1X,1P,1E14.7,1X,I6,1X,I4)')
      .    ' NRCELL,MRSURF,PT,NINCX,IPOLGN ',
      .      NRCELL,MRSURF,PT,NINCX,IPOLGN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
         ENDIF
 #endif
       END IF
@@ -1737,7 +1842,10 @@ C
       REAL(DP) :: TIM
       INTEGER :: ICOS, IERR, IRS, NEWCEL
       INTEGER, SAVE :: MXSF, NRMSRF
+      EXTERNAL :: EIRENE_TIMUSR, EIRENE_EXIT_OWN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(MXSF, NRMSRF)
+#endif
 
       IF (ICALL == 0) THEN
         ICALL = 1
@@ -1769,10 +1877,14 @@ C  NJUMP=3: INTERNAL GRID SURFACE, STOP AND GO.
 
 #ifdef TRACE
       IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
+#endif
         WRITE (iunout,*) 'TIMER, LEVGEO=10, IN: NJUMP,TIM,ZT'
         WRITE (iunout,*)                        NJUMP,TIM,ZT
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
+#endif
       ENDIF
 #endif
 

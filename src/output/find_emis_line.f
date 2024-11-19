@@ -68,6 +68,7 @@ cdr          by calling  EIRENE_EMISSIVITY(...)
       integer :: iline
       character(len=80) :: ctest1, ctest2
       logical :: found
+      EXTERNAL :: EIRENE_EMISSIVITY, EIRENE_RSTRT, EIRENE_MASR1
 
       lno = 0
       found = .false.

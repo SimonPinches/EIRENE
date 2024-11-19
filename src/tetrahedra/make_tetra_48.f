@@ -40,6 +40,7 @@
      .   -1._dp,  1._dp,  1._dp,
      .    0._dp,  1._dp,  1._dp,
      .    1._dp,  1._dp,  1._dp /), (/ 3, 27 /))
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       IF (NTET+48 > NTETRA) THEN
         WRITE (iunout,*) ' ALLOWED NUMBER OF TETRAHEDRA EXCEEDED '

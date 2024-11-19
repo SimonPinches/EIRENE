@@ -15,6 +15,8 @@ C
       LOGICAL, INTENT(IN) :: L1, L2
       REAL(DP) :: XLA, XP, YP, XMU
       INTEGER :: I, IS
+      EXTERNAL :: EIRENE_GSP
+      EXTERNAL :: GRDRW, GRJMP
 
       IS=0
       DO 100 I=1,4

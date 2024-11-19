@@ -21,6 +21,7 @@ c     memory allocation for additional processors
 
       IMPLICIT NONE
       INTEGER JTRJ
+      EXTERNAL EIRENE_ALLOC_COUPLE
 
       CALL EIRENE_ALLOC_COMPRT
       CALL EIRENE_ALLOC_CPES(1)

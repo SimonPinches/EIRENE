@@ -41,6 +41,7 @@ C
      .           NRAPS2, NVPLOT, IFC
       INTEGER :: ZUORD(NKNOT,0:30,2)
       CHARACTER(17) :: CH
+      EXTERNAL :: EIRENE_CELINT, EIRENE_MUELAM, EIRENE_EXIT_OWN
 c
       data nvplot/0/
 C

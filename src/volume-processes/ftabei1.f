@@ -33,25 +33,28 @@ c              for evaluation of rate coefficient.
       INTEGER, INTENT(IN) :: IREI, K
       REAL(DP) :: EIRENE_FTABEI1, DEIMIN, PLS, TBEI,
      .            EIRENE_RATE_COEFF
+      EXTERNAL :: EIRENE_RATE_COEFF
       REAL(DP) :: TEE
+      INTEGER :: ISHIFT2   ! flag for re-scaling 2nd parameter
+                           ! PLS in rate_coeff.f
       INTEGER :: KK   ! reaction counting index in reaction
                       ! input parameter arrays
 
       TBEI=0.D0
-      KK = NREAEI(IREI)   !  KK=-11:NREAC in REACDAT, IFTFLG 
-!                            KK=  1:NREAC else
-
+      KK = NREAEI(IREI)   !  KK=-11: NREAC in REACDAT, IFTFLG
+                          !  KK=  1: NREAC otherwise
 
       DEIMIN=LOG(1.D8)
       PLS=MAX(DEIMIN,DEINL(K))
 
 c   density parameter rescaling: now done in rate_coeff(....,1)
 cdr careful, hidden link: this is only for double polynomial fit (and: MODC=3)
+      ISHIFT2=1
 
 cdr  safety cut-off at Te= 0.1 eV. (note: TVAC=0.02)
       TEE = max(-2.3_dp,TEINL(K))
 
-      TBEI = EIRENE_RATE_COEFF(KK,K,TEE,PLS,.TRUE.,1)*
+      TBEI = EIRENE_RATE_COEFF(KK,K,TEE,PLS,.TRUE.,ISHIFT2)*
      .       FACREI(IREI,1)
       IF (IFTFLG(KK,2) < 100) TBEI=TBEI*DEIN(K)
 

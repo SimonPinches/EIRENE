@@ -34,7 +34,7 @@ C
       REAL(DP) :: CONST(20)
       INTEGER :: IIND(20), IZIF(4,20)
       INTEGER :: I, ITL, IALV, NOP, IOP, K, ILIMPS,
-     .           II, J, IALS, IN, NF, IC, IER
+     .           II, J, IALS, IN, NF, NFR, IC, IER
       LOGICAL :: LFREE1, LFREE2
       LOGICAL, ALLOCATABLE :: LLIMPS(:)
       LOGICAL :: LLMPS
@@ -139,15 +139,29 @@ c  1ST OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             IF (ITL.GT.NTALI) GOTO 90
 cdr use physical species index NFSTPI,
 cdr not the reduced "storage species index" NFRSTP
-            IF (IZIF(1,IOP).GT.NFRSTP(ITL)) GOTO 91
             K=IZIF(1,IOP)
+            IF (K.GT.NFSTPI(ITL)) GOTO 91
 
-            NF=NFRSTP(ITL)
+            NF=NFSTPI(ITL)
+            NFR=NFRSTP(ITL)
+            if (NF .NE. NFR) then
+cdr deal with input tally with indirect species index addressing
+            endif
+cdr perhaps unfinished, for input tallies with indirect species index addressing
+cdr TI, VX,VY,VZ
 
             CALL EIRENE_GET_INTAL
             IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
-cdr  input tally(itl,:) is returned as OP(:),
+cdr  input tally(itl,k,:) is returned as OP(:),
 cdr  weighting fct is returned as WEI(:).
+CDR  IN CASE OF INTENSIVE MULTI-SPECIES INPUT TALLIES
+cdr  code in get_intal is often simply wrong for K=0.
+            if (itl.lt.0 .and. nf.gt.1 .and. k.eq.0) then
+              write (iunout,*) 'DR: wrong code for this alttal option'
+              write (iunout,*) 'ital,ispez ',itl,K
+              write (iunout,*) 'alg. tally skipped for safety '
+              goto 91
+            endif
 
 cdr  weighted sum over subcells: in=ncltal(i)
             SUMWEI = EPS60
@@ -215,16 +229,16 @@ C
           ELSEIF (IZIF(4,IOP).LT.0) THEN
 c  2nd OPERAND IS AN INPUT TALLY: fetch an input tally, case 1 to case 25
             ITL=IABS(IZIF(4,IOP))
+            K=IZIF(3,IOP)
             IF (ITL.GT.NTALI) GOTO 90
 cdr use physical species index NFSTPI,
 cdr not the reduced "storage species index" NFRSTP
-            IF (IZIF(3,IOP).GT.NFRSTP(ITL)) GOTO 91
-            K=IZIF(3,IOP)
-            NF=NFRSTP(ITL)
+            IF (K.GT.NFSTPI(ITL)) GOTO 91
+            NF=NFSTPI(ITL)
 
             CALL EIRENE_GET_INTAL
             IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
-cdr  input tally(itl,:) is returned as OP(:),
+cdr  input tally(itl,k,:) is returned as OP(:),
 cdr  weighting fct is returned as WEI(:).
 
 cdr  weighted sum over subcells: in=ncltal(i)
@@ -771,6 +785,7 @@ cdr also set weighting function WEI(:) for averaging in calling routine.
 cdr K from full physical species range: 1:NF.
 cdr even if reduced indirect species indices NSPLV or NPLSTI exist
 cdr K=0: sum over species index.
+      EXTERNAL :: EIRENE_LEER
 
       IER = 0
 

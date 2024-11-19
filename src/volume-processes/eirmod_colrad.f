@@ -63,6 +63,7 @@ ctt  .           ,E_ALPCR_T, E_SCR_T, E_SCR_EXT_T   these arrays are for testing
       integer :: i, irow_esc, icol_esc, irc
 
       logical :: l_ext
+      external :: eirene_h_colrad, eirene_exit_own
 
 c  try to avoid repeated calls to CR model in same plasma grid cell
 c      for the current run/iteration/time-cycle

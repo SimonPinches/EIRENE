@@ -278,6 +278,7 @@ c        LOGICAL :: LMTSRF(NLIMPS)
      .              XLS1, XLS2, XLS3, XMS1, XMS2, XMS3,
      .              A1, A2, A3, F, G, TMI, TMA, TMX, ROT, TST, TUP,
      .              XXR, PPP
+        EXTERNAL :: EIRENE_FZRTRI
 
 c      LMTSRF=.FALSE.
 

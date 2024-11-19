@@ -11,6 +11,7 @@ C
       CHARACTER(*), INTENT(IN) :: A
       CHARACTER(5) :: FORM
       INTEGER :: LOG, IN, NMIN, IANF, J, NMAX, IN2, LA
+      EXTERNAL :: EIRENE_BITSET
       DATA FORM/'(I  )'/
 C
       LA=LEN(A)

@@ -19,4 +19,4 @@
       END DO
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_COFACT

@@ -7,6 +7,7 @@ C
       use EIRMOD_CPES, only: MY_PE, NPRS
       use EIRMOD_COMPRT, only: IUNOUT
       use EIRMOD_PARMMOD, only: LOUTAPP
+      use EIRMOD_OPENFILE, only: EIRENE_OPENFILE
 
       implicit none
 
@@ -18,19 +19,14 @@ C
 
         OUTNAME='output.'
         WRITE (OUTNAME(8:),'(I4.4)') MY_PE
-#ifndef NAGFOR
         IF ( LOUTAPP ) THEN
           OUTPOS='APPEND'
         ELSE
           OUTPOS='ASIS'
         END IF
 
-        open (unit=IUNOUT, file=OUTNAME, access='SEQUENTIAL',
-     .        form='FORMATTED', position=OUTPOS)
-#else
-        open (unit=IUNOUT, file=OUTNAME, access='SEQUENTIAL',
-     .        FORM='FORMATTED')
-#endif
+        CALL EIRENE_OPENFILE (IUNIT=IUNOUT, FILE=OUTNAME,
+     .        ACCESS='SEQUENTIAL', FORM='FORMATTED', POSITION=OUTPOS)
 cpg #ifdef WINDOWS
 cpg DIR$attributes c, alias: 'ioflush_' :: ioflush
 cpg #endif

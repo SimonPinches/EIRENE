@@ -1,0 +1,918 @@
+!pb  181206  output is done by processor 0
+!pb  181206  setting up of census source is done by processor 0
+!pb  100107  call to reinitialisation routine
+cdr  140416  allow for NSTRAI .le. NSTRA  (e.g. if time stratum has been turned off)
+cdr          currently turning off time stratum may not be detected
+cdr          when setting dynamic allocatable storage parameters in "find_param.f"
+cdr  to be done: check for further use of NSTRA, rather than NSTRAI
+cdr  to be done: add warnings whenever a storage paramater Nxxx differs from Nxxxi
+!pb  MAY 16  nrds -> nrei
+cdr  June 17: GR cleanup: call grnxtb...  --> call eirene_plnxtb...
+cdr           (to remove redundant dummy gr routines)
+cdr  Nov. 17: This routine has become pretty much a mess.
+cdr           It must be cleaned up and documented.
+
+
+      MODULE EIRMOD_EIRENE
+
+      USE EIRMOD_PRECISION, ONLY: DP
+      USE EIRMOD_PARMMOD, ONLY: EIRENE_SET_PARMMOD, IFOFF, LOUTAPP,
+     >                          NRCX, NREC, NREI, NREL, NRPI,
+     >                          NBGK,
+     >                          NSMSTRA, NTALB,
+     >                          IUNMEM, IUNRAPSVEC, NLIMPS,
+     >                          LPE0_TO_STDOUT
+      USE EIRMOD_COMUSR, ONLY: EIRENE_ALLOC_COMUSR,
+     >                         EIRENE_DEALLOC_COMUSR, IITER, ITIMV,
+     >                         NBGVI,
+     >                         NFILEK, NITER, NMODE, NTIME
+      USE EIRMOD_CREF, ONLY: EIRENE_DEALLOC_CREF
+      USE EIRMOD_CESTIM, ONLY: EIRENE_ALLOC_CESTIM,
+     >                         EIRENE_DEALLOC_CESTIM
+      USE EIRMOD_CADGEO, ONLY: EIRENE_ALLOC_CADGEO,
+     >                         EIRENE_DEALLOC_CADGEO
+      USE EIRMOD_CAI, ONLY: EIRENE_ALLOC_CAI, EIRENE_DEALLOC_CAI, NRECOM
+      USE EIRMOD_CGRPTL, ONLY: EIRENE_DEALLOC_CGRPTL
+      USE EIRMOD_CLOGAU, ONLY: EIRENE_ALLOC_CLOGAU, NLANA, NLERG,
+     >                         NLMOVIE, NLPLAS
+      USE EIRMOD_CPLOT, ONLY: EIRENE_ALLOC_CPLOT, EIRENE_DEALLOC_CPLOT,
+     >                        IRAPS, NRAPS, PLIDL, PLTSRC, PLHST
+      USE EIRMOD_CINIT, ONLY: EIRENE_ALLOC_CINIT, EIRENE_DEALLOC_CINIT
+      USE EIRMOD_CUPD, ONLY: EIRENE_ALLOC_CUPD, EIRENE_DEALLOC_CUPD
+      USE EIRMOD_COMSIG, ONLY: EIRENE_DEALLOC_COMSIG, NCHORI
+      USE EIRMOD_CPOLYG, ONLY: EIRENE_ALLOC_CPOLYG,
+     >                         EIRENE_DEALLOC_CPOLYG
+      USE EIRMOD_CGRID, ONLY: EIRENE_ALLOC_CGRID, EIRENE_DEALLOC_CGRID
+      USE EIRMOD_CSPEZ, ONLY: EIRENE_ALLOC_CSPEZ, EIRENE_DEALLOC_CSPEZ
+      USE EIRMOD_CZT1, ONLY: EIRENE_ALLOC_CZT1, EIRENE_DEALLOC_CZT1
+      USE EIRMOD_CTRCEI, ONLY: EIRENE_ALLOC_CTRCEI,
+     >                         EIRENE_DEALLOC_CTRCEI,
+     >                         TRCAMD, TRCSRC, TRCINT, I2TRC
+      USE EIRMOD_CGEOM, ONLY: EIRENE_ALLOC_CGEOM, EIRENE_DEALLOC_CGEOM
+      USE EIRMOD_CSDVI, ONLY: EIRENE_ALLOC_CSDVI, EIRENE_DEALLOC_CSDVI
+      USE EIRMOD_CTETRA, ONLY: EIRENE_ALLOC_CTETRA,
+     >                         EIRENE_DEALLOC_CTETRA
+      USE EIRMOD_COMPRT, ONLY: EIRENE_ALLOC_COMPRT,
+     >                         EIRENE_DEALLOC_COMPRT, ISTRA, IUNIN,
+     >                         IUNOUT, TIME
+      USE EIRMOD_CPES, ONLY: EIRENE_ALLOC_CPES, EIRENE_DEALLOC_CPES,
+     >                       MY_PE, NPRS
+      USE EIRMOD_COMNNL, ONLY: EIRENE_ALLOC_COMNNL,
+     >                         EIRENE_DEALLOC_COMNNL, DTIMVN, IPRNLI
+      USE EIRMOD_COMSOU, ONLY: EIRENE_ALLOC_COMSOU,
+     >                         EIRENE_DEALLOC_COMSOU, NLSRON, NPTS,
+     >                         NSPEZ, NSTRAI
+      USE EIRMOD_CSTEP, ONLY: EIRENE_ALLOC_CSTEP, EIRENE_DEALLOC_CSTEP
+      USE EIRMOD_COMSPL, ONLY: EIRENE_ALLOC_COMSPL,
+     >                         EIRENE_DEALLOC_COMSPL, WMINS, WMINV
+      USE EIRMOD_CTEXT, ONLY: EIRENE_ALLOC_CTEXT, EIRENE_DEALLOC_CTEXT
+      USE EIRMOD_CLGIN, ONLY: EIRENE_ALLOC_CLGIN, EIRENE_DEALLOC_CLGIN
+      USE EIRMOD_COUTAU, ONLY: EIRENE_ALLOC_COUTAU,
+     >                         EIRENE_DEALLOC_COUTAU, NFSTVI
+      USE EIRMOD_COMXS, ONLY: EIRENE_ALLOC_COMXS, EIRENE_DEALLOC_COMXS,
+     >                        NRCXI, NREII, NRELI, NRPII, NRRCI,
+     >                        NRBGI
+      USE EIRMOD_CSPEI, ONLY: EIRENE_ALLOC_CSPEI, EIRENE_DEALLOC_CSPEI
+      USE EIRMOD_CTRIG, ONLY: EIRENE_ALLOC_CTRIG, EIRENE_DEALLOC_CTRIG
+      USE EIRMOD_CLAST, ONLY: EIRENE_ALLOC_CLAST, EIRENE_DEALLOC_CLAST
+      USE EIRMOD_CFPLK, ONLY: EIRENE_ALLOC_CFPLK, EIRENE_DEALLOC_CFPLK
+      USE EIRMOD_MPI
+      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_RESET_SECOND,
+     >                             EIRENE_SECOND_OWN
+      USE EIRMOD_LININT, ONLY: EIRENE_LININT2
+      USE EIRMOD_COLRAD, ONLY: EIRENE_DEALLOC_COLRAD
+      USE EIRMOD_MCARLO
+      USE EIRMOD_LOCATE, ONLY: EIRENE_LOCAT2
+      USE EIRMOD_SAMSRF, ONLY: EIRENE_SAMSF2
+      USE EIRMOD_STATIS, ONLY: EIRENE_STATS3
+      USE EIRMOD_PLT2D, ONLY: EIRENE_PLT2D
+      USE EIRMOD_PLTEIR, ONLY: EIRENE_PLTEIR
+      USE EIRMOD_TIMEA, ONLY: EIRENE_DEALLOC_TIMEA
+      USE EIRMOD_OPENMP, ONLY: EIRENE_INIT_OPENMP,
+     .                         EIRENE_ITHREAD, EIRENE_NTHREADS
+      USE EIRMOD_REFUSR, ONLY: EIRENE_DEALLOC_REFUSR
+      USE EIRMOD_CCOUPL, ONLY: EIRENE_DEALLOC_CCOUPL
+      USE EIRMOD_INFCOP, ONLY: EIRENE_IF4COP, EIRENE_INFCOP_PRE_MCARLO
+      USE EIRMOD_PRESSURELOOP
+      USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
+
+      IMPLICIT NONE
+
+      PRIVATE
+      PUBLIC :: EIRENE_EIRENE, EIRENE_EIRENE_COUPLE,
+     .          EIRENE_EIRENE_REINIT
+
+      integer, save :: inentry=1, init_log=0, init_open=0
+      REAL(DP) :: DUMMY, TIMI
+
+      CONTAINS
+
+c
+      RECURSIVE SUBROUTINE EIRENE_EIRENE (DT,NLMODE,NLLAST,ITNR,
+     .                                    MPI_INITIALIZE)
+C
+C  DT >  0.      : RUN EIRENE FOR A TIMESTEP DT (S),
+C  DT <= 0.      : RUN EIRENE IN QUASI STEADY STATE MODE
+C  NLMODE=.FALSE.: FULL EIRENE INITIALIZATION
+C                  PLASMA DATA TRANSFER INTO EIRENE CONTROLLED BY REGULAR INPUT OPTIONS
+C                  INCLUDING, POSSIBLY, TRANSFER VIA INFCOP, ARRAYS.....
+C  NLMODE=.TRUE. : CALLED FROM INTERFACING ROUTINE EIRSRT
+C                  PLASMA DATA ON COMMON BRAEIR IN SUBROUTINE INFCOP.
+C  NLLAST=.FALSE.: ?
+C  NLLAST=.TRUE. : ?
+C  ITNR          : ITERATION NUMBER, FOR ITERATIONS WITH EXTERNAL CODE (IF ANY)
+C  MPI_INITIALIZE: INITIALIZE USAGE OF MPI-ROUTINES FOR PARALLEL COMPUTATION
+C
+
+      IMPLICIT NONE
+
+#ifdef WINDOWS
+      interface
+        subroutine ioflush
+!DIR$attributes c, alias: 'ioflush_' :: ioflush
+        end subroutine
+      end interface
+#endif
+
+      REAL(DP), INTENT(IN) :: DT
+      LOGICAL, INTENT(IN) :: NLMODE, NLLAST, MPI_INITIALIZE
+      INTEGER, INTENT(IN) :: ITNR
+
+      INTEGER :: IER
+      logical :: op
+      character(20), save :: outname
+      character(6), save :: outpos
+      EXTERNAL :: EIRENE_COUPLE_ALLOC, EIRENE_DEFAULTS_USR,
+     .            EIRENE_FIND_PARAM, EIRENE_LEER, EIRENE_VERSION,
+     .            IOFLUSH_USR
+
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE(OUTNAME,OUTPOS)
+#endif
+C
+C               1.         INITIALIZE PACKAGE
+C
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP MASTER
+#endif
+      IF (MPI_INITIALIZE) THEN
+         CALL EIRENE_MPI_INIT(IER)
+      ENDIF
+#if ( defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
+      WRITE(*,*) 'Cannot run Eirene with both '//
+     .           'USE_EXT_OPENMP and USE_OPENMP simultaneously!'
+      CALL EIRENE_EXIT_OWN(1)
+#endif
+
+Cdmh  MOVED CPU TIME AFTER MPI_INIT BECAUSE MPI CPU-TIME ROUTINE IS USED
+      TIMI=EIRENE_SECOND_OWN()
+
+      CALL MPI_COMM_SIZE (MPI_COMM_WORLD,NPRS,IER)
+      CALL MPI_COMM_RANK (MPI_COMM_WORLD,MY_PE,IER)
+      CALL EIRENE_INIT_OPENMP()
+
+      CALL EIRENE_DEFAULTS_USR
+      CALL EIRENE_ALLOC_CPES(2)
+
+cdr  this is currently done in COMPRT. Should be moved to PARMMOD, or somewhere else early enough
+c     IUNIN = 1
+      IUNIN = IUNIN + IFOFF
+
+      IUNOUT = 6  ! Fortran standard output channel
+      IF (NPRS > 1) IUNOUT = 7  ! in case of multiple PEs
+                                ! use separate output files
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP PARALLEL
+#endif
+      IF (EIRENE_NTHREADS > 1) IUNOUT = 200 ! for multiple threads
+                                            ! use different file numbers
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP END PARALLEL
+#endif
+
+cxpb 04nov16 Going back to having the master PE write to standard output
+      IF (LPE0_TO_STDOUT .AND. (MY_PE == 0)) IUNOUT = 6
+
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP PARALLEL
+#endif
+      IUNOUT = IUNOUT + IFOFF
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP END PARALLEL
+#endif
+
+CDR  OUTPUT STREAM IS: IUNOUT. THIS IS ALSO THE STREAM FOR MASTER PROCESSOR MY_PE =0
+cdr  MPI: DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
+
+      IF (NPRS > 1 .OR. EIRENE_NTHREADS > 1) THEN
+#if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
+!$OMP PARALLEL FIRSTPRIVATE(OP,INIT_OPEN)
+#endif
+!pb_open
+        if (init_open == 0) then
+          IF (LPE0_TO_STDOUT.AND.(MY_PE == 0)) THEN
+!PB   nothing to be done: use standard output
+          ELSE
+            OUTNAME='output.'
+            WRITE (OUTNAME(8:),'(I4.4)')
+     .       (MY_PE*EIRENE_NTHREADS)+EIRENE_ITHREAD
+            inquire(UNIT=IUNOUT,opened=op)
+            if (op) then
+              init_open = 1
+            else
+              IF ( LOUTAPP ) THEN
+                OUTPOS='APPEND'
+              ELSE
+                OUTPOS='ASIS'
+              END IF
+              IF (EIRENE_NTHREADS > 1) IUNOUT = IUNOUT + EIRENE_ITHREAD
+              CALL EIRENE_OPENFILE (IUNOUT, FILE=OUTNAME,
+     .          ACCESS='SEQUENTIAL', FORM='FORMATTED', POSITION=OUTPOS)
+            end if
+            call ioflush_usr
+            init_open=1
+          END IF
+
+        else
+          if (my_pe.ne.0 .and. .not.LOUTAPP) rewind (iunout)
+        end if
+
+        write (iunout,*) 'NPRS, EIRENE_NTHREADS ', NPRS, EIRENE_NTHREADS
+        write (iunout,*) 'MY_PE, EIRENE_ITHREAD ', MY_PE, EIRENE_ITHREAD
+        call eirene_leer(1)
+
+#if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
+!$OMP END PARALLEL
+#endif
+      END IF
+
+      IF (MY_PE == 0) THEN
+
+        IF (ITNR == 1) THEN
+          CALL EIRENE_VERSION
+          CALL EIRENE_ALLOC_CLOGAU
+          CALL EIRENE_FIND_PARAM(0)
+          CALL EIRENE_SET_PARMMOD(1)
+          call eirene_couple_alloc
+        ELSE
+          DUMMY=EIRENE_RESET_SECOND()
+        END IF
+
+        CALL EIRENE_ALLOC_COMPRT
+cdr
+c  indicate: first entry to eirene has now been done.
+c  Calls to find_param, set_parmod(1),... have already been done above
+        inentry = 0
+
+        NRAPS=IUNRAPSVEC
+        IRAPS=0
+        IITER=1
+        ITIMV=ITNR
+        IPRNLI=0
+
+        DTIMVN=DT
+        NLPLAS=NLMODE
+
+        TIME=EIRENE_SECOND_OWN()
+        write (iunout,*) ' CPU time for startup of Eirene ',time-timi
+
+      END IF  ! MY_PE == 0
+
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP END MASTER
+#endif
+
+      CALL EIRENE_EIRENE_COUPLE (NLLAST,ITNR,MPI_INITIALIZE)
+
+      RETURN
+      END SUBROUTINE EIRENE_EIRENE
+
+C
+C  READ FORMATTED INPUT FILE OR RESTART FOR NEXT ITERATION
+c  ENTRY TO EIRENE FROM AN EXTERNAL CODE
+C
+!     ENTRY EIRENE_EIRENE_COUPLE (NLLAST,ITNR,MPI_INITIALIZE)
+      SUBROUTINE EIRENE_EIRENE_COUPLE (NLLAST,ITNR,MPI_INITIALIZE)
+      IMPLICIT NONE
+
+#ifdef WINDOWS
+      interface
+        subroutine ioflush
+!DIR$attributes c, alias: 'ioflush_' :: ioflush
+        end subroutine
+      end interface
+#endif
+
+      LOGICAL, INTENT(IN) :: NLLAST, MPI_INITIALIZE
+      INTEGER, INTENT(IN) :: ITNR
+
+      INTEGER :: IER, ISTRAI
+      logical :: nlplas_save
+      EXTERNAL :: EIRENE_AMDIAG, EIRENE_BROADCAST,
+     .            EIRENE_COUPLE_POST_INPUT, EIRENE_DIAGNO, EIRENE_ERGOD,
+     .            EIRENE_INIT_EION, EIRENE_INPUT,
+     .            EIRENE_MOD_TMSTEP, EIRENE_MODBGK, EIRENE_MODUSR,
+     .            EIRENE_MOVIE, EIRENE_NANALG,
+     .            EIRENE_OUTEIR, EIRENE_OUTIDLCONF, EIRENE_OUTIDLPLA,
+     .            EIRENE_OUTIDLSRF, EIRENE_OUTIDLTAL, EIRENE_OUTPLA,
+     .            EIRENE_OUTUSR, EIRENE_PLASMA_DERIV, EIRENE_PLNXTB,
+     .            EIRENE_REINITIALIZATION_OF_EIRENE,
+     .            EIRENE_RREC, EIRENE_RPSOUT,
+     .            EIRENE_SETCON, EIRENE_SETPRM, EIRENE_STTXT1,
+     .            EIRENE_WRREC, EIRENE_LEER, EIRENE_MASBOX,
+     .            EIRENE_CHECK_EXIT, IOFLUSH_USR
+
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP MASTER
+#endif
+      IF (MY_PE == 0) THEN
+
+        TIMI=EIRENE_SECOND_OWN()
+C
+        IF (INENTRY == 1) THEN
+cdr  first entry to eirene is via call eirene_couple, not via call eirene.
+cdr  Should we not set inentry=0 now ??  meaning of init_log, inentry,
+cdr  nlpls_save,.... ??
+          nlplas_save = nlplas
+          CALL EIRENE_SET_PARMMOD(1)
+          if (init_log == 0) CALL EIRENE_ALLOC_CLOGAU
+          CALL EIRENE_ALLOC_COMPRT
+          nlplas = nlplas_save
+        END IF
+
+        init_log = 1
+        CALL EIRENE_ALLOC_CESTIM(1)
+        CALL EIRENE_ALLOC_COMUSR(1)
+        CALL EIRENE_ALLOC_CADGEO
+        CALL EIRENE_ALLOC_CAI
+        CALL EIRENE_ALLOC_CPLOT
+        CALL EIRENE_ALLOC_CINIT
+        CALL EIRENE_ALLOC_CUPD
+        CALL EIRENE_ALLOC_CPOLYG
+        CALL EIRENE_ALLOC_CGRID
+        CALL EIRENE_ALLOC_CSPEZ
+        CALL EIRENE_ALLOC_CZT1(1)
+        CALL EIRENE_ALLOC_CTRCEI(1)
+        CALL EIRENE_ALLOC_CTRCEI(2)
+        CALL EIRENE_ALLOC_CGEOM(1)
+        CALL EIRENE_ALLOC_CSDVI(1)
+        CALL EIRENE_ALLOC_CTETRA
+        CALL EIRENE_ALLOC_CPES(1)
+        IF (ITNR == 1) CALL EIRENE_ALLOC_COMSOU(1)
+        CALL EIRENE_ALLOC_COMSPL
+        CALL EIRENE_ALLOC_CTEXT(1)
+        CALL EIRENE_ALLOC_CLGIN
+        !Allocate pressure feedback loop
+        IF (.NOT. ALLOCATED(RPRESSFED)) THEN
+          ALLOCATE(RPRESSFED(1:NLIMPS))
+        END IF
+        CALL EIRENE_ALLOC_COMXS(1)
+        CALL EIRENE_ALLOC_CTRIG
+        CALL EIRENE_ALLOC_COMNNL(2)
+        CALL EIRENE_ALLOC_CFPLK
+
+        TIME=EIRENE_SECOND_OWN()
+        write (iunout,*) ' CPU time for memory allocation ',time-timi
+
+cdr make sure that nstrai is properly set in find_param.f
+        IF (ITNR == 1) NLSRON(1:NSTRAI) = .TRUE.
+C
+C   SET SOME CONSTANTS
+C
+        CALL EIRENE_SETCON
+
+      END IF  ! MY_PE == 0
+C
+C  each internal iteration or internal time step (fixed plasma) starts here
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP END MASTER
+#endif
+  101 CONTINUE
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP MASTER
+#endif
+C  IITER=... , ITIMV=...
+
+      CALL EIRENE_PLNXTB(3,'EIRENE.F')
+
+      IF (MY_PE == 0) THEN
+
+        TIMI=EIRENE_SECOND_OWN()
+C
+        CALL EIRENE_INPUT
+
+        CALL EIRENE_ALLOC_CESTIM(0)
+        CALL EIRENE_ALLOC_COMUSR(4)
+        CALL EIRENE_INIT_EION
+
+        CALL EIRENE_COUPLE_POST_INPUT
+
+        CALL EIRENE_ALLOC_COUTAU
+        CALL EIRENE_ALLOC_COMNNL(1)
+C
+C  CHECK PARAMETER STATEMENTS, STORAGE REQUIREMENTS
+C
+        CALL EIRENE_SETPRM
+
+        CALL EIRENE_ALLOC_CSTEP
+        CALL EIRENE_ALLOC_CSPEI
+        CALL EIRENE_ALLOC_CSDVI(2)
+        CALL EIRENE_ALLOC_CLAST
+
+        CALL EIRENE_STTXT1
+C
+        TIME=EIRENE_SECOND_OWN()
+        WRITE (iunout,*) 'CPU TIME CONSUMED IN INPUT: ',
+     .                    TIME-TIMI,' SEC'
+        CALL EIRENE_LEER(1)
+C
+C  SET UP SPLITTING SURFACES, IMPORTANCE FUNCTION, WEIGHT WINDOWS,
+C  AND OTHER DATA FOR NON-ANALOG METHODS: WMINV, WMINS
+C
+        IF (.NOT.NLANA) THEN
+          CALL EIRENE_NANALG
+        ELSEIF (NLANA) THEN
+C  TURN OF ALL NON-ANALOG SAMPLING
+          CALL EIRENE_MASBOX('NON-ANALOG SAMPLING DEACTIVATED')
+C 1: NO SPLITTING AND RUSSIAN ROULETTE
+          WRITE (iunout,*) 'SUBROUTINE NANALG NOT CALLED'
+C 2: SPECIES SOURCE SAMPLING
+          DO ISTRAI=1,NSTRAI
+            NSPEZ(ISTRAI)=MAX(0,NSPEZ(ISTRAI))
+          ENDDO
+          WRITE (iunout,*)
+     .           'NON-ANALOG SOURCE SPECIES SAMPLING TURNED OFF'
+C 3: SUPPRESSION OF ABSORPTION AT SURFACES TURNED OFF
+          WMINS=1.D30
+          WRITE (iunout,*)
+     .        'SUPPRESSION OF ABSORPTION AT SURFACES TURNED OFF'
+C 4: SUPPRESSION OF ABSORPTION AT COLLISIONS TURNED OFF
+          WMINV=1.D30
+          WRITE (iunout,*)
+     .         'SUPPRESSION OF ABSORPTION AT COLLISIONS TURNED OFF'
+          CALL EIRENE_LEER(2)
+        ENDIF
+C
+        TIMI=EIRENE_SECOND_OWN()
+C
+C
+C  PARAMETERS FOR BGK ITERATIONS
+C
+        NBGVI=NRBGI
+        NFSTVI(NTALB)=NBGVI
+C
+        IF (TRCAMD) THEN
+          CALL EIRENE_LEER(1)
+          WRITE (iunout,*) 'NRCXI,NRCX ',NRCXI,NRCX
+          WRITE (iunout,*) 'NRELI,NREL ',NRELI,NREL
+          WRITE (iunout,*) 'NRPII,NRPI ',NRPII,NRPI
+          WRITE (iunout,*) 'NREII,NREI ',NREII,NREI
+          WRITE (iunout,*) 'NRRCI,NREC ',NRRCI,NREC
+          CALL EIRENE_LEER(1)
+        ENDIF
+C
+        SELECT CASE (NFILEK)
+          CASE (2:3)
+C  READ EIRENE STATISTICAL RECOMMENDATIONS FROM PREVIOUS RUN,
+C  AND CARRY THEM OUT
+            CALL EIRENE_RREC
+            WRITE (iunout,*) 'STRATIFIED SOURCE SAMPLING:'
+            WRITE (iunout,*)
+     .             'NPTS(ISTRA) ARE MODIFIED, DUE TO NFILEK.GE.2 '
+            DO 162 ISTRAI=1,NSTRAI
+              WRITE (iunout,*) ISTRAI,' NPTS(INP)= ',NPTS(ISTRAI),
+     .                                ' NPTS(MOD)= ',NRECOM(ISTRAI)
+              NPTS(ISTRAI)=NRECOM(ISTRAI)
+  162       CONTINUE
+          CASE (4:5)
+C read stratum run time from previous run
+            CALL EIRENE_RREC
+        END SELECT
+C
+C  IF NLERG:
+C  PERFORM A RUN, ONE-SPEED, COLLISION-LESS, UNTIL TIME LIMIT
+C  FOR CELL VOLUME ESTIMATION FROM ERGODIC PRINCIPLE
+C
+        IF (NLERG) CALL EIRENE_ERGOD
+C
+C  IF NLMOVIE:
+C  PERFORM A RUN, MANY TIMESTEPS, CONSTANT NUMBER OF PARTICLES IN
+C  PICTURE, COLD START FROM PREVIOUS CENSUS.
+C  FOR MOVIE OF PARTICLE TRAJECTORIES
+C  INVERT ORDER OF STRATA IN ORDER TO HAVE CENSUS STRATUM FIRST.
+C
+        IF (NLMOVIE) CALL EIRENE_MOVIE
+
+C  ATOMIC & MOLECULAR DATA DIAGNOSTICS ON ADDITIONAL INPUT ARRAY ADIN
+C
+        CALL EIRENE_AMDIAG
+C
+C  PRINT VOLUME-AVERAGED INPUT TALLIES.
+C
+        CALL EIRENE_OUTPLA(0)
+C
+        TIME=EIRENE_SECOND_OWN()
+C       WRITE (iunout,*)
+C    .        'CPU TIME CONSUMED IN XSECT: ',TIME-TIMI,' SEC'
+        CALL EIRENE_LEER(1)
+C
+C               2.         PLOT GEOMETRY
+C
+        IF ((IITER.GT.1.OR.ITIMV.GT.1).AND.      ! GEOMETRY PLOT ONLY
+     .     .NOT.(PLHST.AND.I2TRC.GT.0)) GOTO 300 ! ONCE UNLESS PLOTTING
+                                                 ! TRAJECTORIES
+
+C       TIMI=EIRENE_SECOND_OWN()
+        CALL EIRENE_PLT2D
+C       TIME=EIRENE_SECOND_OWN()
+C       WRITE (iunout,*) 'CPU TIME CONSUMED IN PLT2D: ',TIME-TIMI,' SEC'
+C
+C               3.         MONTE CARLO CALCULATION
+C
+  300   CONTINUE
+
+      END IF   ! MY_PE == 0
+      call ioflush_usr
+
+      IF (NPRS > 1) CALL EIRENE_BROADCAST
+      CALL EIRENE_INFCOP_PRE_MCARLO
+
+csw 22dec2011
+CVK ADDITIONAL PRINTOUT
+      IF(TRCINT) THEN
+        WRITE(iunout,*) "BACKGROUND: BEFORE MCARLO"
+        CALL DBG_PRINTOUT
+      END IF
+CVK END
+
+C  MAIN MONTE CARLO ROUTINE: LOOP OVER STRATA AND PARTICLE HISTORIES, SCORING
+
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP END MASTER
+#endif
+      CALL EIRENE_MCARLO
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP MASTER
+#endif
+C
+C               4.         OUTPUT, INTERFACE AND PLOTTING
+C
+C  POSTPROCESSING: OUTPUT FOR SELECTED STRATA AND/OR SUM OVER STRATA
+C
+      IF (MY_PE == 0) THEN
+
+      DO 450 ISTRAI=1,NSTRAI
+          ISTRA=ISTRAI
+          IF (TRCSRC(ISTRA).OR.(NSTRAI.EQ.1.AND.TRCSRC(0)))
+     .        CALL EIRENE_OUTEIR(ISTRA)
+          IF (PLTSRC(ISTRA).OR.(NSTRAI.EQ.1.AND.PLTSRC(0)))
+     .        CALL EIRENE_PLTEIR(ISTRA)
+  450 CONTINUE
+C
+      IF ((NSTRAI.GT.1) .AND. (NSMSTRA==1)) THEN
+        IF (TRCSRC(0)) CALL EIRENE_OUTEIR(0)
+        IF (PLTSRC(0)) CALL EIRENE_PLTEIR(0)
+      ENDIF
+C
+C  WRITE FILES FOR RAPS GRAPHICS
+C
+      IF (IRAPS.GT.0) THEN
+        CALL EIRENE_RPSOUT
+        NRAPS=IUNRAPSVEC
+        IRAPS=0
+      ENDIF
+C
+C  LAST CALL TO INTERFACING ROUTINE (GLOBAL BALANCES, ETC)
+C
+      IF (NMODE.GT.0) CALL EIRENE_IF4COP
+C
+C
+C  CALL WRREC TO EVALUATE EIRENE STATISTICAL RECOMMENDATIONS FOR NEXT
+C  RUN AND WRITE THEM TOGETHER WITH THE STRATUM RUN TIME ON FT 14
+C
+      IF (NFILEK.EQ.1.OR.NFILEK.EQ.3.OR.NFILEK.EQ.5) THEN
+c  this should not be done in a "read run" (NFILEN=2 or =7)
+cdr careful:
+cdr probably not ready for parallel mode
+c
+        CALL EIRENE_WRREC
+      ENDIF
+
+
+C  POSTPROCESSING FOR BACKGROUND TALLIES, E.G. FOR DIAGNO, ITERATION, ETC.
+      CALL EIRENE_PLASMA_DERIV(1)
+C  PRINT THOSE BACKGROUND TALLIES WHICH HAVE BEEN MODIFIED
+C  IN PLASMA_DERIV(1)
+      CALL EIRENE_OUTPLA(1)
+
+      END IF  ! MY_PE == 0
+C
+C  ITERATIVE MONTE CARLO PROBLEM: EIRENE RECALL OPTION
+C
+C  SUBROUTINE MODUSR IS A USER-SUPPLIED SUBROUTINE, WHICH MAY BE USED
+C  TO MODIFY SOME OF THE INPUT VARIABLES FOR THE NEXT ITERATION STEP.
+C  MODUSR IS ALSO CALLED AFTER THE LAST ITERATION TO ALLOW
+C  WRITING OF DATA ONTO SOME FILE AFTER EACH ITERATION
+C
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP END MASTER
+#endif
+      IF (NITER.GE.1.AND.IITER.LE.NITER) THEN
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP MASTER
+#endif
+        IF (MY_PE == 0) THEN
+cdr  are there any nonlinear "BGK" reactions?
+          IF (NBGK > 0) CALL EIRENE_MODBGK
+          CALL EIRENE_MODUSR
+CVK ADDITIONAL PRINTOUT
+          IF(TRCINT) THEN
+            WRITE(iunout,*) "BACKGROUND: AFTER MODUSR"
+            CALL DBG_PRINTOUT
+          END IF
+        END IF
+CVK END
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP END MASTER
+#endif
+        IITER=IITER+1
+        IF (IITER.LE.NITER) THEN
+cdr  prepare next internal iteration
+          DUMMY=EIRENE_RESET_SECOND()
+          IPRNLI=0
+          CALL EIRENE_CHECK_EXIT
+          CALL MPI_BARRIER(MPI_COMM_WORLD,IER)
+          GOTO 101
+        ENDIF
+      ENDIF
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP MASTER
+#endif
+      IF (MY_PE == 0) THEN
+C
+C  CALL DIAGNOSTIC MODULE (COMPUTE LINE INTEGRALS FROM EIRENE TALLIES)
+C
+
+      IF (NCHORI.GT.0) CALL EIRENE_DIAGNO
+
+csw  user-defined output
+      CALL EIRENE_OUTUSR
+
+      END IF   ! MY_PE == 0
+C
+C  SUBROUTINE STOSS IS A SUBROUTINE, IN WHICH BINARY COLLISION
+C  EVENTS BETWEEN TEST PARTICLES ARE CARRIED OUT
+C  STOSS IS ALSO CALLED AFTER THE LAST "TIMESTEP"
+C
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP END MASTER
+#endif
+      IF (NTIME.GE.1) THEN
+C  COLLISIONS BETWEEN TEST PARTICLES ON CENSUS, OLD DSMC ALGORITHM, NOT AVAILABLE ANYMORE
+C       CALL STOSS
+C  MODIFY BACKGROUND (TIME DEP. MODE)
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP MASTER
+#endif
+        IF (MY_PE == 0) CALL EIRENE_MOD_TMSTEP
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP END MASTER
+#endif
+        ITIMV=ITIMV+1
+        IF (ITIMV.LE.NTIME) THEN
+C  DO ONE MORE COMPLETE TIME CYCLE IN THIS EIRENE RUN
+c  A SINGLE TIME CYCLE MAY INVOLVE MANY NONLINEAR ITERATIONS.
+C  HENCE: RESET IITER TO 1
+          DUMMY=EIRENE_RESET_SECOND()
+          IITER=1
+          IPRNLI=0
+          CALL EIRENE_CHECK_EXIT
+          CALL MPI_BARRIER(MPI_COMM_WORLD,IER)
+          GOTO 101
+        ENDIF
+      ENDIF
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP MASTER
+#endif
+C  PRINT OUTPUT FOR IDL BASED EXTERNAL GRAPHICS AND POSTPROCESSING
+      IF (PLIDL.AND.(MY_PE == 0)) THEN
+        CALL EIRENE_MASBOX
+     .          ('OUTPUT OPTION: IDL, PER STRATUM ')
+        call eirene_outidlconf
+        call eirene_outidlsrf
+        call eirene_outidlpla
+        call eirene_outidltal
+      END IF
+
+      CALL EIRENE_CHECK_EXIT
+      CALL MPI_BARRIER(MPI_COMM_WORLD,IER)
+      IF (.NOT.NLLAST) CALL EIRENE_REINITIALIZATION_OF_EIRENE
+
+      IF (NLLAST) THEN
+         CALL EIRENE_DEALLOC_COMUSR
+         CALL EIRENE_DEALLOC_CREF
+         CALL EIRENE_DEALLOC_CESTIM
+         CALL EIRENE_DEALLOC_CADGEO
+         CALL EIRENE_DEALLOC_CAI
+         CALL EIRENE_DEALLOC_CGRPTL
+         CALL EIRENE_DEALLOC_CPLOT
+         CALL EIRENE_DEALLOC_CINIT
+         CALL EIRENE_DEALLOC_CUPD
+         IF (NCHORI > 0) CALL EIRENE_DEALLOC_COMSIG
+         CALL EIRENE_DEALLOC_CPOLYG
+         CALL EIRENE_DEALLOC_CGRID
+         CALL EIRENE_DEALLOC_CSPEZ
+         CALL EIRENE_DEALLOC_CZT1
+         CALL EIRENE_DEALLOC_CTRCEI
+         IF (NMODE .NE. 0) CALL EIRENE_DEALLOC_CCOUPL
+         CALL EIRENE_DEALLOC_CGEOM
+         CALL EIRENE_DEALLOC_CSDVI
+         CALL EIRENE_DEALLOC_CTETRA
+         CALL EIRENE_DEALLOC_CTRIG
+         CALL EIRENE_DEALLOC_COMPRT
+         CALL EIRENE_DEALLOC_CPES
+         CALL EIRENE_DEALLOC_COMNNL
+         CALL EIRENE_DEALLOC_COMSOU
+         CALL EIRENE_DEALLOC_CSTEP
+         CALL EIRENE_DEALLOC_COMSPL
+         CALL EIRENE_DEALLOC_CTEXT
+         CALL EIRENE_DEALLOC_CLGIN
+         CALL EIRENE_DEALLOC_COUTAU
+         CALL EIRENE_DEALLOC_COMXS
+         CALL EIRENE_DEALLOC_CSPEI
+         CALL EIRENE_DEALLOC_CLAST
+         call EIRENE_dealloc_cfplk
+         CALL EIRENE_LOCAT2        ! DEALLOCATE LOCAL ARRAYS
+                                   ! FROM SUBR. LOCATE
+         CALL EIRENE_SAMSF2        ! DEALLOCATE LOCAL ARRAYS
+                                   ! FROM SUBR. SAMSRF
+         CALL EIRENE_STATS3        ! DEALLOCATE LOCAL ARRAYS
+                                   ! FROM SUBR. STATIS
+         CALL EIRENE_LININT2       ! DEALLOCATE LOCAL ARRAYS
+                                   ! FROM SUBR. LININT
+         CALL EIRENE_DEALLOC_COLRAD    ! pb, august 15, deallocate
+                                       ! local arrays used for CRM
+         CALL EIRENE_MCARLO2
+         CALL EIRENE_DEALLOC_TIMEA
+         CALL EIRENE_DEALLOC_REFUSR
+C
+         CLOSE(IUNMEM)
+         IF (MPI_INITIALIZE) CALL MPI_FINALIZE(IER)
+      END IF
+
+csw 27jul2011 flush filesystem just in case
+      call ioflush_usr
+csw
+
+!pb   IF (MY_PE > 0) THEN
+      IF (NPRS > 1 .OR. EIRENE_NTHREADS > 1) THEN
+#if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
+!$OMP PARALLEL
+#endif
+        CLOSE (UNIT=IUNOUT)
+#if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
+!$OMP END PARALLEL
+#endif
+      END IF
+
+#if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
+!$OMP END MASTER
+#endif
+      RETURN
+      END SUBROUTINE EIRENE_EIRENE_COUPLE
+
+C     the following entry is for reinitialization of EIRENE (DMH)
+
+!      ENTRY EIRENE_EIRENE_REINIT
+      SUBROUTINE EIRENE_EIRENE_REINIT
+      inentry = 1
+      return
+      END SUBROUTINE EIRENE_EIRENE_REINIT
+
+CVK DBG
+      SUBROUTINE DBG_PRINTOUT
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_CGRID, ONLY: NSURFM
+      USE EIRMOD_COMUSR
+      USE EIRMOD_COMXS
+      USE EIRMOD_CCONA
+      implicit none
+      INTEGER :: III,JJJ
+      REAL(DP) :: SUMMM,VOLSSS
+
+      VOLSSS=SUM(VOL(1:NSURFM))
+      WRITE(iunout,*) "VOL ",VOLSSS
+      WRITE(iunout,*) "DEIN (AVR)"
+      SUMMM=0
+      DO JJJ=1,NSURFM
+        SUMMM=SUMMM+DEIN(JJJ)*VOL(JJJ)
+      END DO
+      SUMMM=SUMMM/(VOLSSS+EPS60)
+      WRITE(iunout,*) SUMMM
+      WRITE(iunout,*) "TEIN (AVR)"
+      SUMMM=0
+      DO JJJ=1,NSURFM
+        SUMMM=SUMMM+TEIN(JJJ)*VOL(JJJ)
+      END DO
+      SUMMM=SUMMM/(VOLSSS+EPS60)
+      WRITE(iunout,*) SUMMM
+
+      IF (NSTORDR >= NRAD) THEN
+        WRITE(iunout,*) "EELEI1 (AVR)"
+        DO III=1,NREI
+          SUMMM=0
+          DO JJJ=1,NSURFM
+            SUMMM=SUMMM+EELEI1(III,JJJ)*VOL(JJJ)
+          END DO
+          SUMMM=SUMMM/(VOLSSS+EPS60)
+          WRITE(iunout,*) III,SUMMM
+        END DO
+        WRITE(iunout,*) "TABEI1 (AVR)"
+        DO III=1,NREI
+          SUMMM=0
+          DO JJJ=1,NSURFM
+            SUMMM=SUMMM+TABEI1(III,JJJ)*VOL(JJJ)
+          END DO
+          SUMMM=SUMMM/(VOLSSS+EPS60)
+          WRITE(iunout,*) III,SUMMM
+        END DO
+
+        WRITE(iunout,*) "TABRC1 (AVR)"
+        DO III=1,NREC
+          SUMMM=0
+          DO JJJ=1,NSURFM
+            SUMMM=SUMMM+TABRC1(III,JJJ)*VOL(JJJ)
+          END DO
+          SUMMM=SUMMM/(VOLSSS+EPS60)
+          WRITE(iunout,*) III,SUMMM
+        END DO
+
+        WRITE(iunout,*) "TABEL3 (AVR)"
+        DO III=1,NREL
+          SUMMM=0
+          DO JJJ=1,NSURFM
+            SUMMM=SUMMM+SUM(TABEL3(III,JJJ,:))*VOL(JJJ)
+          END DO
+          SUMMM=SUMMM/(VOLSSS+EPS60)
+          WRITE(iunout,*) III,SUMMM
+        END DO
+        WRITE(iunout,*) "EPLEL3 (AVR)"
+        DO III=1,NREL
+          SUMMM=0
+          DO JJJ=1,NSURFM
+            SUMMM=SUMMM+SUM(EPLEL3(III,JJJ,:))*VOL(JJJ)
+          END DO
+          SUMMM=SUMMM/(VOLSSS+EPS60)
+          WRITE(iunout,*) III,SUMMM
+        END DO
+      END IF
+      WRITE(iunout,*) "DIIN (AVR)"
+      DO III=1,NPLS
+        SUMMM=0
+        DO JJJ=1,NSURFM
+          SUMMM=SUMMM+DIIN(III,JJJ)*VOL(JJJ)
+        END DO
+        SUMMM=SUMMM/(VOLSSS+EPS60)
+        WRITE(iunout,*) III,SUMMM
+      END DO
+      WRITE(iunout,*) "TIIN (AVR)"
+      DO III=1,NPLS
+        SUMMM=0
+        DO JJJ=1,NSURFM
+          SUMMM=SUMMM+ TIIN(III,JJJ)*VOL(JJJ)
+        END DO
+        SUMMM=SUMMM/(VOLSSS+EPS60)
+        WRITE(iunout,*) III,SUMMM
+      END DO
+      WRITE(iunout,*) "VXIN (AVR)"
+      DO III=1,NPLS
+        SUMMM=0
+        DO JJJ=1,NSURFM
+          SUMMM=SUMMM+VXIN(III,JJJ)*VOL(JJJ)
+        END DO
+        SUMMM=SUMMM/(VOLSSS+EPS60)
+        WRITE(iunout,*) III,SUMMM
+      END DO
+      WRITE(iunout,*) "VYIN (AVR)"
+      DO III=1,NPLS
+        SUMMM=0
+        DO JJJ=1,NSURFM
+          SUMMM=SUMMM+VYIN(III,JJJ)*VOL(JJJ)
+        END DO
+        SUMMM=SUMMM/(VOLSSS+EPS60)
+        WRITE(iunout,*) III,SUMMM
+      END DO
+      WRITE(iunout,*) "VZIN (AVR)"
+      DO III=1,NPLS
+        SUMMM=0
+        DO JJJ=1,NSURFM
+          SUMMM=SUMMM+VZIN(III,JJJ)*VOL(JJJ)
+        END DO
+        SUMMM=SUMMM/(VOLSSS+EPS60)
+        WRITE(iunout,*) III,SUMMM
+      END DO
+
+      RETURN
+      END SUBROUTINE DBG_PRINTOUT
+
+      END MODULE EIRMOD_EIRENE

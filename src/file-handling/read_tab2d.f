@@ -40,6 +40,7 @@ c  to be done: units, log-lin, scaling, asymptotics
      .           ide, ite, iz
       character(132) :: zeile
       type(adas_data), pointer :: ap
+      external :: eirene_exit_own
 
 cdr  error exit for unfinished options
       if (isw.ne.4 .and. isw.ne.10 .and. isw.ne.12)  goto 1000

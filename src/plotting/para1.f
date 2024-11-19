@@ -7,4 +7,4 @@ C
       REAL(DP) :: EIRENE_PARA1
       EIRENE_PARA1=-A/E*X*X-D/E*X-F/E
       RETURN
-      END
+      END FUNCTION EIRENE_PARA1

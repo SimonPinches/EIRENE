@@ -2135,7 +2135,7 @@ c dpc
 
  7471       CONTINUE  ! loop over grid
 
-            WRITE (iunout,*) 'IPLS,IRRC ',IPLS,IRRC
+            WRITE (iunout,*) 'PARTIAL: IRRC ',IRRC
             CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
      .                         SUMN, SUMM, SUMEI, SUMEE)
 c  now sum over IRRC rec processes for bulk ion IPLS
@@ -2145,7 +2145,11 @@ c  now sum over IRRC rec processes for bulk ion IPLS
             volSUMEE(ISTRAI)=volSUMEE(ISTRAI)+SUMEE          ! dpc
  7472     CONTINUE
 
- 7473    CONTINUE
+          WRITE (iunout,*) 'TOTAL'
+          CALL EIRENE_MASR4
+     .          ('SUMN, SUMM, SUMEI, SUMEE        ',
+     .            volSUMN(ISTRAI), volSUMM(ISTRAI),
+     .            volSUMEI(ISTRAI), volSUMEE(ISTRAI))
         ENDIF
 C
         IF (.NOT.LSYMET) GOTO 7500

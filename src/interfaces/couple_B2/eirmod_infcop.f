@@ -103,7 +103,7 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_JSON
       USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
 
-      use json_module       
+      use json_module       ! IGNORE
 
       IMPLICIT NONE
 
@@ -2385,7 +2385,7 @@ C  EXCLUDE IPLS-VACUUM CELLS
                 END DO
  7471           CONTINUE
                 RECTOT = RECTOT + SUMN
-                WRITE (iunout,*) 'IPLS,IRRC ',IPLS,IRRC
+                WRITE (iunout,*) 'PARTIAL: IRRC ',IRRC
                 CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
      .                             SUMN, SUMM, SUMEI, SUMEE)
  7472         CONTINUE
@@ -2544,7 +2544,6 @@ cdr  then add pppl
      .                  (cpv_cmp(icp+ipls,in,istrai)*cfac +
      .                  PPPL_COP(IPLS,IN)) * VOLTAL(IN)*FLX_EIR
 cdr  is this now any different from sni set above?
-
 
 cdr  add pppl contribution to internal energy sources rate
                 bv = 0._dp

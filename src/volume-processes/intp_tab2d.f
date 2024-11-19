@@ -31,6 +31,7 @@ c  ip2    : same as ip1, for parameter p2.
       integer, intent(out) :: ip1,ip2
       real(dp) :: res, rx, ry, ff(2,2)
       integer :: ide, ite
+      external :: eirene_binsearch_2, eirene_bilinear_int
 
 c  first parameter, find cell ite, ite+1
       if (p1 <= ad%temp(1)) then

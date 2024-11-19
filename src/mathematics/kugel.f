@@ -32,6 +32,7 @@ C
       REAL(DP), INTENT(OUT) :: X0, Y0, Z0, CX, CY, CZ, R
       REAL(DP), INTENT(IN) :: LAMBDA(3), A(4,4)
       REAL(DP) :: A3(3,3), DD, AA, D1, D2, D3, D4, ADD, EIRENE_SARRUS
+      EXTERNAL :: EIRENE_COFACT, EIRENE_SARRUS
 C
 C     DATA              EPS  / 5.D-10 /
 cdr  noch nicht fertig

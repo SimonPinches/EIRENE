@@ -127,6 +127,7 @@
       integer, parameter :: jvft44=20201006, jvft46=20170930
       character*32 :: get_Eir_hash
       external get_Eir_hash
+      external eirene_neutr
 
       character*12 :: filename
       character*3 :: stnum
@@ -685,6 +686,7 @@
         write(46,'(6e15.7)') (PVX(j),j=1,ntrii)
         call write_title(46,'pvy',ntrii)
         write(46,'(6e15.7)') (PVY(j),j=1,ntrii)
+
         rewind(46)
         close (46)
 
@@ -878,9 +880,9 @@
       real(DP), intent(in) :: dummy(nlimps,*)
 
       do iif=1,ldmf
-        if(nlimi.gt.0) write(kard,'(5(1x,e15.8))') &
+        if(nlimi.gt.0) write(kard,'(5(1x,1e15.8))') &
                        (dummy(is,iif),is=1,nlimi)
-        if(nstsi.gt.0) write(kard,'(5(1x,e15.8))') &
+        if(nstsi.gt.0) write(kard,'(5(1x,1e15.8))') &
                        (dummy(is+nlim,iif),is=1,nstsi)
       enddo
       return
@@ -1229,6 +1231,7 @@
       integer :: j,k,l,i,ic,kr,ki,iv,is,mc,ie,iw,i1,lun1,lun,ivv,istr
       integer :: j1,ii,i2,j2
       real(dp) :: x,r1
+      external :: eirene_exit_own
       !c=======================================================================
 
       if(nsrfcls.eq.0) return
@@ -2143,6 +2146,7 @@
       subroutine eirene_extrab25_emissivity
       implicit none
       integer :: istr, i, j, iadv, icell, ncelc, ix, iy
+      external :: eirene_emissivity, eirene_rstrt
 
       istr = 0
 

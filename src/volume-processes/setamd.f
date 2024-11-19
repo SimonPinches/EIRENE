@@ -27,6 +27,12 @@ C
 
       INTEGER, INTENT(IN) :: ICAL
       INTEGER :: I, J, IRPI, IREI, IERROR
+      EXTERNAL :: EIRENE_XSECTA_PARAM, EIRENE_XSECTM_PARAM,
+     .            EIRENE_XSECTI_PARAM, EIRENE_XSECTP_PARAM,
+     .            EIRENE_XSECTPH_PARAM, EIRENE_CONDENSE,
+     .            EIRENE_XSECTA, EIRENE_XSECTM,
+     .            EIRENE_XSECTI, EIRENE_XSECTP, EIRENE_XSECTPH,
+     .            EIRENE_EXIT_OWN
 
       IF (ICAL == 0) THEN
         write (iunout,*) 'setamd(0) called '

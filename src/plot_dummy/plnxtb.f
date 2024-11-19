@@ -3,4 +3,4 @@ c------------------------------------------------------------------------
       INTEGER,  INTENT(IN) :: K
       CHARACTER(LEN=*), INTENT(IN) :: CALLER
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLNXTB

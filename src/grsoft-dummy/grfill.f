@@ -5,4 +5,4 @@ c-------------------------------------------------------------------------
       INTEGER, INTENT(IN) :: N, ISTYLE, ITYPE
       REAL(SP), DIMENSION(N), INTENT(IN) :: XX, YY
       RETURN
-      END
+      END SUBROUTINE GRFILL

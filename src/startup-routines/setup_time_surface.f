@@ -15,7 +15,9 @@
       INTEGER, INTENT(INOUT) :: IERROR
       INTEGER :: I, ISTR_A(1), ISTR, IPNT
       REAL(DP) :: DTIMVO
-
+      EXTERNAL :: EIRENE_RSNAP, EIRENE_LEER, EIRENE_MASJ1,
+     .            EIRENE_MASPRM, EIRENE_MASR1, EIRENE_MASR2,
+     .            EIRENE_EXIT_OWN
 C
       IF (NTIME.GE.1) THEN
 cdr prepare time-dependent mode: A: horizon, B: initial distribution
@@ -145,7 +147,11 @@ cdr  for census source particles. This may result in error exits
 C Would gain performance by turning RPSTT into a pointer
 cpb  changed due to optimizer problem
 cpb  try to determine the index of the element of RPSTT which TIME points to
-            RPSTT(1:NPARTT)=RPARTC(1:NPARTT,1)
+            IF (IPRNL.GT.0) THEN
+              RPSTT(1:NPARTT)=RPARTC(1:NPARTT,1)
+            ELSE
+              RPSTT(1:NPARTT)=0.0_DP
+            END IF
             TIME=HUGE(1._DP)
             IPNT=MAXLOC(RPSTT,1)
 cpb  reset time stamp
@@ -197,8 +203,11 @@ cdr  at this point: NTIME LT 0.
 cdr  New option (M. Rack: 2017):
 CDR  Read an external census array from fort.15, and launch one by one.
 
-        IF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
+        IF (NFILEJ.LE.1) THEN
+cdr  no initial census population to be used in this run.
+cdr  Use default empty census, nothing to be done for one-by-one relaunch
 
+        ELSEIF (NFILEJ.EQ.2.OR.NFILEJ.EQ.3) THEN
 
 !pb        IF ( SIZE( PACK((/ (i, i = 1, NSTRA) /),NLCNS) ) == 1 ) THEN
         IF ( COUNT(NLCNS(1:NSTRA)) == 1 ) THEN

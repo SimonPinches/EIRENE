@@ -132,4 +132,4 @@ C       enddo
 C     enddo
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_GEOUSR_GENERAL

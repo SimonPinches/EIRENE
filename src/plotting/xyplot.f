@@ -10,6 +10,7 @@ C
       INTEGER, INTENT(IN) :: NC
       REAL(SP) :: DXY, HILF
       INTEGER :: I, IANF, NBEG, J
+      EXTERNAL :: GRDRW, GRJMP
 C
       NBEG=1
       IANF=3

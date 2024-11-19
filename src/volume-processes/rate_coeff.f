@@ -72,6 +72,7 @@ c  transformation of parameters p1 and p2:
       integer :: ip1, ip2, iflavor, ivar
       integer :: modc
       INTEGER, EXTERNAL :: EIRENE_IDEZ
+      EXTERNAL :: EIRENE_SNGL_POLY, EIRENE_DBL_POLY, EIRENE_EXIT_OWN
 
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)

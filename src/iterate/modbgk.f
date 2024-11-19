@@ -122,6 +122,10 @@ C   GBGKV == BGKV EVERYWHERE
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL, ALLOCATABLE :: LSAVE(:,:)
       LOGICAL :: TRCSAV, LSKIP
+      EXTERNAL :: EIRENE_PLASMA, EIRENE_PLASMA_DERIV,
+     .            EIRENE_RSTRT, EIRENE_XSTEL, EIRENE_WRPLAM,
+     .            EIRENE_LEER, EIRENE_MASR1, EIRENE_MASR3,
+     .            EIRENE_EXIT_OWN
 C
 C
       CALL EIRENE_LEER(3)
@@ -1076,6 +1080,7 @@ cdr Also returns: cumulated residuals
 
       REAL(DP) :: EIRENE_RATE_COEFF
       REAL(DP) :: ENEW, EDMIX
+      EXTERNAL :: EIRENE_RATE_COEFF
 
       TBEL=0
       IF (LGVAC(IRAD,IPLS)) GOTO 191
@@ -1195,6 +1200,7 @@ cdr  in calling program: 2 identical loops , IRAD
       IMPLICIT NONE
       REAL(DP) :: EIRENE_RATE_COEFF
       REAL(DP) :: VNEW, VOLD
+      EXTERNAL :: EIRENE_RATE_COEFF
 
       TBEL=0.
       IF (LGVAC(IRAD,IPLS)) GOTO 81

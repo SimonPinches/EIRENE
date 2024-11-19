@@ -17,6 +17,8 @@
       REAL(DP) :: RX, RY, RZ, DPH, DZ, X, Y, Z, ZE, RAD, XS, YS, PHI,
      .          DX, DY, XA, XE, YA, YE, ZA
       INTEGER :: IPART, IPRT, N, IZ, IX, IY, I
+      EXTERNAL :: EIRENE_CTELL
+      EXTERNAL :: GRDRW, GRJMP, GRNWPN
 
       XA = MAX(X0-CX,XLIMS1)
       XE = MIN(X0+CX,XLIMS2)

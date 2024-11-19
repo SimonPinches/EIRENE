@@ -76,6 +76,7 @@ c          Also: dum(1) is the fit value at al2=0, e.g. at density=1e8 for amjue
      .            eirene_extrap
       integer :: kk, jj, j, i, ii, ifex
       logical :: trc
+      external :: eirene_extrap
 
       dum = 0._dp
       p1=al1

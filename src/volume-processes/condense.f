@@ -23,6 +23,7 @@ C
       IMPLICIT NONE
 
       INTEGER :: ISP, ISP0, IION, ICOL, IATM, IMOL, IREI, IMEI
+      EXTERNAL :: EIRENE_LEER
 
       DO 10 IATM=1,NATMI
 C  NRCA=0 ?
@@ -65,4 +66,4 @@ c  tbd.
       call eirene_leer(1)
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_CONDENSE

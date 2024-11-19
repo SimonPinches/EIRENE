@@ -17,6 +17,7 @@ C
       INTEGER, INTENT(IN) :: K
       CHARACTER(LEN=*), INTENT(IN) :: NAME
       INTEGER, SAVE :: IFRST1=0, IFRST2=0
+      EXTERNAL :: GRNXTF, GRSCLC
 
       WRITE (iunout,*) 'PLNXTB CALLED FROM ',NAME
       WRITE (iunout,*) 'K,IFRST1,IFRST2 ',K,IFRST1,IFRST2
@@ -52,4 +53,4 @@ C
         IFRST2=0
       end select
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLNXTB

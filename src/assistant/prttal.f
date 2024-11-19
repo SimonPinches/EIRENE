@@ -41,6 +41,7 @@ C
      .           NTTS
 C     INTEGER :: I
       CHARACTER(1) :: TL(72)
+      EXTERNAL :: EIRENE_LEER
 
       DATA TL/72*'='/
       SAVE

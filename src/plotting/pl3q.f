@@ -13,6 +13,7 @@ C
       REAL(DP) :: XP(N+1),YP(N+1)
       REAL(SP) :: XPS(N+1),YPS(N+1)
       INTEGER :: J, JJ, I, N3
+      EXTERNAL :: GRFILL, GRLN, GRNWPN
 
       N3=3*N
       I=0

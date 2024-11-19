@@ -7,6 +7,7 @@ C
       use EIRMOD_CPES, only: MY_PE, NPRS
       use EIRMOD_COMPRT, only: IUNOUT
       use EIRMOD_PARMMOD, only: LOUTAPP
+      use EIRMOD_OPENFILE, only: EIRENE_OPENFILE
 
       implicit none
 
@@ -25,8 +26,8 @@ C
           OUTPOS='ASIS'
         END IF
 
-        open (unit=IUNOUT, file=OUTNAME, access='SEQUENTIAL',
-     .        form='FORMATTED', position=OUTPOS)
+        CALL EIRENE_OPENFILE (IUNIT=IUNOUT, FILE=OUTNAME,
+     .        ACCESS='SEQUENTIAL', FORM='FORMATTED', POSITION=OUTPOS)
 cpg #ifdef WINDOWS
 cpg DIR$attributes c, alias: 'ioflush_' :: ioflush
 cpg #endif

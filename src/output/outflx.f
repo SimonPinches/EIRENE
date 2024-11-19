@@ -93,6 +93,9 @@ C
       LOGICAL :: PRINTED(NLIMPS)
       CHARACTER(8) :: TEXTA(NADS), TEXTL(NALS)
       CHARACTER(10) :: TEXTYP(0:4)
+      EXTERNAL :: EIRENE_INTVOL, EIRENE_PRTTLS, EIRENE_LEER,
+     .            EIRENE_MASAGE, EIRENE_MASBOX, EIRENE_MASR1,
+     .            EIRENE_MASYR1
 
       IF (.NOT.ALLOCATED(HELP)) ALLOCATE (HELP(NRAD))
 
@@ -367,7 +370,7 @@ chk Legendre polynomial expansion tallies
                 IF (ESTIML(ISPC)%ISPCOPT==2) THEN
                   DO IE=1, ESTIML(ISPC)%NSPC
                     EN = ESTIML(ISPC)%SPCMIN +
-     .                   (IE-0.5)*ESTIML(ISPC)%SPCDEL
+     .                   (IE-0.5_DP)*ESTIML(ISPC)%SPCDEL
                     IF (ESTIML(ISPC)%LOG) THEN
                       WRITE (IOUT,'(I6,1ES12.4)') IE,10._DP**EN
                     ELSE

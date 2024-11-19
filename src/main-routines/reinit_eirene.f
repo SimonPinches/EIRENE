@@ -30,6 +30,7 @@ ctk     , ranf_eirene_reinit
 C      REAL(DP) :: H1RN_REINIT
       integer :: idummy
 ctk      INTEGER, EXTERNAL :: ranset_eirene_reinit
+      EXTERNAL :: EIRENE_UPDATE_REINIT, EIRENE_UPDATE_SPECTRUM_REINIT
 
 C     reinitialization start
       call EIRENE_EIRENE_REINIT
@@ -75,5 +76,5 @@ cdr   call EIRENE_BA_ALPHA_REINIT
 
 C     reinitialization end
 
-
-      end
+      return
+      end subroutine eirene_reinitialization_of_eirene

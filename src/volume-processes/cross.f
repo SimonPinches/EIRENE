@@ -55,7 +55,7 @@ C
       LOGICAL :: LEXP
       type(poly_data), pointer :: rpp
       type(fit_forms), pointer :: rpc
-
+      EXTERNAL :: EIRENE_EXIT_OWN, EIRENE_EXTRAP, EIRENE_SNGL_POLY
 C
       IF ((K >= -11) .AND. (K <= NREAC)) THEN
 

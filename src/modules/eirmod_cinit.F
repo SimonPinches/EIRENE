@@ -321,9 +321,9 @@ C  DEFAULT FOR DATABASE NAMES, CAN BE OVERWRITTEN BY CFILE CARDS
 CDR  TRIM USUALLY IS INCLUDED AS fort.21.
 cdr  FOR SOME COMPILERS THIS IS ILLEGAL.
       if (21+ifoff >= 100) then
-        write (DBFNAME(9),'(A,I3)') FORT_LC, 21+ifoff
+        write (DBFNAME(9)(I+1:I+3),'(I3)') 21+ifoff
       else
-        write (DBFNAME(9),'(A,I2)') FORT_LC, 21+ifoff
+        write (DBFNAME(9)(I+1:I+2),'(I2)') 21+ifoff
       endif
       DBFNAME(10) = 'POLARI'
       DBFNAME(11) = 'free'
@@ -343,9 +343,12 @@ cdr  FOR SOME COMPILERS THIS IS ILLEGAL.
       SUBROUTINE EIRENE_BROADCAST_CINIT(ME)
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
-      INTEGER :: IER, IPLS, NREF, IRF, IAN
+      INTEGER :: IER, IPLS, NREF, IAN
       REAL(DP) :: RHELP(4)
       INTEGER, ALLOCATABLE :: IHELP(:)
+#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+      EXTERNAL :: MPI_BCAST
+#endif
 
       IF (ME /= 0) CALL EIRENE_ALLOC_CINIT
 
@@ -382,11 +385,12 @@ cdr
           IHELP(1+NREF:2*NREF) = TDMPAR(IPLS)%TDM%ITP(1:NREF)
           IHELP(1+2*NREF:3*NREF) = TDMPAR(IPLS)%TDM%ISTR(1:NREF)
           IHELP(1+3*NREF:4*NREF) = TDMPAR(IPLS)%TDM%IRC(1:NREF)
+          IAN = 0
         END IF
 
         CALL MPI_BCAST(RHELP,4,MPI_REAL8,0,
      .                MPI_COMM_WORLD,ier)
-        CALL MPI_BCAST(IHELP,3*NREF,MPI_INTEGER,0,
+        CALL MPI_BCAST(IHELP,4*NREF,MPI_INTEGER,0,
      .                MPI_COMM_WORLD,ier)
 
         IF (ME > 0) THEN
@@ -411,6 +415,7 @@ cdr
           TDMPAR(IPLS)%TDM%ITP(1:NREF)  = IHELP(1+NREF:2*NREF)
           TDMPAR(IPLS)%TDM%ISTR(1:NREF) = IHELP(1+2*NREF:3*NREF)
           TDMPAR(IPLS)%TDM%IRC(1:NREF)  = IHELP(1+3*NREF:4*NREF)
+          IAN = 0
         END IF
 
         DEALLOCATE (IHELP)

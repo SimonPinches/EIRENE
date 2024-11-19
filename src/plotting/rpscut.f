@@ -13,7 +13,7 @@ cdr         replacing suche_kanten now is retained
       use EIRMOD_ccona
       use EIRMOD_cplot
       use EIRMOD_module_avltree
-      USE EIRMOD_SECOND_OWN, ONLY: EIRENE_second_own
+
       implicit none
 
       REAL(DP), INTENT(IN) :: AORIG(*)
@@ -218,6 +218,7 @@ cdr         replacing suche_kanten now is retained
       real(dp) :: am(2,2), amm1(2,2), rhs(2), x(3)
       real(dp) :: spat, bnorm, cnorm, detam
       integer :: i, ik, k1, k2
+      external :: eirene_exit_own
 
 ! a ist die richtung der normalen zur schnittebene
       a(1:3) = cutplane(2:4)
@@ -431,6 +432,7 @@ cdr         replacing suche_kanten now is retained
       integer :: iknot(6), ipunkt(4)
       integer :: i, itri, itet, icount, j, ih, i1, i2, i3, ico
       real(dp) :: ar, EIRENE_artri3
+      external :: EIRENE_artri3
 
       if (.not.allocated(itetno)) allocate (itetno(ntri))
       itetno = 0

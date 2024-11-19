@@ -17,6 +17,8 @@ C
 
       CHARACTER(80) :: ZEILE
       integer, save :: ifirst=0
+      EXTERNAL :: EIRENE_UPPERCASE, EIRENE_GEOUSR_BIASED,
+     .            EIRENE_GEOUSR_BIASED_GARCHING, EIRENE_GEOUSR_GENERAL
 
 cdr Carry out geousr only once. It may be called from interfacing: infcop.
 cdr Then avoid second (default) call from input.f
@@ -221,7 +223,8 @@ csw 03sep2013
       REAL(DP) :: XCOOR,YCOOR,ZCOOR !VK
       real(dp) ::  XN, YN
       integer ixn,iyn
-      character*72 zeile
+      character*80 zeile
+      EXTERNAL :: EIRENE_BITSET, FIX_INTEGER_INPUT, EIRENE_EXIT_OWN
 csw
       save first,onetwo,limpos
       data first /.true./
@@ -337,7 +340,7 @@ cdr either read onetwo, limpos
 cdr or     read limpos, onetwo
 
 csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
-          read(iunin,'(a72)') zeile
+          read(iunin,'(a80)') zeile
           call fix_integer_input(zeile,3)
           read(zeile,*,err=91) limpos(i),onetwo(i),icoor(i)
           goto 92
@@ -674,6 +677,7 @@ c======================================================================
       REAL(DP), PARAMETER :: hlp_tol=0.001_DP
       INTEGER :: I, J, K, NBITS, M, N, L
       REAL(DP) :: HLP_P1, HLP_P2
+      EXTERNAL :: EIRENE_BITSET, EIRENE_EXIT_OWN
       save first,onetwo,limpos
       data first /.true./
 c======================================================================

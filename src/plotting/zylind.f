@@ -33,6 +33,8 @@ C
      .          PHID, BX, BY, BZ, PI, DT, PZZ
       REAL(SP), ALLOCATABLE :: XPS(:), YPS(:)
       INTEGER :: J, IA, JJ, IE, I, NAPK
+      EXTERNAL :: EIRENE_SHNITT, EIRENE_EXIT_OWN
+      EXTERNAL :: GRFILL, GRLN, GRNWPN
 C
       NAPK = MAX(NA,NP,NK) + 1
       ALLOCATE (P(3,NAPK))
