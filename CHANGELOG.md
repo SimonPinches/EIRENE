@@ -15,7 +15,7 @@
 
 ---
 
-## X. Bonnin - feature/SOLPS_push_clean-up - 73a692665efc344c074aeda2801d11566fbfba6a
+## X. Bonnin - feature/SOLPS_push_clean-up - e27e08bc972e1c9623e4d8f66e15d17b884d90ca
 
 #### Based on develop - 1138b60ed32d3337e392f716ece854bfc89675a3
 
@@ -116,6 +116,8 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added -fpe0 debug Intel compilation flag
 - Added -allow-argument-mismatch argument to GNU compilation above version 9.5 to avoid errors with MPI routines
 - Added Cray compiler support
+- Implemented new logic in test-case scripts for input_fixed, input_json, output_fixed and output_json directories
+
 ---
 
 ## D. Harting - New EIRENE version: Release-V1.1.0 - a339c4b70032409286e399b59f01e6bcb6940f06
