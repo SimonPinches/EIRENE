@@ -187,7 +187,7 @@ C
           write (cnfti,'(I0)') nfti
           write (cnfte,'(I0)') nfte
           FNAME =
-     .     'outtal_'//trim(cistr)//'_'//trim(cital)//
+     .     'outtal_'//trim(cital)//'_'//trim(cistr)//
      .           '_'//trim(cnfti)//'-'//trim(cnfte)
 
           IF (LFIRST) THEN
