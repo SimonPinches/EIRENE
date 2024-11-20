@@ -2305,7 +2305,7 @@ cdr  default is: cm/s units for flow field(s)
                              ! rather than cm/s
       INDPRO(4)=IABS(INDPRO(4))
 
-cdr  default is: |indpro| < 10: npls flow fields, one per background species
+cdr  default is: |indpro| < 10: nplsi flow fields, one per background species
 cdr              |indpro| > 10: only one common flow field
 
       NPLSV = NPLSI
