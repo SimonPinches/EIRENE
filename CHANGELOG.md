@@ -15,7 +15,7 @@
 
 ---
 
-## X. Bonnin - feature/SOLPS_push_clean-up - e27e08bc972e1c9623e4d8f66e15d17b884d90ca
+## X. Bonnin - feature/SOLPS_push_clean-up - 781960eea7b56a886fccecd4ad98e4002fbc5292
 
 #### Based on develop - 1138b60ed32d3337e392f716ece854bfc89675a3
 
@@ -117,6 +117,8 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Added -allow-argument-mismatch argument to GNU compilation above version 9.5 to avoid errors with MPI routines
 - Added Cray compiler support
 - Implemented new logic in test-case scripts for input_fixed, input_json, output_fixed and output_json directories
+- Adapted test-cases for new outtal_* file format.
+- Adjusted openMP test-case Makefiles for easy CI data creations.
 
 ---
 
