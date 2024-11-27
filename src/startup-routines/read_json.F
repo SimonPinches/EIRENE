@@ -2352,10 +2352,10 @@ cdr  default is: eV units for Ti
       NLKELV=INDPRO(2) < 0  ! Kelvin units instead of eV
       INDPRO(2)=IABS(INDPRO(2))
 
-cdr  default is: |indpro| < 10: npls Ti fields, one per background species
+cdr  default is: |indpro| < 10: nplsi Ti fields, one per background species
 cdr              |indpro| > 10: only one common Ti field is specified
 
-      NPLSTI = NPLS
+      NPLSTI = NPLSI
       LRDMLTI=.TRUE.
 
 cdr  only one common profile for all NPLS species?
@@ -2375,7 +2375,7 @@ cdr  only one common profile for all NPLS species?
      .                   'BECAUSE BGK REACTIONS PRESENT'
         LRDMLTI=.FALSE.         !  read only one common Ti card,
                                 !  despite storage for NPLS Ti profiles.
-        NPLSTI = NPLS
+        NPLSTI = NPLSI
         WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
         CALL EIRENE_LEER(1)
 c     ELSE
@@ -2403,7 +2403,7 @@ cdr     E.g.: only virtual background species with different flow fields
       IF (NLMLTI)     MPLSTI = (/ (I,I=1,NPLS) /)
 
 
-      IF (INDPRO(2).LE.5.AND.NPLS.GT.0) THEN
+      IF (INDPRO(2).LE.5.AND.NPLSI.GT.0) THEN
         call json%info(pti,n_children=nch)
         if (lrdmlti.and.(nch /= nplsi)) then
           write (iunout,*) ' ERROR READING ION TEMPERATURE PROFILES '
@@ -2466,10 +2466,10 @@ cdr  default is: cm/s units for flow field(s)
                              ! rather than cm/s
       INDPRO(4)=IABS(INDPRO(4))
 
-cdr  default is: |indpro| < 10:  npls flow fields, one per background species
+cdr  default is: |indpro| < 10:  nplsi flow fields, one per background species
 cdr              |indpro| > 10:  only one common flow field
 
-      NPLSV = NPLS
+      NPLSV = NPLSI
       LRDMLV=.TRUE.
 
 cdr  only one common profile for all NPLS species?
@@ -2486,10 +2486,10 @@ cdr  only one common profile for all NPLS species?
      .                   'BECAUSE BGK REACTIONS PRESENT'
         LRDMLV=.FALSE.  !  read only one common V.IN card,
                         !  despite storage for NPLS V.IN profiles.
-        NPLSV = NPLS
+        NPLSV = NPLSI
         WRITE (IUNOUT,*) ' NPLSV = ',NPLSV
 c     ELSE
-c  read one V.IN card for each of the NPLS V.IN profiles
+c  read one V.IN card for each of the NPLSI V.IN profiles
 c       LRDMLV=.TRUE.
       END IF
 
@@ -2501,8 +2501,8 @@ cdr  indirect addressing: IVL= MPLSV(IPLS)   ! find flow field for IPLS on V_XYZ
       IF (NPLSV == 1) THEN
         MPLSV = 1                    ! find ALL flow fields
                                      ! on IPLS=1 storage
-      ELSEIF (NPLSV == NPLS) THEN
-        MPLSV = (/ (I,I=1,NPLS) /)   ! find each individual flow field
+      ELSEIF (NPLSV == NPLSI) THEN
+        MPLSV = (/ (I,I=1,NPLSI) /)  ! find each individual flow field
                                      ! on its IPLS storage
       ELSE
 cdr     more general options: to be written.

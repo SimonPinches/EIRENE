@@ -11,13 +11,13 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # XPB/uppercase_extensions
-    SAMPLE_CASE_VERSION: c66f85b7d47c2d0a48ef53f44f4171fa70e9a33c
+    SAMPLE_CASE_VERSION: d32440e0aaa550ab6baa08c18d7e66986dd63b77
 # eirene_unified_bullseye
 #   SAMPLE_CASE_VERSION: 313c4eef6edbf8af7c398886c47ef4a9eddf0f21
 # OpenMP test cases, at present these exist in their own branch created from the
 # first commit. This can be merged at any time.
 # DMH/uppercase_extensions_OpenMP
-    SAMPLE_CASE_VERSION_OPENMP: a7627c2f39f808eacada25660110c88af25969da
+    SAMPLE_CASE_VERSION_OPENMP: a0f2b4564d237ffbbb11517407aaa5ccc98a824b
 # eirene_unified_openmp_bullseye
 #   SAMPLE_CASE_VERSION_OPENMP: f532a411c370bc1b499ab1c1e897327472232e7b
 # Compatible EMC3 version with this EIRENE version
