@@ -1723,7 +1723,7 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
          call json%get(pfld,'BMASS',bmass(ipl),found)
          call json%get(pfld,'LKINDP',l,found)
          if (found) then
-           if(iflb(ipl) .gt. 0) then
+           if(iflb(ipl).gt.0) then
              if(lkindp(ipl).le.0) then
                k=NINT(BMASS(IPL))
                l=0

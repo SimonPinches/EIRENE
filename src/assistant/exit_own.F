@@ -18,6 +18,10 @@ C
 
       WRITE(IUNOUT,*) 'EIRENE EXIT_OWN ENTERED FROM '//
      . 'PROCESSOR ', MY_PE,', THREAD = ', EIRENE_ITHREAD
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC WRITE
+#endif
+      LGEXIT = .TRUE.
       LXOWN = .TRUE.
 #ifdef USE_MPI
       CALL MPI_ALLGATHER (LXOWN, 1, MPI_LOGICAL,
@@ -51,6 +55,7 @@ C  LEGAL ENDING OF GR PLOTTING SOFTWARE
 #endif
 #endif
       LOGICAL :: LXOWN
+      EXTERNAL :: IOFLUSH_USR
 
       LXOWN = .FALSE.
 
@@ -75,5 +80,13 @@ C  LEGAL ENDING OF GR PLOTTING SOFTWARE
         END IF
       END DO
 #endif
+      IF (LGEXIT) THEN
+        call ioflush_usr
+#if defined(G95) || ( defined(PGF90) && COMPILER_MAJOR_VERSION < 19 ) || ( defined(GFORTRAN) && COMPILER_MAJOR_VERSION < 5 && COMPILER_MINOR_VERSION < 6 )
+        STOP 'EIRENE_EXIT'
+#else
+        ERROR STOP 'EIRENE_EXIT'
+#endif
+      END IF
       RETURN
       END SUBROUTINE EIRENE_CHECK_EXIT
