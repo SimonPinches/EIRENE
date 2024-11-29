@@ -159,8 +159,11 @@ add_definitions(-DF2003)
 # Add option to control whether MPI will be used.
 option(MPI "Build with MPI" ON)
 if (MPI)
-  message(STATUS "-- Adding USE_MPI flag...")
+  message(STATUS "-- Adding USE_MPI and MPI_VERSION flags...")
   add_definitions(-DUSE_MPI)
+  if (MPI_VERSION)
+    add_definitions(-DMPI_VERSION=${MPI_VERSION})
+  endif()
   find_package(MPI REQUIRED)
   if ( NOT MPI_FOUND )
 

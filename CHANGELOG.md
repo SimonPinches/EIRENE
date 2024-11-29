@@ -25,6 +25,9 @@
 - Added LGEXIT variable in OpenMP treatment for error handling
 - Corrected location of barrier in BROADCAST routine
 - Added some missing USE_OPENMP pragmas
+- Corrected pragmas in CMake version file
+- Added definition of MPI_VERSION pragma in CMakeLists.txt
+- Corrected procedure names in IOUSR interface files
 - Corrected some reading formats
 - Corrected some comments
 - Alignment corrections
