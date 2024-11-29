@@ -23,6 +23,7 @@
 
 - Bug fixes in AMJUEL and AMMONX data files
 - Added LGEXIT variable in OpenMP treatment for error handling
+- Corrected array bounds for data read loop in couple_B2 interface
 - Corrected location of barrier in BROADCAST routine
 - Bug fix due to typo in SGNAL routine + associated correction to ITER CI serial test cases
 - Added some missing USE_OPENMP pragmas
