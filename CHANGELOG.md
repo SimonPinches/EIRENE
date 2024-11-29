@@ -22,6 +22,8 @@
 ** Changes **
 
 - Bug fixes in AMJUEL and AMMONX data files
+- Added LGEXIT variable in OpenMP treatment for error handling
+- Corrected location of barrier in BROADCAST routine
 - Added some missing USE_OPENMP pragmas
 - Corrected some reading formats
 - Corrected some comments
