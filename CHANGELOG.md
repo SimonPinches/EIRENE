@@ -24,6 +24,7 @@
 - Bug fixes in AMJUEL and AMMONX data files
 - Added LGEXIT variable in OpenMP treatment for error handling
 - Corrected location of barrier in BROADCAST routine
+- Bug fix due to typo in SGNAL routine
 - Added some missing USE_OPENMP pragmas
 - Corrected pragmas in CMake version file
 - Added definition of MPI_VERSION pragma in CMakeLists.txt
