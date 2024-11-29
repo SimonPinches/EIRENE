@@ -29,6 +29,7 @@
 - Corrected pragmas in CMake version file
 - Added definition of MPI_VERSION pragma in CMakeLists.txt
 - Corrected procedure names in IOUSR interface files
+- Removed a premature RETURN in WRPLAM_LONG
 - Corrected some reading formats
 - Corrected some comments
 - Alignment corrections

@@ -274,7 +274,6 @@ cdr     DEINTF...
         VYINTF(1:NPLSV,1:NRAD)  = PTL(NADDP(6)+1:NADDP(7),1:NRAD)
         VZINTF(1:NPLSV,1:NRAD)  = PTL(NADDP(7)+1:NADDP(8),1:NRAD)
         DEALLOCATE (PTL)
-        RETURN
         if (trcfle) then
           write (iunout,*) 'set pointers to plasma_backgrnd fields'
           write (iunout,*) 'called rplam_long. But iflg=10'
