@@ -122,7 +122,7 @@ C
       ENDDO
 
       DO I=1,NASMOD
-        READ (IUNIN,'(5I6)') NAS,IPUNKT,NSSIR,NSSIP
+        READ (IUNIN,'(4I6)') NAS,IPUNKT,NSSIR,NSSIP
         IF (IPUNKT.EQ.1) THEN
           P1(1,NAS)=XPOL(NSSIR,NSSIP)
           P1(2,NAS)=YPOL(NSSIR,NSSIP)
@@ -138,7 +138,7 @@ C
       ENDDO
 
       DO I = 1, NORMOD
-        READ (IUNIN,'(5I6)') IDIR,IR,IP
+        READ (IUNIN,'(3I6)') IDIR,IR,IP
         IF (IDIR == 1) THEN
           PLNX(IR,IP) = -PLNX(IR,IP)
           PLNY(IR,IP) = -PLNY(IR,IP)

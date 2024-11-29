@@ -278,7 +278,8 @@ C
      I           IT, IN, IP, IP1, IR, IR1, IPRT, NTGPRI,
      I           ICOADD, ICOSCR, ICOG, ICOU, IDUMMY, IERROR,
      I           ITRI, NBAR, NUMSI, NBARSI,
-     I           IUNIN_SAVE, IUSROUT, JS
+     I           IUNIN_SAVE, IUSROUT
+      INTEGER :: JS
       REAL(DP) :: PX, PY, TX, TY, VS, VT,
      R            VSX, VSY, VTX, VTY, VPRO, XMUE, TEST,
      R            ALE, ALW, ALN, ALS, ALX, AL
@@ -1429,7 +1430,10 @@ cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. Wha
        IF (IMF /= 0) MSHFRM=IMF
 
 cdr added in april 2015:
-c  flags for orientation of radial (not in use), poloidal and toroidal magnetic field components
+c  flags for orientation of radial, poloidal and toroidal magnetic field components
+c  currently: only btor is used, and only in the vacuum region outside the B2.5 grid
+cdr everywhere else we now have the full BRADB,BPOLB and BTORB tallies (and the pitch angle
+cdr tally RRB should be redundant?
        brad = 1._dp
        if (ibrad < 0) brad = -brad
        bpol = 1._dp

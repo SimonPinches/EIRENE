@@ -2112,7 +2112,7 @@ c  default: only for bulk ions
      .           TDMPAR(JPLS)%TDM%A_CORONA
 cdr  currently only one single contribution allowed. NRE=1 for CORONA model
 cdr         NRE=TDMPAR(JPLS)%TDM%NRE = 1
-            IRC= TDMPAR(JPLS)%TDM%IRC(1)
+            IRC = TDMPAR(JPLS)%TDM%IRC(1)
             IF (.NOT.REACDAT(IRC)%LRTC) THEN
               WRITE (iunout,*)
      .          ' WRONG REACTION SPECIFIED FOR CORONA MODEL'

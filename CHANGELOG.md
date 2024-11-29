@@ -15,6 +15,20 @@
 
 ---
 
+## X. Bonnin - feature/SOLPS_push_bug-fixes - c3b449d6e828da5e17a0d88cf981f7fbd2d84b8c
+
+#### Based on develop - bbf7bd63111955e513bedd25188e3a008e9b4928
+
+** Changes **
+
+- Bug fixes in AMJUEL and AMMONX data files
+- Added some missing USE_OPENMP pragmas
+- Corrected some reading formats
+- Corrected some comments
+- Alignment corrections
+
+---
+
 ## X. Bonnin - feature/SOLPS_push_clean-up - 781960eea7b56a886fccecd4ad98e4002fbc5292
 
 #### Based on develop - 1138b60ed32d3337e392f716ece854bfc89675a3
@@ -78,7 +92,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Generalized usaged of FORT and FORT_LC variables
 - Introduced usage of EIRENE_OPENFILE in all interface routines
 - Avoiding obsolescent shared labels END DO statements, replaced with CONTINUE
-- Added some _DP type declarations for floating-point constants
+- Added _DP type declarations for floating-point constants
 - Added type assignments when using integers inside floating-point operations
 - Added TRIM operations and character ranges to avoid string length overflows
 - Added USE_OPENMP and USE_EXT_OPENMP pragmas to avoid compiler warnings from !$OMP instructions when compiling without OpenMP
