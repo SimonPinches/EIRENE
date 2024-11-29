@@ -11,7 +11,7 @@ include:
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
 # DMH/uppercase_extensions
-    SAMPLE_CASE_VERSION: d32440e0aaa550ab6baa08c18d7e66986dd63b77
+    SAMPLE_CASE_VERSION: 2e7aeb793f5c54d67c350525a2007231a1b0c863
 # eirene_unified_bullseye
 #   SAMPLE_CASE_VERSION: 313c4eef6edbf8af7c398886c47ef4a9eddf0f21
 # OpenMP test cases, at present these exist in their own branch created from the
