@@ -300,7 +300,7 @@ C
 cdr  here we deal with input tallies (and gradients thereof)
 cdr  ITL = IABS(JTAL)
 cdr  physical species index range: 1:NF, independent of possible indirect addressing
-              NF=NFRSTP(ITL)
+              NF=NFSTPI(ITL)
               VECTOR(:,ICURV)=0.
 
 !  INPUT TALLY SWITCHED OFF ?
