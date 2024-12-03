@@ -193,7 +193,7 @@ module eirmod_balanced_strategy
     use eirmod_mpi
     !> We will define the following parameters:
     integer, intent(inout), dimension(:) :: nparts_loc
-    integer, intent(inout), dimension(0:) :: npestr
+    integer, intent(inout), dimension(:) :: npestr
     integer, intent(inout), dimension(:) :: stratum_leader
     logical, intent(inout), dimension(:,0:) :: procforstra
 
