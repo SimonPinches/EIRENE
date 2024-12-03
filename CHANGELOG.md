@@ -22,6 +22,7 @@
 ** Changes **
 
 - Bug fixes in AMJUEL and AMMONX data files
+- Bug fixes for JSON linking and I/O in SOLPS cases
 - Added LGEXIT variable in OpenMP treatment for error handling
 - Corrected array bounds for data read loop in couple_B2 interface
 - Corrected location of barrier in BROADCAST routine

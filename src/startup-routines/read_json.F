@@ -323,6 +323,7 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
           IF (IFILE <= NDBNAMES) THEN
             dbhandle(ifile) = trim(cdbh)
             dbfname(ifile) = trim(cdbf)
+            dbfname_in(ifile) = trim(cdbf)
             call eirene_filepath_usr(cdbf,dbfname(ifile),
      .                               1,len_trim(cdbf))
             ldbread(ifile) = .true.
@@ -4644,49 +4645,51 @@ cdr  check if such emissivity tallies are defined: search for 'DEFINE LINES' in 
 !  read definition of emissivity lines
       call json%get(p,'KEYWORD',key,found)
       if (key == 'DEFINE_LINES') then
-
-cdr read volumetric emission profile data
-        LDEF_LINES = .TRUE.
         IADV = NADVI
         NLEMIS = .TRUE.
 
         call json%get(p,'NUM_LINES',num_lines,found)
         call json%get(p,'MOD_ADDV',mod_addv,found)
+      end if
 
-        IF (NUM_LINES > 0) THEN
-          ALLOCATE (EMIS_LINES(NUM_LINES))
-          EMIS_LINES%LINE_NAME = REPEAT(' ',80)
-          EMIS_LINES%NUM_COMPO = 0
+!   Option 1: Non-zero number of lines are defined
+      if ((key == 'DEFINE_LINES').and.(num_lines > 0)) then
+cdr read volumetric emission profile data
+        LDEF_LINES = .TRUE.
 
-          call json%get_child(p,'LINES',plines,found)
-          call json%info(plines,n_children=nlines)
-          if (nlines /= num_lines) then
-            write (iunout,*)
-     .             ' NUMBER OF EMISSIVITY LINES DOES',
-     .             ' NOT MATCH THE NUMBER FOUND IN FILE '
-            write (iunout,*) 'NUM_LINES = ',num_lines
-            write (iunout,*) 'NLINE =   ',nlines
-            call eirene_exit_own(1)
-          end if
+        ALLOCATE (EMIS_LINES(NUM_LINES))
+        EMIS_LINES%LINE_NAME = REPEAT(' ',80)
+        EMIS_LINES%NUM_COMPO = 0
 
-          WRITE (IUNOUT,*) 'FURTHER EMISSIVITY PROFILES SET:'
-          do iline = 1, num_lines
-            call json%get_child(plines,iline,pline,found)
+        call json%get_child(p,'LINES',plines,found)
+        call json%info(plines,n_children=nlines)
+        if (nlines /= num_lines) then
+          write (iunout,*)
+     .            ' NUMBER OF EMISSIVITY LINES DOES',
+     .            ' NOT MATCH THE NUMBER FOUND IN FILE '
+          write (iunout,*) 'NUM_LINES = ',num_lines
+          write (iunout,*) 'NLINE =   ',nlines
+          call eirene_exit_own(1)
+        end if
+
+        WRITE (IUNOUT,*) 'FURTHER EMISSIVITY PROFILES SET:'
+        do iline = 1, num_lines
+          call json%get_child(plines,iline,pline,found)
 cdr  further below, a particular emission profile is identified
 cdr  (e.g. for a chord ichori) either by its name  (and ch_line%...)
 cdr  or, if that fails, by its energy (and EMIN1 flag)
-            call json%get(pline,'LINE_NAME',txt,found)
-            EMIS_LINES(ILINE)%LINE_NAME = txt
-            deallocate(txt)
-            write (iunout,*) trim(EMIS_LINES(ILINE)%LINE_NAME)
+          call json%get(pline,'LINE_NAME',txt,found)
+          EMIS_LINES(ILINE)%LINE_NAME = txt
+          deallocate(txt)
+          write (iunout,*) trim(EMIS_LINES(ILINE)%LINE_NAME)
 
-            call json%get(pline,'NUM_COMPO',num_compo,found)
-            call json%get(pline,'EINSTEIN',
-     .                    EMIS_LINES(ILINE)%EINSTEIN,found)
-            call json%get(pline,'TRANS_EN',
-     .                    EMIS_LINES(ILINE)%TRANS_EN,found)
+          call json%get(pline,'NUM_COMPO',num_compo,found)
+          call json%get(pline,'EINSTEIN',
+     .                  EMIS_LINES(ILINE)%EINSTEIN,found)
+          call json%get(pline,'TRANS_EN',
+     .                  EMIS_LINES(ILINE)%TRANS_EN,found)
 C
-            EMIS_LINES(ILINE)%NUM_COMPO = NUM_COMPO
+          EMIS_LINES(ILINE)%NUM_COMPO = NUM_COMPO
 
 c  Deal with ADDV storage for sum over components.
 c  The storage on ADDV for individual components is done below (JCOMP loop).
@@ -4695,125 +4698,127 @@ c  if mod_addv=0: reset storage needs for each line
 c                 back to nadvi+1..nadvi+num_compo+1,
 c                 i.e. addv tallies are only saved for one line at a time.
 cdr         IF (MOD_ADDV == 0) IADV = NADVI + 1
-            IF (MOD_ADDV == 0) IADV = NADVI
+          IF (MOD_ADDV == 0) IADV = NADVI
 
-            EMIS_LINES(ILINE)%IADV_TOTAL = IADV + NUM_COMPO+1
+          EMIS_LINES(ILINE)%IADV_TOTAL = IADV + NUM_COMPO+1
 
-            IF (NUM_COMPO > 0) THEN
+          IF (NUM_COMPO > 0) THEN
 
-              ALLOCATE (EMIS_LINES(ILINE)%COMPO(NUM_COMPO))
-              call json%get_child(pline,'COMPONENTS',pcomps,found)
-              call json%info(pcomps,n_children=ncomps)
-              if (ncomps /= num_compo) then
-                write (iunout,*)
-     .             ' NUMBER OF COMPONENTS OF EMISSIVITY LINE DOES',
-     .             ' NOT MATCH THE NUMBER FOUND IN FILE '
-                write (iunout,*) 'NUM_COMPO = ',num_compo
-                write (iunout,*) 'NCOMPS =   ',ncomps
-                call eirene_exit_own(1)
-              end if
+            ALLOCATE (EMIS_LINES(ILINE)%COMPO(NUM_COMPO))
+            call json%get_child(pline,'COMPONENTS',pcomps,found)
+            call json%info(pcomps,n_children=ncomps)
+            if (ncomps /= num_compo) then
+              write (iunout,*)
+     .            ' NUMBER OF COMPONENTS OF EMISSIVITY LINE DOES',
+     .            ' NOT MATCH THE NUMBER FOUND IN FILE '
+              write (iunout,*) 'NUM_COMPO = ',num_compo
+              write (iunout,*) 'NCOMPS =   ',ncomps
+              call eirene_exit_own(1)
+            end if
 
-              do jcomp = 1, num_compo
-                call json%get_child(pcomps,jcomp,pcomp,found)
-                call json%get(pcomp,'COMPO_NAME',txt,found)
-                EMIS_LINES(ILINE)%COMPO(JCOMP)%COMPO_NAME = txt
-                deallocate(txt)
-                call json%get(pcomp,'NUM_CONTRIB',num_contrib,found)
-                call json%get(pcomp,'COMPO_IRC',irc,found)
-                EMIS_LINES(ILINE)%COMPO(JCOMP)%NUM_CONTRIB = NUM_CONTRIB
-                EMIS_LINES(ILINE)%COMPO(JCOMP)%IRC = IRC
-                ALLOCATE
-     .           (EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(NUM_CONTRIB))
+            do jcomp = 1, num_compo
+              call json%get_child(pcomps,jcomp,pcomp,found)
+              call json%get(pcomp,'COMPO_NAME',txt,found)
+              EMIS_LINES(ILINE)%COMPO(JCOMP)%COMPO_NAME = txt
+              deallocate(txt)
+              call json%get(pcomp,'NUM_CONTRIB',num_contrib,found)
+              call json%get(pcomp,'COMPO_IRC',irc,found)
+              EMIS_LINES(ILINE)%COMPO(JCOMP)%NUM_CONTRIB = NUM_CONTRIB
+              EMIS_LINES(ILINE)%COMPO(JCOMP)%IRC = IRC
+              ALLOCATE
+     .          (EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(NUM_CONTRIB))
 cdr  for each new component: store emission profile on addv(iadv)
-                IADV = IADV + 1
-                EMIS_LINES(ILINE)%COMPO(JCOMP)%IADV = IADV
+              IADV = IADV + 1
+              EMIS_LINES(ILINE)%COMPO(JCOMP)%IADV = IADV
 
 cdr  now we dwell on the contributions:
 cdr  e.g. different isotopes,... but same rates, same population factors in each component
-                call json%get_child(pcomp,'CONTRIBUTIONS',pconts,found)
-                call json%info(pconts,n_children=nconts)
-                if (nconts /= num_contrib) then
-                  write (iunout,*)
-     .             ' NUMBER OF CONTRIBUTIONS TO COMPONENT OF EMIS ',
-     .             ' LINE DOES NOT MATCH THE NUMBER FOUND IN FILE '
-                  write (iunout,*) 'NUM_CONTRIB = ',num_contrib
-                  write (iunout,*) 'NCONTS =   ',nconts
-                  call eirene_exit_own(1)
-                end if
+              call json%get_child(pcomp,'CONTRIBUTIONS',pconts,found)
+              call json%info(pconts,n_children=nconts)
+              if (nconts /= num_contrib) then
+                write (iunout,*)
+     .            ' NUMBER OF CONTRIBUTIONS TO COMPONENT OF EMIS ',
+     .            ' LINE DOES NOT MATCH THE NUMBER FOUND IN FILE '
+                write (iunout,*) 'NUM_CONTRIB = ',num_contrib
+                write (iunout,*) 'NCONTS =   ',nconts
+                call eirene_exit_own(1)
+              end if
 
-                do kcontr = 1, num_contrib
-                  CNT%ISP = -1
-                  CNT%ITP = -1
-                  CNT%IRATIO = 0
-                  CNT%IRC_RAT = 0
-                  CNT%ISP_RAT = -1
-                  CNT%ITP_RAT = -1
-                  call json%get_child(pconts,kcontr,pcont,found)
-                  call json%get(pcont,'ISP',cnt%isp,found)
-                  call json%get(pcont,'ITP',cnt%itp,found)
-                  call json%get(pcont,'IRATIO',cnt%iratio,found)
+              do kcontr = 1, num_contrib
+                CNT%ISP = -1
+                CNT%ITP = -1
+                CNT%IRATIO = 0
+                CNT%IRC_RAT = 0
+                CNT%ISP_RAT = -1
+                CNT%ITP_RAT = -1
+                call json%get_child(pconts,kcontr,pcont,found)
+                call json%get(pcont,'ISP',cnt%isp,found)
+                call json%get(pcont,'ITP',cnt%itp,found)
+                call json%get(pcont,'IRATIO',cnt%iratio,found)
 
 cdr  read QSS ratio between two densities, e.g.:  H2+/H2, if nfoli(H2+)=-1.
 cdr  If density n_B of parent state (e.g. H2+) for upper level is not amongst the densities
 cdr  known in this run,
 cdr  but is in an (QSS) equilibrium (nfol<0) with such a density n_A (e.g. H2) instead.
-                  IF (CNT%IRATIO > 0) THEN
+                IF (CNT%IRATIO > 0) THEN
 cdr  read QSS density ratio n_B/n_A(Te,ne). Then the
 cdr  upper state population is n_B *pop_B(upper)= n_A * ratio * pop_B(upper)
-                    call json%get_child(pcont,'RATIOS',prats,found)
-                    call json%info(prats,n_children=nrats)
-                    if (nrats /= cnt%iratio) then
-                      write (iunout,*)
-     .                     ' NUMBER OF RATIOS IN CONTRIBUTION ',
-     .                     ' DOES NOT MATCH THE NUMBER FOUND IN FILE '
-                      write (iunout,*) 'IRATIO = ',cnt%iratio
-                      write (iunout,*) 'NRATS =   ',nrats
-                      call eirene_exit_own(1)
-                    end if
-                    do irt = 1, cnt%iratio
-                      call json%get_child(prats,irt,prat,found)
-                      call json%get(prat,'IRC_RAT',
-     .                              cnt%irc_rat(irt),found)
+                  call json%get_child(pcont,'RATIOS',prats,found)
+                  call json%info(prats,n_children=nrats)
+                  if (nrats /= cnt%iratio) then
+                    write (iunout,*)
+     .                    ' NUMBER OF RATIOS IN CONTRIBUTION ',
+     .                    ' DOES NOT MATCH THE NUMBER FOUND IN FILE '
+                    write (iunout,*) 'IRATIO = ',cnt%iratio
+                    write (iunout,*) 'NRATS =   ',nrats
+                    call eirene_exit_own(1)
+                  end if
+                  do irt = 1, cnt%iratio
+                    call json%get_child(prats,irt,prat,found)
+                    call json%get(prat,'IRC_RAT',
+     .                            cnt%irc_rat(irt),found)
 cdr   Read a second density ratio.
 cdr   It may turn out that, after reading the first density ratio,
 cdr   that now the new parent density n_A is still not amongst the density
 cdr   known to eirene in this run. Then read a second density ratio.
 cdr   Example:  n_B=n_H3+, ratio1=nH3+/nH2+. I.e. n_A =nH2+.
 cdr   See routine emissivity.f for further explanations.
-                      if (irt == 2) then
-                        call json%get(prat,'ISP_RAT',ihelp,found)
-                        cnt%isp_rat(1:2) = ihelp(1:2)
-                        deallocate(ihelp)
-                        call json%get(prat,'ITP_RAT',ihelp,found)
-                        cnt%itp_rat(1:2) = ihelp(1:2)
-                        deallocate(ihelp)
-                      END IF
-                      nullify(prat)
-                    end do      ! irt
-                    nullify(prats)
-                  END IF
+                    if (irt == 2) then
+                      call json%get(prat,'ISP_RAT',ihelp,found)
+                      cnt%isp_rat(1:2) = ihelp(1:2)
+                      deallocate(ihelp)
+                      call json%get(prat,'ITP_RAT',ihelp,found)
+                      cnt%itp_rat(1:2) = ihelp(1:2)
+                      deallocate(ihelp)
+                    END IF
+                    nullify(prat)
+                  end do      ! irt
+                  nullify(prats)
+                END IF
 
-                  EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(KCONTR) = CNT
-                  nullify(pcont)
-                end do          ! kcontr
+                EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(KCONTR) = CNT
+                nullify(pcont)
+              end do          ! kcontr
 
-                nullify(pconts)
-                nullify(pcomp)
-              end do            ! jcomp
+              nullify(pconts)
+              nullify(pcomp)
+            end do            ! jcomp
 
 c  increase counter iadv, for next line, because sum over comp.
 c                         is stored on num_compo+1
-              IADV=IADV+1
-              nullify(pcomps)
-            end if
+            IADV=IADV+1
+            nullify(pcomps)
+          end if
 
-            nullify(pline)
-          end do                ! iline
-          nullify(plines)
+          nullify(pline)
+        end do                ! iline
+        nullify(plines)
 
-        END IF
-
-      elseif (key == 'DEFAULT_LINES') then
+!   Option 2: Requesting default lines, there are two ways:
+!       - DEFAULT_LINES
+!       - DEFINE_LINES && NUM_LINES=0  (backward compatibility)
+      elseif ((key == 'DEFAULT_LINES')
+     .  .or.(key == 'DEFINE_LINES').and.(num_lines <= 0)) then
 
         nlemis = .true.
 

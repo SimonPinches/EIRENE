@@ -354,6 +354,7 @@ c   currently: 16 types of files are recognized
           IANF = I2+I3+VERIFY(ZEILE(I2+I3:),' ')-1
           IEND = IANF+SCAN(ZEILE(IANF+1:),' ')-1
           DBFNAME(IFILE)(1:IEND-IANF+1) = ZEILE(IANF:IEND)
+          DBFNAME_IN(IFILE) = DBFNAME(IFILE)
           CALL EIRENE_FILEPATH_USR(ZEILE,DBFNAME(IFILE),IANF,IEND)
           LDBREAD(IFILE) = .TRUE.
           WRITE (IUNOUT,*) 'PATH SET FOR FILE ',TRIM(HANDLE)
@@ -3738,16 +3739,20 @@ cdr  careful: slightly different from find_param
 
       IF (INDEX(ULINE,'DEFINE_LINES') > 0) THEN
 cdr read volumetric emission profile data
-        LDEF_LINES = .TRUE.
         IADV = NADVI
         NLEMIS = .TRUE.
         READ (IUNIN,6666) NUM_LINES, MOD_ADDV
-        IF (NUM_LINES > 0) THEN
-          ALLOCATE (EMIS_LINES(NUM_LINES))
-          EMIS_LINES%LINE_NAME = REPEAT(' ',80)
-          EMIS_LINES%NUM_COMPO = 0
-          WRITE (IUNOUT,*) 'FURTHER EMISSIVITY PROFILES SET:'
-        END IF
+      END IF
+
+!   Option 1: Non-zero number of lines are defined
+      IF ((INDEX(ULINE,'DEFINE_LINES') > 0).and.(NUM_LINES > 0)) THEN
+        LDEF_LINES = .TRUE.
+
+        ALLOCATE (EMIS_LINES(NUM_LINES))
+        EMIS_LINES%LINE_NAME = REPEAT(' ',80)
+        EMIS_LINES%NUM_COMPO = 0
+        WRITE (IUNOUT,*) 'FURTHER EMISSIVITY PROFILES SET:'
+
         DO ILINE=1, NUM_LINES
           READ (IUNIN,'(A80)') ZEILE
           DO WHILE (ZEILE(1:1) == '*')
@@ -3838,7 +3843,12 @@ c                         is stored on num_compo+1
           READ (IUNIN,'(A80)') ZEILE
         END DO
         IREAD=1
-      ELSEIF (INDEX(ULINE,'DEFAULT_LINES') > 0) THEN
+
+!   Option 2: Requesting default lines, there are two ways:
+!       - DEFAULT_LINES
+!       - DEFINE_LINES && NUM_LINES=0  (backward compatibility)
+      ELSEIF ((INDEX(ULINE,'DEFAULT_LINES') > 0)
+     .  .or.(INDEX(ULINE,'DEFINE_LINES') > 0).and.(NUM_LINES <= 0)) THEN
         IREAD=0
         NLEMIS=.TRUE.
         READ (IUNIN,'(A80)') ZEILE

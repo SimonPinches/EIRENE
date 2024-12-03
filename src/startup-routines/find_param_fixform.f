@@ -68,7 +68,8 @@ C
      .                        INDPRO2_SAVE,
      .                        EIRENE_INIT_CINIT
       USE EIRMOD_JSON, ONLY : NOPTIM_IN, NRTAL_IN, NSMSTRA_IN,
-     .                        INDPRO_IN, NSTRAI_IN, NTIME_IN
+     .                        INDPRO_IN, NSTRAI_IN, NTIME_IN,
+     .                        DBFNAME_IN
       IMPLICIT NONE
 
       INTEGER :: INDGRD(3), INDPRO(12), IDUM(12)
@@ -238,6 +239,7 @@ c   currently: 16 types of files are recognized
             IEND = IANF+SCAN(ZEILE(IANF+1:),' ')-1
 
             DBFNAME(IFILE)(1:IEND-IANF+1) = ZEILE(IANF:IEND)
+            DBFNAME_IN(IFILE) = DBFNAME(IFILE)
             CALL EIRENE_FILEPATH_USR(ZEILE,DBFNAME(IFILE),IANF,IEND)
 
             WRITE (IUNOUT,*) 'PATH SET FOR FILE ',TRIM(HANDLE)

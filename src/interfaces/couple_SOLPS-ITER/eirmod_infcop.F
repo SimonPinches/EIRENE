@@ -1713,6 +1713,7 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
          call eirene_exit_own(1)
        end if
 
+       NFLB=0
        NATMA=0
        DO IPL=1,NPLSI
          call json%get_child(pflds,ipl,pfld)
@@ -1724,6 +1725,8 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
          call json%get(pfld,'LKINDP',l,found)
          if (found) then
            if(iflb(ipl).gt.0) then
+             lkindp(ipl)=l
+             NFLB=NFLB+1
              if(lkindp(ipl).le.0) then
                k=NINT(BMASS(IPL))
                l=0

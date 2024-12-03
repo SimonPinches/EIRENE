@@ -5,6 +5,7 @@
       USE EIRMOD_PARMMOD, ONLY: NLIM, NLIMPS,
      .                          NATM, NMOL, NION, NPHOT, NPLS, NSPZ,
      .                          NSTRA
+      USE EIRMOD_CINIT, ONLY: NDBNAMES
 !pb      USE EIRMOD_COMPRT, ONLY: IUNOUT
 
       use json_module           !IGNORE
@@ -87,6 +88,9 @@
 
       REAl(DP), PUBLIC, ALLOCATABLE, SAVE ::
      R DATD_IN(:), DMLD_IN(:), DIOD_IN(:), DPLD_IN(:), DPHD_IN(:)
+
+! storing original DBFNAME paths for json output
+      CHARACTER(400), PUBLIC, SAVE :: DBFNAME_IN(NDBNAMES)
 
 ! storing original INDPRO data for json output
       INTEGER, PUBLIC, SAVE :: INDPRO_IN(12)
