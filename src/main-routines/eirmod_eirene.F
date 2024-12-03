@@ -191,7 +191,8 @@ c     IUNIN = 1
 #endif
 
 cxpb 04nov16 Going back to having the master PE write to standard output
-      IF (LPE0_TO_STDOUT .AND. (MY_PE == 0)) IUNOUT = 6
+      IF (LPE0_TO_STDOUT .AND.
+     &   (MY_PE == 0 .AND. EIRENE_ITHREAD == 0)) IUNOUT = 6
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP PARALLEL
@@ -210,12 +211,14 @@ cdr  MPI: DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
 #endif
 !pb_open
         if (init_open == 0) then
-          IF (LPE0_TO_STDOUT.AND.(MY_PE == 0)) THEN
+          IF (LPE0_TO_STDOUT.AND.
+     &       (MY_PE == 0.AND.EIRENE_ITHREAD == 0)) THEN
 !PB   nothing to be done: use standard output
           ELSE
             OUTNAME='output.'
             WRITE (OUTNAME(8:),'(I4.4)')
      .       (MY_PE*EIRENE_NTHREADS)+EIRENE_ITHREAD
+            IF (EIRENE_NTHREADS > 1) IUNOUT = IUNOUT + EIRENE_ITHREAD
             inquire(UNIT=IUNOUT,opened=op)
             if (op) then
               init_open = 1
@@ -225,7 +228,6 @@ cdr  MPI: DEFINE OUTPUT STREAMS FOR OTHER PROCESSORS
               ELSE
                 OUTPOS='ASIS'
               END IF
-              IF (EIRENE_NTHREADS > 1) IUNOUT = IUNOUT + EIRENE_ITHREAD
               CALL EIRENE_OPENFILE (IUNOUT, FILE=OUTNAME,
      .          ACCESS='SEQUENTIAL', FORM='FORMATTED', POSITION=OUTPOS)
             end if
@@ -770,6 +772,7 @@ csw
 !$OMP PARALLEL
 #endif
         CLOSE (UNIT=IUNOUT)
+        init_open = 0
 #if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
 !$OMP END PARALLEL
 #endif
