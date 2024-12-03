@@ -3476,8 +3476,12 @@ C
           TE=TESTEP(ITARG,IG)
           CUR=0.
           GAMMA=0.
-          ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,ZI,GAMMA,CUR,
+          IF (SHSTEP(ITARG,IG).NE.0.0_DP) THEN
+            ESHT(ITARG,IG)=SHSTEP(ITARG,IG)*TE
+          ELSE
+            ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,ZI,GAMMA,CUR,
      .                         NPLSI,-ITARG)
+          ENDIF
         ELSE IF (NEM == 9) THEN
           IF (IGSTEP(ITARG,IG).GT.200000) THEN
             NPES=IGSTEP(ITARG,IG)-200000

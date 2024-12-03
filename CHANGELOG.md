@@ -27,6 +27,7 @@
 - Corrected array bounds for data read loop in couple_B2 interface
 - Corrected location of barrier in BROADCAST routine
 - Bug fix due to typo in SGNAL routine + associated correction to ITER CI serial test cases
+- Corrected printout of ESHEATH in SOLPS-ITER cases
 - Added some missing USE_OPENMP pragmas
 - Corrected pragmas in CMake version file
 - Added definition of MPI_VERSION pragma in CMakeLists.txt
