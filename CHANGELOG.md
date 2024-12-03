@@ -29,6 +29,7 @@
 - Corrected location of barrier in BROADCAST routine
 - Changed handling of electromagnetic field input tally flags
 - Added array size check in EIRMOD_COUTAU
+- Removed NLSRF condition to calls to EIRENE_UPSUSR and EIRENE_UPDATE_SPECTRUM in EIRMOD_LOCATE
 - Bug fix due to typo in SGNAL routine + associated correction to ITER CI serial test cases
 - Bug fixes for species-specific rescaling scheme
 - Corrected printout of ESHEATH in SOLPS-ITER cases
