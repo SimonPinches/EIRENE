@@ -233,7 +233,7 @@ cdr This perfectly cancels the source rate. This is an "idle" Monte Carlo partic
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-              PPHPHT2(IPHOT,IPHOT)=PPHPHT2(IPHOT,IPHOT)-WEIGHT
+              PPHPHT2(IPHOT,IPHOT)=PPHPHT2(IPHOT,IPHOT)-WTRSIG
               LMETSP2(1:NPHOT,0:NPHOT) => LMETSP(NTS_IPH+1:NTS_PHPH)
               LMETSP2(IPHOT,0)=.TRUE.
               LMETSP2(IPHOT,IPHOT)=.TRUE.

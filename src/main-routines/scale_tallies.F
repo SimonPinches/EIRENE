@@ -156,7 +156,7 @@ c  atomic surface tallies
               IF (NLSPCSCL) THEN
                 PRFMAT2(1:NATM,LB_MOL:NMOL) => PRFMAT(:,J)
                 PRFMAT2(IATM,1:NMOLI) = PRFMAT2(IATM,1:NMOLI)*
-     .                                  FATM(1:NMOLI)
+     .                                  FMOL(1:NMOLI)
                 PRFMAT(IATM,J) = SUM(PRFMAT2(IATM,1:NMOLI))
               ELSE
                 PRFMAT(IATM,J)=PRFMAT(IATM,J)*FMOL(0)

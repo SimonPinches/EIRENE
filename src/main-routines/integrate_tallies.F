@@ -653,7 +653,7 @@ cdr test ion particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PPHIO(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_PHOT) THEN
-            PPHIOI2(0:NION,0:NION) => PPHIOI(:,ISTRA)
+            PPHIOI2(0:NION,0:NPHOT) => PPHIOI(:,ISTRA)
             DO JPHOT=1,NPHOTI
               IAD=EIRENE_INDIRECT_ADDRESS(IION,JPHOT,NION)
               DUMMY(1:NSBOX_TAL) = PPHIO(IAD,1:NSBOX_TAL)

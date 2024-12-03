@@ -256,7 +256,7 @@ c... from an incident photon
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                PRFPHPHT(IPHOT,IOLD)=PRFPHPHT(IPHOT,IOLD)+WGHTSG
+                PRFPHPHT2(IPHOT,IOLD)=PRFPHPHT2(IPHOT,IOLD)+WGHTSG
                 LMETSPW2(1:NPHOT,0:NPHOT)=>LMETSPW(NTWS_PHI+1:NTWS_PHPH)
                 LMETSPW2(IPHOT,0) = .TRUE.
                 LMETSPW2(IPHOT,IOLD) = .TRUE.
