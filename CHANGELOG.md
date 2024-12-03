@@ -27,6 +27,7 @@
 - Corrected handling of multiple output files for parallel runs
 - Corrected array bounds for data read loop in couple_B2 interface
 - Corrected location of barrier in BROADCAST routine
+- Changed handling of electromagnetic field input tally flags
 - Bug fix due to typo in SGNAL routine + associated correction to ITER CI serial test cases
 - Bug fixes for species-specific rescaling scheme
 - Corrected printout of ESHEATH in SOLPS-ITER cases

@@ -1503,11 +1503,23 @@ cdr  same simplification needed for other vectors...
         ELSE
           NULLIFY(BFINCORNER)
         END IF
+        IF (LBXPSMO) THEN
+          BXPERPCORNER => CORNER_PROFILES(:,NADDCOR(16)+1 )
+        ELSE
+          NULLIFY(BXPERPCORNER)
+        END IF
+        IF (LBYPSMO) THEN
+          BYPERPCORNER => CORNER_PROFILES(:,NADDCOR(17)+1 )
+        ELSE
+          NULLIFY(BYPERPCORNER)
+        END IF
       ELSE
         NULLIFY(BXINCORNER)
         NULLIFY(BYINCORNER)
         NULLIFY(BZINCORNER)
         NULLIFY(BFINCORNER)
+        NULLIFY(BXPERPCORNER)
+        NULLIFY(BYPERPCORNER)
       END IF
 
       IF (LADSMO) THEN
@@ -1532,19 +1544,6 @@ cdr  same simplification needed for other vectors...
         WGHTCORNER => CORNER_PROFILES(:,NADDCOR(15)+1 : NADDCOR(16))
       ELSE
         NULLIFY(WGHTCORNER)
-      END IF
-
-cdr these next two B field tallies should go into LBSMO
-      IF (LBXPSMO) THEN
-        BXPERPCORNER => CORNER_PROFILES(:,NADDCOR(16)+1 )
-      ELSE
-        NULLIFY(BXPERPCORNER)
-      END IF
-
-      IF (LBYPSMO) THEN
-        BYPERPCORNER => CORNER_PROFILES(:,NADDCOR(17)+1 )
-      ELSE
-        NULLIFY(BYPERPCORNER)
       END IF
 
       IF (LESMO) THEN
