@@ -1288,6 +1288,8 @@ C     READ IN THE NUMBER OF TRIANGLES
      &            vydena_aver,vydenm_aver,
      &            vzdena_aver,vzdenm_aver)
 
+      call dealloc_wneutral_fluxes
+
       return
       end subroutine eirene_wneutrals_dealloc
 
