@@ -24,6 +24,7 @@
 - Bug fixes in AMJUEL and AMMONX data files
 - Bug fixes for JSON linking and I/O in SOLPS cases
 - Added LGEXIT variable in OpenMP treatment for error handling
+- Added 0.1 eV minimum value for input electron temperature in PLASMA_DERIV
 - Corrected handling of multiple output files for parallel runs
 - Corrected array bounds for data read loop in couple_B2 interface
 - Corrected location of barrier in BROADCAST routine

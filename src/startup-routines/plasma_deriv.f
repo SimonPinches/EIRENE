@@ -506,7 +506,8 @@ cdr tbd:  avoid division by zero here
 cdr nsbox rather than nsurf? Otherwise this will not work in additional cells
             RCORONA=0.0
             IF (.NOT.LGVAC(IR,NPLS+1)) THEN
-              TEF=TEINL(IR)
+cdr  Te cut off safety at 0.1 eV
+              TEF=max(-2.3_DP,TEINL(IR))
               RCORONA = EIRENE_RATE_COEFF(IRC,IR,TEF,0._DP,.TRUE.,0)
             END IF
 c  now RCORONA contains the excitation rate coefficient (cm**3/s),
