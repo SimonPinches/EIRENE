@@ -550,16 +550,24 @@ C
           write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
           if (nlimpb.ge.nlimps) then
             do I=1,NLIMI
-              do J=1,NOPTIM
-                IGJUM3(J,I)=1
-              end do
+              if (ILIIN(I).LE.0) then
+                write(iunout,*) 'Skipping transparent surface ',I
+              else
+                do J=1,NOPTIM
+                  IGJUM3(J,I)=1
+                end do
+              end if
             end do
           else
             nbits=bit_size(1)
             do I=1,NLIMI
-              do J=1,NOPTIM
-                call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
-              end do
+              if (ILIIN(I).LE.0) then
+                write(iunout,*) 'Skipping transparent surface ',I
+              else
+                do J=1,NOPTIM
+                  call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
+                end do
+              end if
             end do
           endif
         else
@@ -873,16 +881,24 @@ C
             write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
             if (nlimpb.ge.nlimps) then
               do I=1,NLIMI
-                do J=1,NOPTIM
-                  IGJUM3(J,I)=1
-                end do
+                if (ILIIN(I).LE.0) then
+                  write(iunout,*) 'Skipping transparent surface ',I
+                else
+                  do J=1,NOPTIM
+                    IGJUM3(J,I)=1
+                  end do
+                end if
               end do
             else
               nbits=bit_size(1)
               do I=1,NLIMI
-                do J=1,NOPTIM
-                  call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
-                end do
+                if (ILIIN(I).LE.0) then
+                  write(iunout,*) 'Skipping transparent surface ',I
+                else
+                  do J=1,NOPTIM
+                    call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
+                  end do
+                end if
               end do
             endif
           else
