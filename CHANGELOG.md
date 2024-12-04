@@ -32,6 +32,7 @@
 - Corrected charge assignment for bremsstrahlung calculation in EIRENE_SAMVOL
 - Added array size check in EIRMOD_COUTAU
 - Removed NLSRF condition to calls to EIRENE_UPSUSR and EIRENE_UPDATE_SPECTRUM in EIRMOD_LOCATE
+- Bug fix for reading pressure loop feedback data
 - Bug fix due to typo in SGNAL routine + associated correction to ITER CI serial test cases
 - Bug fixes for species-specific rescaling scheme
 - Corrected printout of ESHEATH in SOLPS-ITER cases
