@@ -34,6 +34,7 @@
 - Bug fix due to typo in SGNAL routine + associated correction to ITER CI serial test cases
 - Bug fixes for species-specific rescaling scheme
 - Corrected printout of ESHEATH in SOLPS-ITER cases
+- Removed resetting of IFIRST to 0 after PREPARE step in EIRMOD_UPDLIN
 - Added some missing USE_OPENMP pragmas
 - Corrected pragmas in CMake version file
 - Added definition of MPI_VERSION pragma in CMakeLists.txt

@@ -109,7 +109,6 @@ cdr  ird is coarse grid for scoring
 
       IMPLICIT NONE
 
-      INTEGER, SAVE :: IFIRST=0
       INTEGER :: ICP, ICP2, ICP3, ICP4, ICP5,
      .           ICO, IR, IPL, NMTSP
 
