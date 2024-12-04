@@ -48,6 +48,7 @@
 - Corrected EIRDIAG_NDS size for SOLPS-ITER checking procedures
 - Corrected procedure names in IOUSR interface files
 - Removed a premature RETURN in WRPLAM_LONG
+- Conditioned a gfortran compiler flag to minimal version
 - Corrected some reading formats
 - Corrected some comments
 - Alignment corrections
