@@ -64,9 +64,9 @@ c
         if (my_pe == 0) CALL EIRENE_READ_COUTAU (help, IUNOUT)
         DEALLOCATE (OUTAU)
 
-        CALL MPI_REDUCE(XMCT,help,NSTRA+1,
+        CALL MPI_REDUCE(xmct(0),help(1),1,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier)
-        if (my_pe == 0) XMCT(0:NSTRA) = help(1:NSTRA+1)
+        if (my_pe == 0) XMCT(0) = help(1)
 
         mxdim = (max(NMOLI,NATMI,NIONI,NPHOTI,NPLSI)+1)*(NSTRA+1)
         allocate (lhelp(mxdim))
@@ -106,21 +106,21 @@ c
         if (nsmstra > 0) then
 c  volume-averaged output tallies
 
-        do ir = 1, nrtal
+         do ir = 1, nrtal
           CALL MPI_REDUCE(SMESTV(1:nidv,ir),help,NIDV,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) SMESTV(1:nidv,ir) = help(1:nidv)
-        end do
+         end do
 c  surface-averaged output tallies
 
-        do ir = 1, nlmpgs
+         do ir = 1, nlmpgs
           CALL MPI_REDUCE(SMESTS(1:nids,ir),help,NIDS,
      .                  mpi_double_precision,mpi_sum,0,icomgrp,ier1)
           if (my_pe == 0) SMESTS(1:nids,ir) = help(1:nids)
-        end do
+         end do
 
 c  spectrally resolved output tallies
-        DO I=1,NADSPC
+         DO I=1,NADSPC
           ns = SMESTL(I)%NSPC
           CALL MPI_REDUCE(SMESTL(I)%SPC(0:ns+1),help,
      .                    SMESTL(I)%NSPC+2,
@@ -153,7 +153,7 @@ c  variances of spectrally resolved output tallies
      .                      mpi_double_precision,mpi_sum,0,icomgrp,ier1)
             if (my_pe == 0) SMESTL(I)%GGS = help(1)
           end if
-        END DO
+         END DO
 
         end if
 

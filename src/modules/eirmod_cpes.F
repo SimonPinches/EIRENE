@@ -352,7 +352,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
           CALL EIRENE_LEER(1)
           CALL EIRENE_MASAGE ('Eirene run in serial mode')
           PROCFORSTRA(1:NSTRAI,0) = NLSRON(1:NSTRAI)
-          npestr(1:nstrai)=1
+          npestr(1:nstrai) = 1
           npesta(1:nstrai) = 0
           nparts_loc(1:nstrai) = npts(1:nstrai)
           stratum_leader = 0
