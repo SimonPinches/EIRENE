@@ -17,7 +17,7 @@
 
 ## X. Bonnin - feature/SOLPS_push_bug-fixes - c3b449d6e828da5e17a0d88cf981f7fbd2d84b8c
 
-#### Based on develop - bbf7bd63111955e513bedd25188e3a008e9b4928
+#### Based on V1.1.0 (develop - bbf7bd63111955e513bedd25188e3a008e9b4928)
 
 ** Changes **
 
@@ -193,6 +193,9 @@ New_EIRENE_Version=1.1.0
 ---
 
 ## D. Harting - DMH/fix_ci_version_check - b6e4b2df6d71f4195faa1e23fa1dd79a0f56a5c8
+
+#### Based on Vx.y.z(undefined before this commit - use instead develop - 1138b60ed32d3337e392f716ece854bfc89675a3)
+
 **Changes**
 
 - Stop the CI pipeline if the compliance_check failed
