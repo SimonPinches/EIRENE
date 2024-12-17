@@ -122,7 +122,7 @@ C
       ENDDO
 
       DO I=1,NASMOD
-        READ (IUNIN,'(5I6)') NAS,IPUNKT,NSSIR,NSSIP
+        READ (IUNIN,'(4I6)') NAS,IPUNKT,NSSIR,NSSIP
         IF (IPUNKT.EQ.1) THEN
           P1(1,NAS)=XPOL(NSSIR,NSSIP)
           P1(2,NAS)=YPOL(NSSIR,NSSIP)
@@ -138,7 +138,7 @@ C
       ENDDO
 
       DO I = 1, NORMOD
-        READ (IUNIN,'(5I6)') IDIR,IR,IP
+        READ (IUNIN,'(3I6)') IDIR,IR,IP
         IF (IDIR == 1) THEN
           PLNX(IR,IP) = -PLNX(IR,IP)
           PLNY(IR,IP) = -PLNY(IR,IP)
@@ -550,16 +550,24 @@ C
           write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
           if (nlimpb.ge.nlimps) then
             do I=1,NLIMI
-              do J=1,NOPTIM
-                IGJUM3(J,I)=1
-              end do
+              if (ILIIN(I).LE.0) then
+                write(iunout,*) 'Skipping transparent surface ',I
+              else
+                do J=1,NOPTIM
+                  IGJUM3(J,I)=1
+                end do
+              end if
             end do
           else
             nbits=bit_size(1)
             do I=1,NLIMI
-              do J=1,NOPTIM
-                call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
-              end do
+              if (ILIIN(I).LE.0) then
+                write(iunout,*) 'Skipping transparent surface ',I
+              else
+                do J=1,NOPTIM
+                  call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
+                end do
+              end if
             end do
           endif
         else
@@ -873,16 +881,24 @@ C
             write(iunout,*) 'Setting IGJUM3 to 1 for',NSURF,NLIMI
             if (nlimpb.ge.nlimps) then
               do I=1,NLIMI
-                do J=1,NOPTIM
-                  IGJUM3(J,I)=1
-                end do
+                if (ILIIN(I).LE.0) then
+                  write(iunout,*) 'Skipping transparent surface ',I
+                else
+                  do J=1,NOPTIM
+                    IGJUM3(J,I)=1
+                  end do
+                end if
               end do
             else
               nbits=bit_size(1)
               do I=1,NLIMI
-                do J=1,NOPTIM
-                  call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
-                end do
+                if (ILIIN(I).LE.0) then
+                  write(iunout,*) 'Skipping transparent surface ',I
+                else
+                  do J=1,NOPTIM
+                    call EIRENE_bitset(igjum3,0,noptim,j,i,1,nbits)
+                  end do
+                end if
               end do
             endif
           else

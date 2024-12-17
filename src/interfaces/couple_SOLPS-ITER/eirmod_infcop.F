@@ -278,7 +278,8 @@ C
      I           IT, IN, IP, IP1, IR, IR1, IPRT, NTGPRI,
      I           ICOADD, ICOSCR, ICOG, ICOU, IDUMMY, IERROR,
      I           ITRI, NBAR, NUMSI, NBARSI,
-     I           IUNIN_SAVE, IUSROUT, JS
+     I           IUNIN_SAVE, IUSROUT
+      INTEGER :: JS
       REAL(DP) :: PX, PY, TX, TY, VS, VT,
      R            VSX, VSY, VTX, VTY, VPRO, XMUE, TEST,
      R            ALE, ALW, ALN, ALS, ALX, AL
@@ -1429,7 +1430,10 @@ cdr  imf  flag for different formats of geometry file: linda, sonnet, carre. Wha
        IF (IMF /= 0) MSHFRM=IMF
 
 cdr added in april 2015:
-c  flags for orientation of radial (not in use), poloidal and toroidal magnetic field components
+c  flags for orientation of radial, poloidal and toroidal magnetic field components
+c  currently: only btor is used, and only in the vacuum region outside the B2.5 grid
+cdr everywhere else we now have the full BRADB,BPOLB and BTORB tallies (and the pitch angle
+cdr tally RRB should be redundant?
        brad = 1._dp
        if (ibrad < 0) brad = -brad
        bpol = 1._dp
@@ -1709,6 +1713,7 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
          call eirene_exit_own(1)
        end if
 
+       NFLB=0
        NATMA=0
        DO IPL=1,NPLSI
          call json%get_child(pflds,ipl,pfld)
@@ -1719,7 +1724,9 @@ c  flags for orientation of radial (not in use), poloidal and toroidal magnetic 
          call json%get(pfld,'BMASS',bmass(ipl),found)
          call json%get(pfld,'LKINDP',l,found)
          if (found) then
-           if(iflb(ipl) .gt. 0) then
+           if(iflb(ipl).gt.0) then
+             lkindp(ipl)=l
+             NFLB=NFLB+1
              if(lkindp(ipl).le.0) then
                k=NINT(BMASS(IPL))
                l=0
@@ -3469,8 +3476,12 @@ C
           TE=TESTEP(ITARG,IG)
           CUR=0.
           GAMMA=0.
-          ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,ZI,GAMMA,CUR,
+          IF (SHSTEP(ITARG,IG).NE.0.0_DP) THEN
+            ESHT(ITARG,IG)=SHSTEP(ITARG,IG)*TE
+          ELSE
+            ESHT(ITARG,IG)=EIRENE_SHEATH(TE,DI,VP,ZI,GAMMA,CUR,
      .                         NPLSI,-ITARG)
+          ENDIF
         ELSE IF (NEM == 9) THEN
           IF (IGSTEP(ITARG,IG).GT.200000) THEN
             NPES=IGSTEP(ITARG,IG)-200000

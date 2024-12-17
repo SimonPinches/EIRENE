@@ -348,13 +348,13 @@ C  only: atomic ions. Exclude here, for the time being: molecular ions
           IPLS=JPLS
           ISPZ=NSPAMI+IPLS
           IF (NCHRGP(IPLS) == 0.OR.NPRT(ISPZ).GT.1) CYCLE
-cnh       28.10.2019
-          IF (ZIIN(IPLS,J).NE.ZVAC) THEN
-            Z = ZIIN(IPLS,J)
-          ELSE
-            Z = DBLE(NCHRGP(IPLS))
-          ENDIF
           DO J = 1, NSBOX
+cnh         28.10.2019
+            IF (ZIIN(IPLS,J).NE.ZVAC) THEN
+              Z = ZIIN(IPLS,J)
+            ELSE
+              Z = DBLE(NCHRGP(IPLS))
+            ENDIF
             IF (LGVAC(J,NPLS+1).OR.LGVAC(J,IPLS)) CYCLE
             BREMS=EIRENE_BREMS(TEIN(J),DEIN(J),Z)  ! Watt per ion
             TOT_BREMS(IPLS) = TOT_BREMS(IPLS) +

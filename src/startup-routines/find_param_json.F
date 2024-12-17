@@ -72,9 +72,9 @@ C
      .                         EIRENE_ALLOC_CTRCEI
       USE EIRMOD_CINIT, ONLY: DBFNAME, DBHANDLE, NDBNAMES,
      .                        INDPRO2_SAVE, LDBREAD,
-     .                        EIRENE_INIT_CINIT, MASTER_PATH
+     .                        EIRENE_INIT_CINIT
       USE EIRMOD_COMUSR, ONLY: NMODE, NTIME,
-     .                         NATMI, NMOLI, NPLSI,
+     .                         NPHOTI, NATMI, NMOLI, NIONI, NPLSI,
      .                         NMASSA, NCHARA, NMASSM, NMASSI, NCHARI,
      .                         NCHRGI, LKINDI, COMUSR_FIRST_PASS
       USE EIRMOD_COMSOU, ONLY: NSTRAI
@@ -85,6 +85,7 @@ C
      .                       ldef_time_horizon,nlfem_in, nlplg_in,
      .                       nlpol_in, np2nd_in, nr1st_in, nt3rd_in,
      .                       noptim_in, nrtal_in, nsmstra_in, nstrai_in,
+     .                       dbfname_in,
      .                       eirene_init_input_blocks
 !pgf      use json_module, ck => json_ck
 !cym/cpg, keep using json_ck
@@ -344,11 +345,11 @@ cpg
       class(json_core),intent(inout) :: json
       type(json_value), pointer, intent(inout) :: p
       type(json_value), pointer :: pfile, pdb
-      integer :: i, ifile, nch, i4
-      logical :: found, ex
-      character(400) :: treepath
+      integer :: i, ifile, nch
+      logical :: found
 !pgf      character(kind=CK,len=:), allocatable :: cdbh, cdbf
       character(kind=json_CK,len=:), allocatable :: cdbh, cdbf
+      external :: eirene_filepath_usr
 
       WRITE (iunout,*) '*** 1. DATA FOR OPERATING MODE'
 
@@ -414,26 +415,12 @@ cdr scan for optional CFILE lines: path to external database files
             IF (INDEX(DBHANDLE(IFILE),cdbh) /= 0) EXIT
           END DO
           IF (IFILE <= NDBNAMES) THEN
-cpg         TREEPATH = get_solpstop()
-            TREEPATH = MASTER_PATH
             dbhandle(ifile) = trim(cdbh)
-            IF (INDEX(TREEPATH,' ').NE.1) THEN
-              I4 = SCAN(TREEPATH,' ')-1
-              DBFNAME(IFILE)(1:I4+16) =
-     .          TREEPATH(1:I4)//"/modules/Eirene/"
-              DBFNAME(IFILE) = TRIM(DBFNAME(IFILE))//trim(cdbf)
-              inquire(file=DBFNAME(IFILE),exist=ex)
-              if (.not.ex) then
-                DBFNAME(IFILE) = TRIM(TREEPATH)//'/'//trim(cdbf)
-                I4 = LEN_TRIM(DBFNAME(IFILE))
-                DBFNAME(IFILE)(I4+1:400) =
-     .           REPEAT(' ',400-(I4+1))
-                ldbread(ifile) = .true.
-              end if
-            ELSE
-              dbfname(ifile) = trim(cdbf)
-              ldbread(ifile) = .true.
-            END IF
+            dbfname_in(ifile) = trim(cdbf)
+            dbfname(ifile) = trim(cdbf)
+            call eirene_filepath_usr(cdbf,dbfname(ifile),
+     .                               1,len_trim(cdbf))
+            ldbread(ifile) = .true.
             WRITE (IUNOUT,'(2A)')
      .           'PATH SET FOR FILE ',trim(dbhandle(ifile))
             WRITE (IUNOUT,'(2A)') 'PATH = ',trim(dbfname(ifile))
@@ -631,7 +618,7 @@ C
       type(json_value), pointer, intent(in) :: p
 
       type(json_value), pointer :: species, preac, pspecs, pspc
-      integer :: nreaci, natmi, nmoli, nioni, nphoti
+      integer :: nreaci
       logical :: found
       character(50) :: s1, s2
 
@@ -1077,7 +1064,7 @@ cpb  ascending order starting with 1
       NSTEP = 1
       call json%get(p,'INDSRC',indsrc,found)
       IF (ANY(INDSRC == 6)) THEN
-        DO J=NSTRAI,1,-1
+        DO J=NSTRAI_IN,1,-1
           IF (INDSRC(J) == 6) THEN
             NSTEP = J
             EXIT
@@ -1309,20 +1296,23 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
       if (associated(p)) then
         call json%get(p,'KEYWORD',ckey,lkey)
 
-        if (lkey) then
+      !   if (lkey) then
 !cym type mistmatch here
 !          if (index(ckey,'DEFINE_LINES') == 0) lkey = .false.
-          if (index(ckey,json_ck_'DEFINE_LINES') == 0) lkey = .false.
+      !     if (index(ckey,json_ck_'DEFINE_LINES') == 0) lkey = .false.
 !cym end
-        end if
+      !   end if
 
-        if (lkey) then
+        if (lkey.and.(index(ckey,json_ck_'DEFINE_LINES') > 0)) then
+          NLEMIS = .TRUE.
 !  read emission lines
           call json%get(p,'.NUM_LINES',num_lines,found)
           call json%get(p,'.MOD_ADDV',mod_addv, found)
 
           call json%get_child(p,'LINES',plines,found)
-          call json%get_child(plines,pline)
+          if (associated(plines)) then
+            call json%get_child(plines,pline)
+          end if
 
 !  lines
           do i = 1, num_lines
@@ -1367,6 +1357,8 @@ C  ERGODIC OPTION NEEDS PRINTOUT AT LEAST FROM TIME-HORIZON
           NADV = NADV + NADV_ADD
 !         NREAC = NREAC + LINES
 
+        elseif (lkey.and.(index(ckey,json_ck_'DEFAULT_LINES') > 0)) then
+          NLEMIS = .TRUE.
         end if
 
         WRITE (iunout,*) '*** 12A. DATA FOR LINES OF SIGHT'

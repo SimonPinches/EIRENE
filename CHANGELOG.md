@@ -15,6 +15,46 @@
 
 ---
 
+## X. Bonnin - feature/SOLPS_push_bug-fixes - c3b449d6e828da5e17a0d88cf981f7fbd2d84b8c
+
+#### Based on V1.1.0 (develop - bbf7bd63111955e513bedd25188e3a008e9b4928)
+
+** Changes **
+
+- Bug fixes in AMJUEL and AMMONX data files
+- Bug fixes for JSON linking and I/O in SOLPS cases
+- Added LGEXIT variable in OpenMP treatment for error handling
+- Added 0.1 eV minimum value for input electron temperature in PLASMA_DERIV
+- Corrected handling of multiple output files for parallel runs
+- Corrected array bounds for data read loop in couple_B2 interface
+- Corrected location of barrier in BROADCAST routine
+- Changed handling of electromagnetic field input tally flags
+- Corrected treatment of transparent surfaces in SOLPS-ITER interface
+- Corrected charge assignment for bremsstrahlung calculation in EIRENE_SAMVOL
+- Added array size check in EIRMOD_COUTAU
+- Removed NLSRF condition to calls to EIRENE_UPSUSR and EIRENE_UPDATE_SPECTRUM in EIRMOD_LOCATE
+- Bug fix for reading pressure loop feedback data
+- Bug fix due to typo in SGNAL routine + associated correction to ITER CI serial test cases
+- Bug fixes for species-specific rescaling scheme
+- Corrected printout of ESHEATH in SOLPS-ITER cases
+- Removed resetting of IFIRST to 0 after PREPARE step in EIRMOD_UPDLIN
+- Added some missing USE_OPENMP pragmas
+- Corrected pragmas in CMake version file
+- Added definition of MPI_VERSION pragma in CMakeLists.txt
+- Corrected handling of NPESTA and NPESTR arrays
+- Added broadcasting of NPLRPI in EIRMOD_COMXS
+- Use of NFSTPI instead of NFRSTP in EIRMOD_PLTEIR
+- Added deallocation call of WNEUTRAL_FLUXES
+- Corrected EIRDIAG_NDS size for SOLPS-ITER checking procedures
+- Corrected procedure names in IOUSR interface files
+- Removed a premature RETURN in WRPLAM_LONG
+- Conditioned a gfortran compiler flag to minimal version
+- Corrected some reading formats
+- Corrected some comments
+- Alignment corrections
+
+---
+
 ## X. Bonnin - feature/SOLPS_push_clean-up - 781960eea7b56a886fccecd4ad98e4002fbc5292
 
 #### Based on develop - 1138b60ed32d3337e392f716ece854bfc89675a3
@@ -78,7 +118,7 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Generalized usaged of FORT and FORT_LC variables
 - Introduced usage of EIRENE_OPENFILE in all interface routines
 - Avoiding obsolescent shared labels END DO statements, replaced with CONTINUE
-- Added some _DP type declarations for floating-point constants
+- Added _DP type declarations for floating-point constants
 - Added type assignments when using integers inside floating-point operations
 - Added TRIM operations and character ranges to avoid string length overflows
 - Added USE_OPENMP and USE_EXT_OPENMP pragmas to avoid compiler warnings from !$OMP instructions when compiling without OpenMP
@@ -153,6 +193,9 @@ New_EIRENE_Version=1.1.0
 ---
 
 ## D. Harting - DMH/fix_ci_version_check - b6e4b2df6d71f4195faa1e23fa1dd79a0f56a5c8
+
+#### Based on Vx.y.z(undefined before this commit - use instead develop - 1138b60ed32d3337e392f716ece854bfc89675a3)
+
 **Changes**
 
 - Stop the CI pipeline if the compliance_check failed

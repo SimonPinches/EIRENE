@@ -1288,6 +1288,8 @@ C     READ IN THE NUMBER OF TRIANGLES
      &            vydena_aver,vydenm_aver,
      &            vzdena_aver,vzdenm_aver)
 
+      call dealloc_wneutral_fluxes
+
       return
       end subroutine eirene_wneutrals_dealloc
 
@@ -2332,6 +2334,7 @@ C*******************************************************************************
         VNAME=' EWLDT'
         CALL CHECK_SUM(EWLDT_SUM(IS),EWLDT_RES(IND),VNAME,IS,1)
       END DO
+      IF(eirdiag_nds_ind(NSTS).GT.0) NCL2=NCL2+1
       IF(NCL2.NE.NCL) THEN
         WRITE(IUNOUT,*) "ERROR IN WNEUTRAL_FLUXES: ",
      w                  "NOT ALL ELEMENTS WERE CHECKED"

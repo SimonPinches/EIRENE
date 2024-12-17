@@ -32,9 +32,11 @@
      .          EIRENE_DEALLOCATE_OPENMP
 
       INTEGER, PUBLIC, SAVE :: EIRENE_ITHREAD, EIRENE_NTHREADS
+      LOGICAL, PUBLIC, SAVE :: LGEXIT
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(EIRENE_ITHREAD,EIRENE_NTHREADS)
+!$OMP THREADPRIVATE(LGEXIT)
 #endif
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -77,6 +79,7 @@ c     ym copyin does not work for allocatable pointer arrrays
 #endif
 !HJL Needed to avoid circular dependency with comprt
       NTHREAD = EIRENE_NTHREADS
+      LGEXIT = .FALSE.
 
 #if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
 !$OMP END PARALLEL

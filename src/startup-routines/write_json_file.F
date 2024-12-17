@@ -196,7 +196,7 @@
         if (.not.ldbread(ifile)) cycle
         call json%create_object(var,'')    !name does not matter
         call json%add(var, 'FILE',trim(dbhandle(ifile)))
-        call json%add(var, 'PATH',trim(dbfname(ifile)))
+        call json%add(var, 'PATH',trim(dbfname_in(ifile)))
         call json%add(cfile,var)
         nullify(var)
       end do
@@ -374,7 +374,7 @@
         call json%create_object(add,'ADD_CELLS')
         call json%add(me,add)
         call json%add(add,'NRADD',nradd)
-        call json%add(add,'VOLADD',volcor(1:nradd))
+        call json%add(add,'VOLADD',voladd(1:nradd))
       end if
 
       return

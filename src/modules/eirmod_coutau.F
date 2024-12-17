@@ -1471,6 +1471,11 @@ c     write (iunout,*) 'mapl, NPLSP ',(IE-IA+1)/NSTRAP, NPLSP
       IE = IA - 1 + SIZE(MPHPLI)
       OUTAU(IA:IE) = PACK(MPHPLI,.TRUE.)
 
+      IF (IE /= NOUTA1) THEN
+        WRITE (iunout,*) ' ERROR IN WRITE_COUTAU '
+        WRITE (iunout,*) ' NOUTA1 = ',NOUTA1,' IE = ',IE
+        CALL EIRENE_EXIT_OWN(1)
+      END IF
 
 cdr  surface tallies
       IA = IE + 1

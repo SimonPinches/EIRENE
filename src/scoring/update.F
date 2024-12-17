@@ -1308,19 +1308,25 @@ C                                  AS FOR EL, and neglecting vel. dep. in rate)
 C
             WTRSIG=WTR*SIGVCX(IRCX)
 C  PREVIOUS BULK ION IPLS, NOW LOST.  REMOVE MODULUS OF PARALLEL MOMENTUM
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             MXPL(IPLS,IRD)=MXPL(IPLS,IRD)-WTRSIG*VSIG_PARB(IPLS)
             LMETSP(NSPAMI+IPLS)=.TRUE.
 C  NEW BULK ION IPL
             IF (N1STX(IRCX,1).EQ.4) THEN
               IPL=N1STX(IRCX,2)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               MXPL(IPL,IRD)=MXPL(IPL,IRD)+WTRSIG*VSIG_PARB(IPL)
               LMETSP(NSPAMI+IPL)=.TRUE.
             ENDIF
             IF (N2NDX(IRCX,1).EQ.4) THEN
               IPL=N2NDX(IRCX,2)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               MXPL(IPL,IRD)=MXPL(IPL,IRD)+WTRSIG*PARMOM_0*
      .                      SIGN(1._DP,VAL_PARB(IPL))
               LMETSP(NSPAMI+IPL)=.TRUE.
@@ -1342,7 +1348,9 @@ C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
                 IF (P.GT.0) THEN
                   WTRSIG=WTR*SIGVEI(IREI)*P
 C  NEW BULK ION IPL
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
                   MXPL(IPL,IRD)=MXPL(IPL,IRD)+WTRSIG*PARMOM_0*
      .                          SIGN(1._DP,VAL_PARB(IPL))
                   LMETSP(NSPAMI+IPL)=.TRUE.
@@ -1381,11 +1389,15 @@ C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
 C
             WTRSIG=WTR*SIGVEL(IREL)
 C
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             MXPL(IPLS,IRD)=MXPL(IPLS,IRD)-WTRSIG*VSIG_PARB(IPLS)
             LMETSP(NSPAMI+IPLS)=.TRUE.
             IPL2=IPLS
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
             MXPL(IPL2,IRD)=MXPL(IPL2,IRD)+WTRSIG*PARMOM_0*
      .                     SIGN(1._DP,VAL_PARB(IPL2))
             LMETSP(NSPAMI+IPL2)=.TRUE.

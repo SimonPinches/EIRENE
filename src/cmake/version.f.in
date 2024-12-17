@@ -7,7 +7,7 @@ C> usual output unit.
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
       EXTERNAL :: EIRENE_HEADNG, EIRENE_LEER
-#ifdef B25_Eirene
+#ifdef B25_EIRENE
 #     include <git_version_Eirene.h>
 #endif
 
@@ -16,7 +16,7 @@ C> usual output unit.
 
       CALL EIRENE_HEADNG('GIT REVISION USED IN THIS RUN',29)
 
-#ifdef B25_Eirene
+#ifdef B25_EIRENE
       WRITE(IUNOUT,*) 'HASH:   ', git_version_Eirene
 #else
       WRITE(IUNOUT,*) 'DATE:   ', 
@@ -32,7 +32,7 @@ C> usual output unit.
 
       function get_Eir_hash()
       implicit none
-#ifdef B25_Eirene
+#ifdef B25_EIRENE
       character*32 get_Eir_hash
 #     include <git_version_Eirene.h>
 

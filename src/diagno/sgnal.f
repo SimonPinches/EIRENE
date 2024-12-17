@@ -501,7 +501,7 @@ cdr  Nov. 20:
         ND_5=0
         ND_10=0
         IF (ANY(NCHTAL == 3)) ND_3 = MAX(ND, NPHOTI)
-        IF (ANY(NCLTAL == 5)) ND_5 = MAX(ND, 10)
+        IF (ANY(NCHTAL == 5)) ND_5 = MAX(ND, 10)
         IF (ANY(NCHTAL == 10)) ND_10 = MAX(ND, NSPZ)
         IF (ANY(NCHTAL == 11)) ND = MAX(ND,1)
         IF (ANY(NCHTAL == 12)) ND = MAX(ND,10)

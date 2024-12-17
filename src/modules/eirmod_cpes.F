@@ -299,6 +299,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
           endif
          end do
          ! rank 0 will be the leader for all strata
+         npesta = 0
          stratum_leader = 0
       end subroutine
 
@@ -351,7 +352,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
           CALL EIRENE_LEER(1)
           CALL EIRENE_MASAGE ('Eirene run in serial mode')
           PROCFORSTRA(1:NSTRAI,0) = NLSRON(1:NSTRAI)
-          npestr(1:nstrai)=1
+          npestr(1:nstrai) = 1
           npesta(1:nstrai) = 0
           nparts_loc(1:nstrai) = npts(1:nstrai)
           stratum_leader = 0
@@ -384,6 +385,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
               else
                 call opt_balanced_strategy(nparts_loc, npestr,
      &                stratum_leader, procforstra)
+                npesta = stratum_leader
               endif
             case default
               if (my_pe==0) then

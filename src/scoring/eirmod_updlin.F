@@ -109,7 +109,6 @@ cdr  ird is coarse grid for scoring
 
       IMPLICIT NONE
 
-      INTEGER, SAVE :: IFIRST=0
       INTEGER :: ICP, ICP2, ICP3, ICP4, ICP5,
      .           ICO, IR, IPL, NMTSP
 
@@ -172,13 +171,17 @@ CDR  the present trajectory has visited NCLMT (coarse) scoring cells
 !$OMP CRITICAL
 #endif
              COPV(ICP2+IPL,IR) = 0._DP
-             IF (LMAPL) COPV(ICP2+IPL,IR)=COPV(ICP2+IPL,IR)+MAPL(IPL,IR)
-             IF (LMIPL) COPV(ICP2+IPL,IR)=COPV(ICP2+IPL,IR)+MIPL(IPL,IR)
-             IF (LMMPL) COPV(ICP2+IPL,IR)=COPV(ICP2+IPL,IR)+MMPL(IPL,IR)
+             IF (LMAPL) COPV(ICP2+IPL,IR)=
+     .                  COPV(ICP2+IPL,IR)+MAPL(IPL,IR)
+             IF (LMIPL) COPV(ICP2+IPL,IR)=
+     .                  COPV(ICP2+IPL,IR)+MIPL(IPL,IR)
+             IF (LMMPL) COPV(ICP2+IPL,IR)=
+     .                  COPV(ICP2+IPL,IR)+MMPL(IPL,IR)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
 #endif
-             IF (LMAPL.OR.LMMPL.OR.LMIPL) LMETSP(NMTSP+ICP2+IPL)=.TRUE.
+             IF (LMAPL.OR.LMMPL.OR.LMIPL)
+     .           LMETSP(NMTSP+ICP2+IPL)=.TRUE.
 
            END DO
         END IF

@@ -79,19 +79,24 @@ c flow field
 
       IF (INDPRO(11)/= 9) ZIIN = 0.D0
 c  magnetic field
-      IF (LBXIN .AND. (INDPRO(5) /= 9)) BXIN = 0.D0
-      IF (LBYIN .AND. (INDPRO(5) /= 9)) BYIN = 0.D0
-      IF (LBZIN .AND. (INDPRO(5) /= 9)) BZIN = 0.D0
-      IF (LBFIN .AND. (INDPRO(5) /= 9)) BFIN = 0.D0
+      IF (LBIN .AND. (INDPRO(5) /= 9)) THEN
+        BXIN = 0.D0
+        BYIN = 0.D0
+        BZIN = 0.D0
+        BFIN = 0.D0
+cdr     PSI     : not there yet
+      ENDIF
 
       IF (LADIN .AND. (INDPRO(6) /= 9)) ADIN = 0.D0
 
 c  electric field
-      IF (LEXIN .AND. (INDPRO(7) /= 9)) EXIN = 0.D0
-      IF (LEYIN .AND. (INDPRO(7) /= 9)) EYIN = 0.D0
-      IF (LEZIN .AND. (INDPRO(7) /= 9)) EZIN = 0.D0
-      IF (LEFIN .AND. (INDPRO(7) /= 9)) EFIN = 0.D0
-      IF (LPOT .AND.  (INDPRO(7) /= 9)) POT  = 0.D0
+      IF (LEIN .AND. (INDPRO(7) /= 9)) THEN
+        EXIN = 0.D0
+        EYIN = 0.D0
+        EZIN = 0.D0
+        EFIN = 0.D0
+        POT  = 0.D0
+      ENDIF
 
       ALLOCATE (HELP(NRAD))
       ALLOCATE (HELP2(NRAD))
@@ -603,7 +608,7 @@ cdr distinct from indpro=1,...5: now one single call for all K=1,NAINI
       END IF
 C
 C  ELECTRIC FIELD
-      IF (LEXIN.AND.LEYIN.AND.LEZIN.AND.LEFIN) THEN
+      IF (LEIN) THEN
       IND=INDPRO(7)
 C  DEFAULT: E==0.0 (no electric field), only options ind=5,6,7 overrule this
 c          (transfer from problem-specific codes or external data structures)

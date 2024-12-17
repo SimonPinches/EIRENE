@@ -292,10 +292,12 @@ C
             CALL EIRENE_PLEND
           ENDIF
         ENDIF
-        CALL EIRENE_LEER(2)
-        WRITE(iunout,*)
-     .   'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
-        CALL EIRENE_LEER(2)
+        if (rank_mpi==0) then
+          CALL EIRENE_LEER(2)
+          WRITE(iunout,*)
+     .     'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
+          CALL EIRENE_LEER(2)
+        end if
 C
         RETURN   ! time dep. option done
 c.....................................................................
@@ -709,11 +711,12 @@ csw
           DEALLOCATE(FLUXES,FLUXS)
           CALL EIRENE_PLEND
         END IF
-
-        CALL EIRENE_LEER(2)
-        WRITE(iunout,*)
-     .   'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
-        CALL EIRENE_LEER(2)
+        IF (rank_mpi==0) THEN
+          CALL EIRENE_LEER(2)
+          WRITE(iunout,*)
+     .     'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
+          CALL EIRENE_LEER(2)
+        END IF
         RETURN
 C
 C  NOT THE FIRST CALL IN THIS CYCLE: CHECK: SHORT LOOP CORRECTION
@@ -1002,10 +1005,12 @@ C
           DEALLOCATE(FLUXES,FLUXS)
           CALL EIRENE_PLEND
         END IF
-        CALL EIRENE_LEER(2)
-        WRITE(iunout,*)
-     .   'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
-        CALL EIRENE_LEER(2)
+        IF (rank_mpi==0) THEN
+          CALL EIRENE_LEER(2)
+          WRITE(iunout,*)
+     .     'EIRENE USED ',EIRENE_SECOND_OWN(),' CPU SECONDS'
+          CALL EIRENE_LEER(2)
+        END IF
 
         RETURN
 
