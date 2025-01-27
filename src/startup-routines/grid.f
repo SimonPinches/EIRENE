@@ -634,6 +634,12 @@ c  all other transparent cell faces must either have a neighbor, or a surface bo
             END DO
           END IF
         END DO
+
+        DO J = 1, NLIMPS
+          IF ((J <= NLIMI) .AND. (ILPLG(J) == 0)) CYCLE
+!pb       write (iunout,*) 'CALL SORT_TRI_SURF, J =',J
+          CALL EIRENE_SORT_TRI_SURF(SURF_TRIAN(J),SURF_TRIAN_ORDERED(J))
+        END DO
 C
         IF (TRCGRD) THEN
           WRITE (iunout,*) ' NUMBER OF TRIANGLES = ',NTRII
