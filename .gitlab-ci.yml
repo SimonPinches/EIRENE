@@ -934,11 +934,11 @@ coverage_report:
     stage: coverage
     coverage: '/(TOTAL COVERAGE .*%)/'
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $CI_COMMIT_REF_NAME == 'develop'
         - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_COVERAGE == 'false'
-        - if: $CI_PIPELINE_SOURCE == 'schedule'
-          when: never
         - if: $EXCLUDE_COVERAGE == 'true'
           when: never
     before_script:
