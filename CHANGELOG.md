@@ -14,6 +14,18 @@
 # Changelog of EIRENE repository:
 
 ---
+## P. Boerner - PB/bugfixes_and_improvements - e6f13e8add49da99d21eb1fdde7e276af53b9b56
+
+### Based on V1.1.0 (develop - 549f0660027fa64b28fb59d11ba951d6759f5f5e)
+
+** Changes **
+
+- in subroutine DBG_PRINTOUT use correct dimensions NPLSTI and NPLSV for TIIN, VXIN, VYIN, VZIN
+- set FLXCEN to rescaled flux when changing timestep size in time dependent mode
+- produce a sorted list of triangle edges for spatially resolved surfaces and use it in the output
+  - For triangular meshes the NFLAGS flag has been extended. Here NFLAGS > 10 triggers the production of a additional table holding information about the spatially resolved surface namely start and end points of the triangle edges forming the surface, the arc length along the surface and the values of the surface tally for the requested species.
+
+---
 
 ## X. Bonnin - feature/SOLPS_push_bug-fixes - c3b449d6e828da5e17a0d88cf981f7fbd2d84b8c
 
