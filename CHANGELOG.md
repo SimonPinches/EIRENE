@@ -17,6 +17,30 @@
 
 ---
 
+## D. Harting - New EIRENE version: Release-V1.1.2 - 5b961fd9f8718634046f55f828a21fc66d220cb8
+
+#### Based on V1.1.1 - Hotfix for CI
+
+New_EIRENE_Version=1.1.2
+
+```
++===============================================+
+|                                               |
+|   New EIRENE version: Release-V1.1.2          |
+|   Date: 7th April 2025                        |
+|   Hotfix                                      |
+|                                               |
++===============================================+
+```
+**Changes**
+
+1. Scheduled CI pipelines (run daily) to update GIT forks at CEA, ITER and JET
+was triggering also the 'coverage_report' step. Reordering the rules for the
+'coverage_report' step should fix this problem.
+
+
+---
+
 ## D. Harting - New EIRENE version: Release-V1.1.1 - a3df2da6f46bfca0c28cd69ab771145a888a74b5
 
 #### Based on V1.1.0 - Hotfix for CI
@@ -33,6 +57,7 @@ New_EIRENE_Version=1.1.1
 +===============================================+
 ```
 **Changes**
+
 1. Scheduled CI pipelines (run daily) to update GIT forks at CEA, ITER and JET were failing (yaml-error) due to wrong rules setup for some jobs in .gitlab-ci.yml file. This is now fixed.
 
 ---
@@ -50,6 +75,8 @@ New_EIRENE_Version=1.1.0
 |                                               |
 +===============================================+
 ```
+**Changes**
+
 1. Added new JSON input file format fro EIRENE.
    - See EIRENE manual for more details.
 2. Added OpenMP capability for EIRENE.
