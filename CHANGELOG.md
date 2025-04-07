@@ -14,16 +14,18 @@
 # Changelog of EIRENE repository:
 
 ---
-## P. Boerner - PB/bugfixes_and_improvements - e6f13e8add49da99d21eb1fdde7e276af53b9b56
+## P. Boerner - PB/bugfixes_and_improvements - 997388d9a00ed6a9162659d87a6c2b7247827f77
 
 ### Based on V1.1.0 (develop - 549f0660027fa64b28fb59d11ba951d6759f5f5e)
 
 ** Changes **
 
-- in subroutine DBG_PRINTOUT use correct dimensions NPLSTI and NPLSV for TIIN, VXIN, VYIN, VZIN
-- set FLXCEN to rescaled flux when changing timestep size in time dependent mode
-- produce a sorted list of triangle edges for spatially resolved surfaces and use it in the output
-  - For triangular meshes the NFLAGS flag has been extended. Here NFLAGS > 10 triggers the production of a additional table holding information about the spatially resolved surface namely start and end points of the triangle edges forming the surface, the arc length along the surface and the values of the surface tally for the requested species.
+- In subroutine DBG_PRINTOUT use correct dimensions NPLSTI and NPLSV when calculating averages of TIIN, VXIN, VYIN, VZIN as those are the species limits of these tallies.
+- In timedependent calculations it is necessary to rescale the flux stored on the time boundary when changing the timestep. The rescalad flux needs to be used for FLXCEN as well.
+  - Set FLXCEN to rescaled flux when changing timestep size in time dependent mode.
+- In EIRENE_OUTFLX for triangular meshes not based on an underlying structured grid printing of spatially resolved surface tallies was not done correctly. This issues has been fixed.
+- Additionally an option to order the triangle faces belonging to one spatially resolved surface into a continuous surface has been added (NFLAGS > 10). A table holding information such as coordinates of the start and endpoints of the triangle faces, the arc length along the surface and the surface tally for all requested species will be printed. Produce a sorted list of triangle edges for spatially resolved surfaces and use it in the output
+  - For triangular meshes the NFLAGS flag has been extended. Here NFLAGS > 10 triggers the production of an additional table holding information about the spatially resolved surface namely start and end points of the triangle edges forming the surface, the arc length along the surface and the values of the surface tally for the requested species.
 
 ---
 
