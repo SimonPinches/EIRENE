@@ -17,6 +17,26 @@
 
 ---
 
+## D. Harting - New EIRENE version: Release-V1.1.1 - a3df2da6f46bfca0c28cd69ab771145a888a74b5
+
+#### Based on V1.1.0 - Hotfix for CI
+
+New_EIRENE_Version=1.1.1
+
+```
++===============================================+
+|                                               |
+|   New EIRENE version: Release-V1.1.1          |
+|   Date: 27th November 2024                    |
+|   Hotfix                                      |
+|                                               |
++===============================================+
+```
+**Changes**
+1. Scheduled CI pipelines (run daily) to update GIT forks at CEA, ITER and JET were failing (yaml-error) due to wrong rules setup for some jobs in .gitlab-ci.yml file. This is now fixed.
+
+---
+
 ## D. Harting - New EIRENE version: Release-V1.1.0 - a339c4b70032409286e399b59f01e6bcb6940f06
 
 New_EIRENE_Version=1.1.0
