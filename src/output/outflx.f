@@ -253,37 +253,19 @@ C  TOROIDAL SURFACE
               IPA = IRPTA(ISTS,2)
               IPE = IRPTE(ISTS,2)
             case (4)
-              if (.true.) then
-                sum1 = 0._dp
-                nt =  surf_trian_ordered(i)%numtr
-                do j = 1, nt
-                   it = surf_trian_ordered(i)%itrias(j)
-                   is = surf_trian_ordered(i)%itrisi(j)
-                   msurfg=nlim+nsts+inspat(is,it)
-                   help(j) = helpp(msurfg)
-                   sum1 = sum1 + helpp(msurfg)
-                end do
-                if (nflags(ispr) > 10) help2(1:nt,k) = help(1:nt)
-                N1=NT+1
-                N2=1
-                N3=1
-               else     
-                sum1=0._DP
-                ntco=0
-                DO NP=1,3
-                  DO NR=1,NTRII
-                    IF (INMTI(NP,NR) == NLIM+ISTS) THEN
-                      MSURFG=NLIM+NSTS+INSPAT(NP,NR)
-                      NTCO=NTCO+1
-                      HELP(NTCO)=HELPP(MSURFG)
-                      SUM1=SUM1+HELPP(MSURFG)
-                    END IF
-                  END DO
-                END DO
-                N1=NTCO+1
-                N2=1
-                N3=1
-              end if
+              sum1 = 0._dp
+              nt =  surf_trian_ordered(i)%numtr
+              do j = 1, nt
+                 it = surf_trian_ordered(i)%itrias(j)
+                 is = surf_trian_ordered(i)%itrisi(j)
+                 msurfg=nlim+nsts+inspat(is,it)
+                 help(j) = helpp(msurfg)
+                 sum1 = sum1 + helpp(msurfg)
+              end do
+              if (nflags(ispr) > 10) help2(1:nt,k) = help(1:nt)
+              N1=NT+1
+              N2=1
+              N3=1
              
               IRA = 1
               IRE = N1
