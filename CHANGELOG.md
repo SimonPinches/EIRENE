@@ -14,7 +14,7 @@
 # Changelog of EIRENE repository:
 
 ---
-## P. Boerner - PB/bugfixes_and_improvements - 997388d9a00ed6a9162659d87a6c2b7247827f77
+## P. Boerner - PB/bugfixes_and_improvements - 9744e33a0f57c55dc11725a6df83013e909e16bb
 
 ### Based on V1.1.0 (develop - 549f0660027fa64b28fb59d11ba951d6759f5f5e)
 
