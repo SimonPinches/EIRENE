@@ -313,9 +313,14 @@ numbers) are selected here by input flag NSRF.
         NSPEZV(J,1), NSPEZV(J,2) for volume tallies, respectively.
         If the NPRTLS, \dots\ flags are not specified (i.e.: default=0), then no
         spatially resolved surface tallies are printed.
-  \item[NTLSFL(J)] The spatially resolved tallies (if any) and/or the flux energy
-        spectra (if any, see input block 10F) are printed on additional output stream
-        fort.NTLSFL(J) for this surface.
+        For triangular meshes the NFLAGS flag has been extended. Here NFLAGS > 10
+        triggers the production of a additional table holding information about
+        the spatially resolved surface namely start and end points of the triangle
+        edges forming the surface, the arc length along the surface and the values
+        of the surface tally for the requested species. 
+      \item[NTLSFL(J)] The spatially resolved tallies (if any) including the newly provided
+        table (see above) and/or the flux energy spectra (if any, see input block 10F)
+        are printed on additional output stream fort.NTLSFL(J) for this surface.
 \end{description}
 
 The next, optional input cards can be used to overrule the default choices of

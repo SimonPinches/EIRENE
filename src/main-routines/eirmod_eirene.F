@@ -879,7 +879,7 @@ CVK DBG
         WRITE(iunout,*) III,SUMMM
       END DO
       WRITE(iunout,*) "TIIN (AVR)"
-      DO III=1,NPLS
+      DO III=1,NPLSTI
         SUMMM=0
         DO JJJ=1,NSURFM
           SUMMM=SUMMM+ TIIN(III,JJJ)*VOL(JJJ)
@@ -888,7 +888,7 @@ CVK DBG
         WRITE(iunout,*) III,SUMMM
       END DO
       WRITE(iunout,*) "VXIN (AVR)"
-      DO III=1,NPLS
+      DO III=1,NPLSV
         SUMMM=0
         DO JJJ=1,NSURFM
           SUMMM=SUMMM+VXIN(III,JJJ)*VOL(JJJ)
@@ -897,7 +897,7 @@ CVK DBG
         WRITE(iunout,*) III,SUMMM
       END DO
       WRITE(iunout,*) "VYIN (AVR)"
-      DO III=1,NPLS
+      DO III=1,NPLSV
         SUMMM=0
         DO JJJ=1,NSURFM
           SUMMM=SUMMM+VYIN(III,JJJ)*VOL(JJJ)
@@ -906,7 +906,7 @@ CVK DBG
         WRITE(iunout,*) III,SUMMM
       END DO
       WRITE(iunout,*) "VZIN (AVR)"
-      DO III=1,NPLS
+      DO III=1,NPLSV
         SUMMM=0
         DO JJJ=1,NSURFM
           SUMMM=SUMMM+VZIN(III,JJJ)*VOL(JJJ)
