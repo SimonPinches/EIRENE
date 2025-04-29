@@ -12,6 +12,53 @@
 ---
 
 # Changelog of EIRENE repository:
+---
+
+---
+
+
+## D. Harting - New EIRENE version: Release-V1.1.2 - 5b961fd9f8718634046f55f828a21fc66d220cb8
+
+#### Based on V1.1.1 - Hotfix for CI
+
+New_EIRENE_Version=1.1.2
+
+```
++===============================================+
+|                                               |
+|   New EIRENE version: Release-V1.1.2          |
+|   Date: 7th April 2025                        |
+|   Hotfix                                      |
+|                                               |
++===============================================+
+```
+**Changes**
+
+1. Scheduled CI pipelines (run daily) to update GIT forks at CEA, ITER and JET
+was triggering also the 'coverage_report' step. Reordering the rules for the
+'coverage_report' step should fix this problem.
+
+
+---
+
+## D. Harting - New EIRENE version: Release-V1.1.1 - a3df2da6f46bfca0c28cd69ab771145a888a74b5
+
+#### Based on V1.1.0 - Hotfix for CI
+
+New_EIRENE_Version=1.1.1
+
+```
++===============================================+
+|                                               |
+|   New EIRENE version: Release-V1.1.1          |
+|   Date: 27th November 2024                    |
+|   Hotfix                                      |
+|                                               |
++===============================================+
+```
+**Changes**
+
+1. Scheduled CI pipelines (run daily) to update GIT forks at CEA, ITER and JET were failing (yaml-error) due to wrong rules setup for some jobs in .gitlab-ci.yml file. This is now fixed.
 
 ---
 ## P. Boerner - PB/bugfixes_and_improvements - 9744e33a0f57c55dc11725a6df83013e909e16bb
@@ -173,51 +220,6 @@ This commit is meant to apply good coding practices with minimal consequences on
 - Implemented new logic in test-case scripts for input_fixed, input_json, output_fixed and output_json directories
 - Adapted test-cases for new outtal_* file format.
 - Adjusted openMP test-case Makefiles for easy CI data creations.
-
----
-
-## D. Harting - New EIRENE version: Release-V1.1.2 - 5b961fd9f8718634046f55f828a21fc66d220cb8
-
-#### Based on V1.1.1 - Hotfix for CI
-
-New_EIRENE_Version=1.1.2
-
-```
-+===============================================+
-|                                               |
-|   New EIRENE version: Release-V1.1.2          |
-|   Date: 7th April 2025                        |
-|   Hotfix                                      |
-|                                               |
-+===============================================+
-```
-**Changes**
-
-1. Scheduled CI pipelines (run daily) to update GIT forks at CEA, ITER and JET
-was triggering also the 'coverage_report' step. Reordering the rules for the
-'coverage_report' step should fix this problem.
-
-
----
-
-## D. Harting - New EIRENE version: Release-V1.1.1 - a3df2da6f46bfca0c28cd69ab771145a888a74b5
-
-#### Based on V1.1.0 - Hotfix for CI
-
-New_EIRENE_Version=1.1.1
-
-```
-+===============================================+
-|                                               |
-|   New EIRENE version: Release-V1.1.1          |
-|   Date: 27th November 2024                    |
-|   Hotfix                                      |
-|                                               |
-+===============================================+
-```
-**Changes**
-
-1. Scheduled CI pipelines (run daily) to update GIT forks at CEA, ITER and JET were failing (yaml-error) due to wrong rules setup for some jobs in .gitlab-ci.yml file. This is now fixed.
 
 ---
 
