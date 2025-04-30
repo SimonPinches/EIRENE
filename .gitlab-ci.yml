@@ -1,6 +1,6 @@
-######################################################################################
+###############################################################################
 # Job control
-######################################################################################
+###############################################################################
 
 image: jugit-registry.fz-juelich.de/eirene/eirene-ci-image/debianbullseye
 
@@ -67,18 +67,19 @@ workflow:
         - when: always
 
 
-######################################################################################
-# Compliance tests to ensure code meets requirements - at present just version number
-######################################################################################
+###############################################################################
+# Compliance tests to ensure code meets requirements
+# - at present just version number
+###############################################################################
 
 compliance_check:
     stage: compliance
     script:
         - hooks/ci_version_check.sh
 
-######################################################################################
+###############################################################################
 # Serial tests
-######################################################################################
+###############################################################################
 
 build_library:
     stage: preparation
@@ -633,15 +634,17 @@ test_standalone_ITER_1573_dens_model:
     needs:
         - run_standalone_ITER_1573_dens_model
 
-######################################################################################
+###############################################################################
 # EMC3 cases
-######################################################################################
+###############################################################################
 
 build_EMC3-EIRENE:
     <<: *build_executable
     variables:
         PATH_CASE: "EMC3"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
@@ -651,6 +654,8 @@ run_EMC3-EIRENE_H:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
@@ -670,6 +675,8 @@ test_EMC3-EIRENE_H:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: always
@@ -689,6 +696,8 @@ run_EMC3-EIRENE_He:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/He"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
@@ -708,6 +717,8 @@ test_EMC3-EIRENE_He:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/He"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
@@ -727,6 +738,8 @@ run_EMC3-EIRENE_H_multiStrata:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
@@ -746,6 +759,8 @@ test_EMC3-EIRENE_H_multiStrata:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrata"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
@@ -767,6 +782,8 @@ run_EMC3-EIRENE_H_profile:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_profile"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
@@ -786,6 +803,8 @@ test_EMC3-EIRENE_H_profile:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_profile"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_EMC3 == 'true'
           when: never
         - when: on_success
@@ -800,9 +819,9 @@ test_EMC3-EIRENE_H_profile:
     needs:
         - run_EMC3-EIRENE_H_profile
 
-######################################################################################
+###############################################################################
 # MPI tests - at present using EMC3
-######################################################################################
+###############################################################################
 
 # Create individual stage for mpi-jobs due to recource limits (memory?)
 # of gitlab runner at juelich gitlab
@@ -847,6 +866,8 @@ test_EMC3-EIRENE_H_multiStrataMpi:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_MPI == 'true'
           when: never
         - if: $EXCLUDE_EMC3 == 'true'
@@ -868,6 +889,8 @@ test_EMC3-EIRENE_H_multiStrataMpi2:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi2"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_MPI == 'true'
           when: never
         - if: $EXCLUDE_EMC3 == 'true'
@@ -889,6 +912,8 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
     variables:
         PATH_CASE: "EMC3/W7X_Limiter/H_multiStrataMpi3"
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $EXCLUDE_MPI == 'true'
           when: never
         - if: $EXCLUDE_EMC3 == 'true'
@@ -905,19 +930,19 @@ test_EMC3-EIRENE_H_multiStrataMpi3:
     needs:
         - run_mpi_cases
 
-######################################################################################
+###############################################################################
 # Coverage
-######################################################################################
+###############################################################################
 
 coverage_report:
     stage: coverage
     coverage: '/(TOTAL COVERAGE .*%)/'
     rules:
+        - if: $CI_PIPELINE_SOURCE == 'schedule'
+          when: never
         - if: $CI_COMMIT_REF_NAME == 'develop'
         - if: $CI_COMMIT_REF_NAME == 'master'
         - if: $EXCLUDE_COVERAGE == 'false'
-        - if: $CI_PIPELINE_SOURCE == 'schedule'
-          when: never
         - if: $EXCLUDE_COVERAGE == 'true'
           when: never
     before_script:
@@ -945,9 +970,9 @@ coverage_report:
             - EIRENE-sample-cases/coverageReport
         when: always
 
-######################################################################################
+###############################################################################
 # OpenMP tests
-######################################################################################
+###############################################################################
 
 build_openmp_library:
     stage: preparation:openmp
