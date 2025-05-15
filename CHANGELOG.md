@@ -16,6 +16,36 @@
 
 ---
 
+## D. Harting - New EIRENE version: Release-V1.2.0 - 80d2f78fd3ffe075962b9c594e7599faee3317db
+
+#### Based on V1.1.2 and develop 580f5ab43fe927c23fb42daee40cd6f3026c4719
+
+New_EIRENE_Version=1.2.0
+
+```
++===============================================+
+|                                               |
+|   New EIRENE version: Release-V1.2.0          |
+|   Date: 15th May 2025                         |
+|   MsV:  ???                                   |
+|                                               |
++===============================================+
+```
+**Most relevant changes since V1.1.0**
+
+1. EIRENE is now under dual license (revise wording).
+2. Minor bugfixes to EIRENE Database.
+   - amjuel.tex (Reaction 2.7.14:  e + N_2^+ -> N + N)
+   - AMMONX_Arrh-elast.tex (Reaction 14s: e + N2 -> N + N + e)
+3. New option NFLAGS > 10:
+   - order the triangle faces belonging to one spatially resolved surface into a continuous surface for the output (EIRENE input block 11).
+   - See EIRENE manual chapter 2.11.
+4. Added rescaling of flux stored on the time boundary when changing the timestep in time depending calculations.
+5. Bug fixes related bring EIRENE version inline with SOLPS-ITER version.
+   - For details see X. Bonnin's list of changes for commits c3b449d6e828 and 781960eea7b5 in this CHANGELOG.md.
+6. Fixed some CI issues.
+
+---
 
 ## D. Harting - New EIRENE version: Release-V1.1.2 - 5b961fd9f8718634046f55f828a21fc66d220cb8
 

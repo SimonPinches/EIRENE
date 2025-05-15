@@ -159,7 +159,7 @@ cdr  size of particle species columns in various arrays
 
       ! This value will be automatically replaced with
       ! the version number specified in version.txt
-      CHARACTER(12), PUBLIC, SAVE :: EIRENE_VERSION_STRING='1.1.2'
+      CHARACTER(12), PUBLIC, SAVE :: EIRENE_VERSION_STRING='1.2.0'
 
       PRIVATE :: EIRENE_SPEC_TO_SPEC
       TYPE EIRENE_SPECTRUM
