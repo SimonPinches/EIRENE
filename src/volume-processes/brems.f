@@ -15,7 +15,7 @@ c  ne, electron density,  #/cm^3
 
       REAL(DP), INTENT(IN) :: TE,NE,ZI
       REAL(DP) :: EIRENE_NGFFMH_B, brems, RES
-
+      EXTERNAL :: EIRENE_NGFFMH_B
 
 c  bremsstrahlung in W, per ion, based on free-free Gaunt factors
 c  formula from ADAS, see function ngffmh_b

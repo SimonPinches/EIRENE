@@ -1,17 +1,27 @@
 !> Wrapper module for MPI, and dummy module for serial compilation
 module eirmod_mpi
 #ifdef USE_MPI
-  use mpi         !IGNORE
-  implicit none
-!pb  include 'mpif.h'
-  integer, private, save :: iounit
-  public :: mpi_set_own_io_unit
-  integer, save :: MPI_THREAD_PROVIDED = 0
-
-!pb
 #ifndef MPI_VERSION
 #define MPI_VERSION 3
 #endif
+#ifndef MPI_MOD
+#if MPI_VERSION > 2
+#define MPI_MOD 1
+#else
+#define MPI_MOD 0
+#endif
+#endif
+
+#if MPI_MOD > 0
+  use mpi      ! IGNORE
+#endif
+  implicit none
+#if MPI_MOD < 1
+  include 'mpif.h'
+#endif
+  integer, private, save :: iounit
+  public :: mpi_set_own_io_unit
+  integer, save :: MPI_THREAD_PROVIDED = 0
 
 #if MPI_VERSION < 3
 ! MPI libraries with MPI version 3 are available on all platforms.
@@ -39,6 +49,10 @@ module eirmod_mpi
   integer, private, save :: iounit
   public :: mpi_set_own_io_unit
 
+  !> number of buffers (1 double and 1 logical)
+  !> Moved from eirmod_calstr_buffered to avoid a size mismatch error
+  integer, parameter :: N_BUFFERS = 2
+
   integer, parameter :: mpi_success = 0
   integer, parameter :: mpi_failure = 1
   integer, parameter :: mpi_comm_world = 0
@@ -49,14 +63,14 @@ module eirmod_mpi
   integer, parameter :: mpi_group_null = mpi_comm_null
   integer, parameter :: mpi_group_empty = mpi_group_null
 
-!  Dummy of an include file needed by MPI
+  ! Dummy of an include file needed by MPI
   integer, parameter :: MPI_INTEGER = 1,   &
                  MPI_REAL = 2,             &
                  MPI_DOUBLE_PRECISION = 3, &
                  MPI_REAL8 = 3,            &
                  MPI_LOGICAL = 4,          &
                  MPI_CHARACTER = 5,        &
-                 MPI_STATUS_SIZE = 3,      &
+                 MPI_STATUS_SIZE = 5,      &
                  MPI_SUM = 1,              &
                  MPI_LOR = 2,              &
                  MPI_IN_PLACE = 0
@@ -68,9 +82,10 @@ module eirmod_mpi
   integer, parameter :: MPI_THREAD_FUNNELED = 0
   integer, save :: MPI_THREAD_PROVIDED = 0
   integer, save :: MPI_STATUS_IGNORE(MPI_STATUS_SIZE)
-  integer, save :: MPI_STATUSES_IGNORE(MPI_STATUS_SIZE,1)
+  integer, save :: MPI_STATUSES_IGNORE(MPI_STATUS_SIZE,N_BUFFERS)
   data MPI_STATUS_IGNORE / MPI_STATUS_SIZE*-1 /
-  data MPI_STATUSES_IGNORE / MPI_STATUS_SIZE*-1 /
+  data MPI_STATUSES_IGNORE(1:MPI_STATUS_SIZE,1) / MPI_STATUS_SIZE*-1 /
+  data MPI_STATUSES_IGNORE(1:MPI_STATUS_SIZE,2) / MPI_STATUS_SIZE*-1 /
 
 
   interface mpi_allgather
@@ -512,86 +527,6 @@ module eirmod_mpi
     data2(1:n) = data1(1:n,1)
   end subroutine mpi_reduce_L2_L1
 
-#ifdef GFORTRAN
-  subroutine mpi_ireduce_i0_r1 (data1, data2, n, datatype, operation, receiver, &
-    comm, request, ierror )
-    ! first argument is MPI_IN_PLACE flag
-    implicit none
-    integer, intent(in) :: n, comm
-    integer, intent(in) :: data1
-    double precision, dimension(:) :: data2
-    integer, intent(in) :: datatype, operation, receiver
-    integer, intent(out) :: request, ierror
-    if ( datatype == mpi_integer ) then
-      ierror = mpi_success
-    else
-      ierror = MPI_FAILURE
-    end if
-    request = 0
-    data2 = data1
-  end subroutine mpi_ireduce_i0_r1
-
-  subroutine mpi_ireduce_i0_l1 (data1, data2, n, datatype, operation, receiver, &
-    comm, request, ierror )
-    ! first argument is MPI_IN_PLACE flag
-    implicit none
-    integer, intent(in) :: n, comm
-    integer, intent(in) :: data1
-    logical, dimension(:) :: data2
-    integer, intent(in) :: datatype, operation, receiver
-    integer, intent(out) :: request, ierror
-    if ( datatype == mpi_integer ) then
-      ierror = mpi_success
-    else
-      ierror = MPI_FAILURE
-    end if
-    request = 0
-    if ( data1 == 0 ) then
-      data2 = .false.
-    else if ( data1 == 1 ) then
-      data2 = .true.
-    else
-      ierror = MPI_FAILURE
-    end if
-  end subroutine mpi_ireduce_i0_l1
-  
-  subroutine mpi_ireduce_r1_r1 (data1, data2, n, datatype, operation, receiver, &
-    comm, request, ierror )
-    ! first argument is MPI_IN_PLACE flag
-    implicit none
-    integer, intent(in) :: n, comm
-    double precision, dimension(:), intent(in) :: data1
-    double precision, dimension(:) :: data2
-    integer, intent(in) :: datatype, operation, receiver
-    integer, intent(out) :: request, ierror
-    if ( datatype == mpi_double_precision ) then
-      ierror = mpi_success
-    else
-      ierror = MPI_FAILURE
-    end if
-    request = 0
-    data2 = data1
-  end subroutine mpi_ireduce_r1_r1
-   
-  subroutine mpi_ireduce_l1_l1 (data1, data2, n, datatype, operation, receiver, &
-    comm, request, ierror )
-    ! first argument is MPI_IN_PLACE flag
-    implicit none
-    integer, intent(in) :: n, comm
-    logical, dimension(:), intent(in) :: data1
-    logical, dimension(:) :: data2
-    integer, intent(in) :: datatype, operation, receiver
-    integer, intent(out) :: request, ierror
-    if ( datatype == mpi_logical ) then
-      ierror = mpi_success
-    else
-      ierror = MPI_FAILURE
-    end if
-    request = 0
-    data2 = data1
-  end subroutine mpi_ireduce_l1_l1
-#endif
-
   subroutine mpi_reduce_inplace_r0(data1, data2, n, datatype, operation, receiver, &
     comm, ierror)
     ! first argument is MPI_IN_PLACE flag
@@ -988,6 +923,7 @@ module eirmod_mpi
     integer, intent(out) :: recvbuf
     integer, intent(in) :: sendtype, recvtype, root, comm
     integer, intent(out) :: ierr
+    external eirene_exit_own
     if (sendcount == recvcount) then
       ierr = MPI_SUCCESS
       recvbuf = sendbuf
@@ -1007,6 +943,7 @@ module eirmod_mpi
     integer, intent(out) :: recvbuf
     integer, intent(in) :: sendtype, recvtype, root, comm
     integer, intent(out) :: ierr
+    external eirene_exit_own
     if (sendcount == recvcount) then
       ierr = MPI_SUCCESS
       recvbuf = sendbuf(1)
@@ -1026,6 +963,7 @@ module eirmod_mpi
     integer, intent(out) :: recvbuf(recvcount)
     integer, intent(in) :: sendtype, recvtype, root, comm
     integer, intent(out) :: ierr
+    external eirene_exit_own
     if (sendcount == recvcount) then
       ierr = MPI_SUCCESS
       recvbuf(1:sendcount) = sendbuf(1:sendcount)
@@ -1309,7 +1247,7 @@ module eirmod_mpi
     implicit none
     integer, intent(in) :: n
     integer, intent(inout) :: requests(n)
-    integer, dimension(MPI_STATUS_SIZE, n) :: statuses
+    integer, intent(in) :: statuses(MPI_STATUS_SIZE, n)
     integer, intent(out) :: ierr
     requests = MPI_REQUEST_NULL
     ierr = MPI_SUCCESS
@@ -1337,7 +1275,7 @@ module eirmod_mpi
     integer, intent(in) :: n
     integer, intent(inout) :: requests(n)
     logical, intent(out) :: flag
-    integer, dimension(MPI_STATUS_SIZE, n) :: statuses
+    integer, intent(in) :: statuses(MPI_STATUS_SIZE, n)
     integer, intent(out) :: ierr
     requests = MPI_REQUEST_NULL
     flag = .true.
@@ -1354,7 +1292,7 @@ module eirmod_mpi
   subroutine eirene_mpi_init(ier)
 !   MPI initialization routine used by either
 !   eirene_main (for standalone) or
-!   eirene_eirene (coupled) subroutines    
+!   eirene_eirene (coupled) subroutines
     integer, intent(out) :: ier
 #ifdef USE_OPENMP
     call mpi_init_thread(mpi_thread_funneled, mpi_thread_provided, ier)
@@ -1362,7 +1300,7 @@ module eirmod_mpi
     call mpi_init(ier)
 #endif
   end subroutine eirene_mpi_init
- 
+
 end module eirmod_mpi
 
 !!!Local Variables:

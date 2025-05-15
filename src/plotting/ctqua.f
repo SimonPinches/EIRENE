@@ -20,6 +20,7 @@ C
      .          YL2, PHI, PHIH, XPHI, YPHI, XM, YM
       INTEGER :: I, IPHI, ISORT
       LOGICAL :: LX0, LY0, LZ0, LCTX1, LCTX2, LCTY1, LCTY2
+      EXTERNAL :: EIRENE_CTCIRC
 C
       EPS10=1.E-10
       PI=4.*ATAN(1.)

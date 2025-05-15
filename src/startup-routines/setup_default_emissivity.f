@@ -84,7 +84,7 @@ cdr
 
       integer :: i, NUM_compo, iat, iml, ipl, nat, npl, nml,
      .           nrc, nrc_rat1, nrc_rat2, nrc_rat3
-      integer :: ir, mp, mt,
+      integer :: mp, mt,
      .           jfex1mn, jfex1mx, jfex2mn, jfex2mx,
      .           iz, irow_esc, icol_esc, iftfl, ncoef
       real(dp) :: dpp, rc1min, rc1max, rc2min, rc2max, pop_esc
@@ -95,7 +95,6 @@ cdr
       character(3) :: crc
       character(2) :: elname
       character(60) :: bundling
-      real(dp) :: ry = 13.605
 
       NUM_lines    = 6  ! Ba_alpha, Ba_beta, Ba_gamma, Ba_delta,
                         ! Ly_alpha, Ly_beta
@@ -483,7 +482,7 @@ cdr These must be the isotopomers of H2.
       EMIS_LINES(2)%LINE_NAME = 'BA_BETA'
       EMIS_LINES(2)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
-      EMIS_LINES(2)%EINSTEIN = 8.419E6
+      EMIS_LINES(2)%EINSTEIN = 8.419E6_DP
       EMIS_LINES(2)%TRANS_EN = 2.5500_DP
       EMIS_LINES(2)%IADV_TOTAL = NADVI + NUM_COMPO+1
 
@@ -747,7 +746,7 @@ C  H(n=4)/H3+
       EMIS_LINES(3)%LINE_NAME = 'BA_GAMMA'
       EMIS_LINES(3)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
-      EMIS_LINES(3)%EINSTEIN = 2.530E6
+      EMIS_LINES(3)%EINSTEIN = 2.530E6_DP
       EMIS_LINES(3)%TRANS_EN = 2.8560_DP
       EMIS_LINES(3)%IADV_TOTAL = NADVI + NUM_COMPO+1
 
@@ -1010,7 +1009,7 @@ C  H(n=5)/H3+
       EMIS_LINES(4)%LINE_NAME = 'BA_DELTA'
       EMIS_LINES(4)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
-      EMIS_LINES(4)%EINSTEIN = 9.732E5
+      EMIS_LINES(4)%EINSTEIN = 9.732E5_DP
       EMIS_LINES(4)%TRANS_EN = 3.0222_DP
       EMIS_LINES(4)%IADV_TOTAL = NADVI + NUM_COMPO+1
 
@@ -1273,7 +1272,7 @@ C  H(n=6)/H3+
       EMIS_LINES(5)%LINE_NAME = 'LY_ALPHA'
       EMIS_LINES(5)%NUM_COMPO = NUM_COMPO
 C  RADIATIVE TRANSITION RATE (1/S)
-      EMIS_LINES(5)%EINSTEIN = 4.699E8
+      EMIS_LINES(5)%EINSTEIN = 4.699E8_DP
       EMIS_LINES(5)%TRANS_EN = 10.2375_DP
       EMIS_LINES(5)%IADV_TOTAL = NADVI + NUM_COMPO+1
 

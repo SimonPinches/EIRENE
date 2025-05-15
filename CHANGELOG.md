@@ -12,8 +12,38 @@
 ---
 
 # Changelog of EIRENE repository:
+---
 
 ---
+
+## D. Harting - New EIRENE version: Release-V1.2.0 - 80d2f78fd3ffe075962b9c594e7599faee3317db
+
+#### Based on V1.1.2 and develop 580f5ab43fe927c23fb42daee40cd6f3026c4719
+
+New_EIRENE_Version=1.2.0
+
+```
++===============================================+
+|                                               |
+|   New EIRENE version: Release-V1.2.0          |
+|   Date: 15th May 2025                         |
+|   MsV:  ???                                   |
+|                                               |
++===============================================+
+```
+**Most relevant changes since V1.1.0**
+
+1. EIRENE is now under dual license (revise wording).
+2. Minor bugfixes to EIRENE Database.
+   - amjuel.tex (Reaction 2.7.14:  e + N_2^+ -> N + N)
+   - AMMONX_Arrh-elast.tex (Reaction 14s: e + N2 -> N + N + e)
+3. New option NFLAGS > 10:
+   - order the triangle faces belonging to one spatially resolved surface into a continuous surface for the output (EIRENE input block 11).
+   - See EIRENE manual chapter 2.11.
+4. Added rescaling of flux stored on the time boundary when changing the timestep in time depending calculations.
+5. Bug fixes related bring EIRENE version inline with SOLPS-ITER version.
+   - For details see X. Bonnin's list of changes for commits c3b449d6e828 and 781960eea7b5 in this CHANGELOG.md.
+6. Fixed some CI issues.
 
 ---
 
@@ -61,6 +91,167 @@ New_EIRENE_Version=1.1.1
 1. Scheduled CI pipelines (run daily) to update GIT forks at CEA, ITER and JET were failing (yaml-error) due to wrong rules setup for some jobs in .gitlab-ci.yml file. This is now fixed.
 
 ---
+## P. Boerner - PB/bugfixes_and_improvements - 9744e33a0f57c55dc11725a6df83013e909e16bb
+
+### Based on V1.1.0 (develop - 549f0660027fa64b28fb59d11ba951d6759f5f5e)
+
+** Changes **
+
+- In subroutine DBG_PRINTOUT use correct dimensions NPLSTI and NPLSV when calculating averages of TIIN, VXIN, VYIN, VZIN as those are the species limits of these tallies.
+- In timedependent calculations it is necessary to rescale the flux stored on the time boundary when changing the timestep. The rescalad flux needs to be used for FLXCEN as well.
+  - Set FLXCEN to rescaled flux when changing timestep size in time dependent mode.
+- In EIRENE_OUTFLX for triangular meshes not based on an underlying structured grid printing of spatially resolved surface tallies was not done correctly. This issues has been fixed.
+- Additionally an option to order the triangle faces belonging to one spatially resolved surface into a continuous surface has been added (NFLAGS > 10). A table holding information such as coordinates of the start and endpoints of the triangle faces, the arc length along the surface and the surface tally for all requested species will be printed. Produce a sorted list of triangle edges for spatially resolved surfaces and use it in the output
+  - For triangular meshes the NFLAGS flag has been extended. Here NFLAGS > 10 triggers the production of an additional table holding information about the spatially resolved surface namely start and end points of the triangle edges forming the surface, the arc length along the surface and the values of the surface tally for the requested species.
+
+---
+
+## X. Bonnin - feature/SOLPS_push_bug-fixes - c3b449d6e828da5e17a0d88cf981f7fbd2d84b8c
+
+#### Based on V1.1.0 (develop - bbf7bd63111955e513bedd25188e3a008e9b4928)
+
+** Changes **
+
+- Bug fixes in AMJUEL and AMMONX data files
+- Bug fixes for JSON linking and I/O in SOLPS cases
+- Added LGEXIT variable in OpenMP treatment for error handling
+- Added 0.1 eV minimum value for input electron temperature in PLASMA_DERIV
+- Corrected handling of multiple output files for parallel runs
+- Corrected array bounds for data read loop in couple_B2 interface
+- Corrected location of barrier in BROADCAST routine
+- Changed handling of electromagnetic field input tally flags
+- Corrected treatment of transparent surfaces in SOLPS-ITER interface
+- Corrected charge assignment for bremsstrahlung calculation in EIRENE_SAMVOL
+- Added array size check in EIRMOD_COUTAU
+- Removed NLSRF condition to calls to EIRENE_UPSUSR and EIRENE_UPDATE_SPECTRUM in EIRMOD_LOCATE
+- Bug fix for reading pressure loop feedback data
+- Bug fix due to typo in SGNAL routine + associated correction to ITER CI serial test cases
+- Bug fixes for species-specific rescaling scheme
+- Corrected printout of ESHEATH in SOLPS-ITER cases
+- Removed resetting of IFIRST to 0 after PREPARE step in EIRMOD_UPDLIN
+- Added some missing USE_OPENMP pragmas
+- Corrected pragmas in CMake version file
+- Added definition of MPI_VERSION pragma in CMakeLists.txt
+- Corrected handling of NPESTA and NPESTR arrays
+- Added broadcasting of NPLRPI in EIRMOD_COMXS
+- Use of NFSTPI instead of NFRSTP in EIRMOD_PLTEIR
+- Added deallocation call of WNEUTRAL_FLUXES
+- Corrected EIRDIAG_NDS size for SOLPS-ITER checking procedures
+- Corrected procedure names in IOUSR interface files
+- Removed a premature RETURN in WRPLAM_LONG
+- Conditioned a gfortran compiler flag to minimal version
+- Corrected some reading formats
+- Corrected some comments
+- Alignment corrections
+
+---
+
+## X. Bonnin - feature/SOLPS_push_clean-up - 781960eea7b56a886fccecd4ad98e4002fbc5292
+
+#### Based on develop - 1138b60ed32d3337e392f716ece854bfc89675a3
+
+** Changes **
+
+This commit is meant to apply good coding practices with minimal consequences on actual results. It addresses warnings from many different compilers to make the Eirene compilation as clean as reasonably achievable.
+
+- Applied CONTRIBUTING rule that Fortran file extensions should be .F instead of .f when the file must be pre-processed by the Makefile
+- Pointing to modified set of examples with .F file extensions
+- Removed forced usage of OpenMP compiler options
+- Added GRAPHICS option in CMakeLists.txt for compilation with or without plotting enabled
+- Added EIRENE_ALLOC_CGRID call in COUPLE_PARAM from SOLPS-ITER routine
+- Used the module provided NREACI, NATMI, NMOLI, NIONI, and NPHOTI in EIRENE_BROWSE_BLOCK_5 inside FIND_PARAM_JSON
+- Corrected initialization of WEISPZ in EIRMOD_LOCAT0
+- Added ITYP_OLD assignments in EIRMOD_LOCAT1
+- Added IFIRST initialization to zero in READ_COLRAD
+- Adding COUPLE_INIT routine in B2.5 interface
+- Moved EIRENE_EXPINT, EIRENE_LAX_M and EIRENE_MMDEI to their own files
+- Apply separate scaling to additional, algebraic and pumping tallies
+- Added TRCMELD output switch
+- Refactored computation of random seeds to be compatible with both OpenMP and MPI parallelization schemes
+- Do not use IUNOUT in EIRENE_MAIN before it is defined or after it has been deallocated
+- Added MPI_VERSION and MPI_MOD pragmas to handle older MPI implementations
+- Ensuring MPI_STATUSES has consistent size for MPI runs
+- Added a safety and error message in FIND_PARAM if the input file is found empty
+- Added a safety to check the fort.34 file is present before attempting to read it
+- Added safety for reading correct number of integers in block 10F of input file in READ_FIXFORM
+- Added safety against IPRNL=0 in SETUP_TIME_SURFACE
+- Adding safety against TEIL=0 and an error message in EIRMOD_ALGEBRA
+- Adding safety for incorrect algebraic manipulation of intensive tallies in ALGTAL
+- Added calls to flush out buffers
+- Added allocated status safeties
+- Used NPLSI instead of NPLS in READ_FIXFORM
+- Replaced NPHOT by NPHOTI in SCALE_TALLIES
+- Making NDXD, etc... PUBLIC in EIRMOD_EIRBRA
+- Removed NDXP, NDYP, NFL from EIRMOD_BRAEIR
+- Removed MAXPOIN from EIRMOD_SOLPS
+- Making LMETSP2 and LMETSPW2 threadprivate
+- Rearranged OpenMP critical region in EIRMOD_UPTBGK
+- Added OpenMP compliant error handling
+- Added information about thread number in error state in EIRENE_EXIT_OWN
+- Added census score output in TMSTEP
+- Added SHSTEP output in EIRMOD_INFCOP from SOLPS-ITER interface
+- Made FLUXES and FLUXS arrays in EIRSRT allocatable to avoid a segmentation fault
+- Made DUMMY allocatable in INTEGRATE_TALLIES
+- Made arrays in EIRMOD_PLTEIR allocatable
+- Added SAVE statement in EIRMOD_LOCAT0
+- Removed misleading superfluous output from CMakeLists.txt
+- Added standard deviation output in OUTIDLTAL
+- Removed redundant output in OUTIDLPLA
+- Corrected sizes of tally output arrays in SETTXT_INTAL
+- Conditioned some debugging output
+- Rewrote some output formats to avoid creation of temporary arrays
+- Clarified some code output
+- Some aesthetic output changes
+- Corrected format statements
+- Refactored reading of fort.13 file
+- Rewrote EIRENE_FTHOMP to avoid a fatal round-off error
+- Use of EVKEL instead of approximate value
+- Generalized usaged of FORT and FORT_LC variables
+- Introduced usage of EIRENE_OPENFILE in all interface routines
+- Avoiding obsolescent shared labels END DO statements, replaced with CONTINUE
+- Added _DP type declarations for floating-point constants
+- Added type assignments when using integers inside floating-point operations
+- Added TRIM operations and character ranges to avoid string length overflows
+- Added USE_OPENMP and USE_EXT_OPENMP pragmas to avoid compiler warnings from !$OMP instructions when compiling without OpenMP
+- Removed double definition of USE_OPENMP and USE_EXT_OPENMP in CMakeLists.txt
+- Added B25_EIRENE pre-processor pragmas in SOLPS-ITER interface routines
+- Added LEGACYCOMP alternate code
+- Added definition of GFORTRAN pragma in CMakeLists.txt
+- Added G95 pre-processor pragmas to deal with g95 compiler errors
+- Added NAGFOR pre-processor pragmas to deal with NAG compiler specific warnings
+- Replaced F2003 pre-processor (the compiler supports the Fortran 2003 standard) pragma with LEGACYCOMP (the compiler does not support the Fortran 2003 standard)
+- Removed unused IFOFF argument in EIRENE_FIND_TRIANG_DIM
+- Removed usage of obsolete variables NITER0 in INPUT and NTIME0 in READ_FIXFORM
+- Removed conflicting DIMENSION statements
+- Avoided use of module variables as loop indices
+- Added EXTERNAL definitions for called subroutines and functions
+- Using RETURN and END SUBROUTINE <SUB_NAME> statements to close subroutines
+- Moved statement functions to become contained subroutines
+- Added IMPLICIT NONE statements
+- Added some INTENT(IN) declarations
+- Added pre-processor pragmas around relevant variables only used if the pragma is declared
+- Moved declarations of loop index variables inside contained routines when appropriate
+- Add IGNORE comments to MPI and JSON modules use statements for SOLPS-style dependencies build
+- Removed superfluous MPI interface routines
+- Removed unused variables and modules
+- Removed unused labels, formats and error statements
+- Making use of lower/upper case more consistent
+- Removed tabulations, alignment corrections
+- Added some more clarifying comments
+- Removed trailing whitespaces and empty lines
+- Have figures in Manual listed by full relative path and file extension
+- Added missing comment about density validity range in AMJUEL file
+- Added some more produced file types to .gitignore file
+- Improved handling of external libraries in CMakeLists.txt
+- Added compilation dependency on local environment setup files
+- Added -fpe0 debug Intel compilation flag
+- Added -allow-argument-mismatch argument to GNU compilation above version 9.5 to avoid errors with MPI routines
+- Added Cray compiler support
+- Implemented new logic in test-case scripts for input_fixed, input_json, output_fixed and output_json directories
+- Adapted test-cases for new outtal_* file format.
+- Adjusted openMP test-case Makefiles for easy CI data creations.
+
+---
 
 ## D. Harting - New EIRENE version: Release-V1.1.0 - a339c4b70032409286e399b59f01e6bcb6940f06
 
@@ -95,6 +286,9 @@ New_EIRENE_Version=1.1.0
 ---
 
 ## D. Harting - DMH/fix_ci_version_check - b6e4b2df6d71f4195faa1e23fa1dd79a0f56a5c8
+
+#### Based on Vx.y.z(undefined before this commit - use instead develop - 1138b60ed32d3337e392f716ece854bfc89675a3)
+
 **Changes**
 
 - Stop the CI pipeline if the compliance_check failed
@@ -199,11 +393,11 @@ This commit is meant is decrease the distance between the SOLPS Eirene branch an
 **Changes**
 
 - Only changes to CI logic, no code changes
-  
+
   - Removed fort.37 from reference outputs of ITER cases. Output to fort.37 was abandoned and is now included in the standard output of EIRENE
 
 - Removed dependency of OPENMP cases on previous cases
-  
+
   - OPENMP library and test case preparation downloaded all previous artifacts. This is not necessary as the OPENMP cases should be fresh compilations
 
 - Removed some cells in the 2D-D_polygon_openmp  test cases from the comparison as they contain small numbers and relative change is large due to statistical noise
@@ -225,7 +419,7 @@ This commit is meant is decrease the distance between the SOLPS Eirene branch an
 **Changes in EIRENE Database since compare error was introduced in  40a86ae38b0eeb860f7f4553a15ade890749f3f3**
 
 - amjuel.tex
-  
+
   - Changes in coefficients:
     - Amjuel reaction 2.2.9  e + H_2  -> 2e + H_2^+
     - Amjuel Reaction 2.3.6A0  C^+ + e -> C
@@ -267,33 +461,33 @@ This commit is meant is decrease the distance between the SOLPS Eirene branch an
     - Plus others......
 
 - h2vibr.tex
-  
+
   - H.1 :  Fits for sigma(E)
     - Nearly all Eth changed
-  - Changes in coefficients 
+  - Changes in coefficients
     - Reaction 2.4l1T
   - A lot of reactions changed T1MIN T1MAX
   - New Reactions added
 
 - hydhel.tex
-  
+
   - Changes of Eth
     - Reaction 3.2.2    p + H_2(v=0) -> p + H_2(v > 0)
 
 - methane.tex
-  
+
   - Changes in coefficients
-    - Reaction 3.2      p + C -> C^+ + H 
+    - Reaction 3.2      p + C -> C^+ + H
 
 **Differences of new test cases generated**
 
 - fort.37 generated by eirmod.infcop was abandoned (ecdedfcbb9d2f9a105462ead067205e38b5bc421).
-  
+
   - The output to fort.37 was moved to the general EIRENE output file (IUNOUT)
   - Removed fort.37 from reference cases
 
 - Differences in standard output file of EIRENE
-  
+
   - The maximum number of ATOMIC and molecular reaction has increased by one (NREAC)
     - Affected test cases: 1D-H_slab, 1D_cylindric, 1D-elliptic, 2D-D_slab, 2D-D_slab_finite_cylinder_11x11,  2D-D_triang, 2D_cylindric, 2D_elliptic, 3D_slab_11x11x11,  ALTS2,  ALTS2_bits, cylinder, cylinder_triang_no_octree,  cylinder_triang_octree
     - Test cases not affected:  2D-D_polygon, 2D-D_polygon_NLPLG
@@ -303,31 +497,31 @@ This commit is meant is decrease the distance between the SOLPS Eirene branch an
     - cylinder
   - CREACD changed significantly
     - 2D-D_polygon,  2D-D_slab,  2D-D_slab_finite_cylinder_11x11,  2D-D_triang,  3D_slab_11x11x11,  3D-D_tetra,  3D-D_tetra
-  - TABEI1 (AVR) changed significantly 
+  - TABEI1 (AVR) changed significantly
     - 2D-D_polygon
-  - EELEI1 (AVR) changes slightly 
-    - 2D-D_polygon_NLPLG 
+  - EELEI1 (AVR) changes slightly
+    - 2D-D_polygon_NLPLG
   - More warnings from SLREAC extrapolation
-    - 2D-D_slab_finite_cylinder_11x11, 2D-D_triang, 3D_slab_11x11x11,  3D-D_tetra, 
+    - 2D-D_slab_finite_cylinder_11x11, 2D-D_triang, 3D_slab_11x11x11,  3D-D_tetra,
 
 - **All EMC3 test cases are identical**
-  
+
   - They have limited precision in their ASCII outputs
 
 - Even though these testcases show differences, their global balances in standard output of EIRENE show no differences -> **OK to update these test cases**
-  
+
   - 1D_cylindric, 1D_elliptic, 1D-H_slab, 2D_cylindric, cylinder, ITER_1573, ITER_1573_def_lines, ITER_1573_dens_model, ITER_1573_scaling, ALT2S, 2D-D_polygon_NLPLG, 2D_elliptic, ALT2S_bits
-  
+
   - ITER test cases show differences due to neutral-neutral collisions in the IN-TALLIES
 
 - These test cases show differences with the new EIRENE database, but they show no differences in their global balances with the old EIRENE database -> **OK to update test cases**
-  
+
   - 2D-D_slab_finite_cylinder_11x11, 3D-D_tetra, 2D-D_polygon, 3D-D_slab_11x11x11
 
 - These test cases show differences with the new and the old EIRENE Database. **Reasson for changes needs still to be undestood, not OK to update**
-  
+
   - 2D-D_triang, cylinder_triang_no_octree, cylinder_triang_octree
-  
+
   - 2D-D_slab: Shows only some small differences in global balances with old database !!!
 
 ---

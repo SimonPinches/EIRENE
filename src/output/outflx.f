@@ -65,6 +65,7 @@ C
      .          SUMS(0:NADS,0:NSTRA),  VARS(0:NADS,0:NSTRA),
      .          SUML(0:NALS,0:NSTRA),  VARL(0:NALS,0:NSTRA)
       REAL(DP), ALLOCATABLE, SAVE :: HELP(:)
+      REAL(DP), ALLOCATABLE :: HELP2(:,:), TOTAR(:)
       REAL(DP) :: HELPP(NLMPGS)
       REAL(DP) :: SUM1, DUMMY, SUMMT, SUMMEM, SUMMTI, SUMMEI,
      .          SUMMTA, SUMMTM, SUMMA, SUMMS, SUMMM, SUMMI, SUMMP,
@@ -74,7 +75,8 @@ C
       INTEGER :: NR, NP, NT, MSURFG, J, NCELL, NTOTAL, N1, N2, N3, I,
      .           ITRII, IPLGN, ISPR, ITEXT, ISTS, NFTI, NFTE, NTCO,
      .           K, ITALS, IADS, IALS, IION, IPLS, IATM, N,
-     .           IMOL, IPHOT, ISPC, IOUT, ISF, IE, IT, ILIM, ID
+     .           IMOL, IPHOT, ISPC, IOUT, ISF, IE, IT, ILIM, ID,
+     .           IRA, IRE, IPA, IPE, IS
       INTEGER :: IADTYP(0:4)
       LOGICAL :: LGVRA1(0:NATM,0:NSTRA),
      .           LGVRM1(0:NMOL,0:NSTRA),
@@ -93,6 +95,9 @@ C
       LOGICAL :: PRINTED(NLIMPS)
       CHARACTER(8) :: TEXTA(NADS), TEXTL(NALS)
       CHARACTER(10) :: TEXTYP(0:4)
+      EXTERNAL :: EIRENE_INTVOL, EIRENE_PRTTLS, EIRENE_LEER,
+     .            EIRENE_MASAGE, EIRENE_MASBOX, EIRENE_MASR1,
+     .            EIRENE_MASYR1
 
       IF (.NOT.ALLOCATED(HELP)) ALLOCATE (HELP(NRAD))
 
@@ -169,6 +174,12 @@ C
             NFTI=NSPEZS(ISPR,1)
             NFTE=MAX(NFTI,NSPEZS(ISPR,2))
           ENDIF
+          IF ((LEVGEO == 4) .AND. (NFLAGS(ISPR) > 10)) THEN
+            ALLOCATE(HELP2(SURF_TRIAN_ORDERED(I)%NUMTR+1,NFTI:NFTE))
+            ALLOCATE(TOTAR(NFTI:NFTE))
+            HELP2 = 0._DP
+            TOTAR = 0._DP
+          END IF
           DO 10 K=NFTI,NFTE
             IF (K.GT.NFSTWI(ITALS)) THEN
               CALL EIRENE_LEER(1)
@@ -237,47 +248,67 @@ C  TOROIDAL SURFACE
                 N2=NP2ND
                 N3=1
               ENDIF
+              IRA = IRPTA(ISTS,1)
+              IRE = IRPTE(ISTS,1)
+              IPA = IRPTA(ISTS,2)
+              IPE = IRPTE(ISTS,2)
             case (4)
-              sum1=0._DP
-              ntco=0
-              DO NP=1,3
-                DO NR=1,NTRII
-                  IF (INMTI(NP,NR) == NLIM+ISTS) THEN
-                    MSURFG=NLIM+NSTS+INSPAT(NP,NR)
-                    NTCO=NTCO+1
-                    HELP(NTCO)=HELPP(MSURFG)
-                    SUM1=SUM1+HELPP(MSURFG)
-                  END IF
-                END DO
-              END DO
-              N1=NTCO+1
+              sum1 = 0._dp
+              nt =  surf_trian_ordered(i)%numtr
+              do j = 1, nt
+                 it = surf_trian_ordered(i)%itrias(j)
+                 is = surf_trian_ordered(i)%itrisi(j)
+                 msurfg=nlim+nsts+inspat(is,it)
+                 help(j) = helpp(msurfg)
+                 sum1 = sum1 + helpp(msurfg)
+              end do
+              if (nflags(ispr) > 10) help2(1:nt,k) = help(1:nt)
+              N1=NT+1
               N2=1
               N3=1
+             
+              IRA = 1
+              IRE = N1
+              IPA = 1
+              IPE = N2
             end select
 
             NTOTAL=N1*N2*N3
             IF (NTOTAL > 0) THEN
               CALL EIRENE_INTVOL (HELP,1,1,NTOTAL,DUMMY,N1,N2,N3,1)
+              IF (NFLAGS(ISPR) > 10) THEN
+                 HELP2(NTOTAL,K) = DUMMY
+                 TOTAR(K) = DUMMY
+              END IF   
               IF (ABS(DUMMY) > EPS60) THEN
                 CALL EIRENE_PRTTLS(TXTTLW(K,ITALS),TXTSPW(K,ITALS),
      .                  TXTUNW(K,ITALS),
-     .                  HELP,N1,N2,N3,1,NTOTAL,NFLAGS(ISPR),
+     .                  HELP,N1,N2,N3,1,NTOTAL,MOD(NFLAGS(ISPR),10),
      .                  NTLSFL(ISPR),
-     .                  IRPTA(ISTS,1),IRPTE(ISTS,1),IRPTA(ISTS,2),
-     .                  IRPTE(ISTS,2),1,1)
-              ELSE
-                CALL EIRENE_PRTTLS(TXTTLW(K,ITALS),TXTSPW(K,ITALS),
+     .                  IRA,IRE,IPA,IPE,1,1)
+               ELSE
+                 CALL EIRENE_PRTTLS(TXTTLW(K,ITALS),TXTSPW(K,ITALS),
      .                  TXTUNW(K,ITALS),
      .                  HELP,N1,N2,N3,1,NTOTAL,-1,
      .                  NTLSFL(ISPR),
-     .                  IRPTA(ISTS,1),IRPTE(ISTS,1),IRPTA(ISTS,2),
-     .                  IRPTE(ISTS,2),1,1)
-                CALL EIRENE_MASAGE
+     .                  IRA,IRE,IPA,IPE,1,1)
+                 CALL EIRENE_MASAGE
      .            ('IDENTICALLY ZERO, NOT PRINTED                ')
                 CALL EIRENE_LEER(2)
               END IF
             END IF
    10     CONTINUE
+
+          IF ((LEVGEO == 4) .AND. (NFLAGS(ISPR) > 10)) THEN
+             CALL EIRENE_PRINT_SURF_TRIAN (IUNOUT)
+             IF (NTLSFL(ISPR) > 0) THEN
+                OPEN(UNIT=NTLSFL(ISPR),POSITION='APPEND')
+                CALL EIRENE_PRINT_SURF_TRIAN (NTLSFL(ISPR))
+                CLOSE(UNIT=NTLSFL(ISPR))
+             END IF           
+             DEALLOCATE(HELP2)
+             DEALLOCATE(TOTAR)
+          END IF   
    11     CONTINUE
         ENDIF  ! non-def. standard surf. with spatial resolution: done
 
@@ -367,7 +398,7 @@ chk Legendre polynomial expansion tallies
                 IF (ESTIML(ISPC)%ISPCOPT==2) THEN
                   DO IE=1, ESTIML(ISPC)%NSPC
                     EN = ESTIML(ISPC)%SPCMIN +
-     .                   (IE-0.5)*ESTIML(ISPC)%SPCDEL
+     .                   (IE-0.5_DP)*ESTIML(ISPC)%SPCDEL
                     IF (ESTIML(ISPC)%LOG) THEN
                       WRITE (IOUT,'(I6,1ES12.4)') IE,10._DP**EN
                     ELSE
@@ -3057,4 +3088,55 @@ C  SPECTRA
                 ! FOR WHICH PRINTOUT WAS REQUESTED
       RETURN
  9999 FORMAT (1X,A32)
+
+
+      CONTAINS
+      
+      SUBROUTINE EIRENE_PRINT_SURF_TRIAN(IUN)
+
+      INTEGER, INTENT(IN) :: IUN
+      INTEGER :: II, KK, IT, IS, IS1, I1, I2
+      CHARACTER(1) :: TL(72)
+      CHARACTER(14) :: FORM, FORMA
+
+      DATA TL/72*'='/
+
+      CALL EIRENE_LEER(3)
+      WRITE (iun,*) TL
+      WRITE (iun,*) 'TALLY:   ',TXTTLW(NFTI,ITALS)
+      WRITE (iun,*) TL
+      CALL EIRENE_LEER(1)
+
+      FORM = '(I3,   ES12.4)'
+      WRITE (FORM(5:7),'(I3)') NFTE-NFTI+1+5
+
+      WRITE (IUN,'(63x,A)') 'SPECIES'
+      FORMA = '(A3,   A12)'
+      WRITE (FORMA(5:7),'(I3)') NFTE-NFTI+1+5
+      WRITE (IUN,FORMA) 'I','XA','YA','XE','YE','ARC LENGTH',
+     .                  (TRIM(TXTSPW(KK,ITALS)),KK=NFTI,NFTE)
+      WRITE (IUN,FORMA) ' ','CM','CM','CM','CM','CM',
+     .                  (TRIM(TXTUNW(KK,ITALS)),KK=NFTI,NFTE)
+
+      DO II = 1, NTOTAL-1
+         IT = SURF_TRIAN_ORDERED(I)%ITRIAS(II)
+         IS = SURF_TRIAN_ORDERED(I)%ITRISI(II)
+         IS1 = MOD(IS,3) + 1
+         I1 = NECKE(IS,IT)
+         I2 = NECKE(IS1,IT)
+         WRITE (IUN,FORM)
+     .      II, XTRIAN(I1), YTRIAN(I1), XTRIAN(i2), YTRIAN(I2),
+     .      SURF_TRIAN_ORDERED(I)%BGLT(II+1),
+     .      (HELP2(II,KK),KK=NFTI,NFTE)    
+      END DO
+      
+      WRITE (IUN,'(A)') 'TOTALS'
+      FORM = '(63X,  ES12.4)'
+      WRITE (FORM(6:7),'(I2)') NFTE-NFTI+1
+      WRITE (IUN,FORM) (TOTAR(KK),KK=NFTI,NFTE)
+
+      RETURN
+      END SUBROUTINE EIRENE_PRINT_SURF_TRIAN
+
+      
       END SUBROUTINE EIRENE_OUTFLX

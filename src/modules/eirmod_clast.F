@@ -1,0 +1,108 @@
+      MODULE EIRMOD_CLAST
+cdr  Stores parameters from rejection sampling,
+cdr  currently only: heavy particles collision routines:
+cdr  velocx, veloel, velopi.
+cdr  In case of TRCLST (module comprt), these rejection efficiency
+cdr  diagnostics are printed during the last test flight.
+cdr  What if the last test flight has no CX, EL, or PI collision?
+cdr  In case of parallel execution: set TRCLST = false
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+
+      IMPLICIT NONE
+
+      PRIVATE
+
+      PUBLIC :: EIRENE_ALLOC_CLAST, EIRENE_DEALLOC_CLAST,
+     P          EIRENE_INIT_CLAST
+
+      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
+     R          XCMEAN(:), SGCVMX(:),
+     R          XEMEAN(:), SGEVMX(:),
+     R          XPMEAN(:), SGPVMX(:)
+
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
+     I         NCMEAN(:),IFLRCX(:),
+     I         NEMEAN(:),IFLREL(:),
+     I         NPMEAN(:),IFLRPI(:)
+
+cym
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP threadprivate(XCMEAN,XEMEAN,XPMEAN,
+!$OMP& SGCVMX,SGEVMX,SGPVMX,NCMEAN,NEMEAN,NPMEAN,
+!$OMP& IFLRCX,IFLREL,IFLRPI)
+#endif
+
+      CONTAINS
+
+
+      SUBROUTINE EIRENE_ALLOC_CLAST
+
+      IF (ALLOCATED(XCMEAN)) RETURN
+
+      ALLOCATE (XCMEAN(NRCX))
+      ALLOCATE (SGCVMX(NRCX))
+      ALLOCATE (XEMEAN(NREL))
+      ALLOCATE (SGEVMX(NREL))
+      ALLOCATE (XPMEAN(NRPI))
+      ALLOCATE (SGPVMX(NRPI))
+
+      ALLOCATE (NCMEAN(NRCX))
+      ALLOCATE (IFLRCX(NRCX))
+      ALLOCATE (NEMEAN(NREL))
+      ALLOCATE (IFLREL(NREL))
+      ALLOCATE (NPMEAN(NRPI))
+      ALLOCATE (IFLRPI(NRPI))
+
+      WRITE (IUNMEM,'(A,T25,I15)')
+     .      ' CLAST ',(2*NRCX+2*NREL+2*NRPI)*(8+4)
+
+      CALL EIRENE_INIT_CLAST
+
+      RETURN
+      END SUBROUTINE EIRENE_ALLOC_CLAST
+
+
+      SUBROUTINE EIRENE_DEALLOC_CLAST
+
+      IF (.NOT.ALLOCATED(XCMEAN)) RETURN
+
+      DEALLOCATE (XCMEAN)
+      DEALLOCATE (SGCVMX)
+      DEALLOCATE (XEMEAN)
+      DEALLOCATE (SGEVMX)
+      DEALLOCATE (XPMEAN)
+      DEALLOCATE (SGPVMX)
+
+      DEALLOCATE (NCMEAN)
+      DEALLOCATE (IFLRCX)
+      DEALLOCATE (NEMEAN)
+      DEALLOCATE (IFLREL)
+      DEALLOCATE (NPMEAN)
+      DEALLOCATE (IFLRPI)
+
+      RETURN
+      END SUBROUTINE EIRENE_DEALLOC_CLAST
+
+
+      SUBROUTINE EIRENE_INIT_CLAST
+
+      XCMEAN = 0._DP
+      SGCVMX = 0._DP
+      XEMEAN = 0._DP
+      SGEVMX = 0._DP
+      XPMEAN = 0._DP
+      SGPVMX = 0._DP
+
+      NCMEAN = 0
+      IFLRCX = 0
+      NEMEAN = 0
+      IFLREL = 0
+      NPMEAN = 0
+      IFLRPI = 0
+
+      RETURN
+      END SUBROUTINE EIRENE_INIT_CLAST
+
+      END MODULE EIRMOD_CLAST

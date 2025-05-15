@@ -10,12 +10,16 @@ include:
 
 variables:
     SERVER_DOMAIN: 'jugit.fz-juelich.de'
+# DMH/uppercase_extensions
+    SAMPLE_CASE_VERSION: 2e7aeb793f5c54d67c350525a2007231a1b0c863
 # eirene_unified_bullseye
-    SAMPLE_CASE_VERSION: 313c4eef6edbf8af7c398886c47ef4a9eddf0f21
+#   SAMPLE_CASE_VERSION: 313c4eef6edbf8af7c398886c47ef4a9eddf0f21
 # OpenMP test cases, at present these exist in their own branch created from the
 # first commit. This can be merged at any time.
+# DMH/uppercase_extensions_OpenMP
+    SAMPLE_CASE_VERSION_OPENMP: a0f2b4564d237ffbbb11517407aaa5ccc98a824b
 # eirene_unified_openmp_bullseye
-    SAMPLE_CASE_VERSION_OPENMP: f532a411c370bc1b499ab1c1e897327472232e7b
+#   SAMPLE_CASE_VERSION_OPENMP: f532a411c370bc1b499ab1c1e897327472232e7b
 # Compatible EMC3 version with this EIRENE version
     EMC3_REPOSITORY_VERSION: 2f24415ec311d1479a67597ef678a2fe6fe49ec4
 # These variables allow the exclusion of certain stages to speed up development, true or false
@@ -138,8 +142,8 @@ prepare_testcases:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make -j
         - ls --full-time eirene || true
-        - ls --full-time ../../src/main-routines/eirene_main.f || true
-        - ls --full-time eirene_main.o || true        
+        - ls --full-time ../../src/main-routines/eirene_main.F || true
+        - ls --full-time eirene_main.o || true
     retry: 2
     artifacts:
         name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
@@ -191,7 +195,7 @@ build_iter_executable:
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - ls --full-time eirene || true
-        - ls --full-time ../../src/main-routines/eirene_main.f || true
+        - ls --full-time ../../src/main-routines/eirene_main.F || true
         - ls --full-time eirene_main.o || true
         - make output
     artifacts:
@@ -215,7 +219,7 @@ build_iter_executable:
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - ls --full-time eirene || true
-        - ls --full-time ../../src/main-routines/eirene_main.f || true
+        - ls --full-time ../../src/main-routines/eirene_main.F || true
         - ls --full-time eirene_main.o || true
         - make test
     retry: 2
@@ -1033,7 +1037,7 @@ prepare_openmp_testcases:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - make -j
         - ls --full-time eirene || true
-        - ls --full-time ../../src/main-routines/eirene_main.f || true
+        - ls --full-time ../../src/main-routines/eirene_main.F || true
         - ls --full-time eirene_main.o || true
     retry: 2
     artifacts:
@@ -1085,7 +1089,7 @@ prepare_openmp_testcases:
     script:
         - cd EIRENE-sample-cases/${PATH_CASE}
         - ls --full-time eirene || true
-        - ls --full-time ../../src/main-routines/eirene_main.f || true
+        - ls --full-time ../../src/main-routines/eirene_main.F || true
         - ls --full-time eirene_main.o || true
         - export OMP_NUM_THREADS=4
         - make output
@@ -1113,7 +1117,7 @@ prepare_openmp_testcases:
         - python3 --version
         - cd EIRENE-sample-cases/${PATH_CASE}
         - ls --full-time eirene || true
-        - ls --full-time ../../src/main-routines/eirene_main.f || true
+        - ls --full-time ../../src/main-routines/eirene_main.F || true
         - ls --full-time eirene_main.o || true
         - export OMP_NUM_THREADS=4
         - make test_openmp

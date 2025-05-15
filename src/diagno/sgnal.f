@@ -80,10 +80,11 @@ C
      .            SUMMT, ADDT, XMA,
      .            RC1MIN, RC1MAX, RC2MIN, RC2MAX
       REAL(DP) :: EIRENE_FTABRC1
+      EXTERNAL :: EIRENE_FTABRC1, EIRENE_SLOPE
       INTEGER :: I1, I2, IN, I, IS, NAC2, NBC2, ICHRD, IPVOT, NCHNI,
      .           IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR, IZ,
      .           KREC, IRRC, MAXREC, IFLAG, ISPC,
-     .           ICELL,
+     .           ICELL, ND_3, ND_5, ND_10,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
       INTEGER, SAVE :: MX_COMPO, ND
       LOGICAL :: NLVL(0:NSTRAI),LCHOR
@@ -118,6 +119,10 @@ C
      .                              RC2MIN, RC2MAX, FP2(6)
         END SUBROUTINE EIRENE_SLREAC
       END INTERFACE
+
+      EXTERNAL :: EIRENE_DBL_POLY, EIRENE_EXIT_OWN,
+     .            EIRENE_MASAGE, EIRENE_MASJ1,
+     .            EIRENE_MAXMN2, EIRENE_RSTRT, EIRENE_SYMET
 C
       ISTRA=IISTR
       NCHNI=IABS(NCHENI)
@@ -491,14 +496,17 @@ c  summation over contributions (different isotopes but same emission reactions,
           END IF
           ND = MAX(ND, MX_COMPO)
         END IF
-
-        IF (ANY(NCHTAL == 3)) ND = MAX(ND, NPHOTI)
-
-        IF (ANY(NCLTAL == 5)) ND = MAX(ND, 10)
-        IF (ANY(NCHTAL == 10)) ND = MAX(ND, NSPZ)
+cdr  Nov. 20:
+        ND_3=0
+        ND_5=0
+        ND_10=0
+        IF (ANY(NCHTAL == 3)) ND_3 = MAX(ND, NPHOTI)
+        IF (ANY(NCHTAL == 5)) ND_5 = MAX(ND, 10)
+        IF (ANY(NCHTAL == 10)) ND_10 = MAX(ND, NSPZ)
         IF (ANY(NCHTAL == 11)) ND = MAX(ND,1)
         IF (ANY(NCHTAL == 12)) ND = MAX(ND,10)
         IF (ANY(NCHTAL == 13)) ND = MAX(ND,10)
+        ND=MAX(ND,ND_3,ND_5,ND_10)
 
         ALLOCATE (PSIG(0:ND))
         PSIG = 0._DP

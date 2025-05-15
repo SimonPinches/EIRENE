@@ -141,4 +141,4 @@ C
       END DO
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_CTELL

@@ -12,6 +12,7 @@
 
       INTEGER :: ISTRA, ISTRAI
       REAL(DP) :: THMAX, RP1
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       NLSYMT(0)=.TRUE.
       NLSYMP(0)=.TRUE.

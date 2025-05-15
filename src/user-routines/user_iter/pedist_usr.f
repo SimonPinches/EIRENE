@@ -8,4 +8,5 @@
       REAL(DP), INTENT(INOUT) :: XTIM(0:NSTRA)
       REAL(DP), INTENT(IN) :: XX1 !< remaining CPU time
 
+      RETURN
       END SUBROUTINE EIRENE_PEDIST_USR

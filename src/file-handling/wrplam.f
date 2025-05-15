@@ -33,6 +33,7 @@ cdr  NLSHRT13 : SET TRUE IN INFCOP, COUPLE_SOLPS_ITER. REDUCED SIZE FORT.13.
       IMPLICIT NONE
       LOGICAL, INTENT(IN) :: TRCFLE
       CHARACTER(*), INTENT(IN) :: CALLEDFROM
+      EXTERNAL :: EIRENE_WRPLAM_LONG, EIRENE_WRPLAM_SHRT
 
       IF (NLSHRT13) THEN
         CALL EIRENE_WRPLAM_SHRT (TRCFLE,CALLEDFROM)
@@ -74,6 +75,7 @@ cdr                          all ipls: 1,npls, not just ipls=nfla+1,npls
       LOGICAL, INTENT(IN) :: TRCFLE
       CHARACTER(*), INTENT(IN) :: CALLEDFROM
       INTEGER :: JPLS
+      EXTERNAL :: EIRENE_RPLAM_LONG, EIRENE_RPLAM_SHRT
 c.............................................
 
       IF (NLSHRT13) THEN  !dr  similar to RPLAM_LONG(IFLG=10), but for

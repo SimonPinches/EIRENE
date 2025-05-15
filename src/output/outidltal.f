@@ -5,6 +5,10 @@ c  last modified: jan 2017
 
 
 cdr correction: 3 digits rather than 2 digits for I0 in outtal file name
+cdr jan 22: add std dev. tallies SIGMA
+cdr mar 22: try to document....
+cdr aug 22: separate output files for individual strata
+cdr         tbd: make pltstr(istra) flags also here.
 
       SUBROUTINE EIRENE_OUTIDLTAL
 cdr write all volumetric output tallies, each one on a separate file.
@@ -42,11 +46,14 @@ cdr               depending on how many non-zero rows a tally has.
       IMPLICIT NONE
 C
       REAL(DP), ALLOCATABLE :: VECTOR(:,:), TALAV(:), TALTOT(:)
-      REAL(DP) :: OUTAUI
-      INTEGER :: NFTI, NFTE, K, ITAL, I, ISTR, MXSPZ, IOUT, IN, KK
+      REAL(DP) :: OUTAUI, SMEAN
+      INTEGER :: NFTI, NFTE, K, ITAL, I, ISTR, MXSPZ, IOUT, ICELL, KK
+      INTEGER :: ISP, ISIG
       LOGICAL :: LFIRST
+      CHARACTER(6) :: CISTR, CITAL, CISP, CNFTI, CNFTE
 C
       CHARACTER(50) :: FNAME, FORMA, FORME, FORME2
+      EXTERNAL :: EIRENE_RSTRT, EIRENE_SYMET, EIRENE_LEER
 C
 !      IF (NSBOX_TAL /= NSBOX) THEN
 !         WRITE (IUNOUT,*) ' ERROR IN OUTIDLTAL '
@@ -119,18 +126,25 @@ cdr  Totals (outau, fort.11) are still on storage.
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))
           ENDIF
         ELSE
-          WRITE (iunout,*) 'ERROR IN OUTEIR: DATA FOR STRATUM ISTRA= ',
+          WRITE (iunout,*) 'ERROR IN OUTIDLTAL: STRATUM ISTRA= ',
      .                     ISTRA
-          WRITE (iunout,*) 'ARE NOT AVAILABLE. PRINTOUT ABANDONED'
+          WRITE (iunout,*) 'DATA ARE NOT AVAILABLE. PRINTOUT ABANDONED'
+          CALL EIRENE_LEER(1)
           CYCLE
         ENDIF
 C
 C
 C  PRINT VOLUME-AVERAGED TALLIES, STRATUM: ISTRA
+        write (cistr,'(I0)') istra
 
         DO 100 ITAL = 1, NTALV
 
-          IF (.NOT.LIVTALV(ITAL)) CYCLE
+          IF (.NOT.LIVTALV(ITAL)) THEN
+            WRITE (iunout,*) ' TALLY NOT AVAILABLE (OUTIDLTAL)',
+     .                       ' ITAL = ', ITAL
+            CALL EIRENE_LEER(1)
+            CYCLE
+          ENDIF
 C
           NFTI=1
           NFTE=NFSTVI(ITAL)
@@ -152,9 +166,9 @@ C
 C
             IF (NSBOX_TAL /= NSBOX) THEN
               DO I=1,NSBOX
-                IN = NCLTAL(I)
-                IF (IN > 0) THEN
-                  VECTOR(I,K)=ESTIMV(NADDV(ITAL)+K,IN)
+                ICELL = NCLTAL(I)
+                IF (ICELL > 0) THEN
+                  VECTOR(I,K)=ESTIMV(NADDV(ITAL)+K,ICELL)
                 ELSE
                   VECTOR(I,K)=0._DP
                 END IF
@@ -169,8 +183,12 @@ C
             TALAV(K)=TALTOT(K)/VOLTOT
   119     CONTINUE
 C
-          FNAME = 'outtal_   '
-          WRITE (FNAME(8:10),'(i0)') ITAL
+          write (cital,'(I0)') ital
+          write (cnfti,'(I0)') nfti
+          write (cnfte,'(I0)') nfte
+          FNAME =
+     .     'outtal_'//trim(cital)//'_'//trim(cistr)//
+     .           '_'//trim(cnfti)//'-'//trim(cnfte)
 
           IF (LFIRST) THEN
             OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',
@@ -216,6 +234,72 @@ cdr  only write cells with at least one non-zero contribution
           CLOSE (UNIT=IOUT)
 C
   100   CONTINUE  ! ITAL
+
+C  CHECK IF STANDARD DEVIATION TALLIES ARE AVAILABLE
+        DO 101 ISIG=1,NSIGVI
+          ITAL=IIH(ISIG)
+          ISP =IGH(ISIG)
+          IF (ISP.EQ.0) THEN
+          ENDIF
+          DO 112 I=1,NSBOX_TAL
+            VECTOR(I,1)=SIGMA(ISIG,I)
+  112     CONTINUE
+          SMEAN=SGMS(ISIG)
+C
+          write (cital,'(I0)') ital
+          write (cisp,'(I0)') isp
+          FNAME = 'outtal_'//trim(cital)//'_'//trim(cisp)//'_STDV'
+
+        IF (LFIRST) THEN
+          OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',
+     .          ACCESS='SEQUENTIAL')
+        ELSE
+          OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',
+     .          ACCESS='SEQUENTIAL',POSITION='APPEND')
+        END IF
+
+        WRITE (IOUT,'(A)')
+     .    '+++++++++++++++++++++++++++++++++++++++++++++++++'
+        WRITE (IOUT,'(A,I6)') 'ISTRA = ',ISTRA
+        WRITE (IOUT,'(A)')
+     .    '+++++++++++++++++++++++++++++++++++++++++++++++++'
+
+cdr  feb.22: special treatment for vectorial output tallies mapl_vec, mmpl_vec,....
+cdr          "species index" may be just a particular vector component instead.
+        if (ital.ge.97 .and. ital.le.100) then
+          WRITE (IOUT,'(A)') TXTTAL(isp,ITAL)
+        else
+cdr  tally name is the same for all "species"
+          WRITE (IOUT,'(A)') TXTTAL(1,ITAL)
+        endif
+        WRITE (IOUT,'(A,I10)') 'NCELLS:   ',NSBOX
+        WRITE (IOUT,'(A,I10)') 'NSPECIES: ',1
+        WRITE (IOUT,'(A)') 'SPECIES'
+        WRITE (IOUT,FORMA) TRIM(TXTSPC(ISP,ITAL))
+        WRITE (IOUT,'(A)') 'UNITS'
+        WRITE (IOUT,FORMA) TRIM(TXTUNT(ISP,ITAL))
+
+        WRITE (IOUT,'(A)') 'SDV OF TOTAL (%) '
+          WRITE (IOUT,'(A)') 'TOTAL'
+          WRITE (IOUT,FORME2) SMEAN
+          WRITE (IOUT,'(A)') 'MEAN'
+          WRITE (IOUT,FORME2) SMEAN
+
+          WRITE (IOUT,'(A)')
+     .      '================================================='
+
+cdr  print only rows with at least one non-zero entry. Skip all the others.
+cdr  This is the same as is done in OUTIDLPLA for input (field particle) tallies.
+          DO I=1, NSBOX
+            IF (ANY(ABS(VECTOR(I,1:1)) > EPS30))
+     .        WRITE (IOUT,FORME) I,VECTOR(I,1)
+          END DO
+          WRITE (IOUT,'(A)')
+     .      '================================================='
+
+          CLOSE (UNIT=IOUT)
+
+  101   CONTINUE  ! ISIG
 
         LFIRST = .FALSE.
 

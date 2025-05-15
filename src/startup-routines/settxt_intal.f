@@ -330,12 +330,11 @@ c  grad PSI
 C
       DO J=1,NTALI
 c  except for additional input tally: repeat units, for all species in a tally
-        IF (J.NE.12) THEN
-          TEXT24=TXTPUN(1,J)
-          DO I=2,N1MX
-            TXTPUN(I,J)=TEXT24
-          ENDDO
-        ENDIF
+        IF (J.EQ.12) CYCLE
+        TEXT24=TXTPUN(1,J)
+        DO I=2,N1MX
+          TXTPUN(I,J)=TEXT24
+        ENDDO
       ENDDO
 C
 C  True first tally dimension (physical species) for printout, plotting, etc..
@@ -345,12 +344,12 @@ C   Possibly reduced storage, if indirect addressing is applied: NPLSV, NPLSTI, 
 C   is coded via the quite similar array NFRSTP set in setprm_intal.f
 C
       NFSTPI(1)=1
-      NFSTPI(2)=NPLSTI
+      NFSTPI(2)=NPLSI
       NFSTPI(3)=1
       NFSTPI(4)=NPLSI
-      NFSTPI(5)=NPLSV
-      NFSTPI(6)=NPLSV
-      NFSTPI(7)=NPLSV
+      NFSTPI(5)=NPLSI
+      NFSTPI(6)=NPLSI
+      NFSTPI(7)=NPLSI
       NFSTPI(8)=1
       NFSTPI(9)=1
       NFSTPI(10)=1
@@ -368,8 +367,8 @@ cdr  inconsistent with using N1MX as first dimension
       NFSTPI(20)=1
       NFSTPI(21)=1
       NFSTPI(22)=1
-      NFSTPI(23)=NPLSV
-      NFSTPI(24)=NPLS
+      NFSTPI(23)=NPLSI
+      NFSTPI(24)=NPLSI
 
       NFSTPI(25)=1
 
@@ -383,24 +382,24 @@ cdr  gradients of input tallies
       NFSTPI(31)=1
       NFSTPI(32)=1
       NFSTPI(33)=1
-      NFSTPI(34)=NPLSTI
-      NFSTPI(35)=NPLSTI
-      NFSTPI(36)=NPLSTI
+      NFSTPI(34)=NPLSI
+      NFSTPI(35)=NPLSI
+      NFSTPI(36)=NPLSI
       NFSTPI(37)=1
       NFSTPI(38)=1
       NFSTPI(39)=1
       NFSTPI(40)=NPLSI
       NFSTPI(41)=NPLSI
       NFSTPI(42)=NPLSI
-      NFSTPI(43)=NPLSV
-      NFSTPI(44)=NPLSV
-      NFSTPI(45)=NPLSV
-      NFSTPI(46)=NPLSV
-      NFSTPI(47)=NPLSV
-      NFSTPI(48)=NPLSV
-      NFSTPI(49)=NPLSV
-      NFSTPI(50)=NPLSV
-      NFSTPI(51)=NPLSV
+      NFSTPI(43)=NPLSI
+      NFSTPI(44)=NPLSI
+      NFSTPI(45)=NPLSI
+      NFSTPI(46)=NPLSI
+      NFSTPI(47)=NPLSI
+      NFSTPI(48)=NPLSI
+      NFSTPI(49)=NPLSI
+      NFSTPI(50)=NPLSI
+      NFSTPI(51)=NPLSI
       NFSTPI(52)=1
       NFSTPI(53)=1
       NFSTPI(54)=1
@@ -449,34 +448,34 @@ cdr
       NFSTPI(94)=1
       NFSTPI(95)=1
       NFSTPI(96)=1
-      NFSTPI(97)=NPLSV
-      NFSTPI(98)=NPLSV
-      NFSTPI(99)=NPLSV
-      NFSTPI(100)=NPLS
-      NFSTPI(101)=NPLS
-      NFSTPI(102)=NPLS
+      NFSTPI(97)=NPLSI
+      NFSTPI(98)=NPLSI
+      NFSTPI(99)=NPLSI
+      NFSTPI(100)=NPLSI
+      NFSTPI(101)=NPLSI
+      NFSTPI(102)=NPLSI
 c  grad PSI
-      NFSTPI(103)=NPLS
-      NFSTPI(104)=NPLS
-      NFSTPI(105)=NPLS
+      NFSTPI(103)=1
+      NFSTPI(104)=1
+      NFSTPI(105)=1
 
       NFSTPI(106)=NPLS
       NFSTPI(107)=NPLS
       NFSTPI(108)=NPLS
 
 cdr  grad of free tallies 27...30
-      NFSTPI(109)=NPLS
-      NFSTPI(110)=NPLS
-      NFSTPI(111)=NPLS
-      NFSTPI(112)=NPLS
-      NFSTPI(113)=NPLS
-      NFSTPI(114)=NPLS
-      NFSTPI(115)=NPLS
-      NFSTPI(116)=NPLS
-      NFSTPI(117)=NPLS
-      NFSTPI(118)=NPLS
-      NFSTPI(119)=NPLS
-      NFSTPI(120)=NPLS
+      NFSTPI(109)=1
+      NFSTPI(110)=1
+      NFSTPI(111)=1
+      NFSTPI(112)=1
+      NFSTPI(113)=1
+      NFSTPI(114)=1
+      NFSTPI(115)=1
+      NFSTPI(116)=1
+      NFSTPI(117)=1
+      NFSTPI(118)=1
+      NFSTPI(119)=1
+      NFSTPI(120)=1
 C
       TXTPSP(1,1)='ELECTRONS               '
       TXTPSP(1,3)='ELECTRONS               '
@@ -581,6 +580,7 @@ cdr  This may be 3*NPLS due to vectorial tallies, but still be smaller than NSPA
 cdr  Most likely "weight-window tallies" 15, 73,74,75 do not exist in any run
 cdr  anyway. But still corrections are needed here.
       DO 50 ISPZ=1,NSPAMI
+        if (ispz.gt.n1mx) exit
         TXTPSP(ISPZ,15)=TEXTS(ISPZ)
         TXTPSP(ISPZ,73)=TEXTS(ISPZ)
         TXTPSP(ISPZ,74)=TEXTS(ISPZ)

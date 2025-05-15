@@ -49,6 +49,8 @@ c          plargl, prargl
       INTEGER :: NSPTP(NCHOR) ! should come via comsig. not ready.
       INTEGER :: J, ISTR, ISP, ITP, NCHNI, ICHORI
       LOGICAL :: PLSAVE,L_CHOR(NCHOR)
+      EXTERNAL :: EIRENE_HEADNG, EIRENE_LEER,
+     .            EIRENE_OUTSIG, EIRENE_SGNAL
 C
 C  INITIALISE LINE INTEGRATION ROUTINE
 C

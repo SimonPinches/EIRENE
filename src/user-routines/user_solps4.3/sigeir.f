@@ -67,4 +67,4 @@ C
       ENDIF
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_SIGEIR

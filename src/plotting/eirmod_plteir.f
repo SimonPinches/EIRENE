@@ -68,9 +68,9 @@ C
       REAL(DP), ALLOCATABLE :: VECTOR(:,:), VECSAV(:,:), VSDVI(:,:)
       REAL(DP), ALLOCATABLE :: XSPEC(:), YSPEC(:,:), VSPEC(:,:),
      .          WLSPEC(:), YSPECWL(:,:), VSPECWL(:,:)
-      REAL(DP) :: DUMMY(NRTAL)
+      REAL(DP), ALLOCATABLE :: DUMMY(:)
       REAL(DP) :: XXP3D_DUM(1), YYP3D_DUM(1)
-      REAL(DP) :: YMN2(NPLT), YMX2(NPLT), YMNLG2(NPLT), YMXLG2(NPLT)
+      REAL(DP), ALLOCATABLE :: YMN2(:), YMX2(:), YMNLG2(:), YMXLG2(:)
       REAL(DP) :: XMI, XMA, TMIN, TMAX, XI, XE, DEL, OUTAUI,
      .            SPCAN, SPC00, WL00, DE, DW
       INTEGER :: IR1(NPLT), IR2(NPLT), IRS(NPLT)
@@ -87,6 +87,11 @@ C
       CHARACTER(72) :: TXTLL1
       CHARACTER(72) :: HEAD,  HEAD0, HEAD1, HEAD2, HEAD3, HEAD4,
      .                 HEAD5, HEAD6, HEAD7, HEAD8, HEAD9, HEAD10, TXHEAD
+      EXTERNAL :: EIRENE_ALGTAL, EIRENE_INTTAL, EIRENE_ISOLNE,
+     .            EIRENE_PL3DPG, EIRENE_PLOT3D, EIRENE_PLTTLY,
+     .            EIRENE_RPSCOL, EIRENE_RPSVEC, EIRENE_RSTRT,
+     .            EIRENE_SYMET, EIRENE_VECLNE,
+     .            EIRENE_LEER, EIRENE_EXIT_OWN
 C
 C
       SAVE
@@ -239,6 +244,8 @@ C
         END IF
       END IF
 
+      ALLOCATE(DUMMY(NRTAL))
+      ALLOCATE(YMN2(NPLT), YMX2(NPLT), YMNLG2(NPLT), YMXLG2(NPLT))
       DO 10000 IBLD=1,NVOLPL
 C
         IF (PLTL2D(IBLD).OR.PLTL3D(IBLD)) THEN
@@ -293,7 +300,7 @@ C
 cdr  here we deal with input tallies (and gradients thereof)
 cdr  ITL = IABS(JTAL)
 cdr  physical species index range: 1:NF, independent of possible indirect addressing
-              NF=NFRSTP(ITL)
+              NF=NFSTPI(ITL)
               VECTOR(:,ICURV)=0.
 
 !  INPUT TALLY SWITCHED OFF ?
@@ -1028,6 +1035,7 @@ C
         ENDIF
 C
 10000 CONTINUE
+      DEALLOCATE(DUMMY)
 
 C  LOOP IBLD FINISHED, NO PICTURE PRODUCED IN CASE XMCP=0 AND OUTPUT TALLY REQUESTED
 C
@@ -1245,6 +1253,7 @@ cdr  itt=2 was still missing....  units probably: (TO BE CHECKED)
 
 20000 CONTINUE
 
+      DEALLOCATE(YMN2,YMX2,YMNLG2,YMXLG2)
       IF (ALLOCATED(VECTOR)) DEALLOCATE(VECTOR)
       IF (ALLOCATED(VECSAV)) DEALLOCATE(VECSAV)
       IF (ALLOCATED(VSDVI))  DEALLOCATE(VSDVI)

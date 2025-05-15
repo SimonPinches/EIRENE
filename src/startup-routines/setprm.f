@@ -55,6 +55,7 @@ cdr          may be allocated multiple times in associate_cestim?
       INTEGER :: ISAVE, J, ITAL, NLSTTL, NLSTTW
       LOGICAL :: LEXTALV(NTALV), LEXTALS(NTALS),
      .           LEXGENA, LEXGENM, LEXGENI, LEXGENPH
+      EXTERNAL :: EIRENE_LEER, EIRENE_EXIT_OWN
 C
 
       IF (NSTORDT.LT.1 .OR. NSTORDT.GT.9) THEN

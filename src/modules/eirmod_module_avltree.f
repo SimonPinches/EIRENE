@@ -207,10 +207,9 @@
       FUNCTION EIRENE_RotLeft(node) result(right)
 
       type(TAVLNode), POINTER :: node
-      type(TAVLNode), POINTER :: left, right
+      type(TAVLNode), POINTER :: right
       integer :: abal, bbal
 
-      left => node%left
       right => node%right
 
       node%right => right%left
@@ -252,11 +251,10 @@
       FUNCTION EIRENE_RotRight(node) RESULT(left)
 
       type(TAVLNode), pointer :: node
-      type(TAVLNode), pointer :: left, right
+      type(TAVLNode), pointer :: left
       integer :: abal, bbal
 
       left => node%left
-      right => node%right
 
       node%left => left%right
       left%right => node

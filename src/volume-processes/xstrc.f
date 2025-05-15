@@ -30,6 +30,7 @@ c
      .           j
       integer, external :: EIRENE_idez
       real(dp) :: factkk,aik
+      EXTERNAL :: EIRENE_EXIT_OWN
 
 c  fetch data for process nrc of ipls
 
@@ -48,7 +49,7 @@ c  fetch data for process nrc of ipls
       ITYP1=EIRENE_IDEZ(ISCD1P(ipls,nrc),1,3)
       ITYP2=EIRENE_IDEZ(ISCD2P(ipls,nrc),1,3)
 
-      IF ((IPL0 < 1) .OR. (IPL0 > MAXSPC(ITYP0))) GOTO 994
+      IF ((IPL0 < 1) .OR. (IPL0 > MAXSPC(ITYP0))) GOTO 993
       IF ((IPL1 < 1) .OR. (IPL1 > MAXSPC(ITYP1))) GOTO 994
       IF ((IPL2 < 1) .OR. (IPL2 > MAXSPC(ITYP2))) GOTO 994
 
@@ -96,11 +97,22 @@ c  fetch data for process nrc of ipls
       end select
       return
 
+  993 CONTINUE
+      WRITE (iunout,*) 'ERROR IN XSTRC: EXIT CALLED'
+      WRITE (iunout,*)
+     .  'SPECIES INDEX OF INCIDENT BULK PARTICLE OUT OF RANGE'
+      WRITE (iunout,*) 'KK, ityp0, IPL0 ',
+     .                  KK, ityp0, IPL0
+      CALL EIRENE_EXIT_OWN(1)
+
   994 CONTINUE
       WRITE (iunout,*) 'ERROR IN XSTRC: EXIT CALLED'
       WRITE (iunout,*)
      .  'SPECIES INDEX OF SECONDARY PARTICLE OUT OF RANGE'
-      WRITE (iunout,*) 'KK ',KK
+      WRITE (iunout,*) 'KK, ityp0, IPL0 ',
+     .                  KK, ityp0, IPL0
+      WRITE (iunout,*) 'ityp1, IPL1, itpy2, IPL2 ',
+     .                  ityp1, IPL1, ityp2, IPL2
       CALL EIRENE_EXIT_OWN(1)
 
       END SUBROUTINE EIRENE_XSTRC

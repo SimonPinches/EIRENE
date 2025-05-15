@@ -18,6 +18,7 @@ cdr  Aug. 19: started. Old data structure hydkin rebuild, for 1D tables
       integer, intent(out) :: ip1
       real(dp) :: res
       integer :: ite
+      external :: eirene_binsearch_2
 
       if (p1 <= tb%temps(1)) then
         ite = 1

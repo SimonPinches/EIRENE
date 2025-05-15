@@ -16,7 +16,7 @@ C  User specific read routines
       end interface eirene_read_block_11_usr
 
       interface eirene_write_block_11_usr
-        procedure :: eirene_read_block_11_usr_json
+        procedure :: eirene_write_block_11_usr_json
       end interface eirene_write_block_11_usr
 
       contains
@@ -64,5 +64,4 @@ C  User specific read routines
       end subroutine eirene_write_block_11_usr_json
 
       end module eirmod_iousr
-
 

@@ -39,6 +39,7 @@ c
      .            eirene_deter4x4, det, deti, root1, root2
       real(dp) :: b(4,4), ad(4,4)
       logical, allocatable, save :: visited(:)
+      external :: eirene_deter4x4
 
       real(dp) :: dummy
 

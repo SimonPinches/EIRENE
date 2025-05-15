@@ -56,8 +56,9 @@ c  lexp=true:   return exp(POLY)
       logical, intent(in) :: trc, lexp
       real(dp) :: p1, parm, cou, fp(6), s01, s02, ds12, expo1, expo2,
      .            ccxm1, ccxm2, almin, almax, coumin, coumax,
-     .            EIRENE_extrap
+     .            eirene_extrap
       integer :: ii, if8, ifex
+      external :: eirene_extrap
 
       p1=al        ! fit parameter for log-log fit: log(T), log(E),...
 c     parm=exp(p1)  ! physical parameter T, or E
@@ -186,8 +187,9 @@ C  Continue with a constant: poly evaluated at RCMAX
 
 C  PARAMETER "P1=AL" IS WITHIN VALID RANGE OF FIT:
 
-  100 cou = cf(9)
+  100 continue
 
+      cou = cf(9)
       do ii = 8, 1, -1
         cou = cou * p1 + cf(ii)
       end do

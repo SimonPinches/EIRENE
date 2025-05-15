@@ -30,6 +30,8 @@ cdr                                KK = 0: else, simple models (via jelrrc)
      .            eirene_brems
       INTEGER :: KK
       LOGICAL :: LADAS
+      EXTERNAL :: EIRENE_EXIT_OWN, EIRENE_FTABRC1,
+     .            EIRENE_ENERGY_RATE_COEFF, EIRENE_BREMS
 
       EIRENE_FEELRC1=0.D0
       KK=NELRRC(IRRC)

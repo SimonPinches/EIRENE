@@ -17,6 +17,7 @@
       real(dp) :: xx, yy, richtx, richty, ax, ay, v, vx, vy, t
       logical :: lc1(3), lc2(3), lhit1, lhit2
       TYPE(TRI_ELEM), POINTER :: CUR1, cur2
+      EXTERNAL :: EIRENE_BITSET
 
 ! pb for the time being
       if (.true.) return

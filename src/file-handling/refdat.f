@@ -53,6 +53,7 @@ C
       INTEGER :: I1, I2, I3, I4, I5, NRECL, IUN, IFILE, I, J, IFLR
       character*256 :: filename
       logical :: found
+      external :: eirene_leer, eirene_exit_own
 C
       IFLR=NHD6
       IF (NHD6.GT.12) THEN

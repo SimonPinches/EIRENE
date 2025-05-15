@@ -83,6 +83,8 @@ C
       REAL(DP), PARAMETER :: TMINL=-2.3_DP
       type(poly_data), pointer :: rp
       type(fit_forms), pointer :: rt
+      EXTERNAL :: EIRENE_DBL_POLY, EIRENE_LEER, EIRENE_EXIT_OWN,
+     .            EIRENE_RATE_COEFF, EIRENE_ENERGY_RATE_COEFF
 
       ITYP=EIRENE_IDEZ(IFRST,1,3)
       INUM=EIRENE_IDEZ(IFRST,2,3)
@@ -593,7 +595,7 @@ CTK      use EIRMOD_ctrcei, only: trcamd
       INTEGER, INTENT(IN) :: IREI
       REAL(DP) :: EN, EA, EI, EIRENE_FEHVEI1, EIRENE_FEELEI1
       INTEGER :: IPP, IP, IRAD, IO, IIO, IMIN, IMAX, IAT, IA, IML, IM
-
+      EXTERNAL :: EIRENE_LEER, EIRENE_FEHVEI1, EIRENE_FEELEI1
 C
       CALL EIRENE_LEER(2)
       WRITE (iunout,*) 'ELEC. IMPACT REACTION NO. IREI= ',IREI

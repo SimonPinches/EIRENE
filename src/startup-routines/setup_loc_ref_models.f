@@ -13,6 +13,7 @@
       REAL(DP) :: RSAVE
       TYPE(TSURFACE), POINTER :: SURFCUR, SURFCUR2
       TYPE(REFMODEL), POINTER :: REFCUR
+      EXTERNAL :: EIRENE_EXIT_OWN, EIRENE_IDEZ
 C
 C  SOURCE PARAMETERS AND (REFLECTING) BOUNDARY CONDITIONS,
 C  ON ADDITIONAL AND NON-DEFAULT STANDARD SURFACES
@@ -54,7 +55,7 @@ C
             ILSPT(NLJ) = REFCUR%JLSPT
             ISRS(:,NLJ) = REFCUR%JSRS
             ISRC(:,NLJ) = REFCUR%JSRC
-            LCHSPNWL(:,NLJ) = REFLIST%JLCHSPNWL
+            LCHSPNWL(:,NLJ) = REFCUR%JLCHSPNWL
             ZNML(NLJ) = REFCUR%ZNMLR
             EWALL(NLJ) = REFCUR%EWALLR
             EWBIN(NLJ) = REFCUR%EWBINR
@@ -76,8 +77,8 @@ C
             !Initialize pressure feedback loop
             IF (ILREF(NLJ) == 4)THEN
               CALL initPressureFeedback(RPRESSFED(NLJ), NLJ,
-     .                                  REFLIST%REFCELL,
-     .                                  REFLIST%REFPRESS)
+     .                                  REFCUR%REFCELL,
+     .                                  REFCUR%REFPRESS)
             END IF
 
             IF (.NOT.ASSOCIATED(SURFCUR2)) THEN

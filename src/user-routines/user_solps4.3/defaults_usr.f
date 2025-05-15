@@ -1,8 +1,7 @@
       subroutine eirene_defaults_usr
 
       use eirmod_parmmod
-      use eirmod_cpes, only: nprs,
-     .                       STRATEGY_DEFAULT, NPRLL_DEFAULT,
+      use eirmod_cpes, only: STRATEGY_DEFAULT, NPRLL_DEFAULT,
      .                       STRATEGY_EMBARRASS
 
       implicit none

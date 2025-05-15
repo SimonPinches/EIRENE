@@ -17,4 +17,5 @@ c
       NAIN=0
       NPTRGT=1
 
-      END
+      RETURN
+      END SUBROUTINE EIRENE_IF0PRM

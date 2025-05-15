@@ -3,6 +3,7 @@ cdr  tally 22 (electric potential) added, and a few comments, started...
 cdr  Possible pitfall: coarse graining onto scoring grid is not done here.
 cdr  Perhaps now some input tallies are on different grids?
 cpb  Input tallies are ALWAYS defined on the fine grid.
+cdr  2020   :  NTAL vs. NTALG, remove redundant printout
 
 C
       SUBROUTINE EIRENE_OUTIDLPLA
@@ -41,8 +42,10 @@ C
       REAL(DP) :: HELPI, TOTAL
       INTEGER :: IR, IP, IT, I, NBLCKA, IB, ITAL, NXM, NYM, NZM,
      .           K, KK,
-     .           NFTI, NFTE, MXSPZ, IOUT
+     .           NFTI, NFTE, MXSPZ, IOUT, NTAL
+      CHARACTER(6) :: CITAL, CNFTI, CNFTE
       CHARACTER(50) :: FNAME, FORMA, FORME, FORME2
+      EXTERNAL :: EIRENE_INTTAL, EIRENE_INTVOL, EIRENE_LEER
 C
 C  TYPE OF TALLY: TALTYP=0: #              (#-UNITS)
 C                 TALTYP=1: # DENSITY      (#-UNITS/CM**3)
@@ -115,7 +118,12 @@ C
       NYM=MAX(1,NP2NDM)
       NZM=MAX(1,NT3RDM)
 
-      DO 100 ITAL=1,NTALI
+cdr       1:NTALG regular input tallies
+cdr NTALG+1:NTALI gradients of these regular input tallies
+      NTAL=NTALG
+      IF (ANY(LIVTALI(NTALG+1:NTALI))) NTAL=NTALI
+
+      DO 100 ITAL=1,NTAL
 
 !  TALLY SWITCHED OFF ?
         IF (.NOT.LIVTALI(ITAL)) THEN
@@ -368,8 +376,11 @@ C
 
   119   CONTINUE
 C
-        FNAME = 'intal_  '
-        WRITE (FNAME(7:8),'(i0)') ITAL
+        write (cital,'(I0)') ital
+        write (cnfti,'(I0)') nfti
+        write (cnfte,'(I0)') nfte
+        FNAME =
+     .   'intal_'//trim(cital)//'_'//trim(cnfti)//'-'//trim(cnfte)
 
         OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',
      .        ACCESS='SEQUENTIAL')
@@ -423,6 +434,10 @@ C
         CLOSE (UNIT=IOUT)
 C
   100 CONTINUE   !  NTAL - LOOP
+cdr
+      IF (NTAL.LT.NTALI) THEN
+        WRITE (iunout,*) ' NO GRADIENT TALLIES AVAILABLE (OUTIDLPLA)'
+      ENDIF
 
       DEALLOCATE (HELPP)
       DEALLOCATE (HELPW)

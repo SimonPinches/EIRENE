@@ -43,6 +43,9 @@ c            if false:  make a new picture, and new frame
      .           I, IERR, IPEN1, IPEN2
       CHARACTER(10) :: CHR
       CHARACTER(12) :: CHR12
+      EXTERNAL :: EIRENE_PLNXTB, EIRENE_PLTMSK
+      EXTERNAL :: GRCHRC, GRDRW, GRJMP, GRJMPS, GRNWPN, GRSCLC, GRSCLV,
+     .            GRTXT, GRTXTC
       SAVE YA,IPEN1,IPEN2
 C
       IKURV=0

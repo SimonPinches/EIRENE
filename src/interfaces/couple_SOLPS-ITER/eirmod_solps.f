@@ -7,6 +7,4 @@
 
       integer, public, parameter :: msrfclsx=12
 
-      integer, public :: MAXPOIN
-
       end module eirmod_solps

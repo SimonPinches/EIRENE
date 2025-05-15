@@ -274,6 +274,10 @@ cdr  for reading asymptotics parameters from data files
         end subroutine eirene_lookup_adasdir_usr
 
       END INTERFACE
+
+      EXTERNAL :: EIRENE_READ_PHOTDBK, EIRENE_READ_TAB2D,
+     .            EIRENE_LEER, EIRENE_MASJ1R, EIRENE_MASRR1,
+     .            EIRENE_EXIT_OWN, EIRENE_UPPERCASE
 C
       IF(TRCAMD) WRITE(IUNOUT,'(A,1X,I3,1X,A8,1X,A4,1X,A,1X,A2)')
      w                 "IR,FILNAM,H123,REAC,CRC",IR,FILNAM,H123,
@@ -284,6 +288,7 @@ C
       WRITE (IUNOUT,*) 'FILNAM ',FILNAM
       WRITE (IUNOUT,*) 'H123 ',H123
       WRITE (IUNOUT,*) 'REAC ',REAC
+      CALL EIRENE_LEER(1)
 C
 ! defining backslash character
       BACK=ACHAR(92)
@@ -1183,14 +1188,6 @@ C
       WRITE (iunout,*) ' IR,MODCLF(IR) ',IR,MODCLF(IR)
       CLOSE (UNIT=29+ifoff)
       CALL EIRENE_EXIT_OWN(1)
-  991 WRITE (iunout,*) ' INVALID CONSTANT IN SLREAC. CONST= ',CONST
-      WRITE (iunout,*) ' CHECK "REACTION CARDS" FOR REACTION NO. ',IR
-      CLOSE (UNIT=29+ifoff)
-      CALL EIRENE_EXIT_OWN(1)
-  992 WRITE (iunout,*) ' DATASET ',FILNAM,' FOUND EMPTY'
-      CLOSE (UNIT=29+ifoff)
-      CALL EIRENE_EXIT_OWN(1)
- 6664 FORMAT (6E12.4)
 
       CONTAINS
 

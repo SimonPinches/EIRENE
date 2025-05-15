@@ -130,27 +130,27 @@ c   LGVAC(...,0)     : background vacuum flag
       INTEGER, INTENT(IN) :: ICALL
       REAL(DP) :: ZTII, ZTNI, FCT2, FCRG, FCT1, EIRENE_VDION, ZTEI,
      .            ZTNE,EMPLS, FCT0, TEPLS, DEPLS, DIPLS, AM1, TEF, DEF,
-     .            TEI, DEJ, TEIDEJ,
      .            BOLTZFAC, RCORONA, RCOLRAD, DELTAE,
      .            G_BOLTZ, G_PLANCK,
 ! rates and population coefficients for density models
      .            EIRENE_RATE_COEFF, EIRENE_OTHER_RATE_COEFF,
 ! asymptotics thereof
-     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX, DE_CORONA,
+     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX,
      .            BXP, BYP, BNORM, TE, DE
       REAL(DP) :: FP1(6), FP2(6)
       REAL(DP) :: BX, BY, BZ
       REAL(DP) :: tpb1, tpb2
-      REAL(DP) :: COEF1D(0:8), COEF2D(0:8,0:8)
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
      .                         BASE_DENSITY(:), BASE_TEMP(:),
      .                         TALLY(:)
-      INTEGER :: IR, IN, IP, IPM, IPLS, IOLD, ISW, IRE, I1,
-     .           I, J, JEND, IAIN, ISPZ,
+      INTEGER :: IR, IN, IP, IPM, IPLS, IOLD, IRE,
+     .           I, J, IAIN, ISPZ,
      .           KK,
-     .           IO, IPLSTI, IPLSV, IOLDTI, IOLDV, IBS, IFLG,
+     .           IPLSTI, IPLSV, IOLDTI, IOLDV, IBS, IFLG,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           ITAL, K, NFTI, NFTE, JPLS, IRC
+      EXTERNAL :: EIRENE_RATE_COEFF, EIRENE_OTHER_RATE_COEFF,
+     .            EIRENE_VDION
 
       TYPE(EIRENE_SPECTRUM) :: SPEC
       LOGICAL :: FOUND
@@ -169,26 +169,9 @@ c   LGVAC(...,0)     : background vacuum flag
           logical, intent(in) :: lfdx, lfdy, lfdz
         end subroutine eirene_calc_grad
 
-        SUBROUTINE EIRENE_SLREAC (IR,FILNAM,H123,REAC,CRC,
-     .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
-     .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, BUNDLING,
-     .             IROW_ESC, ICOL_ESC, POP_ESC)
-        USE EIRMOD_PRECISION
-        INTEGER,      INTENT(IN) :: IR, IZ1
-        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
-        CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
-        CHARACTER(8), INTENT(IN) :: FILNAM
-        CHARACTER(4), INTENT(IN) :: H123
-        CHARACTER(LEN=*), INTENT(IN) :: REAC
-        CHARACTER(2), INTENT(IN) :: ELNAME
-        CHARACTER(3), INTENT(IN) :: CRC
-        INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX,JFEX2MN, JFEX2MX
-        REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
-     .                              RC2MIN, RC2MAX, FP2(6)
-        END SUBROUTINE EIRENE_SLREAC
       end interface
+
+      EXTERNAL :: EIRENE_RPLAM, EIRENE_EXIT_OWN
 
       FP1 = 0._DP
       FP2 = 0._DP
@@ -217,6 +200,7 @@ cdr  IFLG=10:  set pointers DIINTF,... in RPLAM
         IPLS = JPLS
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
+c       write (iunout,*) jpls, cdenmodel(IPLS)
 
         SELECT CASE (CDENMODEL(IPLS))
 
@@ -276,6 +260,7 @@ cdr         itold=?                         ! type
 
             ALLOCATE (BASE_DENSITY(NRAD))
             ALLOCATE (BASE_TEMP(NRAD))
+
             CALL EIRENE_GET_BASE_DENSITY(1)
 
             DIIN(IPLS,1:NSBOX)=MAX(DVAC,BASE_DENSITY(1:NSBOX))
@@ -335,6 +320,7 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
 
             ALLOCATE (BASE_DENSITY(NRAD))
             ALLOCATE (BASE_TEMP(NRAD))
+
             CALL EIRENE_GET_BASE_DENSITY(1)
 
             DO IR=1,NSBOX
@@ -359,6 +345,7 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
 
             ALLOCATE (BASE_DENSITY(NRAD))
             ALLOCATE (BASE_TEMP(NRAD))
+
             CALL EIRENE_GET_BASE_DENSITY(1)
 
             IF (NLMLTI) THEN
@@ -433,12 +420,12 @@ C  SET ELECTRON DENSITY FROM QUASI-NEUTRALITY, FURTHER: TEINL, DEINL, LGVAC(..,0
       DEIN=0._DP
 
       DO J=1,NSBOX
-        DO IPLS=1,NPLSI
+        DO JPLS=1,NPLSI
 cnh       28.10.2019
-          IF(ZIIN(IPLS,J).NE.ZVAC) THEN
-            DEIN(J)=DEIN(J)+ZIIN(IPLS,J)*DIIN(IPLS,J)
+          IF(ZIIN(JPLS,J).NE.ZVAC) THEN
+            DEIN(J)=DEIN(J)+ZIIN(JPLS,J)*DIIN(JPLS,J)
           ELSE
-            DEIN(J)=DEIN(J)+DBLE(NCHRGP(IPLS))*DIIN(IPLS,J)
+            DEIN(J)=DEIN(J)+DBLE(NCHRGP(JPLS))*DIIN(JPLS,J)
           ENDIF
         END DO
 C  SET 'LOG OF TEMPERATURE AND DENSITY' ARRAYS
@@ -471,7 +458,8 @@ C
       ALLOCATE (BASE_DENSITY(NRAD))
       ALLOCATE (BASE_TEMP(NRAD))
 
-      DO IPLS=1,NPLSI
+      DO JPLS=1,NPLSI
+        IPLS=JPLS
 
         IF (LEN_TRIM(CDENMODEL(IPLS)) == 0) CYCLE
 
@@ -518,7 +506,8 @@ cdr tbd:  avoid division by zero here
 cdr nsbox rather than nsurf? Otherwise this will not work in additional cells
             RCORONA=0.0
             IF (.NOT.LGVAC(IR,NPLS+1)) THEN
-              TEF=TEINL(IR)
+cdr  Te cut off safety at 0.1 eV
+              TEF=max(-2.3_DP,TEINL(IR))
               RCORONA = EIRENE_RATE_COEFF(IRC,IR,TEF,0._DP,.TRUE.,0)
             END IF
 c  now RCORONA contains the excitation rate coefficient (cm**3/s),
@@ -587,6 +576,7 @@ c  sum up contributions coupled to one or more (NRE) base-species
             IOLD=TDMPAR(IPLS)%TDM%ISP(IRE)
             IOLDTI=MPLSTI(IOLD)
             IOLDV=MPLSV(IOLD)
+c           write (iunout,*) 'test colrad ',iold,ioldti,ioldv
             CALL EIRENE_GET_BASE_DENSITY(IRE)
 
 c  temperature and density dependence in reduced population coefficient
@@ -595,7 +585,6 @@ cdr            now to more general reaction card IRC
 cdr            (e.g. population coefficients from internal CR codes
 cdr                  or from AMJUEL H.11, or H.12 data fits)
             IRC = TDMPAR(IPLS)%TDM%IRC(IRE)
-            DE_CORONA=1.E8_DP
             DO IR=1,NSBOX
 cdr nsbox rather than nsurf? Otherwise this will not work in additional cells
               IF (LGVAC(IR,NPLS+1)) CYCLE
@@ -603,7 +592,7 @@ cdr nsbox rather than nsurf? Otherwise this will not work in additional cells
               TE=TEIN(IR)
               DE=DEIN(IR)
               DEF=LOG(DE)
-              TEF=max(-2.30,LOG(TE)) ! cut off at 0.1 eV
+              TEF=max(-2.3_DP,LOG(TE)) ! cut off at 0.1 eV
 
               RCOLRAD=EIRENE_OTHER_RATE_COEFF(IRC,IR,TEF,DEF,.TRUE.,1)
 
@@ -718,14 +707,14 @@ C
                   EDRIFT(IPLS,J)=CVRSSP(IPLS)*EIRENE_VDION(J)**2
                 ELSE
 C                 WRITE(iunout,*)'WARNING PLASMA_DERIV: IPLS>1 NO DRIFT!'
-                  EDRIFT(IPLS,J)=0.D0
+                  EDRIFT(IPLS,J)=0._DP
                 END IF
               ELSE
                 EDRIFT(IPLS,J)=CVRSSP(IPLS)*
      .              (VXIN(IPLSV,J)**2+VYIN(IPLSV,J)**2+VZIN(IPLSV,J)**2)
               END IF
             ELSE
-              EDRIFT(IPLS,J)=0.D0
+              EDRIFT(IPLS,J)=0._DP
             ENDIF
           END DO
         END DO
@@ -978,8 +967,8 @@ cdr NTALG+1:NTALI gradients of these regular input tallies
         ALLOCATE (TALLY(NCORNER))
         DO ITAL = 1, NTALG
 C  ITAL : NO. OF TALLY OF WHICH GRADIENT IS TO BE CALCULATED
-C  KK   : INDEX OF GRADIENT TALLY: KK+1, KK+2, KK+3
-          KK = NTALG + (ITAL-1)*3 
+C  KK   : INDEX OF GRADIENT TALLY COMPONENTS: KK+1, KK+2, KK+3
+          KK = NTALG + (ITAL-1)*3
           IF (ANY(LIVTALI(KK+1:KK+3))) THEN
             NFTI = 1
             NFTE=NFSTPI(KK+1)  ! same as for KK+2, KK+3
@@ -1026,6 +1015,7 @@ c  output: base_density, base_temp (missing: base_drift?)
 c
       INTEGER, INTENT(IN) :: IRE
       INTEGER :: IG, IT, ISTRA, ITYP
+      EXTERNAL :: EIRENE_RSTRT, EIRENE_SYMET, EIRENE_EXIT_OWN
 
       BASE_DENSITY = 0._DP
       BASE_TEMP = 0._DP

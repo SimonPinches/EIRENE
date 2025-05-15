@@ -16,7 +16,8 @@
 
       PUBLIC :: EIRENE_PLT2D, EIRENE_CHCTRC, EIRENE_PLT2D_REINIT
 
-      INTEGER,PARAMETER :: NTXHST=21
+      INTEGER, PARAMETER :: NTXHST=21
+
       CONTAINS
 
       subroutine EIRENE_plt2d
@@ -42,6 +43,10 @@ cdr  to still be able to provide printed trajectory output.
       INTEGER :: ISTR, I
       LOGICAL :: LWR
       CHARACTER(20) :: TXTHST(NTXHST)
+      EXTERNAL :: EIRENE_LEER, EIRENE_MASJ1, EIRENE_MASJ1R,
+     .            EIRENE_MASJ3, EIRENE_MASJ4, EIRENE_MASR1,
+     .            EIRENE_MASR2, EIRENE_MASR3, EIRENE_MASR5,
+     .            EIRENE_MASR6
 
       DATA TXTHST
      .           /'LOCATE(1)           ',
@@ -64,7 +69,7 @@ cdr  to still be able to provide printed trajectory output.
      .            'ERROR DETECTED      ',     ! SYMBOL FOR PARTICLE
                                               ! TRACING ERROR.
 c  next symbols/text: only for printout, not on plot.
-     .            'INT. GRID SURFACE(8)',
+     .            'INT.GRID SURFACE(19)',
      .            'DIFFUSION STEP(20)  ',
      .            'STATIC LOOP(21)     '/
 C
