@@ -1,5 +1,30 @@
 # EIRENE
 
+## Legal aspects
+
+The EIRENE  code is distributed under the dual "CC By-NC-ND 4.0" and Forschungszentrum Juelich GmbH developed dedicated "EPL" licence. The user is bound by at least one of the licences at the own choice. The EPL requires the mandatory registration at www.eirene.de website and recognition of the FZ Juelich origin of the code, however it is much less restrictive for scientific developers.
+
+The EIRENE public licence (EPL) is contained in the same directory in the "EPL.md" file. 
+
+The "CC By-NC-ND 4.0" licence is also saved to the EIRENE root (as markdown and converted PDF) files based on the orginal licence from https://creativecommons.org/licenses/by-nc-nd/4.0/ converted to markdown format by https://github.com/idleberg/Creative-Commons-Markdown. 
+
+The EIRENE code primary application domain is linear kinetic transport, mainly
+to study interaction of neutral gas and radiation with magnetized plasmas.
+
+The EIRENE code is a continuously updated "moving target", developed at
+Forschungszentrum Jülich GmbH (FZJ) mainly for own scientific applications.
+
+The EIRENE team at FZJ is not a "code provider". We do not offer technical and
+3rd party support at the level which would be necessary for such a complex
+numerical tool.
+
+For this reason no download of EIRENE as ready-to-use software is foreseen.
+
+On the other hand, EIRENE is an open source code, which we are happy to provide
+and jointly employ within projects and collaborations of mutual interest.
+
+
+
 ## Source code
 
 The source code of EIRENE is [hosted on JuGit](https://jugit.fz-juelich.de/eirene/eirene).
@@ -61,21 +86,4 @@ instead. The variable values correspond to the folder name without prefix (`coup
 
 EIRENE is an open source code and we are very happy to accept contributions. Please refer to the [contributing guide](CONTRIBUTING.md) for more details.
 
-## Legal aspects
 
-The EIRENE public licence is contained in the same directory in the "EPL.md" file.
-
-The EIRENE code primary application domain is linear kinetic transport, mainly
-to study interaction of neutral gas and radiation with magnetized plasmas.
-
-The EIRENE code is a continuously updated "moving target", developed at
-Forschungszentrum Jülich GmbH (FZJ) mainly for own scientific applications.
-
-The EIRENE team at FZJ is not a "code provider". We do not offer technical and
-3rd party support at the level which would be necessary for such a complex
-numerical tool.
-
-For this reason no download of EIRENE as ready-to-use software is foreseen.
-
-On the other hand, EIRENE is an open source code, which we are happy to provide
-and jointly employ within projects and collaborations of mutual interest.
