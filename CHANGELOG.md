@@ -16,7 +16,7 @@
 
 ---
 
-## D. Harting - New EIRENE version: Release-V1.2.0 - 80d2f78fd3ffe075962b9c594e7599faee3317db
+## D. Harting - New EIRENE version: Release-V1.2.0 - e7beec746cf1c1a646c488f696bec65dcf35f85e
 
 #### Based on V1.1.2 and develop 580f5ab43fe927c23fb42daee40cd6f3026c4719
 
@@ -27,13 +27,14 @@ New_EIRENE_Version=1.2.0
 |                                               |
 |   New EIRENE version: Release-V1.2.0          |
 |   Date: 15th May 2025                         |
-|   MsV:  ???                                   |
 |                                               |
 +===============================================+
 ```
 **Most relevant changes since V1.1.0**
 
-1. EIRENE is now under dual license (revise wording).
+1. EIRENE is now under dual license:
+   - EIRENE Public Licence (EPL.md)
+   - and Creative Commons Public Licenses (CC_BY-NC-ND.md)
 2. Minor bugfixes to EIRENE Database.
    - amjuel.tex (Reaction 2.7.14:  e + N_2^+ -> N + N)
    - AMMONX_Arrh-elast.tex (Reaction 14s: e + N2 -> N + N + e)
