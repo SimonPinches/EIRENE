@@ -26,15 +26,17 @@ New_EIRENE_Version=1.2.0
 +===============================================+
 |                                               |
 |   New EIRENE version: Release-V1.2.0          |
-|   Date: 15th May 2025                         |
+|   Date: 23th May 2025                         |
+|   MsV:  MsV-JuelichOrigin_1.0-Oct2024-V1.1.0  |
 |                                               |
 +===============================================+
 ```
 **Most relevant changes since V1.1.0**
 
-1. EIRENE is now under dual license:
-   - EIRENE Public Licence (EPL.md)
-   - and Creative Commons Public Licenses (CC_BY-NC-ND.md)
+1. EIRENE is now under the dual license:
+   - EIRENE Public Licence - "EPL" (see EPL.md) provided by the Forschungszentrum Juelich GmbH (FZJ)
+   - and Creative Commons Public License "CC BY-NC-ND 4.0" (see CC_BY-NC-ND.md file and its pdf-converted version)
+   The user is bound by at least one of those licenses - at the own choince. The EPL allows research purposed development including creating an own developer community and even providing limiterd commercial services within the boudaries regulated by the EPL, however it requirs registration at www.eirene.de/EPL
 2. Minor bugfixes to EIRENE Database.
    - amjuel.tex (Reaction 2.7.14:  e + N_2^+ -> N + N)
    - AMMONX_Arrh-elast.tex (Reaction 14s: e + N2 -> N + N + e)

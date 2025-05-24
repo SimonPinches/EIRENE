@@ -2,9 +2,9 @@
 
 ## Legal aspects
 
-The EIRENE  code is distributed under the dual "CC By-NC-ND 4.0" and Forschungszentrum Juelich GmbH developed dedicated "EPL" licence. The user is bound by at least one of the licences at the own choice. The EPL requires the mandatory registration at www.eirene.de website and recognition of the FZ Juelich origin of the code, however it is much less restrictive for scientific developers.
+The EIRENE code is distributed under the dual "CC By-NC-ND 4.0" and Forschungszentrum Juelich GmbH (FZJ) developed dedicated "EPL" licence. The user is bound by at least one of the licences at the own choice. The EPL requires the mandatory registration at www.eirene.de website and recognition of the FZ Juelich origin of the EIRENE code, however it is much less restrictive for research-oriented developers. The EPL allows as well a creation of a new developers community so as providing the limited commercial services (for details please check the EPL.md file or www.eirene.de/EPL)
 
-The EIRENE public licence (EPL) is contained in the same directory in the "EPL.md" file. 
+The EIRENE public licence (EPL) is contained in the same directory (EIRENE repository root) in the "EPL.md" file. The licence is versioned together with the code and the manual, which is ensured by Git hooks.
 
 The "CC By-NC-ND 4.0" licence is also saved to the EIRENE root (as markdown and converted PDF) files based on the orginal licence from https://creativecommons.org/licenses/by-nc-nd/4.0/ converted to markdown format by https://github.com/idleberg/Creative-Commons-Markdown. 
 
