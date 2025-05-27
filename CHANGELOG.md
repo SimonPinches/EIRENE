@@ -16,7 +16,7 @@
 
 ---
 
-## D. Harting - New EIRENE version: Release-V1.2.0 - 9bf18969ff73fc5a5d6913854d70bc7550ed2ce0
+## D. Harting - New EIRENE version: Release-V1.2.0 - 1ae241d96213ee7f22f83da44a15d1a561d2f476
 
 #### Based on V1.1.2 and develop 580f5ab43fe927c23fb42daee40cd6f3026c4719
 
