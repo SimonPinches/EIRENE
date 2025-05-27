@@ -77,6 +77,7 @@ c  transformation of parameters p1 and p2:
 
       integer :: jfex1mn, jfex1mx,jfex2mn, jfex2mx
       integer :: ip1, ip2, iflavor, ivar
+      external :: eirene_sngl_poly, eirene_dbl_poly, eirene_exit_own
 
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)

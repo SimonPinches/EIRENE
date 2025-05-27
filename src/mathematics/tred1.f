@@ -122,4 +122,4 @@ C
 C
       RETURN
 C     :::::::::: LAST CARD OF TRED1 ::::::::::
-      END
+      END SUBROUTINE EIRENE_TRED1

@@ -2244,7 +2244,7 @@ the subscripts $mpSh$ and $eSh$ labelling the plasma side magnetic pre-sheath
 entrance and the electrostatic sheath entrance, respectively.
 
 \begin{figure}[h]
-  \includegraphics[height=9.0cm]{magn_pre_sheath}
+  \includegraphics[height=9.0cm]{figures/magn_pre_sheath.eps}
   \caption{Transition region between fluid plasma (\ac{CFD}) and wall surface, 
     schematic. 
     The plasma flow is specified by \ac{CFD} models at the entrance surface of 
@@ -2704,11 +2704,11 @@ grid voxels.
     supplemented by about 100 (\acs{BREP}) first and second order surfaces for 
     ALT-II scoops, pumping ducts and inner structures such as probe supports, 
     getter pumps, etc..}
-    {\includegraphics[width=0.48\textwidth, angle=90]{ALT-II}}
+    {\includegraphics[width=0.48\textwidth, angle=90]{figures/ALT-II.eps}}
   \hfill
   \subcaptionbox{\label{label1r} Same as left Figure, but \ac{BREP} part only, and 
     EIRENE re-run with more modern 3D visualisation graphics program, 2009.}
-    {\includegraphics[width=0.48\textwidth]{alt_imp}}
+    {\includegraphics[width=0.48\textwidth]{figures/alt_imp.eps}}
 \end{figure}
 
 If these surfaces are transparent, they can be used to conveniently ``measure"
@@ -2900,7 +2900,7 @@ The \cref{flow03} illustrates this mode of operation.
 \newpage
 
 \begin{figure}[h]
-  \includegraphics[width=\textwidth]{flowchart9}
+  \includegraphics[width=\textwidth]{figures/flowchart9.eps}
   \caption{Explicit coupling scheme between EIRENE and a \ac{CFD} code (for 
     plasma flow): After each plasma code cycle (or time step) a full new Monte 
     Carlo run is carried out.
@@ -2958,7 +2958,7 @@ The \cref{flow03} illustrates this mode of operation.
 %{\center
 
 \begin{figure}[h]
-  \includegraphics[width=\textwidth]{flowchart7}
+  \includegraphics[width=\textwidth]{figures/flowchart7.eps}
   \caption{``Semi implicit" coupling scheme between EIRENE and a \ac{CFD} code
     (e.g.\ BRAAMS B2 for plasma flow), involving internal re-iteration on sources 
     terms without new Monte Carlo trajectories, much less frequent Monte Carlo 
@@ -3048,7 +3048,7 @@ The \cref{flow03} illustrates this mode of operation.
 %{\center
 
 \begin{figure}[h]
-  \includegraphics[width=\textwidth]{flowchart8}
+  \includegraphics[width=\textwidth]{figures/flowchart8.eps}
   \caption{Time dependent coupling to plasma \ac{CFD} code.}
   \label{flow03}
 \end{figure}
@@ -3114,7 +3114,7 @@ The \cref{flow03} illustrates this mode of operation.
 \newpage
 
 \begin{figure}{h}
-  \includegraphics[height=20cm]{converg}
+  \includegraphics[height=20cm]{figures/converg.eps}
   \caption{Convergence of B2/EIRENE, measured by B2-residuals. 
     Method: implicit coupling, method of ``saturated residuals", ref.\ 
     \cite{kn:Maddison94}.}
@@ -3957,7 +3957,7 @@ to be filled in startup routine pedist.f
 \section{EIRENE flow charts} \label{sec1.9}
 
 \begin{figure}[h]
-  \includegraphics[width=14cm]{flowchart1}
+  \includegraphics[width=14cm]{figures/flowchart1.eps}
   \caption{Structure: EIRENE code.}
   \label{flow1}
 \end{figure}
@@ -3965,7 +3965,7 @@ to be filled in startup routine pedist.f
 \newpage
 
 \begin{figure}
-  \includegraphics[height=\textwidth]{flowchart2}
+  \includegraphics[height=\textwidth]{figures/flowchart2.eps}
   \caption{Program EIRENE.}
   \label{flow2}
 \end{figure}
@@ -3973,7 +3973,7 @@ to be filled in startup routine pedist.f
 \newpage
 
 \begin{figure}
-  \includegraphics[height=22cm]{flowchart3}
+  \includegraphics[height=22cm]{figures/flowchart3.eps}
   \caption{Subroutine INPUT.}
   \label{flow3}
 \end{figure}
@@ -3981,7 +3981,7 @@ to be filled in startup routine pedist.f
 \newpage
 
 \begin{figure}
-  \includegraphics[height=22cm]{flowchart4}
+  \includegraphics[height=22cm]{figures/flowchart4.eps}
   \caption{Subroutine MCARLO.}
   \label{flow4}
 \end{figure}
@@ -3989,7 +3989,7 @@ to be filled in startup routine pedist.f
 \newpage
 
 \begin{figure}
-  \includegraphics[height=16cm]{flowchart5_new}
+  \includegraphics[height=16cm]{figures/flowchart5_new.eps}
   \caption{Particle loop in subr.\ MCARLO. 
     Default volume averaged tallies are updated, ``on the fly" 
     \emph{(per event)} in routines UPDATE, problem specific tallies for code-code 
@@ -4009,7 +4009,7 @@ to be filled in startup routine pedist.f
 \newpage
 
 \begin{figure}
-  \includegraphics[height=22cm]{flowchart6}
+  \includegraphics[height=22cm]{figures/flowchart6.eps}
   \caption{Iterative mode for neutral--neutral interactions.}
   \label{flow6}
 \end{figure}

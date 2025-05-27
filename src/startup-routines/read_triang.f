@@ -32,6 +32,7 @@ c
      .           ISTMIN, ISTMAX, IC, n2, n3, nb1, ns1, nb3, ns3,
      .           jt, js, js1, imin, imax, jmin, jmax, in1, in3
       real(dp) :: ar
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       LL=LEN_TRIM(CASENAME)
 

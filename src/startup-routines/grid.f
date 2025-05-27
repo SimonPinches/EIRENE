@@ -63,6 +63,10 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
      .           NT, IS1, IM, IMP, JLIM
       LOGICAL :: LERROR
       LOGICAL, ALLOCATABLE :: VISITED(:,:)
+      EXTERNAL :: EIRENE_ARELLP, EIRENE_GRID_1, EIRENE_PROUSR,
+     .            EIRENE_SNEIGH, EIRENE_SUCHE_NACHBARN,
+     .            EIRENE_LEER, EIRENE_MASR2, EIRENE_MASR3,
+     .            EIRENE_MASRR1, EIRENE_MASRR4, EIRENE_EXIT_OWN
 !pb
       TYPE(TRI_ELEM), POINTER :: CUR
 
@@ -629,6 +633,13 @@ c  all other transparent cell faces must either have a neighbor, or a surface bo
               END IF
             END DO
           END IF
+        END DO
+
+        DO J = 1, NLIMPS
+          if (surf_trian(j)%numtr == 0) cycle
+          IF ((J <= NLIMI) .AND. (ILPLG(J) == 0)) CYCLE
+!pb       write (iunout,*) 'CALL SORT_TRI_SURF, J =',J
+          CALL EIRENE_SORT_TRI_SURF(SURF_TRIAN(J),SURF_TRIAN_ORDERED(J))
         END DO
 C
         IF (TRCGRD) THEN

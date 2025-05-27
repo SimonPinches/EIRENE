@@ -31,6 +31,7 @@ c  FOR WEIGHTING
       integer :: i, j, ir, ipart, ip, ic, in, nrk, ic1, ic2, ic3, ic4,
      .           it
       TYPE(CELL_ELEM), POINTER :: CUR
+      EXTERNAL :: EIRENE_EXIT_OWN
 
 c  2d cartesian x-y- grid
       if ((levgeo == 1)

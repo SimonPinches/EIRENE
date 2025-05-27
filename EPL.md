@@ -4,13 +4,22 @@ lang: en
 ---
 
 :::info
-EIRENE IEK-4
-EPL (EIRENE Public Licence)
-Version: 1.1.2
+EIRENE IFN-1, Forschungszentrum Jülich GmbH (FZJ)
+**EPL (EIRENE Public Licence)**
+Version: 1.2.0
 Copyright Forschungszentrum Jülich GmbH
 :::
 
-[TOC]
+**Table of contents**
+- [Preamble](#preamble)
+- [1. Scope](#1-scope)
+- [2. Definitions](#2-definitions)
+- [3. Rights and Obligations](#3-rights-and-obligations)
+- [4. Copyright](#4-copyright)
+- [5. Warranty](#5-warranty)
+- [6. Liability](#6-liability)
+- [7. Publications](#7-publications)
+- [8. Acceptance of the Licence](#8-acceptance-of-the-licence)
 
 # Preamble
 

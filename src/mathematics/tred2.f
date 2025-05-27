@@ -151,4 +151,4 @@ C
 C
       RETURN
 C     :::::::::: LAST CARD OF TRED2 ::::::::::
-      END
+      END SUBROUTINE EIRENE_TRED2

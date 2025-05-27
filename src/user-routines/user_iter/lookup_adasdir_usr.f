@@ -11,6 +11,7 @@
       character(*), intent(in), optional :: ELNAME, BUNDLING
       integer :: ierr
       logical :: found0, found1, found2
+      EXTERNAL :: EIRENE_EXIT_OWN
 
 !     If open fails, try again interpreting the path as relative
 !     to SOLPSTOP/modules/Eirene

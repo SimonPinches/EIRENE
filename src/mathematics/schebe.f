@@ -98,4 +98,5 @@ C
       P(3) = -EV(3,1)*SQRT(-LAMBDA(2)/LAMBDA(1))+EV(3,2) + M(3)
 *
       C0 = -(C1 * P(1) + C2 * P(2) + C3 * P(3))
-      END
+      RETURN
+      END SUBROUTINE EIRENE_SCHEBE

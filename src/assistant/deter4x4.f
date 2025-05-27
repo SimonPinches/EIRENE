@@ -6,6 +6,7 @@ cdr  (better: find a row or column with as many as possible zeros and expand fro
 
       real(dp), intent(in) :: a(4,4)
       real(dp) :: EIRENE_deter4x4, d11, d12, d13, d14, EIRENE_deter3x3
+      external :: EIRENE_deter3x3
 
       d11 = EIRENE_deter3x3(a(2,2),a(3,2),a(4,2),
      .            a(2,3),a(3,3),a(4,3),

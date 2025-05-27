@@ -7,4 +7,4 @@
       INDEX = I1 + I2*ND1
 
       RETURN
-      END
+      END FUNCTION EIRENE_INDIRECT_ADDRESS

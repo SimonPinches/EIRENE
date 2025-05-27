@@ -38,6 +38,7 @@ c
       character(2) :: kenn(12)
       character(2), save :: polari_elnam(120)
       type(line_data), pointer :: phline
+      external :: eirene_exit_own
 
       IF (REACDAT(IR)%LPHR) THEN
           WRITE (IUNOUT,*) ' PARAMETER FOR PHOTONIC REACTION ALREADY',

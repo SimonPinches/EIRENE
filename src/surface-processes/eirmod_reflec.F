@@ -1,0 +1,1492 @@
+C  nov.05:  cleanup: ispz=nspa+imol, instead ispz=nsph+natmi+imol
+C  jan.06:  user reflection model: modref=3 --> modref=9
+C  feb06:   check for valid MODREF added
+C  apr06:   spelling error corrected: rprop --> rprob (2 times)
+C  aug06:   printout of reflection properties of surfaces only for
+C           nontransparent surfaces
+C  jan2010  ireduc and freduc introduced, to store reduced energy
+C           scaling factors vs. ispz and msurf. This reduces overhead in
+C           subr reflec. Previously: freduc was re-calculated at each entry.
+C  jan2010  bug fix: dimension of arrays for behrisch matrix spline 12-->13
+C           This can be needed if ERCUT is between Zengy(1) and Zengy(2)
+C  jan2010  in case of reduced energy scaled database reflection model:
+C           use also scaled eminr and emaxr, in order to stay within
+C           correct limits after scaling E_ref back to real system
+C           Was a problem only in case of very large/small (compared to one)
+C           reduced energy scaling factors.
+C  Oct2009  Behrisch reflection Matrix saved, to avoid restart problems
+C           with reduced energy scaling.
+C  Nov2010  bug fix: use variables for the input of a drift vector to subroutine
+C           VELOCS as these arguments are of INTENT(INOUT) in VELOCS
+C  Oct 14:  arguments of velocs changed. "weight" now in argument list
+C  MAR 15:  remove Thompson distribution for thermal atom model:
+c           TWALL=0 now leads to error exit
+cdr Jan 16: added: eintg and aintg lt. 0: elastic and specular for fast particle refl.
+cdr Nov.17: lmetspw arguments corrected
+cdr Apr.18: cleaned up the use of RINTG,EINTG,AINTG  (for unit tests, reduced refl. models)
+cdr         vs. use of EXPP,EXPE,EXPI (for ilref=2 model, incident angle dependence).
+cdr         Maxwell boundary conditions added via EINTG, AINTG flags.
+cdr         tbd:  the Maxwellian evaporation flux part is repeated 4 times now.
+cdr         Maybe more of this in escape.f
+cdr         It should become an own subroutine.
+cdr  aug. 20: code safeties from ITER branch
+
+      MODULE EIRMOD_REFLEC
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+      USE EIRMOD_COMUSR
+      USE EIRMOD_CESTIM
+      USE EIRMOD_CADGEO
+      USE EIRMOD_CCONA
+      USE EIRMOD_CLOGAU
+      USE EIRMOD_CRAND
+      USE EIRMOD_CREF
+      USE EIRMOD_CZT1
+      USE EIRMOD_CTRCEI
+      USE EIRMOD_COMPRT
+      USE EIRMOD_CLGIN
+      USE EIRMOD_CSPEI
+      USE EIRMOD_CPES
+      USE EIRMOD_CSDVI
+      USE EIRMOD_RANF, ONLY: RANF_EIRENE, RANSET_EIRENE, RANGET_EIRENE
+      USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
+      USE EIRMOD_REFUSR, ONLY: EIRENE_REFUSR, EIRENE_REFUSR_INIT
+
+      IMPLICIT NONE
+      PRIVATE
+
+      PUBLIC :: EIRENE_REFLC0, EIRENE_REFLC1,
+     .          EIRENE_REFLEC_REINIT,
+cym will be removed once the parallel zone encompasses the code
+     .          IREDUC, FREDUC, EREDUC
+cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      REAL(DP), SAVE, ALLOCATABLE :: EREDUC(:,:), FREDUC(:,:)
+      INTEGER , SAVE, ALLOCATABLE :: IREDUC(:,:)
+      INTEGER , SAVE :: ICOUNT=0, IFIRST=0, NPANOLD=0
+
+C  DATA FOR STOCHASTIC BEHRISCH REFLECTION MATRIX
+C  ENERGY RANGE FOR ENERGY DISTRIBUTION, LAST CELL IS: ZENGY
+C  I.E. ABSCISSA FOR ENERGY DISTRIBUTION FUNCTIONS, H INCIDENT ON FE
+C  SIZE OF "BEHRISCH TABLES"
+      INTEGER :: IDIM=12
+      REAL(DP) :: ZRANGES(0:12)=(/0.0_DP,    6.81_DP,    14.7_DP,
+     .                          31.63_DP,    68.1_DP,   146.8_DP,
+     .                          316.3_DP,   681.9_DP,  1468.0_DP,
+     .                         3162.0_DP,  6813.0_DP, 14678.0_DP,
+     .                        31630.0_DP/)
+C  ENERGY, ABSCISSA FOR REFLECTION PROBABILITY, H INCIDENT ON FE
+      REAL(DP) :: ZENGYS(0:12)=(/0.0_DP,    4.64_DP,    10.0_DP,
+     .                          21.5_DP,    46.4_DP,   100.0_DP,
+     .                         215.4_DP,   464.1_DP,  1000.0_DP,
+     .                        2154.3_DP,  4641.3_DP, 10000.0_DP,
+     .                       21543.0_DP/)
+C  REFLECTION PROBABILITY RPROB(ENERGY)= ZR(ZENGY)
+      REAL(DP) :: ZRS(0:12)=(/1.0_DP,  0.9_DP,  0.8_DP,
+     .                        0.7_DP,  0.62_DP, 0.543_DP,
+     .                        0.46_DP, 0.37_DP, 0.29_DP,
+     .                        0.21_DP, 0.14_DP, 0.095_DP,
+     .                        0.04_DP/)
+C  DISTRIBUTION FUNCTIONS ZIDE(ZRANGE), ONE FOR EACH ZENGY
+      REAL(DP) :: ZIDES(12,12)
+      DATA ZIDES /12*1._DP,
+     .  0.2_DP,11*1._DP,
+     .  0.1_DP,0.2_DP,10*1._DP,
+     .  0.025_DP,0.05_DP,0.35_DP,9*1._DP,
+     .  0.012_DP,0.025_DP,0.1_DP,0.45_DP,8*1._DP,
+     .  0.01_DP,0.02_DP,0.05_DP,0.15_DP,0.55_DP,7*1._DP,
+     .  0.002_DP,0.005_DP,0.02_DP,0.055_DP,0.175_DP,0.625_DP,6*1._DP,
+     .  0.001_DP,0.003_DP,0.011_DP,0.029_DP,0.079_DP,0.224_DP,0.699_DP,
+     .    5*1._DP,
+     .  0.001_DP,0.003_DP,0.007_DP,0.016_DP,0.04_DP,0.105_DP,0.301_DP,
+     .    0.771_DP,4*1._DP,
+     .  0._DP,0.001_DP,0.003_DP,0.007_DP,0.018_DP,0.050_DP,0.14_DP,
+     .    0.40_DP,0.83_DP,3*1._DP,
+     .  0._DP,0.001_DP,0.003_DP,0.006_DP,0.011_DP,0.025_DP,0.073_DP,
+     .    0.215_DP,0.505_DP,0.865_DP,2*1._DP,
+     .  0._DP,0.001_DP,0.003_DP,0.005_DP,0.009_DP,0.015_DP,0.035_DP,
+     .    0.105_DP,0.305_DP,0.6_DP,0.9_DP,1._DP/
+C---------------------------------------------------------------------
+
+      REAL(DP), SAVE, ALLOCATABLE :: ZIDED(:,:), ZENGY(:), ZRANGE(:),
+     .  ZDE(:), ZDEL(:), ZR(:), ZIDE(:,:),
+     .  E0AV(:), QUOTR(:), QUOTE(:)
+      REAL(DP), SAVE ::
+     .  XSP(13),YSP(13),ASP(13),BSP(13),CSP(13),DSP(13)
+
+      REAL(DP) :: ERDUC, EFCT
+
+      REAL(DP) :: VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
+     .          ZSPHI, RO5, PRBRF, WATOM, RPROBA, ZE0,
+     .          ZA, A, VXR, VYR, VZR, VWL, WGHTVS,
+     .          ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
+     .          FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
+     .          XCH, XMFE, XMH, EPSHFE, E0TERM, XCW, EBIND, PRFCT,
+     .          PRFCF, XMW,
+     .          XCFE, DX, RO1, EQSAVE, ZEP1, RO3,
+     .          EMINR, EMAXR, RPROB, APROB, COSIN,
+     .          EXPP, EXPI, EXPE, RINTG, AINTG, EINTG,
+     .          EQTO, ETEST, EQT, F1, WFAC, F2,
+     .          FR1, RO2
+      REAL(DP) :: RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8,
+     .          RF9, RF10, RF11, RF12, RF13, RF14, RF15, RF16,
+     .          RFF1, RFF2, RFF3, RFF4, RFF5, RFF6, RFF7, RFF8,
+     .          RFFF1, RFFF2, RFFF3, RFFF4,
+     .          RFFFF1, RFFFF2
+
+      INTEGER :: IRANGE, IRM, INDR2, INDR3P, MSS,
+     .           IBOX, JP, MODREF,
+     .           NRE, NREP,
+     .           NRI, ISAVE, INDEP, INDWP, INDE, INDR2P,
+     .           INDR1P, INDR1, ISPZO, INDW, IDUMMY, IRET
+
+      LOGICAL :: NLDATA, NLBEHR
+
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE (
+!$OMP& ZRANGES, ZENGYS, ZRS, ZIDES,
+!$OMP& ZRANGE, ZDE, ZDEL, ZENGY, ZR, ZIDE,
+!$OMP& ZIDED, XSP, YSP, ASP, BSP, CSP, DSP,
+!$OMP& E0AV, QUOTR, QUOTE,
+!$OMP& EREDUC, FREDUC, IREDUC,
+!$OMP& ERDUC, EFCT,
+!$OMP& VX, VY, VZ, ED, ZCTHET, ZSTHET, RO4, ZCPHI,
+!$OMP& ZSPHI, RO5, PRBRF, WATOM, RPROBA, ZE0,
+!$OMP& ZA, A, VXR, VYR, VZR, VWL, WGHTVS,
+!$OMP& ZTHET, ZE, ESUM, EFAC, ZDELTA, COSI2, WABS, WLOSS, TW,
+!$OMP& FLPRT, WMOLEC, RPROBM, FR2, PRTEST, RPROBL, DUMMY,
+!$OMP& XCH, XMFE, XMH, EPSHFE, E0TERM, XCW, EBIND, PRFCT,
+!$OMP& PRFCF, XMW,
+!$OMP& XCFE, DX, RO1, EQSAVE, ZEP1, RO3,
+!$OMP& EMINR, EMAXR, RPROB, APROB, COSIN,
+!$OMP& EXPP, EXPI, EXPE, RINTG, AINTG, EINTG,
+!$OMP& EQTO, ETEST, EQT, F1, WFAC, F2,
+!$OMP& FR1, RO2,
+!$OMP& RF, RF1, RF2, RF3, RF4, RF5, RF6, RF7, RF8, RF9, RF10,
+!$OMP& RF11, RF12, RF13, RF14, RF15, RF16,
+!$OMP& RFF1, RFF2, RFF3, RFF4, RFF5, RFF6, RFF7, RFF8,
+!$OMP& RFFF1, RFFF2, RFFF3, RFFF4,
+!$OMP& RFFFF1,RFFFF2,
+!$OMP& NPANOLD, IDIM, IRANGE, IRM, INDR2, INDR3P, MSS,
+!$OMP& IBOX, JP, MODREF,
+!$OMP& NRE, NREP,
+!$OMP& ICOUNT, IFIRST,
+!$OMP& NRI, ISAVE, INDEP, INDWP, INDE, INDR2P,
+!$OMP& INDR1P, INDR1, ISPZO, INDW, IDUMMY, IRET)
+#endif
+
+      CONTAINS
+
+C
+C  REFLECT ESCAPING ATOMS OR IONS
+C  INPUT:
+C       ILREF = 1  DATABASE REFLECTION MODEL, W.ECKSTEIN, D.B.HEIFETZ,
+C                  IPP 9/59 (1986)
+C       ILREF = 2  MODIFIED BEHRISCH MATRIX, R. BEHRISCH, ERICE SUMMER
+C                  SCHOOL 1976
+C       ILREF = 9  USER-SUPPLIED REFLECTION MODEL, CALL: REFUSR
+C
+C       ITYP  = 1  INCIDENT ATOM
+C       ITYP  = 2  INCIDENT MOLECULES: this is handled in calling program: only thermal re-emission
+C       ITYP  = 3  INCIDENT TEST ION
+C       ITYP  = 4  INCIDENT BULK ION
+C  OUTPUT:
+C     LGPART= TRUE AND:
+C       ITYP = 1  ATOM IATM IS RETURNED TO CALLING PROGRAM
+C       ITYP = 2  MOLECULE IMOL IS RETURNED TO CALLING PROGRAM
+C       ITYP = 3  TEST ION IION IS RETURNED TO CALLING PROGRAM
+C     LGPART= FALSE NO PARTICLE IS RETURNED (ABSORPTION)
+C       ITYP = -1
+C
+C
+C  INITIALIZE SURFACE REFLECTION MODELS
+C
+      SUBROUTINE EIRENE_REFLC0
+      IMPLICIT NONE
+      INTEGER :: EIRENE_LEARCA
+      EXTERNAL :: EIRENE_LEARCA
+      INTEGER :: I, J, ILIM, INDR3, ISP, ISTS
+      EXTERNAL :: EIRENE_RDTRIM, EIRENE_REFDAT, EIRENE_SPLINE,
+     .            EIRENE_LEER, EIRENE_MASR3, EIRENE_EXIT_OWN
+CYM/HJL Moved variables to module scope
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE( I, J, ILIM, INDR3, ISP, ISTS )
+#endif
+      SAVE
+C
+      IF (.NOT.ALLOCATED(EREDUC)) ALLOCATE(EREDUC(NSPZ,0:NLIMPS))
+      IF (.NOT.ALLOCATED(FREDUC)) ALLOCATE(FREDUC(NSPZ,0:NLIMPS))
+      IF (.NOT.ALLOCATED(IREDUC)) ALLOCATE(IREDUC(NSPZ,0:NLIMPS))
+      EREDUC=0._DP
+      FREDUC=0._DP
+      IREDUC=0
+
+      IF (IFIRST.EQ.1) RETURN
+      IFIRST=1
+C
+      IF (.NOT.ALLOCATED(ZRANGE)) ALLOCATE(ZRANGE(0:12))
+      IF (.NOT.ALLOCATED(ZENGY)) ALLOCATE(ZENGY(0:12))
+      IF (.NOT.ALLOCATED(ZIDE)) ALLOCATE(ZIDE(12,12))
+      IF (.NOT.ALLOCATED(ZR)) ALLOCATE(ZR(0:12))
+      ZENGY = ZENGYS
+      ZR = ZRS
+      ZRANGE = ZRANGES
+      ZIDE = ZIDES
+C
+      NLDATA=.FALSE.
+      NLBEHR=.FALSE.
+      DO 1 J=1,NLIMPS
+        NLDATA=NLDATA.OR.(ILREF(J).EQ.1).OR.(ILREF(J).EQ.4)
+        NLBEHR=NLBEHR.OR.(ILREF(J).EQ.2)
+    1 CONTINUE
+C
+C
+C  SET ADDITIONAL DATA FOR "DATABASE REFLECTION MODEL"
+C
+      IF (NLDATA) THEN
+C
+        if (my_pe .eq. 0) then
+          IF (NLTRIM) THEN
+C  OLD VERSION: READ ALL REFLECTION DATA FROM ONE SINGLE BIG, FIXED SET OF TARGET -- PROJECTILES,
+C               FIXED SET OF TARGET -- PROJECTILES CASES
+C               there are NHD6=12  target-projectile combinations on the file TRIM.DAT
+            IF (LTRIM_OLD) THEN
+              CALL EIRENE_REFDAT(TM,TC,WM,WC)
+C  NEWER VERSION: READ SOME SELECTED (IN INPUT FILE) TRIM A_ON_B FILES
+            ELSE
+              CALL EIRENE_RDTRIM
+            ENDIF
+          ELSE
+            WRITE (iunout,*) 'INPUT ERROR FOR LOCAL REFLECTION MODEL'
+            WRITE (iunout,*) 'DATABASE REFLECTION MODEL REQUIRED BUT '
+            WRITE (iunout,*) 'NLTRIM IS NOT SET TRUE'
+            CALL EIRENE_EXIT_OWN(1)
+          ENDIF
+        endif
+
+        if (nprs > 1) call EIRENE_BROADCAST_CREF(MY_PE)
+C
+C  SET FACTORS FOR REDUCED ENERGY SCALING FOR ALL TARGET/PROJECTILE
+C  COMBINATIONS AVAILABLE IN DATABASE MODEL
+        DO 3 J=1,NHD6
+          ERDC(J)=EREDC(WM(J),WC(J),TM(J),TC(J))
+    3   CONTINUE
+
+
+C  SET UNIFORM DISTRIBUTION OF AZIMUTHAL ANGLE FOR DATABASE MODEL
+C  FOR PERPENDICULAR INCIDENCE (INDW=1)
+        DO 4 INDR3=1,INR
+          HFTR3F(INDR3)=COS(PIA*(1.-RAAR(INDR3)))
+    4   CONTINUE
+C
+        IF (TRCREF) THEN
+          DO 5 J=1,NHD6
+            CALL EIRENE_LEER(1)
+            WRITE (iunout,*) 'DATABASE REFLECTION MODEL DEFINED FOR:'
+            WRITE (iunout,*) 'IFILE =                      ',J
+            WRITE (iunout,*) 'TARGET MASS NUMBER =         ',WM(J)
+            WRITE (iunout,*) 'TARGET NUCL. CHARGE NUMBER = ',WC(J)
+            WRITE (iunout,*) 'PROJECTILE MASS NUMBER =     ',TM(J)
+            WRITE (iunout,*) 'PRJTL. NUCL. CHARGE NUMBER = ',TC(J)
+            WRITE (iunout,*) 'REDUCED ENERGY FACTOR ERDC = ',ERDC(J)
+    5     CONTINUE
+          CALL EIRENE_LEER(2)
+        ENDIF
+      ELSE         !  .NOT.NLDATA,
+                   !  NO TRIM DATABASE REFLECTION MODEL AVAILABLE
+        INE=1
+        INW=1
+        INR=1
+        NHD6=1
+        if (nprs > 1) call EIRENE_BROADCAST_CREF(MY_PE)
+      ENDIF
+C
+C  SET ADDITIONAL DATA FOR "BEHRISCH MATRIX REFLECTION MODEL"
+C
+      IF (NLBEHR) THEN
+C
+C  "BEHRISCH MODEL" REFLECTION PROBABILITY ZR(ZENGY)
+C        FOR ENERGIES BELOW ERCUT CAN BE MODIFIED;
+C        RPROB0 IS THE NEW (HYPOTHETICAL) REFL. PROB AT ZENGY(0)=0. (EV)
+C        (THERE IS NO REFLECTION MODEL BUT ONLY A THERMAL PARTICLE
+C        MODEL CALLED FOR E0 BELOW ERMIN)
+C
+C  NO MODIFICATION FOR ERCUT.LT.0.
+C  ZR(0) -- ZR(NRE) ARE MODIFIED FOR ERCUT.GE.ZENGY(0)
+        IF (ERCUT.GT.ZENGY(0).AND.ERCUT.LT.ZENGY(1)) THEN
+          ZR(0)=RPROB0
+        ELSEIF (ERCUT.GE.ZENGY(1)) THEN
+          NRI=2
+          NRE=EIRENE_LEARCA(ERCUT,ZENGY,1,13,1,'REFLEC (1)  ')-1
+          NREP=NRE+1
+          DX=ERCUT-ZENGY(NRE)
+          XSP(1)=ZENGY(0)
+          YSP(1)=RPROB0
+          XSP(2)=ERCUT
+          YSP(2)=(ZR(NREP)-ZR(NRE))/(ZENGY(NREP)-ZENGY(NRE))*DX+ZR(NRE)
+C  SET SPLINE DATA FOR NEW REFLECTION PROBABLITY ZR(ZENGY)
+          DO 6 J=NREP,12
+            NRI=NRI+1
+            XSP(NRI)=ZENGY(J)
+            YSP(NRI)=ZR(J)
+    6     CONTINUE
+          CALL EIRENE_SPLINE(XSP,YSP,NRI,ASP,BSP,CSP,DSP)
+C   SET THE NEW ZR ON GRID ZENGY(J) FROM ZENGY(0) TO ZENGY(NRE)
+          ZR(0)=RPROB0
+          DO 7 J=0,NRE
+            DX=ZENGY(J)-XSP(1)
+            ZR(J)=((DSP(1)*DX+CSP(1))*DX+BSP(1))*DX+ASP(1)
+    7     CONTINUE
+        ENDIF
+C
+C
+C  THE BEHRISCH REFLECTION DATA ARE GIVEN FOR H INCIDENT ON FE
+C  CONVERT TO REDUCED ENERGY
+C
+C  CHARGE NUMBER : STAINLESS STEEL
+        XCFE=26._DP
+C  MASS NUMBER   : STAINLESS STEEL
+        XMFE=56._DP
+C  CHARGE NUMBER : HYDROGEN
+        XCH=1.0_DP
+C  MASS NUMBER   : HYDROGEN
+        XMH=1._DP
+C
+        EPSHFE=EREDC(XMFE,XCFE,XMH,XCH)
+C
+        IF (.NOT.ALLOCATED(ZDE)) ALLOCATE(ZDE(12))
+C       ZRANGE(0)=0.0_DP
+        DO 12 J=1,12
+          ZRANGE(J)=ZRANGE(J)*EPSHFE
+          ZDE(J)=ZRANGE(J)-ZRANGE(J-1)
+          ZENGY(J)=ZENGY(J)*EPSHFE
+   12   CONTINUE
+        IF (.NOT.ALLOCATED(ZIDED)) ALLOCATE(ZIDED(12,12))
+        IF (.NOT.ALLOCATED(ZDEL)) ALLOCATE(ZDEL(12))
+        DO 13 I=1,12
+          ZIDED(1,I)=ZIDE(1,I)
+          ZDEL(I)=ZENGY(I)-ZRANGE(I-1)
+          DO 14 J=2,12
+            ZIDED(J,I)=ZIDE(J,I)-ZIDE(J-1,I)
+   14     CONTINUE
+   13   CONTINUE
+        ZDEL(1)=0.0_DP
+C
+C  SET MEAN ENERGY OF REFLECTED PARTICLES FROM STOCHASTIC MATRIX
+C
+        IF (.NOT.ALLOCATED(E0AV)) ALLOCATE(E0AV(0:12))
+        E0AV(0)=0.0_DP
+        DO 15 J=1,12
+C  LAST BOX
+          E0AV(J)=ZIDED(J,J)*(ZENGY(J)-ZDEL(J)/2.)
+C   OTHER BOXES
+          DO 16 I=1,J-1
+            E0AV(J)=E0AV(J)+ZIDED(I,J)*(ZRANGE(I)-ZDE(I)/2.)
+   16     CONTINUE
+   15   CONTINUE
+C
+C  SET SOME CONSTANTS TO SPEED UP LINEAR INTERPOLATION IN
+C  BEHRISCH REFLECTION DATA
+C
+        IF (.NOT.ALLOCATED(QUOTR)) ALLOCATE(QUOTR(0:11))
+        IF (.NOT.ALLOCATED(QUOTE)) ALLOCATE(QUOTE(0:11))
+        DO 17 J=0,11
+          JP=J+1
+          QUOTR(J)=(ZR(JP)-ZR(J))/(ZENGY(JP)-ZENGY(J))
+          QUOTE(J)=(E0AV(JP)-E0AV(J))/(ZENGY(JP)-ZENGY(J))
+   17   CONTINUE
+C
+        IF (TRCREF) THEN
+          CALL EIRENE_LEER(1)
+          WRITE (iunout,*) 'REFLECTION DATA FROM BEHRISCH-MATRIX'
+          WRITE (iunout,*)
+     .      'IMP. ENERGY (RED), REF. PROB, MEAN REFL. ENERGY'
+          DO 19 J=0,12
+            CALL EIRENE_MASR3
+     .                    ('                        ',ZRANGE(J),ZR(J),
+     .                                                E0AV(J))
+   19     CONTINUE
+          CALL EIRENE_LEER(2)
+        ENDIF
+C
+      ENDIF
+C
+C  PRINTOUT REFLECTION PROPERTIES OF SURFACES
+C
+      IF (TRCREF) THEN
+        WRITE (iunout,*)
+     .    'ADDITIONAL SURFACES, THAT ARE NOT 100% RECYCLING'
+        WRITE (iunout,*) 'FOR ALL SPECIES'
+        ICOUNT=0
+        DO 20 ILIM=1,NLIMI
+          DO 21 ISP=1,NSPTOT
+            IF ((RECYCT(ISP,ILIM).LT.1.D0).AND.
+     .          (TRANSP(ISP,1,ILIM)+TRANSP(ISP,2,ILIM).LT.2.D0)) THEN
+              ICOUNT=ICOUNT+1
+              IF (ICOUNT.EQ.1) WRITE (iunout,*) 'ISPZ,ILIM,RECYCT'
+              WRITE (iunout,*) TEXTS(ISP),ILIM,RECYCT(ISP,ILIM)
+            ENDIF
+   21     CONTINUE
+   20   CONTINUE
+        IF (ICOUNT.EQ.0) WRITE (iunout,*) 'NONE '
+        WRITE (iunout,*)
+     .    'STANDARD SURFACES, THAT ARE NOT 100% REFLECTING'
+        WRITE (iunout,*) 'FOR ALL SPECIES'
+        ICOUNT=0
+        DO 22 ISTS=1,NSTSI
+          DO 23 ISP=1,NSPTOT
+            IF ((RECYCT(ISP,NLIM+ISTS).LT.1.D0).AND.
+     .          (TRANSP(ISP,1,NLIM+ISTS)+
+     .           TRANSP(ISP,2,NLIM+ISTS).LT.2.D0)) THEN
+              ICOUNT=ICOUNT+1
+              IF (ICOUNT.EQ.1) WRITE (iunout,*) 'ISPZ,ISTS,RECYCT'
+              WRITE (iunout,*) TEXTS(ISP),ISTS,RECYCT(ISP,NLIM+ISTS)
+            ENDIF
+   23     CONTINUE
+   22   CONTINUE
+        IF (ICOUNT.EQ.0) WRITE (iunout,*) 'NONE '
+        ICOUNT=0
+        CALL EIRENE_LEER(2)
+      ENDIF
+C
+      CALL EIRENE_REFUSR_INIT
+C
+      RETURN
+c
+c  done with initialisation
+C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      END SUBROUTINE EIRENE_REFLC0
+
+
+      SUBROUTINE EIRENE_REFLC1 (WMIN,XMP,XCP,NPRIN,IGASF,IGAST)
+      IMPLICIT NONE
+      REAL(DP) :: WMIN, XMP, XCP
+      INTEGER :: NPRIN, IGASF, IGAST
+      INTEGER :: I, J, IFILE, INDR3
+      EXTERNAL :: EIRENE_FCOSIN, EIRENE_ROTATE, EIRENE_ROTATF,
+     .            EIRENE_VELOCS, EIRENE_LEER, EIRENE_EXIT_OWN
+
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE (I,J,IFILE,INDR3)
+#endif
+
+c DATA FOR REDUCED ENERGY SCALING
+CYM/HJL Moved variables to module scope
+      SAVE
+
+C.................................................................
+C
+C  ONLY FOR CORRELATED SAMPLING:
+C  RE-SYNCHRONIZE RANDOM NUMBERS AT FIRST CALL AFTER PRIMARY SOURCE SAMPLING
+cdr April 17: turned off, revise random number generator seeds....,
+C
+      IF (NLCRR.AND.(NPANU.NE.NPANOLD).AND..FALSE.) THEN
+
+C  RE-INITIALIZE RANDOM NUMBERS FOR EACH NEW RECYCLING SOURCE PARTICLE,
+C  TO ENHANCE CORRELATION
+C
+        IDUMMY=RANSET_EIRENE(ISEEDR)
+        DUMMY=RANF_EIRENE( )
+        ISEEDR=RANGET_EIRENE(ISEEDR)
+        ISEEDR=INTMAX-ISEEDR
+        NPANOLD=NPANU
+      END IF
+C..................................................................
+C
+C  SURFACE NUMBER : MSURF (MSURF=0: DEFAULT MODEL)
+C  SPECIES INDEX  : ISPZ
+C
+      MODREF=ILREF(MSURF)
+      XMW=ZNML(MSURF)
+      XCW=ZNCL(MSURF)
+      E0TERM=EWALL(MSURF)
+      EBIND=EWBIN(MSURF)
+      PRFCF=RECYCF(ISPZ,MSURF)
+      PRFCT=RECYCT(ISPZ,MSURF)
+C  PARAMETERS FOR INCIDENT ANGLE DEPENDENCE IN BEHRISH MATRIX MODEL (ilref=2)
+      EXPP=EXPPL(ISPZ,MSURF)
+      EXPE=EXPEL(ISPZ,MSURF)
+      EXPI=EXPIL(ISPZ,MSURF)
+C  PARAMETERS FOR SIMPLE UNIT TESTS: CONSTANT PARTICLE, ENERGY and MOMENTUM REFLECT: COEFFS.
+      RINTG=RINTEG(MSURF)
+      EINTG=EINTEG(MSURF)
+      AINTG=AINTEG(MSURF)
+C
+      ISPZO=ISPZ
+C
+C  SET EMIN AND EMAX FOR ENERGY SAMPLING FROM DATABASE (MODREF=1)
+C
+      EMINR=E0TERM
+      IF (E0TERM.LT.0.D0) EMINR=-2.*E0TERM
+      EMAXR=E0
+C
+C   TENTATIVELY ASSUME REFLECTION
+      LGPART=.TRUE.
+C   COSINE OF ANGLE OF INCIDENCE
+      COSIN=VELX*CRTX+VELY*CRTY+VELZ*CRTZ
+      IF (COSIN.LT.0.D0) GOTO 993
+C
+C   NO REFLECTION OF FAST ATOMS FOR INCIDENT ENERGY BELOW ERMIN
+C                               OR IF IGASF=0
+C   EINTG < 0 : ENFORCE ELASTIC REFLECTION: E_IN=E_OUT
+C
+      IF (EINTG.GE.0..AND.(E0.LE.ERMIN.OR.IGASF.EQ.0)) THEN
+C
+C   THERMAL PARTICLE RE-EMISSION MODEL IS CALLED
+C
+        RPROB=0.
+        WFAC=0.
+        COSIN=1.
+C  SET PARAMETERS FOR EITHER PURE COSINE DISTRIBUTION (LAMBERTIAN)
+C              OR FOR MAXWELLIAN FLUX AT WALL TEMPERATURE TW
+        F1=1.
+        F2=0.
+        FR1=RANF_EIRENE( )
+C       IF (FR1.GE.RPROB) THEN
+         IF (MODREF.LT.9) THEN
+          IF (IGAST.LT.0) THEN
+            GOTO 500
+          ELSE IF (IGAST.GT.0) THEN
+            GOTO 600
+          ELSE
+            GOTO 700
+          ENDIF
+         ENDIF
+C       ENDIF
+      ENDIF
+C
+C   FACTOR FOR CONVERSION TO REDUCED ENERGY
+      IF (ABS(EREDUC(ISPZ,MSURF)).LE.EPS10)
+     .             EREDUC(ISPZ,MSURF)=EREDC(XMW,XCW,XMP,XCP)
+      ERDUC=EREDUC(ISPZ,MSURF)
+C
+C
+C   MODREF  =1: "DATABASE REFLECTION MODEL" (TRIM)
+C   MODREF  =2: "BEHRISCH-MATRIX"
+C   MODREF  =4: "PRESSURE FEEDBACK LOOP"
+C   MODREF >=9: "USER-SUPPLIED REFLECTION MODEL"
+C
+      IF (MODREF.EQ.1) THEN
+        GOTO 100
+      ELSEIF (MODREF.EQ.2) THEN
+        GOTO 200
+      ELSEIF (MODREF.EQ.4) THEN
+        !Pressure feedback loop, defaults to TRIM model
+        GOTO 100
+      ELSEIF (MODREF.GE.9) THEN
+        CALL EIRENE_REFUSR (XMW,XCW,XMP,XCP,IGASF,IGAST,F1,F2,EXPI,
+     .               RPROB,E0TERM,ITYP,MSURF,ISPZO,IRET)
+        IF (IRET == 1) GOTO 400
+        IF (IRET == 2) GOTO 500
+        IF (IRET == 3) GOTO 600
+        IF (IRET == 4) GOTO 700
+        IF (IRET == 5) GOTO 100
+        RETURN
+      ELSE
+        WRITE (IUNOUT,*)  'INVALID REFLECTION MODEL PARAMETER '
+        WRITE (IUNOUT,*)  'EXIT CALLED FROM SUBROUTINE EIRENE_REFLEC.F'
+        MSS=MSURF
+        IF (MSURF.GT.NLIM) MSS=-(MSURF-NLIM)
+        WRITE (IUNOUT,*)  'MSURF, MODREF ',MSS, MODREF
+        CALL EIRENE_EXIT_OWN(1)
+      ENDIF
+C
+C  DATABASE REFLECTION MODEL STARTS HERE
+C
+  100 CONTINUE
+C
+C   CHECK IF WALL REFLECTION DATA FOR IATM/IION INCIDENT ON
+C   XWALL/ZWALL ARE AVAILABLE, OR KNOWN FROM PREVIOUS PARTICLE
+C
+      IF (IREDUC(ISPZ,MSURF).NE.0) THEN
+        IFILE=IREDUC(ISPZ,MSURF)
+        EFCT=FREDUC(ISPZ,MSURF)
+        GOTO 125
+      ENDIF
+C
+C  IDENTIFY REDUCED ENERGY SCALING FILE AND FACTOR
+      EQTO=1.D40
+      EFCT=1.
+      DO 120 IFILE=1,NHD6
+        IF (ABS(ERDC(IFILE)-ERDUC).LE.EPS12) THEN
+C  EXACT TRIM DATABASE FILE FOUND: IFILE, SCALING FACTOR=1.
+          IREDUC(ISPZ,MSURF)=IFILE
+          FREDUC(ISPZ,MSURF)=1.
+          EFCT=1.
+          GOTO 130
+        ENDIF
+C  FIND DATABASE FILE WITH SCALING RATIO CLOSEST TO ONE
+        EQT=ERDUC/ERDC(IFILE)
+        ETEST=ABS(EQT-1.)
+        IF (ETEST.LT.EQTO) THEN
+          ISAVE=IFILE
+          EQTO=ETEST
+          EQSAVE=EQT
+        ENDIF
+  120 CONTINUE
+      IF (ICOUNT.LT.5.AND.TRCREF) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP CRITICAL
+#endif
+        WRITE (iunout,*) 'TRIM REFLECTION DATA REQUESTED BUT NOT'
+        WRITE (iunout,*) 'AVAILABLE FOR THE TARGET-PROJECTILE SYSTEM:'
+        WRITE (iunout,*) 'ISP,ISURF,XMWALL,XCWALL,XMPART,XCPART'
+        MSS=MSURF
+        IF (MSURF.GT.NLIM) MSS=-(MSURF-NLIM)
+        WRITE (IUNOUT,*)  ISPZ,MSS,XMW,XCW,XMP,XCP
+        WRITE (iunout,*) 'EREDUC = ',EREDUC(ISPZ,MSURF)
+        WRITE (iunout,*) 'THE REDUCED ENERGY FORMULAE ARE APPLIED WITH'
+        WRITE (iunout,*) 'THE DATA FOR THE TARGET-PROJECTILE SYSTEM:'
+        WRITE (iunout,*) 'J,WM(J),WC(J),TM(J),TC(J)'
+        WRITE (iunout,*)  ISAVE,WM(ISAVE),WC(ISAVE),TM(ISAVE),TC(ISAVE)
+        WRITE (iunout,*) 'ERDC(J), F_REDUC = ',ERDC(ISAVE),EQSAVE
+        CALL EIRENE_LEER(1)
+        ICOUNT=ICOUNT+1
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP END CRITICAL
+#endif
+      ENDIF
+      IFILE=ISAVE
+      EFCT=EQSAVE
+      IREDUC(ISPZ,MSURF)=IFILE
+      FREDUC(ISPZ,MSURF)=EFCT
+C
+  125 CONTINUE
+      E0=E0*EFCT
+      EMINR=EMINR*EFCT
+      EMAXR=EMAXR*EFCT
+C
+  130 CONTINUE
+C
+C  FIND INDICES FOR INCIDENT ENERGY AND ANGLE: INDE, INDW, R01, R02
+C
+cdr tbd : binary search
+cdr we must avoid extrapolation:
+cdr tbd : we also need the zero-quantile (= emin=enar(0))
+cdr tbd : we also need the one-quantile  (= emax=enar(ine+1))
+      DO 102 I=2,INEM
+        INDEP=I
+        IF (E0.LE.ENAR(I)) GOTO 101
+  102 CONTINUE
+      INDEP=INE
+  101 INDE=INDEP-1    !  we now have 1<=inde<=ine  (e.g. ine=5, or =10)
+C
+cdr tbd : binary search
+cdr we must avoid extrapolation:
+cdr tbd : we also need the zero-quantile (= cosmin=wiar(0)= 0)
+cdr tbd : we also need the one-quantile  (= cosmax=wiar(inw+1) =1)
+      DO 103 I=2,INWM
+        INDWP=I
+        IF (COSIN.GE.WIAR(I)) GOTO 104
+  103 CONTINUE
+      INDWP=INW
+  104 INDW=INDWP-1
+C
+      RO1=(E0-ENAR(INDE))*DENAR(INDE)
+      RO2=(COSIN-WIAR(INDW))*DWIAR(INDW)
+C
+C  REFLECTION PROBALITY: RPROB
+C
+      IF (RINTG.GT.0.D0) THEN
+C  CONSTANT PARTICLE REFLECTION COEFFICIENT RINTG, limited only by specified absorption
+        RPROB=MIN(PRFCT,RINTG)
+      ELSEIF (RINTG.LT.0) THEN
+C  PERFECT REFLECTION. P_REF=1-P_ABS, limited only by specified absorption
+        RPROB=MIN(PRFCT,1.0_DP)
+      ELSE
+C  P_REF FROM DATA TABLE VS. INCIDENT ANGLE AND ENERGY
+
+C  BI-LINEAR INTERPOLATION WRT: INCIDENT ENERGY AND ANGLE
+C     LINEAR EXTRAPOLATION IF INCIDENT ENERGY AND ANGLE ARE OUT OF RANGE
+        RF1=HFTR0(INDE,INDW,IFILE)
+        RF1=RF1+RO1*(HFTR0(INDEP,INDW,IFILE)-RF1)
+        RF2=HFTR0(INDE,INDWP,IFILE)
+        RF2=RF2+RO1*(HFTR0(INDEP,INDWP,IFILE)-RF2)
+C
+        RPROB=RF1+RO2*(RF2-RF1)
+        RPROB=MAX(0.D0,MIN(1._DP,RPROB)) ! avoid spurious extrapolations
+
+C  APPLY SCALING (PRFCF= RECYCF) AND CUT-OFF (PRCFT= RECYCT)
+        RPROB=MIN(RPROB*PRFCF,PRFCT)
+      ENDIF
+C
+C   DECIDE IF PARTICLE IS TO BE REFLECTED OR IF THE
+C   "THERMAL PARTICLE MODEL" IS CALLED
+C
+      WFAC=1.
+      FR1=RANF_EIRENE( )
+C  THERMAL PARTICLE MODEL OR ABSORPTION
+      IF (FR1.GE.RPROB) THEN
+        IF (IGAST.LT.0) THEN
+          GOTO 500
+        ELSE IF (IGAST.GT.0) THEN
+          GOTO 600
+        ELSE
+          GOTO 700
+        ENDIF
+      ENDIF
+C
+C  SPECIES OF REFLECTED PARTICLE
+      IF (IGASF.LT.1.OR.IGASF.GT.NATMI) GOTO 992
+      IATM=IGASF
+      ISPZ=NSPH+IATM
+      ITYP=1
+C
+C  ENERGY OF REFLECTED PARTICLE
+C
+      ZEP1=RANF_EIRENE( )
+cdr tbd : binary search, or use specific structure in raar(i) array, integer arithmetic
+cdr       intermediate quantiles 0.2, 0.4, 0.6, 0.8  are also available from original TRIM run.
+cdr       including them here, plus 0.0 amd 1.0 quantiles (eminr,emaxr) would lead to equidistant raar(i),
+cdr       allow faster search, increase precision and avoid extrapolations.
+      DO 105 I=2,INRM
+        INDR1P=I
+        IF (ZEP1.LE.RAAR(I)) GOTO 106
+  105 CONTINUE
+      INDR1P=INR
+  106 INDR1=INDR1P-1
+C
+      RO3=(ZEP1-RAAR(INDR1))*DRAAR(INDR1)
+C
+      IF (EINTG.GT.0.D0) THEN
+C  CONSTANT ENERGY REFLECTION COEFFICIENT
+        E0=E0*EINTG
+      ELSEIF (EINTG.LT.0.D0) THEN
+C  PERFECT REFLECTION. E_IN = E_OUT
+C       E0=E0
+      ELSE
+C  SAMPLING E0 FROM STOCHASTIC MATRIX VS. INCIDENT ENERGY AND ANGLE
+
+C  tri-linear interpolation
+C      linear extrapolation, if out of range
+c  indr1
+        RF1=HFTR1(INDE,INDW,INDR1,IFILE)
+        RF1=RF1+RO1*(HFTR1(INDEP,INDW,INDR1,IFILE)-RF1)
+        RF2=HFTR1(INDE,INDWP,INDR1,IFILE)
+        RF2=RF2+RO1*(HFTR1(INDEP,INDWP,INDR1,IFILE)-RF2)
+c  indr1p
+        RF3=HFTR1(INDE,INDW,INDR1P,IFILE)
+        RF3=RF3+RO1*(HFTR1(INDEP,INDW,INDR1P,IFILE)-RF3)
+        RF4=HFTR1(INDE,INDWP,INDR1P,IFILE)
+        RF4=RF4+RO1*(HFTR1(INDEP,INDWP,INDR1P,IFILE)-RF4)
+C
+        RFF1=RF1+RO2*(RF2-RF1)   ! bi-linear in incident parameters,
+                                 ! for quantile indr1,
+        RFF2=RF3+RO2*(RF4-RF3)   ! bi-linear in incident parameters,
+                                 ! for quantile indr1p,
+Cdr  cut-off here, to avoid spurious extrapolations ??
+C
+        E0=RFF1+RO3*(RFF2-RFF1)  ! linear between quantiles
+                                 ! indr1 and indr1p
+
+c  cut-off, to avoid spurious extrapolation
+        E0=MAX(E0,EMINR)
+        E0=MIN(E0,EMAXR)
+      ENDIF
+
+C   REDUCED ENERGY SCALING, IF NEEDED
+      E0=E0/EFCT
+      VEL=RSQDVA(IATM)*SQRT(E0)
+
+C........................................................................
+C
+C  NEXT: SIMPLE ANGULAR DISTRIBUTION (AINTG)
+C        OR CONTINUE WITH ORIGINAL ANGULAR DISTRIBUTION FROM TRIM DATABASE SAMPLING
+C
+      IF (AINTG.GT.0.0_DP) THEN
+C  CONSTANT MOMENTUM REFLECTION COEFFICIENT (ACCOMMODATION COEFFICIENT)
+C  FRACTION  AINTG:      specular
+C  FRACTION (1.0-AINTG): cosine (Lambertian)
+        ZEP1=RANF_EIRENE( )
+        APROB=MIN(1.0_DP,AINTG)
+        IF (ZEP1.GT.APROB) THEN
+cdr  evaporated fraction
+cdr  decide: Maxwellian flux or monoenergetic Lambertian:
+          IF (E0TERM.LT.0.0) THEN
+C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
+            TW=-E0TERM
+! these variables are INTENT(IN) (not altered in velocs)
+            VXR = 0._DP
+            VYR = 0._DP
+            VZR = 0._DP
+            VWL = 0._DP    ! INDICATE:
+                           ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            WGHTVS= WEIGHT ! WEIGHT IS NOT ALTERED WHEN
+                           ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            CALL EIRENE_VELOCS(WGHTVS,
+     .              TW,0._DP,VWL,VXR,VYR,VZR,RSQDVA(IATM),
+     .                    CVRSSA(IATM),
+     .                   -CRTX,-CRTY,-CRTZ,
+     .                   E0,VELX,VELY,VELZ,VEL)
+            RETURN
+
+          ELSEIF (E0TERM.GT.0.0) THEN
+C  SAMPLE FROM LAMBERTIAN, I.E. COSINE DISTRIBUTION
+            F1=1.0
+            F2=0.0
+            EXPI=0.0
+            GOTO 400
+          ELSE  ! E0TERM=0
+            GOTO 991
+          ENDIF
+        ELSE
+C  specular fraction MIN(1.0_DP,AINTG)
+          EXPI=200.
+          GOTO 400
+        ENDIF
+      ELSEIF (AINTG.LT.0.) THEN
+C  PERFECT (SPECULAR) REFLECTION: COS_IN = COS_OUT
+        EXPI=200.
+        GOTO 400
+      ENDIF
+
+C  AINTG=0.0: find polar and azimuthal angle of reflection
+C             from tabulated TRIM code distribution
+      ZEP1=RANF_EIRENE( )
+      DO 107 I=2,INRM
+        INDR2P=I
+        IF (ZEP1.LE.RAAR(I)) GOTO 108
+  107 CONTINUE
+      INDR2P=INR
+  108 INDR2=INDR2P-1
+C
+      RO4=(ZEP1-RAAR(INDR2))*DRAAR(INDR2)
+C
+      RF1=HFTR2(INDE,INDW,INDR1,INDR2,IFILE)
+      RF1=RF1+RO1*(HFTR2(INDEP,INDW,INDR1,INDR2,IFILE)-RF1)
+      RF2=HFTR2(INDE,INDWP,INDR1,INDR2,IFILE)
+      RF2=RF2+RO1*(HFTR2(INDEP,INDWP,INDR1,INDR2,IFILE)-RF2)
+      RF3=HFTR2(INDE,INDW,INDR1P,INDR2,IFILE)
+      RF3=RF3+RO1*(HFTR2(INDEP,INDW,INDR1P,INDR2,IFILE)-RF3)
+      RF4=HFTR2(INDE,INDWP,INDR1P,INDR2,IFILE)
+      RF4=RF4+RO1*(HFTR2(INDEP,INDWP,INDR1P,INDR2,IFILE)-RF4)
+      RF5=HFTR2(INDE,INDW,INDR1,INDR2P,IFILE)
+      RF5=RF5+RO1*(HFTR2(INDEP,INDW,INDR1,INDR2P,IFILE)-RF5)
+      RF6=HFTR2(INDE,INDWP,INDR1,INDR2P,IFILE)
+      RF6=RF6+RO1*(HFTR2(INDEP,INDWP,INDR1,INDR2P,IFILE)-RF6)
+      RF7=HFTR2(INDE,INDW,INDR1P,INDR2P,IFILE)
+      RF7=RF7+RO1*(HFTR2(INDEP,INDW,INDR1P,INDR2P,IFILE)-RF7)
+      RF8=HFTR2(INDE,INDWP,INDR1P,INDR2P,IFILE)
+      RF8=RF8+RO1*(HFTR2(INDEP,INDWP,INDR1P,INDR2P,IFILE)-RF8)
+C
+      RFF1=RF1+RO2*(RF2-RF1)
+      RFF2=RF3+RO2*(RF4-RF3)
+      RFF3=RF5+RO2*(RF6-RF5)
+      RFF4=RF7+RO2*(RF8-RF7)
+C
+      RFFF1=RFF1+RO3*(RFF2-RFF1)
+      RFFF2=RFF3+RO3*(RFF4-RFF3)
+C
+      ZCPHI=RFFF1+RO4*(RFFF2-RFFF1)
+C  LIMIT COSINE OF POLAR ANGLE TO 85. DEGREES
+C  (I.E., 5 DEGREES AGAINST SURFACE TANGENTIAL PLANE)
+      ZCPHI=MIN(0.999999_DP,MAX(0.08716_DP,ZCPHI))
+      ZSPHI=SQRT(1._DP-ZCPHI*ZCPHI)
+C
+C  AZIMUTHAL ANGLE OF REFLECTION
+C
+      ZEP1=RANF_EIRENE( )
+      DO 109 I=2,INRM
+         INDR3P=I
+         IF (ZEP1.LE.RAAR(I)) GOTO 110
+  109 CONTINUE
+      INDR3P=INR
+  110 INDR3=INDR3P-1
+C
+      RO5=(ZEP1-RAAR(INDR3))*DRAAR(INDR3)
+C
+      IF (INDW.EQ.1) THEN
+        RF1=HFTR3F(INDR3)
+        RF3=RF1
+        RF5=RF1
+        RF7=RF1
+        RF9=HFTR3F(INDR3P)
+        RF11=RF9
+        RF13=RF9
+        RF15=RF9
+      ELSE
+        RF1=HFTR3(INDE,INDW,INDR1,INDR2,INDR3,IFILE)
+        RF1=RF1+RO1*(HFTR3(INDEP,INDW,INDR1,INDR2,INDR3,IFILE)-RF1)
+        RF3=HFTR3(INDE,INDW,INDR1P,INDR2,INDR3,IFILE)
+        RF3=RF3+RO1*(HFTR3(INDEP,INDW,INDR1P,INDR2,INDR3,IFILE)-RF3)
+        RF5=HFTR3(INDE,INDW,INDR1,INDR2P,INDR3,IFILE)
+        RF5=RF5+RO1*(HFTR3(INDEP,INDW,INDR1,INDR2P,INDR3,IFILE)-RF5)
+        RF7=HFTR3(INDE,INDW,INDR1P,INDR2P,INDR3,IFILE)
+        RF7=RF7+RO1*(HFTR3(INDEP,INDW,INDR1P,INDR2P,INDR3,IFILE)-RF7)
+        RF9=HFTR3(INDE,INDW,INDR1,INDR2,INDR3P,IFILE)
+        RF9=RF9+RO1*(HFTR3(INDEP,INDW,INDR1,INDR2,INDR3P,IFILE)-RF9)
+        RF=HFTR3(INDE,INDW,INDR1P,INDR2,INDR3P,IFILE)
+        RF11=RF+RO1*(HFTR3(INDEP,INDW,INDR1P,INDR2,INDR3P,IFILE)-RF)
+        RF=HFTR3(INDE,INDW,INDR1,INDR2P,INDR3P,IFILE)
+        RF13=RF+RO1*(HFTR3(INDEP,INDW,INDR1,INDR2P,INDR3P,IFILE)-RF)
+        RF=HFTR3(INDE,INDW,INDR1P,INDR2P,INDR3P,IFILE)
+        RF15=RF+RO1*(HFTR3(INDEP,INDW,INDR1P,INDR2P,INDR3P,IFILE)-RF)
+      ENDIF
+C
+      RF2=HFTR3(INDE,INDWP,INDR1,INDR2,INDR3,IFILE)
+      RF2=RF2+RO1*(HFTR3(INDEP,INDWP,INDR1,INDR2,INDR3,IFILE)-RF2)
+      RF4=HFTR3(INDE,INDWP,INDR1P,INDR2,INDR3,IFILE)
+      RF4=RF4+RO1*(HFTR3(INDEP,INDWP,INDR1P,INDR2,INDR3,IFILE)-RF4)
+      RF6=HFTR3(INDE,INDWP,INDR1,INDR2P,INDR3,IFILE)
+      RF6=RF6+RO1*(HFTR3(INDEP,INDWP,INDR1,INDR2P,INDR3,IFILE)-RF6)
+      RF8=HFTR3(INDE,INDWP,INDR1P,INDR2P,INDR3,IFILE)
+      RF8=RF8+RO1*(HFTR3(INDEP,INDWP,INDR1P,INDR2P,INDR3,IFILE)-RF8)
+      RF10=HFTR3(INDE,INDWP,INDR1,INDR2,INDR3P,IFILE)
+      RF10=RF10+RO1*(HFTR3(INDEP,INDWP,INDR1,INDR2,INDR3P,IFILE)-RF10)
+      RF12=HFTR3(INDE,INDWP,INDR1P,INDR2,INDR3P,IFILE)
+      RF12=RF12+RO1*(HFTR3(INDEP,INDWP,INDR1P,INDR2,INDR3P,IFILE)-RF12)
+      RF14=HFTR3(INDE,INDWP,INDR1,INDR2P,INDR3P,IFILE)
+      RF14=RF14+RO1*(HFTR3(INDEP,INDWP,INDR1,INDR2P,INDR3P,IFILE)-RF14)
+      RF16=HFTR3(INDE,INDWP,INDR1P,INDR2P,INDR3P,IFILE)
+      RF16=RF16+RO1*(HFTR3(INDEP,INDWP,INDR1P,INDR2P,INDR3P,IFILE)-RF16)
+C
+      RFF1=RF1+RO2*(RF2-RF1)
+      RFF2=RF3+RO2*(RF4-RF3)
+      RFF3=RF5+RO2*(RF6-RF5)
+      RFF4=RF7+RO2*(RF8-RF7)
+      RFF5=RF9+RO2*(RF10-RF9)
+      RFF6=RF11+RO2*(RF12-RF11)
+      RFF7=RF13+RO2*(RF14-RF13)
+      RFF8=RF15+RO2*(RF16-RF15)
+C
+      RFFF1=RFF1+RO3*(RFF2-RFF1)
+      RFFF2=RFF3+RO3*(RFF4-RFF3)
+      RFFF3=RFF5+RO3*(RFF6-RFF5)
+      RFFF4=RFF7+RO3*(RFF8-RFF7)
+C
+      RFFFF1=RFFF1+RO4*(RFFF2-RFFF1)
+      RFFFF2=RFFF3+RO4*(RFFF4-RFFF3)
+C
+      ZCTHET=RFFFF1+RO5*(RFFFF2-RFFFF1)
+      ZCTHET=MAX(-.999999_DP,MIN(0.999999_DP,ZCTHET))
+      ZSTHET=SQRT(1._DP-ZCTHET*ZCTHET)
+      ZSTHET=ZSTHET*SIGN(1._DP,(RANF_EIRENE( )-0.5_DP))
+C
+      VX=-ZCPHI
+      VY=ZSPHI*ZSTHET
+      VZ=ZSPHI*ZCTHET
+      IF (COSIN.GT.0.9999_DP) THEN
+C (ALMOST) NORMAL INCIDENCE, NO SPECULAR CONTRIBUTION POSSIBLE
+        CALL EIRENE_ROTATF (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ)
+      ELSE
+        CALL EIRENE_ROTATE
+     .   (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ,COSIN)
+      ENDIF
+      RETURN
+C
+C *************************************************************
+C
+C
+C  MODIFIED BEHRISCH MATRIX MODEL STARTS HERE
+C  INCIDENT ANGLE DEPENDENCIES ARE CONTROLLED BY EXPP;EXPE;EXPI
+C
+  200 CONTINUE
+C
+      E0=E0*ERDUC
+C
+C  DETERMINE INTERVAL FOR INCIDENT ENERGY: IRM, ED
+C
+      DO 201 J=1,IDIM
+        IRANGE=J
+        IF (ZENGY(J).GE.E0) GO TO 202
+  201 CONTINUE
+  202 CONTINUE
+      IRM=IRANGE-1
+      ED=E0-ZENGY(IRM)
+C
+C   REFLECTION PROBABILITY FOR FAST PARTICLE REFLECTION MODEL: RPROB
+C
+      IF (RINTG.GT.0.D0) THEN
+        RPROB=MIN(PRFCT,RINTG)
+      ELSEIF (RINTG.LT.0.D0) THEN
+        RPROB=1.D0
+      ELSE
+        PRBRF=MIN(1._DP,MAX(0._DP,ZR(IRM)+QUOTR(IRM)*ED))
+        RPROB=1.-(1.-PRBRF)*(COSIN**EXPP)
+        RPROB=MIN(RPROB*PRFCF,PRFCT)
+      ENDIF
+C
+C  RELATIVE FRACTION OF LAMBERTIAN (cosine) VS. SPECULAR REFLECTION
+      IF (EXPI.EQ.0.D0.OR.EXPI.GE.100.D0) THEN
+        F1=1.
+        F2=0.
+      ELSE
+        F1=MAX(0.015_DP,MIN(1._DP,COSIN**EXPI))
+        F2=SQRT(1.-F1*F1)
+      ENDIF
+C
+      WFAC=1.
+      FR1=RANF_EIRENE( )
+C
+C  THERMAL PARTICLE MODEL
+      IF (FR1.GE.RPROB) THEN
+        IF (IGAST.LT.0) THEN
+          GOTO 500
+        ELSE IF (IGAST.GT.0) THEN
+          GOTO 600
+        ELSE
+          GOTO 700
+        ENDIF
+      ENDIF
+C
+C  FAST PARTICLE REFLECTION MODEL
+C
+C  SPECIES OF REFLECTED PARTICLE
+      IATM=IGASF
+      ISPZ=NSPH+IATM
+      ITYP=1
+C
+C   ENERGY REFLECTION COEFFICIENT
+C   EPROB=1.-(1.-ERBRF)*(COSIN**EXPE)
+C
+      EFAC=COSIN**EXPE
+      ESUM=E0-E0*EFAC
+C
+      IF (EINTG.GT.0.D0) THEN
+        E0=E0*EINTG
+C     ELSEIF (EINTG.LT.0.D0) THEN
+cdr  tbd: use eintg as thermal energy parameter for reflected atomic (fast particle) model
+C       E0=E0
+C  OR: (? TO BE DONE ?)
+C
+C  E0 FROM MEAN ENERGY MODEL
+C
+C       E0=ESUM+(E0AV(IRM)+QUOTE(IRM)*ED)*EFAC
+      ELSE
+C  E0 FROM STOCHASTIC BEHRISCH MATRIX MODEL
+C   REFLECTION ENERGY, "BEHRISCH MATRIX"
+C   NUMBER OF BOXES IN THIS RANGE: IRANGE
+C   DISTRIBUTION ZIDE(...,IRANGE)
+C
+        ZEP1=RANF_EIRENE( )
+C
+        DO 305 J=1,IRM
+          IBOX=J
+          ZDELTA=ZDE(J)
+          ZE=ZRANGE(J)
+          ZA=ZIDE(J,IRANGE)
+          IF (ZA.GT.ZEP1) GO TO 307
+  305   CONTINUE
+C  LAST BOX
+        IBOX=IRANGE
+        ZDELTA=ZDEL(IRANGE)
+        ZE=ZENGY(IRANGE)
+        ZA=1.
+C
+C   REFLECTION ENERGY, LINEAR INTERPOLATION
+  307   CONTINUE
+        ZE0=ZE-(ZA-ZEP1)*ZDELTA/ZIDED(IBOX,IRANGE)
+        ZE0=ZE0*E0/ZENGY(IRANGE)
+        E0=ESUM+ZE0*EFAC
+      ENDIF
+C
+C  E0 IS FOUND NOW. NEXT:
+C  NEW WEIGHT, RESCALE ENERGY, SET VELOCITY
+C
+      WEIGHT=WEIGHT*WFAC
+      E0=E0/ERDUC
+      VEL=RSQDVA(IATM)*SQRT(E0)
+
+C  NEXT: SIMPLE ANGULAR DISTRIBUTION (AINTG)
+C        OR CONTINUE WITH ORIGINAL EIRENE ANGULAR DISTRIBUTION (WITH PARAMETER EXPI)
+C
+      IF (AINTG.GT.0.) THEN
+C  CONSTANT MOMENTUM REFLECTION (ACCOMMODATION) COEFFICIENT
+C  FRACTION  AINTG:    specular
+C  FRACTION (1_AINTG): cosine (Lambertian)
+        ZEP1=RANF_EIRENE( )
+        APROB=MIN(1.0_DP,AINTG)
+        IF (ZEP1.GT.APROB) THEN
+C  evaporated fraction
+C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
+          IF (E0TERM.LT.0.0) THEN
+            TW=-E0TERM
+! these variables are INTENT(IN) (not altered in velocs)
+            VXR = 0._DP
+            VYR = 0._DP
+            VZR = 0._DP
+            VWL = 0._DP    ! INDICATE:
+                           ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            WGHTVS= WEIGHT ! WEIGHT IS NOT ALTERED WHEN
+                           ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+            CALL EIRENE_VELOCS(WGHTVS,
+     .              TW,0._DP,VWL,VXR,VYR,VZR,RSQDVA(IATM),
+     .                    CVRSSA(IATM),
+     .                   -CRTX,-CRTY,-CRTZ,
+     .                   E0,VELX,VELY,VELZ,VEL)
+            RETURN
+C  SAMPLE FROM COSINE (LAMBERTIAN), E0 not modified
+          ELSEIF (E0TERM.GT.0.0) THEN
+            F1=1.0
+            F2=0.0
+            EXPI=0.0
+            GOTO 400
+          ELSE  ! E0TERM=0
+            GOTO 991
+          ENDIF
+        ELSE
+c  specular fraction
+          EXPI=200.
+          GOTO 400
+        ENDIF
+      ELSEIF (AINTG.LT.0.) THEN
+C  PERFECT (SPECULAR) REFLECTION: COS_IN = COS_OUT
+        EXPI=200.
+        GOTO 400
+      ENDIF
+C  AINTG=0.0: Original Behrisch Matrix assigned angular reflection distribution
+C     GOTO 400
+C
+  400 CONTINUE
+C
+C  ANGULAR DISTRIBUTION, used for Behrisch matrix model,
+C                        and for thermal re-emission model
+C                        and for SIMPLE models (ainteg ne.0.)
+C                        e.g. also to test Database histogram sampling
+C
+      IF (EXPI.LT.100.) THEN
+C  At this point: F2=sqrt(1-F1*F1) must be ensured
+        IF (F1.GT.0.999999) THEN
+C  NO SPECULAR CONTRIBUTION (F2 = 0., F1 = 1.)
+          IF (INIV4.LE.0) CALL EIRENE_FCOSIN
+          VX=FC1(INIV4)
+          VY=FC2(INIV4)
+          VZ=FC3(INIV4)
+          INIV4=INIV4-1
+c  /vx,vy,vz/ is cosine distributed around surface normal vector/-1,0,0/
+          CALL EIRENE_ROTATF (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ)
+        ELSE
+C  mixed cosine-specular model angular distribution, see manual.
+C  PURE COSINE DISTRIBUTION (LAMBERTIAN) FOR F1 = 1., F2 = 0.
+C  INCLUDE A FORWARD "SPECULAR" CONTRIBUTION F1 < 1., F2 > 0.
+C
+          ZTHET=PI2A*RANF_EIRENE( )
+          ZSTHET=SIN(ZTHET)
+          ZCTHET=COS(ZTHET)
+          A=RANF_EIRENE( )
+          ZCPHI=SQRT(A)
+          ZSPHI=SQRT(1.-A)
+C
+          ZSPHI=ZSPHI*F1
+          ZCPHI=SQRT(1.-ZSPHI*ZSPHI)
+C
+          VX=-ZCPHI*F1+        ZSPHI*ZSTHET*F2
+          VY= ZSPHI*ZCTHET
+          VZ= ZSPHI*ZSTHET*F1+ ZCPHI*F2
+C
+          CALL EIRENE_ROTATE
+     .      (VELX,VELY,VELZ,VX,VY,VZ,CRTX,CRTY,CRTZ,COSIN)
+        ENDIF
+
+      ELSEIF (EXPI.GE. 100.0) THEN
+
+C   PURELY SPECULAR REFLECTION
+C
+        COSI2=-(COSIN+COSIN)
+        VELX=VELX+COSI2*CRTX
+        VELY=VELY+COSI2*CRTY
+        VELZ=VELZ+COSI2*CRTZ
+      ENDIF
+      RETURN
+
+C   FAST PARTICLE REFLECTION MODEL DONE
+C
+C  "THERMAL MOLECULE MODEL"
+C
+C  CREATE MOLECULE OF SPECIES IMOL
+C  WITH PROBABILITY PRFCT-RPROB, WHERE RPROB IS THE
+C  PROBABILITY FOR BACKSCATTERING OF HOT ATOMS (.LE. PRFCT)
+C  THE CONDITION FR1.GE.RPROB IS FULLFILLED AT THIS POINT
+C
+  500 CONTINUE
+      ITYP=2
+      IMOL=-IGAST
+      IF (IMOL.LT.1.OR.IMOL.GT.NMOLI) THEN
+        FR2=RANF_EIRENE( )
+        DO 501 I=1,NMOLI
+          IMOL=I
+          IF (FR2.LE.DMOL(IMOL)) GOTO 502
+  501   CONTINUE
+        GOTO 992
+  502   CONTINUE
+      ENDIF
+      ISPZ=NSPA+IMOL
+C
+C  FAST FRACTION
+C     RPROBF=RPROB
+C  THERMAL MOLECULE FRACTION
+      RPROBM=PRFCT-RPROB
+C  LOST FRACTION
+      RPROBL=1.D0-PRFCT
+C
+      IF (WEIGHT.LT.WMIN.OR.RPROBM.LE.0.D0) THEN
+C  NO SUPPRESSION OF ABSORPTION
+        PRTEST=RPROB+RPROBM
+C  AT THIS POINT: 1.D0.GE.FR1.GE.RPROB
+        IF (FR1.GT.PRTEST) GOTO 700
+      ELSE
+C  SUPPRESSION OF ABSORPTION
+        WMOLEC=RPROBM/(1.D0-RPROB)
+        WLOSS =RPROBL/(1.D0-RPROB)
+        IF (WLOSS.GT.0.D0) THEN
+          WABS=WEIGHT*WLOSS
+          IF (LSPUMP .AND. WABS .GT. 0.D0) THEN
+            IF (MSURF.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
+            ENDIF
+            IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WABS
+            END IF
+            LMETSPW(ISPZO) = .TRUE.
+          ENDIF
+        ENDIF
+        WEIGHT=WEIGHT*WMOLEC
+      ENDIF
+C
+C  NUMBER OF MOLECULES PER INCIDENT PARTICLE
+C  NOTE: ABSORPTION DUE TO RECOMBINATION OF ATOMS (ONLY A FRACTION OF
+C  A MOLECULE IS REEMITTED PER INCIDENT ATOM) IS ALWAYS SUPPRESSED
+C
+      FLPRT=DBLE(NPRIN)/DBLE(NPRT(ISPZ))
+      WEIGHT=WEIGHT*FLPRT
+C
+C  REFLECT THERMAL MOLECULE
+      IF (E0TERM.LT.0.D0) THEN
+C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
+        TW=-E0TERM
+! these variables are INTENT(IN) (not altered in velocs)
+        VXR = 0._DP
+        VYR = 0._DP
+        VZR = 0._DP
+        VWL = 0._DP    ! INDICATE:
+                       ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        WGHTVS= WEIGHT ! WEIGHT IS NOT ALTERED WHEN
+                       ! SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        CALL EIRENE_VELOCS(WGHTVS,
+     .          TW,0._DP,VWL,VXR,VYR,VZR,RSQDVM(IMOL),
+     .                CVRSSM(IMOL),
+     .               -CRTX,-CRTY,-CRTZ,
+     .               E0,VELX,VELY,VELZ,VEL)
+      ELSEIF (E0TERM.GT.0.D0) THEN
+C  MONOENERGETIC, E0 (EV),  COSINE
+        E0=E0TERM
+        VEL=RSQDVM(IMOL)*SQRT(E0)
+        F1=1.0
+        F2=0.0
+        EXPI=0.0
+        GOTO 400
+      ELSE  ! E0TERM=0
+        GOTO 991
+      ENDIF
+      RETURN
+C
+C  "THERMAL ATOM MODEL"
+C
+C    ONE ATOM IS BORN,
+C    WITH PROBABILITY PRFCT-RPROB, WHERE RPROB IS THE
+C    PROBABILITY FOR BACKSCATTERING OF HOT ATOMS (.LE. PRFCT)
+C    THE CONDITION FR1.GE.RPROB IS FULLFILLED AT THIS POINT
+C
+C    E0TERM > 0: COSINE DISTRIBUTED, E0=E0TERM,
+C    E0TERM < 0: MAXWELLIAN AT TEMP. T=-E0TERM
+C    E0TERM = 0: THOMPSON DISTRIBUTION WITH SURF. BIND. EN.= EBIND
+C                UNTIL NOW: ONLY FOR THERMAL ATOM REFLECTION MODEL
+C
+  600 CONTINUE
+      ITYP=1
+      IATM=IGAST
+      IF (IATM.GT.NATMI) THEN
+        FR2=RANF_EIRENE( )
+        DO 610 I=1,NATMI
+          IATM=I
+          IF (FR2.LE.DATM(IATM)) GOTO 611
+  610   CONTINUE
+        GOTO 992
+  611   CONTINUE
+      ENDIF
+      ISPZ=NSPH+IATM
+C
+C  FAST FRACTION
+C     RPROBF=RPROB
+C  THERMAL ATOM FRACTION
+      RPROBA=PRFCT-RPROB
+C  LOST FRACTION
+      RPROBL=1.D0-PRFCT
+C
+      IF (WEIGHT.LT.WMIN.OR.RPROBA.LE.0.D0) THEN
+C  NO SUPPRESSION OF ABSORPTION
+        PRTEST=RPROB+RPROBA
+C  AT THIS POINT: 1.D0.GE.FR1.GE.RPROB
+        IF (FR1.GE.PRTEST) GOTO 700
+      ELSE
+C  SUPPRESSION OF ABSORPTION
+        WATOM=RPROBA/(1.D0-RPROB)
+        WLOSS=RPROBL/(1.D0-RPROB)
+        IF (WLOSS.GT.0.D0) THEN
+          WABS=WEIGHT*WLOSS
+          IF (LSPUMP .AND. WABS .GT. 0.D0) THEN
+            IF (MSURF.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WABS
+            ENDIF
+            IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WABS
+            END IF
+            LMETSPW(ISPZO) = .TRUE.
+          ENDIF
+        ENDIF
+        WEIGHT=WEIGHT*WATOM
+      ENDIF
+C
+C  REFLECT THERMAL ATOM
+      IF (E0TERM.LT.0.D0) THEN
+C  SAMPLE FROM MAXWELLIAN FLUX AROUND INNER (!) NORMAL AT TEMP. TW (EV)
+        TW=-E0TERM
+! these variables for velocs.f are INTENT(IN)
+        VXR = 0._DP
+        VYR = 0._DP
+        VZR = 0._DP
+        VWL = 0._DP    !  INDICATE:
+                       !  SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        WGHTVS= WEIGHT !  WEIGHT IS NOT ALTERED WHEN
+                       !  SAMPLING FROM NON-DRIFTING MAXWELLIAN FLUX
+        CALL EIRENE_VELOCS(WGHTVS,
+     .            TW,0._DP,VWL,VXR,VYR,VZR,RSQDVA(IATM),
+     .             CVRSSA(IATM),
+     .             -CRTX,-CRTY,-CRTZ,
+     .             E0,VELX,VELY,VELZ,VEL)
+        RETURN
+      ELSEIF (E0TERM.GT.0.D0) THEN
+C  MONOENERGETIC, E0 (EV), +  STANDARD, COSINE
+        E0=E0TERM
+        VEL=RSQDVA(IATM)*SQRT(E0)
+        F1=1.0
+        F2=0.0
+        EXPI= 0.0
+        GOTO 400
+      ELSE ! E0TERM=0
+        GOTO 991
+      ENDIF
+C
+C  ABSORB PARTICLE AT THIS SURFACE
+C
+  700 CONTINUE
+      IF (LSPUMP) THEN
+        IF (MSURF.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+          SPUMP(ISPZO,MSURF)=SPUMP(ISPZO,MSURF)+WEIGHT
+        ENDIF
+        IF (MSURFG.GT.0) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+          SPUMP(ISPZO,MSURFG)=SPUMP(ISPZO,MSURFG)+WEIGHT
+        END IF
+        LMETSPW(ISPZO) = .TRUE.
+      ENDIF
+      LGPART=.FALSE.
+      WEIGHT=0.
+      ITYP=-1
+      RETURN
+C
+C  ERROR MESSAGES FROM SUBR. REFLEC
+C
+  991 CONTINUE
+      WRITE (iunout,*) 'ERROR IN SUBR. REFLEC '
+      MSS=MSURF
+      IF (MSS.GT.NLIM) MSS=-(MSURF-NLIM)
+      WRITE (iunout,*) 'MSURF = ',MSS
+      WRITE (iunout,*) 'E0TERM=0 '
+      WRITE (iunout,*) 'STOP HISTORY NO. NPANU= ',NPANU
+      GOTO 999
+C
+  992 CONTINUE
+      WRITE (iunout,*) 'ERROR IN SUBR. REFLEC '
+      MSS=MSURF
+      IF (MSS.GT.NLIM) MSS=-(MSURF-NLIM)
+      WRITE (iunout,*) 'MSURF = ',MSS
+      WRITE (iunout,*) 'IGASF, IGAST ?? '
+      WRITE (iunout,*) 'STOP HISTORY NO. NPANU= ',NPANU
+      GOTO 999
+c
+  993 CONTINUE
+      WRITE (iunout,*) 'ERROR IN SUBR. REFLEC '
+      MSS=MSURF
+      IF (MSS.GT.NLIM) MSS=-(MSURF-NLIM)
+      WRITE (iunout,*) 'MSURF = ',MSS
+      WRITE (iunout,*) 'COSIN.LT.0. ', COSIN
+      WRITE (iunout,*) 'STOP HISTORY NO. NPANU= ',NPANU
+      GOTO 999
+C
+  999 IF (NLTRC) THEN
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP CRITICAL
+#endif
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP END CRITICAL
+#endif
+      ENDIF
+      LGPART=.FALSE.
+      WEIGHT=0.
+      RETURN
+
+      END SUBROUTINE EIRENE_REFLC1
+C
+
+C     The following SUBROUTINE is for reinitialization of EIRENE (DMH)
+
+      SUBROUTINE EIRENE_REFLEC_REINIT
+      IMPLICIT NONE
+
+      IF (ALLOCATED(EREDUC)) DEALLOCATE(EREDUC)
+      IF (ALLOCATED(FREDUC)) DEALLOCATE(FREDUC)
+      IF (ALLOCATED(IREDUC)) DEALLOCATE(IREDUC)
+      IF (ALLOCATED(ZRANGE)) DEALLOCATE(ZRANGE)
+      IF (ALLOCATED(ZIDED)) DEALLOCATE(ZIDED)
+      IF (ALLOCATED(ZENGY)) DEALLOCATE(ZENGY)
+      IF (ALLOCATED(QUOTE)) DEALLOCATE(QUOTE)
+      IF (ALLOCATED(QUOTR)) DEALLOCATE(QUOTR)
+      IF (ALLOCATED(ZIDE)) DEALLOCATE(ZIDE)
+      IF (ALLOCATED(ZDEL)) DEALLOCATE(ZDEL)
+      IF (ALLOCATED(E0AV)) DEALLOCATE(E0AV)
+      IF (ALLOCATED(ZDE)) DEALLOCATE(ZDE)
+      IF (ALLOCATED(ZR)) DEALLOCATE(ZR)
+      ICOUNT = 0
+      NPANOLD = 0
+      IFIRST = 0
+
+      RETURN
+      END SUBROUTINE EIRENE_REFLEC_REINIT
+
+      FUNCTION EREDC(XMTT,XCTT,XMPP,XCPP)
+      IMPLICIT NONE
+      REAL(DP) :: EREDC
+      REAL(DP), INTENT(IN) :: XMTT,XCTT,XMPP,XCPP
+      REAL(DP) :: CON=0.4685_DP, ZWDR=0.666667_DP, EOQ=14.39_DP
+
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE(CON, ZWDR, EOQ)
+#endif
+      SAVE
+
+cdr:  statement function: reduced energy for target (tt) - projectile (pp) system.
+      EREDC=CON/EOQ*XMTT/((XMPP+XMTT)*XCPP*XCTT*
+     .                       SQRT(XCPP**ZWDR+XCTT**ZWDR))
+      END FUNCTION EREDC
+
+      END MODULE EIRMOD_REFLEC

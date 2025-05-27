@@ -115,6 +115,10 @@ cdr   integer, parameter :: lupa=34, lima=40
       integer, parameter :: lupa=34, lima=34
       INTEGER, SAVE :: IFRST=0
       INTEGER :: IP
+      EXTERNAL :: EIRENE_CLSAHA, EIRENE_EINSTN,
+     .            EIRENE_E_IONREC, EIRENE_IONREC,
+     .            EIRENE_POPCOF_M, EIRENE_RATCOF,
+     .            EIRENE_EXIT_OWN
 c
       IF (LIMA.GT.40.OR.LUPA.GT.LIMA) THEN
         WRITE (iunout,*) 'LIMA, LUPA ??? ',LIMA,LUPA
@@ -197,48 +201,51 @@ C
 C     L.C.JOHNSON, ASTROPHYS. J. 174, 227 (1972).
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      USE EIRMOD_CCONA, ONLY : PIA
+      IMPLICIT NONE
       INTEGER LIM
-      DIMENSION F(40,40)
-      DIMENSION A(40,40)
-      DIMENSION E_AT(40)
-      DIMENSION POP_ESC(40,40)
+      REAL(DP) F(40,40)
+      REAL(DP) A(40,40)
+      REAL(DP) E_AT(40)
+      REAL(DP) POP_ESC(40,40)
       INTEGER I, J
+      REAL(DP) AI, AJ, G, P, UH, X
       logical lopaque
 
-      UH=13.595
+      UH=13.595_DP
       DO 100 I=1,LIM
         P=I
-        E_AT(I)=UH*(1.0-1.0/P**2)
+        E_AT(I)=UH*(1.0_DP-1.0_DP/P**2)
   100 CONTINUE
 
       DO 101 I=1,LIM-1
        DO 102 J=I+1,LIM
-        AI=I
-        AJ=J
-        X=1.-(AI/AJ)**2
+        AI=REAL(I,DP)
+        AJ=REAL(J,DP)
+        X=1.0_DP-(AI/AJ)**2
 
 cdr: Johnson Gaunt factor approx.
 cdr  gaunt=g(i,x)=G(I,J)
         IF(I.GE.3) THEN
 
-          G=(.9935+.2328/AI-.1296/AI**2)
-     *     -(.6282-.5598/AI+.5299/AI**2)/(AI*X)
+          G=(.9935_DP+.2328_DP/AI-.1296_DP/AI**2)
+     *     -(.6282_DP-.5598_DP/AI+.5299_DP/AI**2)/(AI*X)
 C Feb. 2008: TYPO CORRECTED: .3387 --> .3887
-     *     +(.3887-1.181/AI+1.470/AI**2)/(AI*X)**2
+     *     +(.3887_DP-1.181_DP/AI+1.470_DP/AI**2)/(AI*X)**2
         ELSEIF(I.EQ.2) THEN
-          G=1.0785-.2319/X+.02947/X**2
+          G=1.0785_DP-.2319_DP/X+.02947_DP/X**2
         ELSEIF(I.EQ.1) THEN
-          G=1.1330-.4059/X+.07014/X**2
+          G=1.1330_DP-.4059_DP/X+.07014_DP/X**2
         ENDIF
 
 cdr  gaunt(x) done. gaunt=g(i,j)
 
-        F(I,J)=2.**6/(3.*SQRT(3.)*3.1416)*(AI/AJ)**3/(2.*AI**2)*G/X**3
-        A(J,I)=8.03E9*AI**2/AJ**2*(AI**(-2)-AJ**(-2))**2*F(I,J)
+        F(I,J)=2.0_DP**6/(3.0_DP*SQRT(3.0_DP)*PIA)*(AI/AJ)**3/
+     .        (2.0_DP*AI**2)*G/X**3
+        A(J,I)=8.03E9_DP*AI**2/AJ**2*(AI**(-2)-AJ**(-2))**2*F(I,J)
 
 cdr  Fully Ly opaque: all a(j-->1) transitions are removed.
-        if (lopaque.and.i.eq.1) a(j,i)=0.
+        if (lopaque.and.i.eq.1) a(j,i)=0.0_DP
 cdr apply population escape factor to transition J-->I
         A(J,I)=A(J,I) * POP_ESC(J,I)
   102  CONTINUE
@@ -255,19 +262,21 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
-      DIMENSION SAHA(40)
+      USE EIRMOD_CCONA, ONLY : EVKEL
+      IMPLICIT NONE
+      REAL(DP) TEMP,SAHA(40)
       INTEGER I
+      REAL(DP) P, TE, UION
 
-      TE=TEMP*1.1605E4
+      TE=TEMP/EVKEL
 
       DO 101 I=1,40
-        P=I
-        UION=13.595/TEMP/P**2
-c     if (uion.gt.65) then
-c       saha(i)=1.e30
+        P=REAL(I,DP)
+        UION=13.595_DP/TEMP/P**2
+c     if (uion.gt.65_DP) then
+c       saha(i)=1.e30_DP
 c     else
-        SAHA(I)=P**2*EXP(UION)/2.414D15/SQRT(TE**3)
+        SAHA(I)=P**2*EXP(UION)/2.414E15_DP/SQRT(TE**3)
 c     endif
   101 CONTINUE
 
@@ -284,147 +293,151 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
-      DIMENSION OSC(40,40),C(40,40),F(40,40),U(40,40)
-      DIMENSION SAHA(40),S(40),ALPHA(40),BETA(40),EBETA(40),UION(40)
+      USE EIRMOD_CCONA, ONLY : EVKEL
+      IMPLICIT NONE
+      REAL(DP) TEMP
+      REAL(DP) OSC(40,40),C(40,40),F(40,40),U(40,40)
+      REAL(DP) SAHA(40),S(40),ALPHA(40),BETA(40),EBETA(40),UION(40)
       INTEGER I, II, III, J, JJ
+      REAL(DP) DCCX, ELN, EP, EXS, P, TE, TEL10, UH, XP, XS
+      EXTERNAL EIRENE_CLBETA, EIRENE_EXCOFF
 
 cdr  above some critical Te0 value the radiative rate coefficients beta become unphysical
 c    perhaps due to numerical integration, or due to fit expression for integrand.
 c    Extrapolate energy rate coeff ebeta beyond Te0 =500 eV
 
       logical lopaque
-      DIMENSION RECMB1(9)
+      REAL(DP) RECMB1(9)
       DATA RECMB1/
      .-2.955397218588D+01,-5.415952519274D-01, -1.898544362547D-02,
      .-6.296638424302D-03,-6.590547592879D-04,  1.979096752346D-04,
      .-3.384091511722D-06,-1.312178532481D-06,  6.794867069246D-08/
-      DIMENSION RECMB2(9)
+      REAL(DP) RECMB2(9)
       DATA RECMB2/
      .-3.028258203128D+01,-6.489344359811D-01,-5.044516146247D-02,
      .-6.834257068606D-03, 7.621603311294D-04, 1.820369471925D-04,
      .-4.172173992553D-05, 3.151129832749D-06,-8.557790319804D-08/
-      DIMENSION RECMB3(9)
+      REAL(DP) RECMB3(9)
       DATA RECMB3/
      .-3.081308111854D+01,-7.506832188514D-01,-6.392987382349D-02,
      .-3.136753737114D-03, 1.130486114398D-03,-5.891101787416D-06,
      .-1.871544818151D-05, 1.924155011543D-06,-6.113117867247D-08/
-      DIMENSION RECMB4(9)
+      REAL(DP) RECMB4(9)
       DATA RECMB4/
      .-3.124178248661D+01,-8.324721778000D-01,-6.749686238962D-02,
      .-1.819027715538D-04, 1.029662235699D-03,-9.947563495630D-05,
      .-1.157212109508D-06, 6.419046650810D-07,-2.632212378124D-08/
-      DIMENSION RECMB5(9)
+      REAL(DP) RECMB5(9)
       DATA RECMB5/
      .-3.160248102907D+01,-8.970582941706D-01,-6.672021078686D-02,
      . 1.735998035356D-03, 8.102846437404D-04,-1.293548645460D-04,
      . 7.653597399125D-06,-1.007290294963D-07,-4.396689144443D-09/
-      DIMENSION RECMB6(9)
+      REAL(DP) RECMB6(9)
       DATA RECMB6/
      .-3.191200354649D+01,-9.487943192650D-01,-6.416290359056D-02,
      . 2.915417324842D-03, 5.904290511293D-04,-1.293159094005D-04,
      . 1.121762622770D-05,-4.647730339162D-07, 7.248953722425D-09/
-      DIMENSION RECMB7(9)
+      REAL(DP) RECMB7(9)
       DATA RECMB7/
      .-3.218096339788D+01,-9.910879396074D-01,-6.095219508517D-02,
      . 3.617704413680D-03, 4.023923659235D-04,-1.170991503299D-04,
      . 1.208395104539D-05,-6.153747484991D-07, 1.276002457208D-08/
-      DIMENSION RECMB8(9)
+      REAL(DP) RECMB8(9)
       DATA RECMB8/
      .-3.241655828927D+01,-1.026367760090D+00,-5.758688104786D-02,
      . 4.015706361086D-03, 2.503898666107D-04,-1.009126065615D-04,
      . 1.164859556536D-05,-6.527211813278D-07, 1.485788926575D-08/
-      DIMENSION RECMB9(9)
+      REAL(DP) RECMB9(9)
       DATA RECMB9/
      .-3.262387280670D+01,-1.056350328756D+00, -5.428573116785D-02,
      . 4.218200737528D-03, 1.304699903027D-04, -8.440144760676D-05,
      . 1.063623086507D-05,-6.324515306256D-07,  1.511971184207D-08/
-      DIMENSION RECMB10(9)
+      REAL(DP) RECMB10(9)
       DATA RECMB10/
      .-3.280658322283D+01,-1.082264892917D+00,-5.113789272221D-02,
      . 4.293438883183D-03,3.692139459358D-05 ,-6.905886517440D-05,
      . 9.413397820660D-06,-5.846761030723D-07, 1.443147593158D-08/
-      DIMENSION RECMB11(9)
+      REAL(DP) RECMB11(9)
       DATA RECMB11/
      .-3.296736752352D+01, -1.105008301698D+00, -4.817218718568D-02,
      . 4.284573570871D-03, -3.554562646018D-05, -5.539693364836D-05,
      . 8.160180100312D-06, -5.253448069028D-07,  1.327912727320D-08/
-      DIMENSION RECMB12(9)
+      REAL(DP) RECMB12(9)
       DATA RECMB12/
      .-3.310815524446D+01,-1.125249327580D+00,-4.538927682514D-02,
      . 4.219407043180D-03,-9.129558854381D-05,-4.350496815893D-05,
      . 6.963937973383D-06,-4.630004759641D-07, 1.193307256583D-08/
-      DIMENSION RECMB13(9)
+      REAL(DP) RECMB13(9)
       DATA RECMB13/
      .-3.323028186699D+01,-1.143497947426D+00,-4.277662562220D-02,
      . 4.116029910827D-03,-1.338072127899D-04,-3.328224832213D-05,
      . 5.863111240449D-06,-4.021451443280D-07, 1.054515552989D-08/
-      DIMENSION RECMB14(9)
+      REAL(DP) RECMB14(9)
       DATA RECMB14/
      .-3.333457692604D+01,-1.160151559549D+00,-4.031606772897D-02,
      . 3.986144192297D-03,-1.657642895871D-04,-2.454533247143D-05,
      . 4.866420567932D-06,-3.445615518446D-07, 9.181805185443D-09/
-      DIMENSION RECMB15(9)
+      REAL(DP) RECMB15(9)
       DATA RECMB15/
      .-3.342140353146D+01, -1.175528330345D+00, -3.798784446956D-02,
      . 3.837630497852D-03, -1.892109056864D-04, -1.713312193944D-05,
      . 3.978313590670D-06, -2.915668119657D-07,  7.895773130286D-09/
-      DIMENSION RECMB16(9)
+      REAL(DP) RECMB16(9)
       DATA RECMB16/
      .-3.349065709684D+01,-1.189890025875D+00,-3.577113355659D-02,
      . 3.675431118626D-03,-2.057472771812D-04,-1.086107122550D-05,
      . 3.190471670743D-06,-2.432219763675D-07, 6.698796511582D-09/
-      DIMENSION RECMB17(9)
+      REAL(DP) RECMB17(9)
       DATA RECMB17/
      .-3.354171350627D+01, -1.203459634476D+00,-3.364574539433D-02,
      . 3.502705068758D-03, -2.165263655319D-04,-5.593693576382D-06,
      . 2.496628300465D-06,-1.995492586410D-07 , 5.598476502405D-09/
-      DIMENSION RECMB18(9)
+      REAL(DP) RECMB18(9)
       DATA RECMB18/
      .-3.357331947394D+01,-1.216435628777D+00, -3.159069352529D-02,
      . 3.321134001198D-03,-2.224762687832D-04, -1.195846543818D-06,
      . 1.887944138620D-06,-1.603648021903D-07, 4.597768509898D-09 /
-      DIMENSION RECMB19(9)
+      REAL(DP) RECMB19(9)
       DATA RECMB19/
      .-3.358338560247D+01,-1.229004753335D+00,-2.958476231981D-02,
      . 3.131349929429D-03,-2.242129098657D-04, 2.426519089379D-06,
      . 1.357374516638D-06,-1.253982655621D-07, 3.692268883687D-09/
-      DIMENSION RECMB20(9)
+      REAL(DP) RECMB20(9)
       DATA RECMB20/
      .-3.356862240333D+01, -1.241355838486D+00, -2.760425715542D-02,
      . 2.932832208231D-03, -2.221882606505D-04,  5.370072522835D-06,
      . 8.951422982914D-07, -9.414351171950D-08,  2.871350578727D-09/
-      DIMENSION RECMB21(9)
+      REAL(DP) RECMB21(9)
       DATA RECMB21/
      .-3.352387025175D+01, -1.253698383107D+00, -2.562222079503D-02,
      . 2.724279920091D-03, -2.166083216770D-04, 7.671932594855D-06 ,
      . 4.995725943925D-07, -6.664545124985D-08,  2.139078683720D-09/
-      DIMENSION RECMB22(9)
+      REAL(DP) RECMB22(9)
       DATA RECMB22/
      .-3.344080404025D+01,-1.266290224370D+00, -2.360370763255D-02,
      . 2.502743536910D-03,-2.074812094740D-04,  9.376815010545D-06,
      . 1.640662776104D-07,-4.245674204110D-08,  1.483365500922D-09/
-      DIMENSION RECMB23(9)
+      REAL(DP) RECMB23(9)
       DATA RECMB23/
      .-3.330515902115D+01,-1.279492872276D+00, -2.149943684787D-02,
      . 2.263297751642D-03,-1.945289210035D-04,  1.048130070914D-05,
      .-1.111440892860D-07,-2.168045908152D-08,  9.097953739845D-10/
-      DIMENSION RECMB24(9)
+      REAL(DP) RECMB24(9)
       DATA RECMB24/
      .-3.308989756561D+01,-1.293895127861D+00,-1.922974855128D-02,
      . 1.996974143238D-03,-1.769459921577D-04, 1.093203266053D-05,
      .-3.242765500448D-07,-4.272006247928D-09, 4.140158369421D-10/
-      DIMENSION RECMB25(9)
+      REAL(DP) RECMB25(9)
       DATA RECMB25/
      .-3.273412834255D+01,-1.310670020686D+00,-1.663863373590D-02,
      . 1.685306322247D-03,-1.528534971941D-04, 1.057088450235D-05,
      .-4.649188077982D-07, 9.294915640077D-09, 6.752259753282D-12/
-      DIMENSION RECMB26(9)
+      REAL(DP) RECMB26(9)
       DATA RECMB26/
      .-3.204416240346D+01,-1.333113656592D+00,-1.330417762787D-02,
      . 1.278449892734D-03,-1.168945644350D-04, 8.891790020206D-06,
      .-4.953005276433D-07, 1.718610439449D-08,-2.710780782107D-10/
-      DIMENSION RECOMB(9,26)
+      REAL(DP) RECOMB(9,26)
       EQUIVALENCE (RECOMB(1,1),RECMB1(1))
       EQUIVALENCE (RECOMB(1,2),RECMB2(1))
       EQUIVALENCE (RECOMB(1,3),RECMB3(1))
@@ -453,22 +466,22 @@ c    Extrapolate energy rate coeff ebeta beyond Te0 =500 eV
       EQUIVALENCE (RECOMB(1,26),RECMB26(1))
 
 C     INITIALIZATION
-      S=0.0
-      ALPHA=0.0
-      BETA=0.0
-      EBETA=0.0
-      UION=0.0
-      C=0.0
-      F=0.0
-      U=0.0
+      S=0.0_DP
+      ALPHA=0.0_DP
+      BETA=0.0_DP
+      EBETA=0.0_DP
+      UION=0.0_DP
+      C=0.0_DP
+      F=0.0_DP
+      U=0.0_DP
 
-      TE=TEMP*1.1605E4     !  Te in Kelvin, TEMP in eV
+      TE=TEMP/EVKEL    !  Te in Kelvin, TEMP in eV
       TEL10=log10(temp)
-      UH=13.595
+      UH=13.595_DP
 
       DO 101 I=1,40
-        P=I
-        UION(I)=13.595/TEMP/P**2
+        P=REAL(I,DP)
+        UION(I)=13.595_DP/TEMP/P**2
   101 CONTINUE
       DO 102 I=1,40
        DO J=1,40
@@ -480,7 +493,7 @@ c  excitation   :            C
 c  de-excitation:            F  (by detailed balance)
 c  ionization:               S
 c  three body recombination: ALPHA (inverse to ionization S)
-      IF(TE.GT.5.0E3) THEN
+      IF(TE.GT.5.0D3) THEN
 ! Te gt than 5000 Kelvin: calculate S, and derive alpha
         CALL EIRENE_EXCOFF(U,OSC,TEMP,C,F,S,ALPHA)
 
@@ -502,7 +515,7 @@ c   next: radiative recombination: BETA
 
       DO 602 I=1,40
 
-        P=I
+        P=REAL(I,DP)
         XP=UH/TEMP/P**2
         EP=UH/P**2
         CALL EIRENE_CLBETA(XP,P,XS,EXS) ! return XS,EXS for
@@ -520,8 +533,8 @@ c    .                              temp, I, BETA(i),EBETA(I), RATIO
 c         endif
 
 C  for high Te use the d ln(K)/d ln(T) from the old Claudine (Mahn-Welge) code.
-          IF (TEMP.GT.500.0) THEN  ! tried also higher temp,
-                                   ! from 800 eV: spurious
+          IF (TEMP.GT.500.0_DP) THEN  ! tried also higher temp,
+                                      ! from 800 eV: spurious
             iii=min(i,26)  ! assume the same correction term
                            ! for all I > 26
             ELN=LOG(TEMP)
@@ -536,7 +549,7 @@ C  EKIN=  <SIGMA * V * EKIN(ELEC)>   (EV*CM**3/S)
 
   602 CONTINUE
 c
-      if (lopaque) beta(1)=0.
+      if (lopaque) beta(1)=0._DP
 c
 
       RETURN
@@ -550,23 +563,28 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
-      DIMENSION U(40,40),OSC(40,40),C(40,40),F(40,40)
-      DIMENSION S(40),ALPHA(40)
+      USE EIRMOD_CCONA, ONLY : EVKEL
+      IMPLICIT NONE
+      REAL(DP) TEMP
+      REAL(DP) U(40,40),OSC(40,40),C(40,40),F(40,40)
+      REAL(DP) S(40),ALPHA(40)
       INTEGER I, J
+      REAL(DP) AL, CJ, CV, F1, GG, GGG, P, Q, S1, SJ, SV, TE
+      EXTERNAL EIRENE_COF1N, EIRENE_COFJO, EIRENE_COFJS, EIRENE_COFJS2,
+     .         EIRENE_COFVR, EIRENE_COFVS
 C
-      S=0.0
-      ALPHA=0.0
-      C=0.0
-      F=0.0
+      S=0.0_DP
+      ALPHA=0.0_DP
+      C=0.0_DP
+      F=0.0_DP
 
-      TE=TEMP*1.1605E4
+      TE=TEMP/EVKEL
 
 C*********  1 -> J
       I=1
-      P=I
+      P=REAL(I,DP)
       DO 100 J=2,40
-        Q=J
+        Q=REAL(J,DP)
         CALL EIRENE_COF1N(U(I,J),OSC(I,J),TE,F1,I,J)
         F(J,1)=F1
         C(1,J)=Q**2/EXP(U(1,J))*F(J,1)  !/P**2, but P=1 here
@@ -574,14 +592,14 @@ C*********  1 -> J
 
 C*********  2-10 -> J
       DO 110 I=2,10
-        P=I
+        P=REAL(I,DP)
         DO J=I+1,40
-          Q=J
+          Q=REAL(J,DP)
           CALL EIRENE_COFVR(U(I,J),OSC(I,J),TEMP,CV,I,J)
           CALL EIRENE_COFJO(U(I,J),OSC(I,J),TE,CJ,I,J)
 
-          GG=((P-2.)/8.)**0.25
-          C(I,J)=(1.-GG)*CJ+GG*CV
+          GG=((P-2.0_DP)/8.0_DP)**0.25
+          C(I,J)=(1.0_DP-GG)*CJ+GG*CV
           F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
         END DO
   110 CONTINUE
@@ -590,9 +608,9 @@ C*********  2-10 -> J
 C*********  I(>11) -> J
 
       DO 120 I=11,39
-        P=I
+        P=REAL(I,DP)
         DO J=I+1,40
-          Q=J
+          Q=REAL(J,DP)
           CALL EIRENE_COFVR(U(I,J),OSC(I,J),TEMP,CV,I,J)
           C(I,J)=CV
           F(J,I)=P**2/Q**2*EXP(U(I,J))*C(I,J)
@@ -613,13 +631,13 @@ C*********  S  1 ->  ionization
 C
 C*********  S  2-10 ->
       DO 210 I=2,10
-        P=I
+        P=REAL(I,DP)
 
         CALL EIRENE_COFJS(TE,SJ,I)
         CALL EIRENE_COFVS(TEMP,SV,I)
 
-        GGG=((P-2.)/8.)**0.25
-        S(I)=(1.-GGG)*SJ+GGG*SV
+        GGG=((P-2.0_DP)/8.0_DP)**0.25
+        S(I)=(1.0_DP-GGG)*SJ+GGG*SV
   210 CONTINUE
 
 C*********  S  I(>11) ->
@@ -644,52 +662,55 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
 
+      REAL(DP) U, OSC, TE, F
       INTEGER I, J, ICON
+      REAl(DP) A, B, C1, E1, E1Y, E1Z, E2, E2Y, E2Z,
+     .         R, RX, P, Q, X, Y, Y1, Z, Z1
       REAL(DP) EIRENE_GINT
-      EXTERNAL EIRENE_GINT
+      EXTERNAL EIRENE_GINT, EIRENE_EXPI
 
-      P=I
-      Q=J
-      X=1-P**2/Q**2
+      P=REAL(I,DP)
+      Q=REAL(J,DP)
+      X=1.0_DP-P**2/Q**2
       Y=U
 C
-      R=0.45*X
+      R=0.45_DP*X
       IF(J.EQ.2) THEN
-        RX=-0.95
+        RX=-0.95_DP
       ELSE IF(J.EQ.3) THEN
-        RX=-0.95
+        RX=-0.95_DP
       ELSE IF(J.EQ.4) THEN
-        RX=-0.95
+        RX=-0.95_DP
       ELSE IF(J.EQ.5) THEN
-        RX=-0.95
+        RX=-0.95_DP
       ELSE IF(J.EQ.6) THEN
-        RX=-0.94
+        RX=-0.94_DP
       ELSE IF(J.EQ.7) THEN
-        RX=-0.93
+        RX=-0.93_DP
       ELSE IF(J.EQ.8) THEN
-        RX=-0.92
+        RX=-0.92_DP
       ELSE IF(J.EQ.9) THEN
-        RX=-0.91
+        RX=-0.91_DP
       ELSE
-        RX=-0.9
+        RX=-0.9_DP
       END IF
 C
       Z=R+Y
-      A=2*P**2*OSC/X
-      B=4*P**4/Q**3/X**2*(1+1.3333/X-0.603/X**2)
-      C1=2*P**2/X
+      A=2.0_DP*P**2*OSC/X
+      B=4.0_DP*P**4/Q**3/X**2*(1.0_DP+1.3333_DP/X-0.603_DP/X**2)
+      C1=2.0_DP*P**2/X
       B=B-A*LOG(C1)
       Y1=-Y
       Z1=-Z
 
-      IF(Y.GT.50.0) THEN
+      IF(Y.GT.50.0_DP) THEN
         E1Y=EXP(-Y)*EIRENE_GINT(Y)/Y
         E1Z=EXP(-Z)*EIRENE_GINT(Z)/Z
         E2Y=EXP(-Y)*(1.0-EIRENE_GINT(Y))
         E2Z=EXP(-Z)*(1.0-EIRENE_GINT(Z))
-        E1=(1/Y+0.5)*E1Y+RX*(1/Z+0.5)*E1Z
+        E1=(1.0_DP/Y+0.5_DP)*E1Y+RX*(1.0_DP/Z+0.5_DP)*E1Z
         E2=E2Y/Y+RX*E2Z/Z
         F=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)*P**2/Q**2*EXP(Y)
       ELSE
@@ -703,7 +724,7 @@ cdr  use exponential integral here
         E1Z=-E1Z
         E2Y=EXP(-Y)-Y*E1Y
         E2Z=EXP(-Z)-Z*E1Z
-        E1=(1/Y+0.5)*E1Y+RX*(1/Z+0.5)*E1Z
+        E1=(1.0_DP/Y+0.5_DP)*E1Y+RX*(1.0_DP/Z+0.5_DP)*E1Z
         E2=E2Y/Y+RX*E2Z/Z
 
         F=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)*P**2/Q**2*EXP(Y)
@@ -725,19 +746,23 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) U, OSC, TE, C
       INTEGER I, J, ICON
+      REAL(DP) A, B, C1, BN, E1, E1Y, E1Z, E2, E2Y, E2Z, P, Q, R,
+     .         X, Y, Y1, Z, Z1
+      EXTERNAL EIRENE_EXPI, EIRENE_EXIT_OWN
 
-      P=I
-      BN=(4.0-18.63/P+36.24/P**2-28.09/P**3)/P
-      Q=J
-      X=1-P**2/Q**2
+      P=REAL(I,DP)
+      BN=(4.0_DP-18.63_DP/P+36.24_DP/P**2-28.09_DP/P**3)/P
+      Q=REAL(J,DP)
+      X=1.0_DP-P**2/Q**2
       Y=U
-      R=1.94/P**1.57*X
+      R=1.94_DP/P**1.57_DP*X
       Z=R+Y
-      A=2*P**2*OSC/X
-      B=4*P**4/Q**3/X**2*(1+1.3333/X+BN/X**2)
-      C1=2*P**2/X
+      A=2.0_DP*P**2*OSC/X
+      B=4.0_DP*P**4/Q**3/X**2*(1.0_DP+1.3333_DP/X+BN/X**2)
+      C1=2.0_DP*P**2/X
       B=B-A*LOG(C1)
       Y1=-Y
       Z1=-Z
@@ -748,7 +773,7 @@ C
       E1Z=-E1Z
       E2Y=EXP(-Y)-Y*E1Y
       E2Z=EXP(-Z)-Z*E1Z
-      E1=(1/Y+0.5)*E1Y-(1/Z+0.5)*E1Z
+      E1=(1.0_DP/Y+0.5_DP)*E1Y-(1.0_DP/Z+0.5_DP)*E1Z
       E2=E2Y/Y-E2Z/Z
 
       C=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)
@@ -770,25 +795,28 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) U, OSC, TEMP, C
       INTEGER I, J
+      REAL(DP) A, B, C1, C2, BN, DELTA,
+     .         G1, G2, G3, GAMMA, P, Q, S1, UH, X
 
-      UH=13.595
-      P=I
-      BN=1.4/P*LOG(P)-0.7/P-0.51/P**2+1.16/P**3-0.55/P**4
-      Q=J
+      UH=13.595_DP
+      P=REAL(I,DP)
+      BN=1.4_DP/P*LOG(P)-0.7_DP/P-0.51_DP/P**2+1.16_DP/P**3-0.55_DP/P**4
+      Q=REAL(J,DP)
       S1=Q-P
-      X=1-P**2/Q**2
-      A=2*P**2*OSC/X
-      B=4*P**4/Q**3/X**2*(1+1.3333/X+BN/X**2)
-      DELTA=EXP(-B/A)+0.06*S1**2/P**2/Q
-      G1=1+TEMP/UH*P**3
-      G2=3+11*S1**2/P**2
-      G3=6+1.6*S1*Q+0.3/S1**2+
-     .   0.8*Q**1.5/S1**0.5*(S1-0.6)
+      X=1.0_DP-P**2/Q**2
+      A=2.0_DP*P**2*OSC/X
+      B=4.0_DP*P**4/Q**3/X**2*(1.0_DP+1.3333_DP/X+BN/X**2)
+      DELTA=EXP(-B/A)+0.06_DP*S1**2/P**2/Q
+      G1=1.0_DP+TEMP/UH*P**3
+      G2=3.0_DP+11.0_DP*S1**2/P**2
+      G3=6.0_DP+1.6_DP*S1*Q+0.3_DP/S1**2+
+     .   0.8_DP*Q**1.5/S1**0.5*(S1-0.6_DP)
       GAMMA=UH*LOG(G1)*G2/G3
       C1=1.6D-7*TEMP**0.5/(TEMP+GAMMA)*EXP(-U)
-      C2=0.3*TEMP/UH+DELTA
+      C2=0.3_DP*TEMP/UH+DELTA
 
       C=C1*(A*LOG(C2)+B)
 
@@ -807,38 +835,43 @@ C     J. APPL. PHYS. 73, 8122 (1993).
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) TE, S
       INTEGER I, N, K, ICON
-      DIMENSION G(0:2,40)
+      REAL(DP) G(0:2,40)
+      REAL(DP) A, B, BN, C1,
+     .         E0Y, E0Z, E1, E1Y, E1Z, E2, E2Y, E2Z, EGY, EGZ,
+     .         P, R, RX, Y, Y1, Z, Z1
+      EXTERNAL EIRENE_EXPI
 
-      G(0,1)=1.1330
-      G(1,1)=-0.4059
-      G(2,1)=0.07014
-      G(0,2)=1.0785
-      G(1,2)=-0.2319
+      G(0,1)=1.1330_DP
+      G(1,1)=-0.4059_DP
+      G(2,1)=0.07014_DP
+      G(0,2)=1.0785_DP
+      G(1,2)=-0.2319_DP
       G(2,2)=0.02947
       DO 350 N=3,40
-        G(0,N)= 0.9935     +0.2328/N   -0.1296/N**2
-        G(1,N)=-0.6282/N   +0.5598/N**2-0.5299/N**3
-        G(2,N)= 0.3887/N**2-1.1810/N**3+1.4700/N**4
+        G(0,N)= 0.9935_DP     +0.2328_DP/N   -0.1296_DP/N**2
+        G(1,N)=-0.6282_DP/N   +0.5598_DP/N**2-0.5299_DP/N**3
+        G(2,N)= 0.3887_DP/N**2-1.1810_DP/N**3+1.4700_DP/N**4
   350 CONTINUE
 
       IF (I.EQ.1) THEN
 
-        P=1.0
+        P=1.0_DP
 
-        Y=1.57770E5/TE
-        R=0.45
+        Y=1.57770E5_DP/TE
+        R=0.45_DP
         Z=R+Y
-        RX=-0.59
-        A=0.0
+        RX=-0.59_DP
+        A=0.0_DP
         DO 223 K=0,2
           A=A+G(K,1)/(K+3)
   223   CONTINUE
-        A=A*1.9603*P
+        A=A*1.9603_DP*P
 
-        B=0.66667*P**2*(5-0.603)
-        C1=2*P**2
+        B=0.66667_DP*P**2*(5.0_DP-0.603_DP)
+        C1=2.0_DP*P**2
         B=B-A*LOG(C1)
         Y1=-Y
         Z1=-Z
@@ -859,18 +892,18 @@ C
         S=1.093D-10*SQRT(TE)*P**2*Y**2*(A*E1+B*E2)
 
       ELSE
-        P=I
-        BN=(4.0-18.63/P+36.24/P**2-28.09/P**3)/P
-        Y=1.57770E5/TE/P**2
-        R=1.94/P**1.57
+        P=REAL(I,DP)
+        BN=(4.0_DP-18.63_DP/P+36.24_DP/P**2-28.09_DP/P**3)/P
+        Y=1.57770E5_DP/TE/P**2
+        R=1.94_DP/P**1.57_DP
         Z=R+Y
-        A=0.0
+        A=0.0_DP
         DO 222 K=0,2
           A=A+G(K,I)/(K+3)
   222   CONTINUE
-        A=A*1.9603*P
-        B=0.66667*P**2*(5+BN)
-        C1=2*P**2
+        A=A*1.9603_DP*P
+        B=0.66667_DP*P**2*(5.0_DP+BN)
+        C1=2.0_DP*P**2
         B=B-A*LOG(C1)
         Y1=-Y
         Z1=-Z
@@ -904,49 +937,52 @@ C     J. APPL. PHYS. 73, 8122 (1993).
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) TE, W
       INTEGER I, N, K
-      DIMENSION G(0:2,40)
+      REAL(DP) G(0:2,40)
+      REAL(DP) A, B, C1, E0Y, E0Z, E1, E1Y, E1Z, E2, E2Y, E2Z, EGY, EGZ,
+     .         P, PP, R, RX, Y, Y1, Z, Z1
       REAL(DP) EIRENE_GINT
       EXTERNAL EIRENE_GINT
 
-      G(0,1)= 1.1330
-      G(1,1)=-0.4059
-      G(2,1)= 0.07014
-      G(0,2)= 1.0785
-      G(1,2)=-0.2319
-      G(2,2)= 0.02947
+      G(0,1)= 1.1330_DP
+      G(1,1)=-0.4059_DP
+      G(2,1)= 0.07014_DP
+      G(0,2)= 1.0785_DP
+      G(1,2)=-0.2319_DP
+      G(2,2)= 0.02947_DP
       DO 350 N=3,40
-        G(0,N)= 0.9935     +0.2328/N   -0.1296/N**2
-        G(1,N)=-0.6282/N   +0.5598/N**2-0.5299/N**3
-        G(2,N)= 0.3887/N**2-1.1810/N**3+1.4700/N**4
+        G(0,N)= 0.9935_DP     +0.2328_DP/N   -0.1296_DP/N**2
+        G(1,N)=-0.6282_DP/N   +0.5598_DP/N**2-0.5299_DP/N**3
+        G(2,N)= 0.3887_DP/N**2-1.1810_DP/N**3+1.4700_DP/N**4
   350 CONTINUE
 
 C     IF (I.EQ.1) THEN
-        PP=I
-        P=1.0
-        Y=1.57770E5/TE
-        R=0.45
+        PP=REAL(I,DP)
+        P=1.0_DP
+        Y=1.57770E5_DP/TE
+        R=0.45_DP
         Z=R+Y
-        RX=-0.59
+        RX=-0.59_DP
 
-        A=0.0
+        A=0.0_DP
         DO 223 K=0,2
           A=A+G(K,1)/(K+3)
   223   CONTINUE
-        A=A*1.9603*P
+        A=A*1.9603_DP*P
 
-        B=0.66667*P**2*(5-0.603)
-        C1=2*P**2
+        B=0.66667_DP*P**2*(5.0_DP-0.603_DP)
+        C1=2.0_DP*P**2
         B=B-A*LOG(C1)
         Y1=-Y
         Z1=-Z
 
         E1Y=EXP(-Y)*EIRENE_GINT(Y)/Y
         E1Z=EXP(-Z)*EIRENE_GINT(Z)/Z
-        E2Y=EXP(-Y)*(1.0-EIRENE_GINT(Y))
-        E2Z=EXP(-Z)*(1.0-EIRENE_GINT(Z))
-        E1=1/Y*E1Y+RX*1/Z*E1Z
+        E2Y=EXP(-Y)*(1.0_DP-EIRENE_GINT(Y))
+        E2Z=EXP(-Z)*(1.0_DP-EIRENE_GINT(Z))
+        E1=1.0_DP/Y*E1Y+RX*1.0_DP/Z*E1Z
         E0Y=EXP(-Y)/Y
         E0Z=EXP(-Z)/Z
         EGY=E0Y-2*E1Y+E2Y
@@ -954,7 +990,7 @@ C     IF (I.EQ.1) THEN
         E2=EGY+RX*EGZ
 
         W=1.093D-10*SQRT(TE)*P**2*Y**2*(A*E1+B*E2)*
-     *    EXP(13.595/TE*1.1605E4)/2.414D15/SQRT(TE**3)
+     *    EXP(13.595_DP/TE*1.1605E4_DP)/2.414D15/SQRT(TE**3)
 
       RETURN
       END SUBROUTINE EIRENE_COFJS2
@@ -971,12 +1007,14 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) TEMP, S
       INTEGER I
+      REAL(DP) P, UI, UIZ
 
-      P=I
-      UI=13.595/TEMP/P**2
-      UIZ=UI**2.33+4.38*UI**1.72+1.32*UI
+      P=REAL(I,DP)
+      UI=13.595_DP/TEMP/P**2
+      UIZ=UI**2.33_DP+4.38_DP*UI**1.72_DP+1.32_DP*UI
       S=9.56D-6/TEMP**1.5*EXP(-UI)/UIZ
 
       RETURN
@@ -1022,11 +1060,12 @@ C   integrate functions gaunt3(x), for S and gaunt4, for ES, from 0 to 20
 C
       USE EIRMOD_PRECISION
 
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
+      REAL(DP) XP,P,S,ES
       REAL(DP) EIRENE_GAUNT3,EIRENE_GAUNT4,PP,XPP,A,B,EPSR
       INTEGER II, NMIN, NMAX
       COMMON PP,XPP
-      EXTERNAL EIRENE_GAUNT3, EIRENE_GAUNT4
+      EXTERNAL EIRENE_GAUNT3, EIRENE_GAUNT4, EIRENE_AQC8
 
       II=INT(P)
       PP=P
@@ -1056,12 +1095,12 @@ C***********************************************************************
 
       U=X/XPP
       B=PP
-      EIRENE_GAUNT3=(1./(U+1.)+
-     .               0.1728*(U-1.)/B**(2./3.)/
-     .                      (U+1.)**(5./3.)-
-     .               0.0496*(U**2+4./3.*U+1.)/
-     .                                    B**(4./3.)/
-     .               (U+1.)**(7./3.))*EXP(-X)
+      EIRENE_GAUNT3=(1.0_DP/(U+1.0_DP)+
+     .               0.1728_DP*(U-1.0_DP)/B**(2.0_DP/3.0_DP)/
+     .                         (U+1.0_DP)**(5.0_DP/3.0_DP)-
+     .               0.0496_DP*(U**2+4.0_DP/3.0_DP*U+1.0_DP)/
+     .                                    B**(4.0_DP/3.0_DP)/
+     .               (U+1.0_DP)**(7.0_DP/3.0_DP))*EXP(-X)
       RETURN
       END FUNCTION EIRENE_GAUNT3
 
@@ -1077,10 +1116,10 @@ cdr careful: integration of gaunt4 fails above Te gt 4500 eV
       U=X/XPP
       B=PP
       EIRENE_GAUNT4=U*
-     .    (1./(U+1.)+0.1728*(U-1.)/B**(2./3.)/
-     .    (U+1.)**(5./3.)-0.0496*
-     .    (U**2+4./3.*U+1.)/B**(4./3.)/
-     .    (U+1.)**(7./3.))*EXP(-X)
+     .    (1.0_DP/(U+1.0_DP)+0.1728_DP*(U-1.0_DP)/B**(2.0_DP/3.0_DP)/
+     .    (U+1.0_DP)**(5.0_DP/3.0_DP)-0.0496_DP*
+     .    (U**2+4.0_DP/3.0_DP*U+1.0_DP)/B**(4.0_DP/3.0_DP)/
+     .    (U+1.0_DP)**(7.0_DP/3.0_DP))*EXP(-X)
       RETURN
       END FUNCTION EIRENE_GAUNT4
 
@@ -1096,8 +1135,9 @@ c  WITH OF UP TO 3 RIGHT HAND SIDES. (DEFAULT: 2: IONISATION, RECOMBINATION)
 c  l_ext: indicate that 3rd right hand side term is requested
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER LUP, LIM
+      REAL(DP) DENSEL
       REAL(DP) C(40,40),F(40,40),A(40,40),W(40,40),
      &         SAHA(40),S(40),ALPHA(40),BETA(40),R0(40),R1(40),
      &         Q_EXT(40),R_EXT(40),
@@ -1106,6 +1146,8 @@ C
       INTEGER I,J,K,L,IE,ICON,IS
       LOGICAL :: L_EXT
       integer ip(40)
+      REAL(DP) SUMA, SUMAS, SUMC, SUMF, SUMFS
+      EXTERNAL :: EIRENE_LAX_M
 
       DO 201 K=2,LUP-1
 
@@ -1116,17 +1158,17 @@ cdr stoss bevoelkerung von k von unten
 
 cc diagonale
 cc entvoelkerung durch stoesse nach unten
-        SUMF=0.
+        SUMF=0.0_DP
         DO 301 I=1,K-1
           SUMF=SUMF+F(K,I)
   301   CONTINUE
 cc entvoelkerung durch stoesse nach oben
-        SUMC=0.
+        SUMC=0.0_DP
         DO 302 I=K+1,LIM
           SUMC=SUMC+C(K,I)
   302   CONTINUE
 cc  spontan nach unten
-        SUMA=0.
+        SUMA=0.0_DP
         DO 303 I=1,K-1
           SUMA=SUMA+A(K,I)
   303   CONTINUE
@@ -1151,15 +1193,15 @@ c                                  but not for de-exit to it, also not for rad r
         W(LUP,L)=C(L,LUP)*DENSEL
   211 CONTINUE
 c  beitrag des letzten zustandes lup zu diagonal
-      SUMF=0.
+      SUMF=0.0_DP
       DO 311 I=1,LUP-1
         SUMF=SUMF+F(LUP,I)
   311 CONTINUE
-      SUMC=0.0
+      SUMC=0.0_DP
       DO 313 I=LUP+1,LIM   !Boltzmann LTE contribution for LIM gt. LUP
         SUMC=SUMC+C(LUP,I)
   313 CONTINUE
-      SUMA=0.
+      SUMA=0.0_DP
       DO 312 I=1,LUP-1
         SUMA=SUMA+A(LUP,I)
   312 CONTINUE
@@ -1170,11 +1212,11 @@ C  RECHTE SEITEN:
       DO 550 K=2,LUP
 
 c  vorbereiten fuer recombination, Saha correction
-        SUMFS=0.0
+        SUMFS=0.0_DP
         DO 500 I=LUP+1,LIM
           SUMFS=SUMFS+F(I,K)*SAHA(I)
   500   CONTINUE
-        SUMAS=0.0
+        SUMAS=0.0_DP
         DO 501 I=LUP+1,LIM
           SUMAS=SUMAS+SAHA(I)*A(I,K)
   501   CONTINUE
@@ -1245,17 +1287,19 @@ C  3) FROM EXTERNAL TO GROUND OR CONTINUUM: SCR_EXT, ALP_EXT
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER LUP, LIM
-      DIMENSION C(40,40),S(40),SAHA(40),A(40,40),ALPHA(40),BETA(40),
-     &          R0(40),R1(40),R_EXT(40),Q_EXT(40),F(40,40)
+      REAL(DP) ALPCR, DENSEL, SCR, SCR_EXT
+      REAL(DP) C(40,40),S(40),SAHA(40),A(40,40),ALPHA(40),BETA(40),
+     &         R0(40),R1(40),R_EXT(40),Q_EXT(40),F(40,40)
       INTEGER I
+      REAL(DP) ALPCR1, ALPCR2, SUSCR, SUSRAD
       LOGICAL :: L_EXT
 C
       DO 5000 I=LUP+1,LIM
-        R0(I)=1.0*SAHA(I)
-        R1(I)=0.0
-        R_EXT(I)=0.0
+        R0(I)=1.0_DP*SAHA(I)
+        R1(I)=0.0_DP
+        R_EXT(I)=0.0_DP
  5000 CONTINUE
 C
 C  IONIS. TRANSITION TO CONTINUUM
@@ -1268,7 +1312,7 @@ C  IONIS. TRANSITION TO CONTINUUM
 C  RECOMB. TRANSITION TO (1)
       ALPCR1=DENSEL*ALPHA(1)+BETA(1)
 
-      ALPCR2=0.0
+      ALPCR2=0.0_DP
 
       DO 5003 I=2,LIM
         ALPCR2=ALPCR2+R0(I)*(DENSEL*F(I,1)+A(I,1))
@@ -1277,7 +1321,7 @@ C  RECOMB. TRANSITION TO (1)
       ALPCR=ALPCR1+ALPCR2
 
 C  FROM EXTERNAL, TRANSITION TO CONTINUUM
-      SCR_EXT=0.00
+      SCR_EXT=0.0_DP
 
       IF (.NOT.L_EXT) RETURN
 
@@ -1289,7 +1333,7 @@ C  FROM EXTERNAL, TRANSITION TO CONTINUUM
 C  ALP_EXT STILL MISSING: from external to ground state
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_IONREC
 
 C***********************************************************************
       SUBROUTINE EIRENE_E_IONREC
@@ -1320,36 +1364,38 @@ C     ENERGY LEVELS: E_AT(1)=0, E_AT(H+)=13.595=UH
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER LUP, LIM
-      DIMENSION C(40,40),S(40),SAHA(40),A(40,40),F(40,40),
-     &          ALPHA(40),BETA(40),EBETA(40),
-     &          R0(40),R1(40),R_EXT(40),Q_EXT(40),E_AT(40)
+      REAL(DP) ALPCR, DENSEL, E_ALPCR, E_SCR, E_SCR_EXT, SCR, SCR_EXT
+      REAL(DP) C(40,40),S(40),SAHA(40),A(40,40),F(40,40),
+     &         ALPHA(40),BETA(40),EBETA(40),
+     &         R0(40),R1(40),R_EXT(40),Q_EXT(40),E_AT(40)
       INTEGER I, I1, I2
+      REAL(DP) DE, SUSCR, UH
       LOGICAL :: L_EXT
 
-      DIMENSION EMEAN_REC(41)
+      REAL(DP) EMEAN_REC(41)
 C
       DO 5000 I=LUP+1,LIM
-        R0(I)=1.0*SAHA(I)
-        R1(I)=0.0
-        R_EXT(I)=0.0
+        R0(I)=1.0_DP*SAHA(I)
+        R1(I)=0.0_DP
+        R_EXT(I)=0.0_DP
  5000 CONTINUE
 C
-      E_SCR=0.0
-      E_SCR_EXT=0.0
-      E_ALPCR=0.0
+      E_SCR=0.0_DP
+      E_SCR_EXT=0.0_DP
+      E_ALPCR=0.0_DP
 C  FOR TESTING: ONLY CUMULATE RADIATION LOSSES HERE.
-ctt   E_SCR_T=0.0
-ctt   E_SCR_EXT_T=0.0
-ctt   E_ALPCR_T=0.0
+ctt   E_SCR_T=0.0_DP
+ctt   E_SCR_EXT_T=0.0_DP
+ctt   E_ALPCR_T=0.0_DP
 C
 C  EFFECTIVE ELECTRON COOLING CORRESPONDING TO
 C  "ORDINARY" COUPLING TO GROUND STATE S(I)
 C
 C  PART I
 C  1(EXTERN)--> inf.  R1(1)=1
-      UH=13.595
+      UH=13.595_DP
       DE=(E_AT(1)-UH)
       E_SCR  =S(1)*DE  !  *POPULATION OF H(1) = R1(1) =1
 C  1(EXTERN) --> 1  !  here no contribution
@@ -1394,7 +1440,7 @@ ctt       E_SCR_T=E_SCR_T+SUSCR_T
 
 C  for test only.  evaluate second formula for E_SCR,
 C                  using radiation loss E_SCR_T and effective rate SCR
-ctt   UH=13.595
+ctt   UH=13.595_DP
 ctt   DE=(E_AT(1)-UH)  !  POTENTIAL DIFFERENCE IS NEGATIVE, ELECTRONS LOSE ENERGY IN IONISATION
 ctt   E_SCR_T=E_SCR_T+SCR *DE
 
@@ -1420,7 +1466,7 @@ C  CONTIN(EXTERN)--> CONTIN
 
 C  CONTIN(EXTERN)--> 1 , POPULATION R0 OF H+: = 1
 C
-      UH=13.595
+      UH=13.595_DP
       E_ALPCR  =DENSEL*ALPHA(1)*(UH-E_AT(1))  !  * POPULATION OF H+
       ! ENERGY GAINED BY ELECTRON GAS, THREE-BODY, SPECTATOR ELECTRON
       E_ALPCR  =E_ALPCR +BETA(1)*EMEAN_REC(1) !  * POPULATION OF H+
@@ -1573,33 +1619,38 @@ C
 C
 C
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      USE EIRMOD_CCONA, ONLY : EVKEL
+      IMPLICIT NONE
+      REAL(DP) TEMP
       REAL(DP) OSC(40,40),CJ(40,40)
       INTEGER I, J, ICON
+      REAL(DP) A, B, BN, C1, E1, E1Y, E1Z, E2, E2Y, E2Z, EP, EQ,
+     .         P, Q, R, TE, U, X, Y, Y1, Z, Z1
+      EXTERNAL EIRENE_EXPI
 
-      TE=TEMP*1.1605E4
+      TE=TEMP/EVKEL
 C
       DO 1 I=1,40
        DO 2 J=1,40
-        P=I
-        Q=J
+        P=REAL(I,DP)
+        Q=REAL(J,DP)
         IF (I.EQ.1) THEN
-          BN=-0.603
+          BN=-0.603_DP
         ELSE
-          BN=(4.0-18.63/P+36.24/P**2-28.09/P**3)/P
+          BN=(4.0_DP-18.63_DP/P+36.24_DP/P**2-28.09_DP/P**3)/P
         END IF
-        EP=13.6/P**2
-        EQ=13.6/Q**2
+        EP=13.6_DP/P**2
+        EQ=13.6_DP/Q**2
         U=(EP-EQ)/TEMP
 C
-        IF (U.GT.0) THEN
-          X=1-P**2/Q**2
+        IF (U.GT.0.0_DP) THEN
+          X=1.0_DP-P**2/Q**2
           Y=U
-          R=1.94/P**1.57*X
+          R=1.94_DP/P**1.57_DP*X
           Z=R+Y
-          A=2*P**2*OSC(I,J)/X
-          B=4*P**4/Q**3/X**2*(1+1.3333/X+BN/X**2)
-          C1=2*P**2/X
+          A=2.0_DP*P**2*OSC(I,J)/X
+          B=4.0_DP*P**4/Q**3/X**2*(1.0_DP+1.3333_DP/X+BN/X**2)
+          C1=2.0_DP*P**2/X
           B=B-A*LOG(C1)
           Y1=-Y
           Z1=-Z
@@ -1611,12 +1662,12 @@ C
 
           E2Y=EXP(-Y)-Y*E1Y
           E2Z=EXP(-Z)-Z*E1Z
-          E1=(1/Y+0.5)*E1Y-(1/Z+0.5)*E1Z
+          E1=(1.0_DP/Y+0.5_DP)*E1Y-(1.0_DP/Z+0.5_DP)*E1Z
           E2=E2Y/Y-E2Z/Z
 
           CJ(I,J)=1.093D-10*SQRT(TE)*P**2/X*Y**2*(A*E1+B*E2)
         ELSE
-          CJ(I,J)=0.0
+          CJ(I,J)=0.0_DP
 
         END IF
 C
@@ -1627,219 +1678,9 @@ C
       RETURN
       END SUBROUTINE EIRENE_JOHN
 c
-      subroutine EIRENE_LAX_M(A,N1,N,B,nb,nbi,eps,ifl,is,vw,ip,icon)
-C
-C     COPY OF ORIGINAL ROUTINE EIRENE_LAX FOR USE OF MULTIPLE RIGHT HAND SIDES
-C     NEW ARGUMENT: nb:  STORAGE FOR NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS
-C     NEW ARGUMENT: nbi: NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS. .LE.NB
-C
-      USE EIRMOD_PRECISION
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
-
-      integer n1, n,nb, nbi, ifl, is, icon
-      real(dp) a(n1,n1),B(nb,*),vw(*)
-      real(dp) eps
-      integer ip(*)
-      integer iw(100), ier
-      if (n1.gt.100) then
-        write (iunout,*) 'error in lax'
-        call eirene_exit_own(1)
-      endif
-      call EIRENE_galpd_m(a,n1,n,b,nb,nbi,iw,ier)
-      if (ier.eq.1) then
-        write (iunout,*) 'error in lax, matrix ist singulaer'
-      endif
-      return
-      end
-c
-
-c
-      SUBROUTINE EIRENE_GALPD_M(A,NA,NG,B,NB,NBI,IW,IER)
-C
-C     COPY OF ORIGINAL ROUTINE EIRENE_GALPD FOR USE OF MULTIPLE RIGHT HAND SIDES
-C     NEW ARGUMENT: nb:  NO. OF RIGHT HAND SIDE (INHOMOGENEOUS) VECTORS
-C
-      USE EIRMOD_PRECISION
-C
-C***********************************************************************
-C*   GAUSS-ALGORITHMUS ZUR LOESUNG LINEARER GLEICHUNGS-SYSTEME MIT     *
-C*   PIVOTIERUNG.                                                      *
-C*   GENAUIGKEIT:   DOUBLE-PRECISION                   (01.07.1991)    *
-C***********************************************************************
-C    A(NA,NA): KOEFFIZIENTEN-MATRIX DES GLEICHUNGS-SYSTEMS
-C    NA      : DIMENSION VON A WIE IM AUFRUFENDEN PROGRAMM ANGEGEBEN
-C    NG      : ANZAHL DER UNBEKANNTEN   (NG <= NA)
-C    B(NB,NG): ELEMENTE DER RECHTEN SEITE DES GLEICHUNGS-SYSTEMS
-C    NB      : DIMENSION ANZAHL DER RECHTEN SEITEN (NB >= 1)
-C    NBI     : ANZAHL DER RECHTEN SEITEN (NB >= 1)
-c    B WIRD MODIFIZIERT UND ENTHAELT BEIM OUTPUT DIE NBI LOESUNGSVEKTOREN
-C    IW(NG)  : INTEGER HILFS-ARRAY FUER EINE MOEGLICHE PROGRAMM-
-C              INTERNE UMNUMERIERUNG DER GLEICHUNGEN
-C    IER     : ERROR-INDEX (IER = 1: MATRIX SINGULAER)
-C***********************************************************************
-C
-      IMPLICIT REAL(DP) (A-H,O-Z)
-      INTEGER NA, NG, NB, NBI, IW, IER
-      DIMENSION A(NA,NA),B(NB,NG),IW(NG)
-      DIMENSION HB(NB), R(NB,NG)
-      INTEGER IB, I, K, M, N, IZ, KS, IH, II
-      DATA ZERO /1.E-71_DP/
-      IER=0
-C
-C     ******************************************************************
-C     DER FALL:   NG = 2
-C     ******************************************************************
-C
-      IF(NG.EQ.2) THEN
-                  DO IB = 1, NBI
-                    H=A(1,1)*A(2,2)-A(2,1)*A(1,2)
-                    AI=B(IB,1)*A(2,2)-B(IB,2)*A(1,2)
-                    AK=A(1,1)*B(IB,2)-A(2,1)*B(IB,1)
-                    B(IB,1)=AI/H
-                    B(IB,2)=AK/H
-                  END DO
-                  RETURN
-                  ENDIF
-C
-C     ******************************************************************
-C     NUMMERN DER UNBEKANNTEN AUF IW ABSPEICHERN.
-C     ******************************************************************
-C
-      DO 1 K=1,NG
-        IW(K)=K
-    1 CONTINUE
-C
-C     ******************************************************************
-C     DIE A-MATRIX AUF DREIECKS-FORM BRINGEN.
-C     ******************************************************************
-C
-      DO 10 I=1,NG
-C
-C        ===============================================================
-C        Pivot-Element suchen  ( Zeile IZ,  Spalte KS )
-C        ===============================================================
-C
-         AP=0
-         IZ=0
-         KS=0
-         DO 3 M=I,NG
-            DO 2 N=I,NG
-               AMN=ABS(A(M,N))
-               IF(AMN.GT.AP) THEN
-                             AP=AMN
-
-                             IZ=M
-
-                             KS=N
-
-                             ENDIF
-    2          CONTINUE
-    3      CONTINUE
-C
-C        ============================
-C        Zeilen umordnen, wenn IZ > I
-C        ============================
-C
-         IF(IZ.GT.I) THEN
-                     DO 4 N=I,NG
-                        H=A(I,N)
-                        A(I,N)=A(IZ,N)
-                        A(IZ,N)=H
-    4                CONTINUE
-                     HB(1:NBI)=B(1:NBI,I)
-                     B(1:NBI,I)=B(1:NBI,IZ)
-                     B(1:NBI,IZ)=HB(1:NBI)
-                     ENDIF
-C
-C        ===============================================
-C        Spalten umordnen und Unbekannte neu numerieren
-C        ===============================================
-C
-         IF(KS.GT.I) THEN
-                     IH=IW(I)
-                     IW(I)=IW(KS)
-                     IW(KS)=IH
-                     DO 5 M=1,NG
-                        AK=A(M,KS)
-                        A(M,KS)=A(M,I)
-                        A(M,I)=AK
-    5                CONTINUE
-                     ENDIF
-C
-C        ===============================================================
-C        Total-Pivotierung. Spalte i,  Zeile 1 ... i-1, i+1 ... NG
-C        zu Null machen.
-C        ===============================================================
-C
-         AP=A(I,I)
-         IF(ABS(AP).LT.ZERO) GOTO 15
-         AP=1/AP
-         DO 8 M=1,NG
-            IF(M.EQ.I) GOTO 8
-            IF(ABS(A(M,I)).GT.ZERO) THEN
-                                    Q=A(M,I)*AP
-                                    DO 7 N=I,NG
-                                       A(M,N)=A(M,N)-A(I,N)*Q
-    7                               CONTINUE
-                                    B(1:NBI,M)=B(1:NBI,M)-B(1:NBI,I)*Q
-                                    ENDIF
-    8       CONTINUE
-   10    CONTINUE
-C
-C     ******************************************************************
-C     WENN A(N,N) ^= 0, KOENNEN DIE UNBEKANNTEN BERECHNET WERDEN.
-C     -:  SIE WERDEN ZUNAECHST AUF A(N,I), I=1,...,N GESETZT.
-C     -:  DANN DIE BERECHNETEN UNBEKANNTEN IN DER RICHTIGEN ANORDNUNG
-C         AUF B(I) SCHREIBEN UND AN DAS AUFRUFENDE PROGRAMM ZURUECKGEBEN
-C     ******************************************************************
-C
-      DO 12 M=1,NG
-         R(1:NBI,M)=B(1:NBI,M)/A(M,M)
-   12 CONTINUE
-      DO 14 M=1,NG
-         II=IW(M)
-         B(1:NBI,II)=R(1:NBI,M)
-   14 CONTINUE
-C
-       RETURN
-
-C     ******************************************************************
-C     MATRIX IST SINGULAER.
-C       -: IER = 1 SETZTEN
-C       -: RETURN
-C     ******************************************************************
-C
-   15 IER=1
-      RETURN
-      END SUBROUTINE EIRENE_GALPD_M
-
-
-      subroutine EIRENE_expi(x,ei,icon)
-      USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
-c  exponential integral
-c  -int exp(-x)/x, von -x nach unendlich     x<0,  identisch mit
-c  +int exp(x)/x,  von -unendl. bis x
-c
-c   PV +int exp(-x)/x von unendl bis -x      x>0 ,  identisch mit
-c   PV +int exp(x)/x von -unendl bis x
-      INTEGER ICON, IER
-      REAL(DP) EIRENE_mmdei,dei,xx
-cdr   if (x.gt.0) then
-        xx=x
-        dei=-EIRENE_mmdei(xx,ier)
-        icon=ier
-        ei=dei
-cdr   else
-cdr     write (iunout,*) 'argument in expi lt.0, call exit'
-cdr     call eirene_exit_own(1)
-cdr   endif
-      return
-      end subroutine EIRENE_expi
-c
       subroutine EIRENE_aqc8(a,b,f,epsr,nmin,nmax,S)
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
 c  S=integral from a to b, of the function f(x) (external).
 c  epsr : relative errors, input
 c   nmin,nmax:  min and max number of function calls
@@ -1851,96 +1692,53 @@ c err: estim absolut error
 c n  anzahl der functionsaufrufe
 c icon: error code
       integer nmin, nmax
-      real(dp) f
+      real(dp) a, b, f, epsr, s
       external f
-      external EIRENE_midpnt
+      external EIRENE_midpnt, EIRENE_qromo
 cdr  perhaps Romberg integration?
       call EIRENE_qromo(f,a,b,s,EIRENE_midpnt,epsr)
       return
       end subroutine EIRENE_aqc8
 
 
-
-c
-      FUNCTION EIRENE_MMDEI (S,IER)
-      USE EIRMOD_PRECISION
-C  exponential integral function
-c  imsl routine, dort: mmdei(ipot=2,s,ier), also:
-c  s muss gt.0, mmdei ist dann: integral (s bis unendlich) von
-c               exp(-t)/t dt
-      IMPLICIT REAL(DP) (A-H,O-Z)
-      REAL(DP) EIRENE_MMDEI
-      INTEGER IER
-      X=S
-      Y=ABS(X)
-      Z=0.25_DP*Y
-      IF (Z.LE.1.0D0) THEN
-       VALUE=((((((((((((((((((((-.483702D-8*Z+.2685377D-7)*Z-
-     1 .11703642D-6)*Z+.585911692D-6)*Z-.2843937873D-5)*Z+
-     1 .1284394756D-4)*Z-.547380648948D-4)*Z+.21992775413732D-3)*Z-
-     1 .8290046678016D-3)*Z+.0029187885699858)*Z-.0095523774824170)*Z+
-     1 .028895941356815)*Z-.080266510032735)*Z+.20317460364863)*Z-
-     1 .46439909294939)*Z+.9481481480886)*Z-1.706666666669)*Z+
-     1 2.6666666666702)*Z-3.5555555555546)*Z+3.9999999999994)*Z-
-     1 3.9999999999996)*Z+.57721566490143+LOG(Y)
-      VALUE=-VALUE
-      ELSE
-       Z=1.0D0/Z
-      VALUE=(((((((((((((((((((-.77769007188383D-3*Z+.84295295893998D-2
-     1 )*Z-.04272827083185)*Z+.13473041266261)*Z-.29671551148)*Z+
-     1 .48618806480858)*Z-.61743468824936)*Z+.62656052544291)*Z-
-     1 .52203502518727)*Z+.36771959879483)*Z-.22727998629908)*Z+
-     1 .12965447884319)*Z-.72886262704894D-1)*Z+.043418637381012)*Z-
-     1 .29244589614262D-1)*Z+.23433749581188D-1)*Z-.023437317333964)*Z+
-     1 .03124999448124)*Z-.062499999910765)*Z+.24999999999935)*Z-
-     1 .20933859981036D-14
-c     if (y.gt.160.D0) then
-c       value=0
-c     else
-        VALUE=VALUE*EXP(-Y)
-c     endif
-      ENDIF
-      VAL=VALUE
-      EIRENE_MMDEI=VAL
-      ier=0
-      RETURN
-      END FUNCTION EIRENE_MMDEI
-
       SUBROUTINE EIRENE_QROMO(FUNC,A,B,SS,CHOOSE,epsr)
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER JMAX, JMAXP, KM, K
       PARAMETER (JMAX=14,JMAXP=JMAX+1,KM=4,K=KM+1)
-      DIMENSION S(JMAXP),H(JMAXP)
+      REAL(DP) A, B, DSS, SS, EPSR
+      REAL(DP) S(JMAXP),H(JMAXP)
       INTEGER J
       REAL(DP) FUNC
-      external choose,func
+      external choose,func,eirene_polint
 
-      H(1)=1.0D0
+      H(1)=1.0_DP
       DO 11 J=1,JMAX
 
         CALL CHOOSE(FUNC,A,B,S(J),J)
         IF (J.GE.K) THEN
-          CALL EIRENE_POLINT(H(J-KM),S(J-KM),K,0.0d0,SS,DSS)
+          CALL EIRENE_POLINT(H(J-KM),S(J-KM),K,0.0_DP,SS,DSS)
           IF (ABS(DSS).LT.EPSR*ABS(SS)) then
             RETURN
           endif
         ENDIF
         S(J+1)=S(J)
-        H(J+1)=H(J)/9.
+        H(J+1)=H(J)/9.0_DP
    11 CONTINUE
       write(iunout,*) '(W) Too many steps.'
       END SUBROUTINE EIRENE_QROMO
 
       SUBROUTINE EIRENE_POLINT(XA,YA,N,X,Y,DY)
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER NMAX, N
       PARAMETER (NMAX=10)
-      DIMENSION XA(N),YA(N),C(NMAX),D(NMAX)
+      REAL(DP) DY, X, Y
+      REAL(DP) XA(N),YA(N),C(NMAX),D(NMAX)
       INTEGER I, NS, M
+      REAL(DP) DEN, DIF, DIFT, HO, HP, W
 
       NS=1
       DIF=ABS(X-XA(1))
@@ -1968,7 +1766,7 @@ c     endif
           D(I)=HP*DEN
           C(I)=HO*DEN
    12   CONTINUE
-        IF (2*NS.LT.N-M)THEN
+        IF (2*NS.LT.N-M) THEN
           DY=C(NS+1)
         ELSE
           DY=D(NS)
@@ -1981,26 +1779,30 @@ c     endif
 C
       SUBROUTINE EIRENE_MIDPNT(FUNC,A,B,S,N)
       USE EIRMOD_PRECISION
-      IMPLICIT REAL(DP) (A-H,O-Z)
+      IMPLICIT NONE
       INTEGER N, IT, J
+      REAL(DP) A, B, S
+      REAl(DP) DEL, DDEL, SUM, TNM, X
+      REAL(DP) FUNC
       external func
       save
+
       IF (N.EQ.1) THEN
-        S=(B-A)*FUNC(0.5*(A+B))
+        S=(B-A)*FUNC(0.5_DP*(A+B))
         IT=1
       ELSE
-        TNM=IT
-        DEL=(B-A)/(3.*TNM)
+        TNM=REAL(IT,DP)
+        DEL=(B-A)/(3.0_DP*TNM)
         DDEL=DEL+DEL
-        X=A+0.5*DEL
-        SUM=0.
+        X=A+0.5_DP*DEL
+        SUM=0.0_DP
         DO 11 J=1,IT
           SUM=SUM+FUNC(X)
           X=X+DDEL
           SUM=SUM+FUNC(X)
           X=X+DEL
    11   CONTINUE
-        S=(S+(B-A)*SUM/TNM)/3.
+        S=(S+(B-A)*SUM/TNM)/3.0_DP
         IT=3*IT
       ENDIF
       RETURN

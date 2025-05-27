@@ -256,8 +256,8 @@ C  RADIATION RATES
      . 'RADIATION RATE EMITTED FROM TEST IONS                       '
 C
       DO 1 J=1,NTALV
+        TEXT72=TXTTAL(1,J)
         DO I=2,N1MX  ! rather than n1mx we should use nfstpi(j)
-          TEXT72=TXTTAL(1,J)
           TXTTAL(I,J)=TEXT72
         END DO
     1 CONTINUE
@@ -620,6 +620,7 @@ C
      .           N11, N12, N13, N14, N15, N16, N17, N18, N19, N20,
      .           N21, N22, N23, N24, N25, N26, N27, N28, N29, N30, N31
       INTEGER :: IAD, EIRENE_INDIRECT_ADDRESS
+      EXTERNAL :: EIRENE_TEXT_COMBINE, EIRENE_INDIRECT_ADDRESS
 C
 C
       NFSTVI(1)=NATMI

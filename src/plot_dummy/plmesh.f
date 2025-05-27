@@ -4,4 +4,4 @@ cdr june 17: separate WRMESH and PLMESH.
 
       IMPLICIT NONE
       RETURN
-      END
+      END SUBROUTINE EIRENE_PLMESH

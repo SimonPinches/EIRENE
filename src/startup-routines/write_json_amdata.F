@@ -10,12 +10,12 @@
       use json_module           !IGNORE
 
       implicit none
+      character(*) :: filename
 
       type(json_core) :: json
-      type(json_value),pointer :: pAMD, REACT, PART
+      type(json_value),pointer :: pAMD
       type(json_value),pointer :: crs_lines
       type(s_stack), pointer   :: cur
-      character(*) :: filename
 
 ! initialize the class
       call json%initialize(compact_reals=.true.,real_format='ES',
@@ -50,8 +50,10 @@
       type(json_value),pointer :: pAMD
       type(json_value),pointer :: PART, REACT
 
-      integer :: i, ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv
-      real(dp) :: dum(1)
+      integer :: i
+#ifdef NEVERCOMEHERE
+      integer :: ndum1(1), ndum2(1), ndum3(1), ndum4(1), nti, nv
+#endif
 
       character(300) :: sCReactStr
 
@@ -360,7 +362,7 @@
       call json%add(blk5,blk5b)
 
 #endif
-
+      return
       end subroutine eirene_write_block_45
 
 !******************************************************************************
@@ -524,6 +526,7 @@
 
       end do
 
+      return
       end subroutine eirene_write_block_4abcd
 
 #endif

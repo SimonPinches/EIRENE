@@ -86,6 +86,7 @@ cdr            LEXP=.true.
      .                  xlnelch =-43.2777390821    !ln(elcha)
       integer :: jfex1mn, jfex1mx, jfex2mn, jfex2mx
       integer :: ip1, ip2, iflavor, ivar
+      external :: EIRENE_sngl_poly
 
       interface
         function EIRENE_intp_tab2d (ad,p1,p2,ip1,ip2) result(res)
@@ -106,6 +107,8 @@ cdr            LEXP=.true.
           real(dp) :: res
         end function EIRENE_intp_tab1d
       end interface
+
+      EXTERNAL :: EIRENE_DBL_POLY, EIRENE_EXIT_OWN
 
       if (.not.reacdat(ir)%lrtcew) then
         write (iunout,*) ' no data for energy-weighted rate',

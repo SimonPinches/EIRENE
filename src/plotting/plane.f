@@ -23,6 +23,7 @@ C
      .            Z1, Z2
       INTEGER :: K, J, IPOINT, IP, ILN, I, II, ISORT, ICOUNT, ICHECK,
      .           IS
+      EXTERNAL :: EIRENE_DETER3X3, EIRENE_PL3Q, EIRENE_SPOINT
 C
       IS=0
       IF (RL.GT.0) THEN

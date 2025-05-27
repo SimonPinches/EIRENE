@@ -9,19 +9,27 @@
       character*256 :: get_solpstop
       external get_solpstop
 
+      ! Check if the path is already valid
+      inquire(file=DBFNAME,exist=ex)
+      if (ex) return
+      ! Path is not valid, but it is absolute,
+      ! so no sense in prepending anything
+      if (DBFNAME(1:1).eq.'/') return
+
       TREEPATH = get_solpstop()
-      IF (INDEX(TREEPATH,' ').NE.1) THEN
-        I4 = SCAN(TREEPATH,' ')-1
-        DBFNAME(1:I4+16) = TREEPATH(1:I4)//'/modules/Eirene/'
-        DBFNAME(I4+17:I4+16+IEND-IANF+1) = ZEILE(IANF:IEND)
-        inquire(file=DBFNAME,exist=ex)
-        if (.not.ex) then
-          DBFNAME(1:I4+1) = TREEPATH(1:I4)//'/'
-          DBFNAME(I4+2:I4+1+IEND-IANF+1) = ZEILE(IANF:IEND)
-          DBFNAME(I4+1+IEND-IANF+2:400) =
-     .         REPEAT(' ',400-(I4+1+IEND-IANF+2)+1)
-        end if
-      END IF
+      if (index(TREEPATH,' ').eq.1) return
+
+      ! Attempt 1: Prepend $SOLPSTOP/modules/Eirene/
+      I4 = scan(TREEPATH,' ')-1
+      DBFNAME(1:I4+16) = TREEPATH(1:I4) // '/modules/Eirene/'
+      DBFNAME(I4+17:I4+16+IEND-IANF+1) = ZEILE(IANF:IEND)
+      inquire(file=DBFNAME,exist=ex)
+      if (ex) return
+
+      ! Attempt 2: Prepend $SOLPSTOP/
+      DBFNAME = repeat(' ',len(DBFNAME))
+      DBFNAME(1:I4+1) = TREEPATH(1:I4) // '/'
+      DBFNAME(I4+2:I4+1+IEND-IANF+1) = ZEILE(IANF:IEND)
 
       return
       end subroutine eirene_filepath_usr

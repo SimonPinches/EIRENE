@@ -59,7 +59,9 @@ C
       REAL(DP), ALLOCATABLE :: HELP(:), HELP2(:), RDUMMY(:,:)
       REAL(DP) :: PUX, PUY, EL, EP, PN, BD, B, BVAC, FACT
       INTEGER :: IB, IAIN, K, JJ, ITALI, ICELL, IND, JSTREAM,
-     .           IP, IT, IA, J, IR, IPLSTI, IPLSV, JPLS, NDIM
+     .           IP, IT, IA, J, IR, IPLSTI, IPLSV, JPLS, INI, NDIM
+      EXTERNAL :: EIRENE_NCELLN, EIRENE_READTL, EIRENE_PROUSR,
+     .            EIRENE_LEER, EIRENE_EXIT_OWN
 C
 C  INDPRO=9 MEANS: THESE ARRAYS ARE ALREADY SET IN COUPLE_... (SUBR. INFCOP)
       IF (INDPRO(1) /= 9) TEIN = 0.D0
@@ -77,19 +79,24 @@ c flow field
 
       IF (INDPRO(11)/= 9) ZIIN = 0.D0
 c  magnetic field
-      IF (LBXIN .AND. (INDPRO(5) /= 9)) BXIN = 0.D0
-      IF (LBYIN .AND. (INDPRO(5) /= 9)) BYIN = 0.D0
-      IF (LBZIN .AND. (INDPRO(5) /= 9)) BZIN = 0.D0
-      IF (LBFIN .AND. (INDPRO(5) /= 9)) BFIN = 0.D0
+      IF (LBIN .AND. (INDPRO(5) /= 9)) THEN
+        BXIN = 0.D0
+        BYIN = 0.D0
+        BZIN = 0.D0
+        BFIN = 0.D0
+cdr     PSI     : not there yet
+      ENDIF
 
       IF (LADIN .AND. (INDPRO(6) /= 9)) ADIN = 0.D0
 
 c  electric field
-      IF (LEXIN .AND. (INDPRO(7) /= 9)) EXIN = 0.D0
-      IF (LEYIN .AND. (INDPRO(7) /= 9)) EYIN = 0.D0
-      IF (LEZIN .AND. (INDPRO(7) /= 9)) EZIN = 0.D0
-      IF (LEFIN .AND. (INDPRO(7) /= 9)) EFIN = 0.D0
-      IF (LPOT .AND.  (INDPRO(7) /= 9)) POT  = 0.D0
+      IF (LEIN .AND. (INDPRO(7) /= 9)) THEN
+        EXIN = 0.D0
+        EYIN = 0.D0
+        EZIN = 0.D0
+        EFIN = 0.D0
+        POT  = 0.D0
+      ENDIF
 
       ALLOCATE (HELP(NRAD))
       ALLOCATE (HELP2(NRAD))
@@ -137,13 +144,15 @@ c  INDPRO=5: tally from PROUSR, indx=0
       CASE (6)
 c  INDPRO=6: tally from PROFR, pointer TEINTF(1:NSURF,.)
         ALLOCATE(RDUMMY(1,1:NSURF))
-        CALL EIRENE_PROFR (RDUMMY,0,1,1,NSURF)
+        INI=0
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
         TEIN(1:NSURF) = RDUMMY(1,1:NSURF)
         DEALLOCATE(RDUMMY)
       CASE (7)
 c  INDPRO=7: tally from PROFR, pointer TEINTF(1:NSBOX=NSURF+NRADD,.)
         ALLOCATE(RDUMMY(1,1:NSBOX))
-        CALL EIRENE_PROFR (RDUMMY,0,1,1,NSBOX)
+        INI=0
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
         TEIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
         DEALLOCATE(RDUMMY)
       END SELECT
@@ -190,7 +199,8 @@ cdr distinct from indpro=1,...5: now one single call for all IPLS=1,NPLSTI
         case(6)
 c  INDPRO=6: tally from PROFR, indx=1, all TIINTF pointer fields in one single call
           ALLOCATE(RDUMMY(NDIM,NSURF))
-          CALL EIRENE_PROFR (RDUMMY,1+0*NPLS,NPLSTI,NDIM,NSURF)
+          INI=1
+          CALL EIRENE_PROFR (RDUMMY,INI,NPLSTI,NDIM,NSURF)
           TIIN(1:NPLSTI,1:NSURF) = RDUMMY(1:NPLSTI,1:NSURF)
           DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
@@ -198,7 +208,8 @@ c  INDPRO=6: tally from PROFR, indx=1, all TIINTF pointer fields in one single c
         case (7)
 c  INDPRO=7: tally from PROFR, indx=1, all TIINTF pointer fields in one single call
           ALLOCATE(RDUMMY(NDIM,NSBOX))
-          CALL EIRENE_PROFR (RDUMMY,1+0*NPLS,NPLSTI,NDIM,NSBOX)
+          INI=1
+          CALL EIRENE_PROFR (RDUMMY,INI,NPLSTI,NDIM,NSBOX)
           TIIN(1:NPLSTI,1:NSBOX) = RDUMMY(1:NPLSTI,1:NSBOX)
           DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
@@ -249,7 +260,8 @@ cdr distinct from indpro=1,...5: now one single call for all IPLS=1,NPLSI
 c  INDPRO=6:
 cdr first dimension of arrays: pointer DIINTF(1:NPLS,.), always NPLS
           ALLOCATE(RDUMMY(NPLS,NSURF))
-          CALL EIRENE_PROFR (RDUMMY,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSURF)
+          INI=1+NPLSTI
+          CALL EIRENE_PROFR (RDUMMY,INI,NPLSI,NPLS,NSURF)
           DIIN(1:NPLSI,1:NSURF) = RDUMMY(1:NPLSI,1:NSURF)
           DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
@@ -258,7 +270,8 @@ cdr first dimension of arrays: pointer DIINTF(1:NPLS,.), always NPLS
 c  INDPRO=7:
 cdr first dimension of arrays: pointer DIINTF(1:NPLS,.), always NPLS
           ALLOCATE(RDUMMY(NPLS,NSBOX))
-          CALL EIRENE_PROFR (RDUMMY,1+0*NPLS+NPLSTI,NPLSI,NPLS,NSBOX)
+          INI=1+NPLSTI
+          CALL EIRENE_PROFR (RDUMMY,INI,NPLSI,NPLS,NSBOX)
           DIIN(1:NPLSI,1:NSBOX) = RDUMMY(1:NPLSI,1:NSBOX)
           DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
@@ -328,14 +341,14 @@ cdr distinct from indpro=1,...5: now one single call for all IPLS=1,NPLSV
 c  read tally from external data structure, all V.IN fields in one single call
 cdr first dimension of arrays:  always NPLSV
           ALLOCATE(RDUMMY(NDIM,NSURF))
-          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+0*NPLSV,
-     .                       NPLSV,NDIM,NSURF)
+          INI=1+NPLS+NPLSTI
+          CALL EIRENE_PROFR (RDUMMY,INI,NPLSV,NDIM,NSURF)
           VXIN(1:NPLSV,1:NSURF) = RDUMMY(1:NPLSV,1:NSURF)
-          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+1*NPLSV,
-     .                       NPLSV,NDIM,NSURF)
+          INI=1+NPLS+NPLSTI+1*NPLSV
+          CALL EIRENE_PROFR (RDUMMY,INI,NPLSV,NDIM,NSURF)
           VYIN(1:NPLSV,1:NSURF) = RDUMMY(1:NPLSV,1:NSURF)
-          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+2*NPLSV,
-     .                       NPLSV,NDIM,NSURF)
+          INI=1+NPLS+NPLSTI+2*NPLSV
+          CALL EIRENE_PROFR (RDUMMY,INI,NPLSV,NDIM,NSURF)
           VZIN(1:NPLSV,1:NSURF) = RDUMMY(1:NPLSV,1:NSURF)
           DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
@@ -345,14 +358,14 @@ cdr all nplsv vector component profiles set in a single call
 c  read tally from external data structure, all V.IN fields in one single call
 cdr first dimension of arrays:  always NPLSV
           ALLOCATE(RDUMMY(NDIM,NSBOX))
-          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+0*NPLSV,
-     .                       NPLSV,NDIM,NSBOX)
+          INI=1+NPLS+NPLSTI
+          CALL EIRENE_PROFR (RDUMMY,INI,NPLSV,NDIM,NSBOX)
           VXIN(1:NPLSV,1:NSBOX) = RDUMMY(1:NPLSV,1:NSBOX)
-          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+1*NPLSV,
-     .                       NPLSV,NDIM,NSBOX)
+          INI=1+NPLS+NPLSTI+1*NPLSV
+          CALL EIRENE_PROFR (RDUMMY,INI,NPLSV,NDIM,NSBOX)
           VYIN(1:NPLSV,1:NSBOX) = RDUMMY(1:NPLSV,1:NSBOX)
-          CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+2*NPLSV,
-     .                       NPLSV,NDIM,NSBOX)
+          INI=1+NPLS+NPLSTI+2*NPLSV
+          CALL EIRENE_PROFR (RDUMMY,INI,NPLSV,NDIM,NSBOX)
           VZIN(1:NPLSV,1:NSBOX) = RDUMMY(1:NPLSV,1:NSBOX)
           DEALLOCATE(RDUMMY)
 !pb all species fields have been filled in this call thus exit loop
@@ -421,26 +434,34 @@ c  INDPRO(5)=5: call prousr
 c  INDPRO(5) =6: call profr (information comes from interfacing code)
 c                default (vacuum) parameters in additional cells
         ALLOCATE(RDUMMY(1,1:NSURF))
-        CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        INI=1+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
         BXIN(1:NSURF) = RDUMMY(1,1:NSURF)
-        CALL EIRENE_PROFR (RDUMMY,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        INI=2+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
         BYIN(1:NSURF) = RDUMMY(1,1:NSURF)
-        CALL EIRENE_PROFR (RDUMMY,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        INI=3+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
         BZIN(1:NSURF) = RDUMMY(1,1:NSURF)
-        CALL EIRENE_PROFR (RDUMMY,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        INI=4+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
         BFIN(1:NSURF) = RDUMMY(1,1:NSURF)
         DEALLOCATE(RDUMMY)
       case (7)
 c  INDPRO(5) =7: call profr (information comes from interfacing code)
 c                include also additional cells
         ALLOCATE(RDUMMY(1,1:NSBOX))
-        CALL EIRENE_PROFR (RDUMMY,1+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        INI=1+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
         BXIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
-        CALL EIRENE_PROFR (RDUMMY,2+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        INI=2+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
         BYIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
-        CALL EIRENE_PROFR (RDUMMY,3+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        INI=3+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
         BZIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
-        CALL EIRENE_PROFR (RDUMMY,4+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        INI=4+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
         BFIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
         DEALLOCATE(RDUMMY)
       end select
@@ -587,7 +608,7 @@ cdr distinct from indpro=1,...5: now one single call for all K=1,NAINI
       END IF
 C
 C  ELECTRIC FIELD
-      IF (LEXIN.AND.LEYIN.AND.LEZIN.AND.LEFIN) THEN
+      IF (LEIN) THEN
       IND=INDPRO(7)
 C  DEFAULT: E==0.0 (no electric field), only options ind=5,6,7 overrule this
 c          (transfer from problem-specific codes or external data structures)
@@ -603,24 +624,32 @@ c          (transfer from problem-specific codes or external data structures)
      .                      EF0,EF1,EF2,EF3,EF4,EF5,0._DP,NSURF)
       case (6)
         ALLOCATE(RDUMMY(1,1:NSURF))
-        CALL EIRENE_PROFR (RDUMMY, 7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        INI= 7+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
         EXIN(1:NSURF) = RDUMMY(1,1:NSURF)
-        CALL EIRENE_PROFR (RDUMMY, 8+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        INI= 8+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
         EYIN(1:NSURF) = RDUMMY(1,1:NSURF)
-        CALL EIRENE_PROFR (RDUMMY, 9+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        INI= 9+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
         EZIN(1:NSURF) = RDUMMY(1,1:NSURF)
-        CALL EIRENE_PROFR (RDUMMY,10+1*NPLS+NPLSTI+3*NPLSV,1,1,NSURF)
+        INI= 10+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
         EFIN(1:NSURF) = RDUMMY(1,1:NSURF)
         DEALLOCATE(RDUMMY)
       case (7)
         ALLOCATE(RDUMMY(1,1:NSBOX))
-        CALL EIRENE_PROFR (RDUMMY, 7+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        INI= 7+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
         EXIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
-        CALL EIRENE_PROFR (RDUMMY, 8+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        INI= 8+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
         EYIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
-        CALL EIRENE_PROFR (RDUMMY, 9+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        INI= 9+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
         EZIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
-        CALL EIRENE_PROFR (RDUMMY,10+1*NPLS+NPLSTI+3*NPLSV,1,1,NSBOX)
+        INI= 10+NPLS+NPLSTI+3*NPLSV
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
         EFIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
         DEALLOCATE(RDUMMY)
       end select

@@ -19,16 +19,15 @@ C
 
       REAL(DP), INTENT(IN) :: PX, PY, PZ
       REAL(DP), INTENT(OUT) :: PP1, PP2
-      REAL(DP) :: FXI, FZETA, X, Y, Z, COP, COT, SIP, SIT, PPY11, PPX11,
+      REAL(DP) :: X, Y, Z, COP, COT, SIP, SIT, PPY11, PPX11,
      .          YO, ZO, DY, DZ, CH, TH, PPX12, PPX13, PPX14, PPX21,
      .          PPX22, PPX23, PPX24, PPY12, PPY13, PPY14, PPY21, PPY22,
      .          PPY23, PPY24, DX, F00, F01, F02, F03, F10, F11, F12,
      .          BREITE, XMIN, YMIN, ZMIN, XMAX, YMAX, ZMAX, XO, W3, FA,
      .          BREI
+      EXTERNAL :: EIRENE_LOCTOR, EIRENE_TORLOC
+      EXTERNAL :: GRDRW, GRJMP, GRJMPS, GRMRKS, GRNWPN
       SAVE
-
-      FXI(X,Y) = (F10+F11*X)+F12*Y
-      FZETA(X,Y,Z) = ((F00+F01*X)+F02*Y)+F03*Z
 
       X=PX
       Y=PY
@@ -119,6 +118,30 @@ C
 C
       PP1 = FXI(X,Z)
       PP2 = FZETA(X,Z,Y)
+
+      RETURN
+
+      CONTAINS
+
+      FUNCTION FXI(X,Y)
+      IMPLICIT NONE
+      REAL(DP) :: FXI
+      REAL(DP), INTENT(IN) :: X, Y
+
+      FXI = (F10+F11*X)+F12*Y
+
+      RETURN
+      END FUNCTION FXI
+
+      FUNCTION FZETA(X,Y,Z)
+      IMPLICIT NONE
+      REAL(DP) :: FZETA
+      REAL(DP), INTENT(IN) :: X, Y, Z
+
+      FZETA = ((F00+F01*X)+F02*Y)+F03*Z
+
+      RETURN
+      END FUNCTION FZETA
 
       END SUBROUTINE EIRENE_PL3D
 

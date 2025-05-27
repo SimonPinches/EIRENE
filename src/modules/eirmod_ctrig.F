@@ -1,0 +1,337 @@
+      MODULE EIRMOD_CTRIG
+cdr  Data for triangular meshes: LEVGEO=4
+
+!pb 07.12.06: use POINTER rather than ALLOCATABLE in datatype definition
+!pb           at this place ALLOCATABLE is allowed only in FORTRAN 2000
+!pb 23.09.11: array INMTINSS introduced based on changes from V.Kotov
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+
+      IMPLICIT NONE
+
+      PRIVATE
+
+      PUBLIC :: EIRENE_ALLOC_CTRIG, EIRENE_DEALLOC_CTRIG,
+     P          EIRENE_INIT_CTRIG, EIRENE_BROADCAST_CTRIG,
+     P          TRI_ELEM, TRI_LISTE, TRI_SURF
+
+      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
+     R XTRIAN(:),  YTRIAN(:),
+     R VTRIX(:,:), VTRIY(:,:), PTRIX(:,:), PTRIY(:,:)
+
+      INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
+     I NECKE(:,:), NCHBAR(:,:), NSEITE(:,:),
+     I INMTI(:,:), INSPAT(:,:), IXTRI(:), IYTRI(:), IREVERS(:,:),
+     I INMTI3(:,:)
+
+cdr:  this part seems to be specific to coupling to B2.5: infcop.f
+CVK TO HAVE CORRECT SIGNS FOR PARTICLES CROSSING TRANSPARENT NDS
+      INTEGER, ALLOCATABLE, SAVE, PUBLIC :: INMTINSS(:,:)         !VK
+cdr
+
+      INTEGER, PUBLIC, SAVE ::
+     I NRKNOT, NTRII, NCTRIG, MCTRIG
+
+
+      TYPE :: TRI_ELEM
+        INTEGER :: NOTRI
+        TYPE(TRI_ELEM), POINTER :: NEXT_TRI
+      END TYPE TRI_ELEM
+
+      TYPE :: TRI_LISTE
+        TYPE(TRI_ELEM), POINTER :: PTRI
+      END TYPE TRI_LISTE
+
+      TYPE :: TRI_SURF
+        INTEGER :: NUMTR = 0
+        INTEGER, POINTER :: ITRIAS(:) => NULL()
+        INTEGER, POINTER :: ITRISI(:) => NULL()
+        REAL(DP), POINTER :: BGLT(:) => NULL()
+        LOGICAL :: LSPLIT
+      END TYPE TRI_SURF
+
+      TYPE(TRI_LISTE), ALLOCATABLE, SAVE, PUBLIC :: COORTRI(:)
+
+      TYPE(TRI_SURF), ALLOCATABLE, PUBLIC, SAVE :: SURF_TRIAN(:)
+      TYPE(TRI_SURF), ALLOCATABLE, PUBLIC, SAVE :: SURF_TRIAN_ORDERED(:)
+
+      CONTAINS
+
+
+      SUBROUTINE EIRENE_ALLOC_CTRIG
+
+      IF (ALLOCATED(XTRIAN)) RETURN
+
+      NCTRIG = 2*NKNOTS+4*3*NTRIS
+      MCTRIG = (7*3+2+N3RD)*NTRIS+2
+
+      ALLOCATE (XTRIAN(NKNOTS))
+      ALLOCATE (YTRIAN(NKNOTS))
+      ALLOCATE (VTRIX(3,NTRIS))
+      ALLOCATE (VTRIY(3,NTRIS))
+      ALLOCATE (PTRIX(3,NTRIS))
+      ALLOCATE (PTRIY(3,NTRIS))
+
+      ALLOCATE (NECKE(3,NTRIS))
+      ALLOCATE (NCHBAR(3,NTRIS))
+      ALLOCATE (NSEITE(3,NTRIS))
+      ALLOCATE (INMTI(3,NTRIS))
+      ALLOCATE (INSPAT(3,NTRIS))
+      ALLOCATE (IXTRI(NTRIS))
+      ALLOCATE (IYTRI(NTRIS))
+      ALLOCATE (IREVERS(3,NTRIS))
+      ALLOCATE (INMTI3(NTRIS,N3RD))
+      ALLOCATE (INMTINSS(3,NTRIS)) !VK
+
+      ALLOCATE (SURF_TRIAN(NLIMPS))
+      ALLOCATE (SURF_TRIAN_ORDERED(NLIMPS))
+
+      WRITE (IUNMEM,'(A,T25,I15)')
+     .       ' CTRIG ',NCTRIG*8+MCTRIG*4
+
+      CALL EIRENE_INIT_CTRIG
+
+      RETURN
+      END SUBROUTINE EIRENE_ALLOC_CTRIG
+
+
+      SUBROUTINE EIRENE_DEALLOC_CTRIG
+
+      INTEGER :: I
+      TYPE(TRI_ELEM), POINTER :: CUR, CURN
+
+      IF (.NOT.ALLOCATED(XTRIAN)) RETURN
+
+      DEALLOCATE (XTRIAN)
+      DEALLOCATE (YTRIAN)
+      DEALLOCATE (VTRIX)
+      DEALLOCATE (VTRIY)
+      DEALLOCATE (PTRIX)
+      DEALLOCATE (PTRIY)
+
+      DEALLOCATE (NECKE)
+      DEALLOCATE (NCHBAR)
+      DEALLOCATE (NSEITE)
+      DEALLOCATE (INMTI)
+      DEALLOCATE (INSPAT)
+      DEALLOCATE (IXTRI)
+      DEALLOCATE (IYTRI)
+      DEALLOCATE (IREVERS)
+      DEALLOCATE (INMTI3)
+      DEALLOCATE (INMTINSS)
+
+      DO I=1, NLIMPS
+        IF (SURF_TRIAN(I)%NUMTR > 0) THEN
+          DEALLOCATE (SURF_TRIAN(I)%ITRIAS)
+          DEALLOCATE (SURF_TRIAN(I)%ITRISI)
+          DEALLOCATE (SURF_TRIAN(I)%BGLT)
+        END IF
+        IF (SURF_TRIAN_ORDERED(I)%NUMTR > 0) THEN
+          DEALLOCATE (SURF_TRIAN_ORDERED(I)%ITRIAS)
+          DEALLOCATE (SURF_TRIAN_ORDERED(I)%ITRISI)
+          DEALLOCATE (SURF_TRIAN_ORDERED(I)%BGLT)
+        END IF
+      END DO
+
+      DEALLOCATE (SURF_TRIAN)
+      DEALLOCATE (SURF_TRIAN_ORDERED)
+
+      IF (ALLOCATED(COORTRI)) THEN
+        DO I=1, NKNOT
+          CUR => COORTRI(I)%PTRI
+          DO WHILE(ASSOCIATED(CUR))
+            CURN => CUR%NEXT_TRI
+            DEALLOCATE (CUR)
+            CUR => CURN
+          END DO
+        END DO
+
+        DEALLOCATE (COORTRI)
+      END IF
+
+      RETURN
+      END SUBROUTINE EIRENE_DEALLOC_CTRIG
+
+
+      SUBROUTINE EIRENE_INIT_CTRIG
+      INTEGER :: I
+
+      XTRIAN = 0._DP
+      YTRIAN = 0._DP
+      VTRIX  = 0._DP
+      VTRIY  = 0._DP
+      PTRIX  = 0._DP
+      PTRIY  = 0._DP
+
+      NECKE  = 0
+      NCHBAR = 0
+      NSEITE = 0
+      INMTI  = 0
+      INSPAT = 0
+      IXTRI = 0
+      IYTRI = 0
+      IREVERS = 1
+      INMTI3 = 0
+      INMTINSS = 1  !VK
+
+      SURF_TRIAN(:)%NUMTR = 0
+      SURF_TRIAN(:)%LSPLIT = .FALSE.
+
+      SURF_TRIAN_ORDERED(:)%NUMTR = 0
+      SURF_TRIAN_ORDERED(:)%LSPLIT = .FALSE.
+
+      DO I=1, size(SURF_TRIAN)
+        NULLIFY (SURF_TRIAN(I)%ITRIAS)
+        NULLIFY (SURF_TRIAN(I)%ITRISI)
+        NULLIFY (SURF_TRIAN(I)%BGLT)
+      END DO
+      IF (SIZE(SURF_TRIAN) > 0) NULLIFY (SURF_TRIAN(1)%BGLT)
+
+      DO I=1, size(SURF_TRIAN_ORDERED)
+        NULLIFY (SURF_TRIAN_ORDERED(I)%ITRIAS)
+        NULLIFY (SURF_TRIAN_ORDERED(I)%ITRISI)
+        NULLIFY (SURF_TRIAN_ORDERED(I)%BGLT)
+      END DO
+      IF (SIZE(SURF_TRIAN_ORDERED) > 0) 
+     .  NULLIFY (SURF_TRIAN_ORDERED(1)%BGLT)
+
+      RETURN
+      END SUBROUTINE EIRENE_INIT_CTRIG
+
+
+      SUBROUTINE EIRENE_BROADCAST_CTRIG(ME)
+      USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
+      INTEGER :: IER, I, NMT
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
+
+      IF (ME /= 0) THEN
+        IF (ALLOCATED(XTRIAN)) THEN
+          IF (SIZE(XTRIAN) .NE. NKNOTS) call EIRENE_dealloc_ctrig
+        END IF
+        CALL EIRENE_ALLOC_CTRIG
+      END IF
+
+      CALL MPI_BCAST (XTRIAN,NKNOTS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (YTRIAN,NKNOTS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (VTRIX,3*NTRIS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (VTRIY,3*NTRIS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (PTRIX,3*NTRIS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (PTRIY,3*NTRIS,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NECKE,3*NTRIS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NCHBAR,3*NTRIS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NSEITE,3*NTRIS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (INMTI,3*NTRIS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (INSPAT,3*NTRIS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (INMTINSS,3*NTRIS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (IREVERS,3*NTRIS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NRKNOT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NTRII,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (INMTI3,NTRIS*N3RD,MPI_INTEGER,0,
+     .                MPI_COMM_WORLD,ier)
+
+      CALL MPI_BCAST (IXTRI, NTRIS, MPI_INTEGER, 0,
+     &                MPI_COMM_WORLD, ier)
+      CALL MPI_BCAST (IYTRI, NTRIS, MPI_INTEGER, 0,
+     &                MPI_COMM_WORLD, ier)
+
+!+++++++++++ In this block dynamical structures are processed with care
+!+++++++++++ IYS 27.02.2015
+
+      DO I = 1, NLIMPS
+        NMT = SURF_TRIAN(I)%NUMTR
+        CALL MPI_BCAST (NMT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        IF (NMT > 0) THEN
+          IF (ME /= 0) THEN
+            SURF_TRIAN(I)%NUMTR = NMT
+            IF (ASSOCIATED(SURF_TRIAN(I)%ITRIAS)) THEN        ! IYS
+              IF (NMT.ne.UBOUND(SURF_TRIAN(I)%ITRIAS,1)) THEN ! IYS
+                DEALLOCATE (SURF_TRIAN(I)%ITRIAS)             ! IYS
+                NULLIFY (SURF_TRIAN(I)%ITRIAS)                ! IYS
+                ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT))          ! IYS
+              ENDIF
+            ELSE                                              ! IYS
+              ALLOCATE (SURF_TRIAN(I)%ITRIAS(NMT))
+            ENDIF
+            IF (ASSOCIATED(SURF_TRIAN(I)%ITRISI)) THEN        ! IYS
+              IF (NMT.ne.UBOUND(SURF_TRIAN(I)%ITRISI,1)) THEN ! IYS
+                DEALLOCATE (SURF_TRIAN(I)%ITRISI)             ! IYS
+                NULLIFY (SURF_TRIAN(I)%ITRISI)                ! IYS
+                ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT))          ! IYS
+              ENDIF
+            ELSE                                              ! IYS
+              ALLOCATE (SURF_TRIAN(I)%ITRISI(NMT))
+            ENDIF
+            IF (ASSOCIATED(SURF_TRIAN(I)%BGLT)) THEN          ! IYS
+              IF (NMT+1.ne.UBOUND(SURF_TRIAN(I)%BGLT,1)) THEN ! IYS
+                DEALLOCATE (SURF_TRIAN(I)%BGLT)               ! IYS
+                NULLIFY (SURF_TRIAN(I)%BGLT)                  ! IYS
+                ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1))          ! IYS
+              ENDIF
+            ELSE                                              ! IYS
+              ALLOCATE (SURF_TRIAN(I)%BGLT(NMT+1))
+            END IF
+          END IF
+          CALL MPI_BCAST (SURF_TRIAN(I)%ITRIAS,NMT,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (SURF_TRIAN(I)%ITRISI,NMT,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (SURF_TRIAN(I)%BGLT,NMT+1,
+     .                    MPI_REAL8,0,MPI_COMM_WORLD,ier)
+        END IF
+      END DO
+!+++++++++++ IYS 27.02.2015
+!+++++++++++ In this block dynamical structures are processed with care
+
+      DO I = 1, NLIMPS
+        NMT = SURF_TRIAN_ORDERED(I)%NUMTR
+        CALL MPI_BCAST (NMT,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+        IF (NMT > 0) THEN
+          IF (ME /= 0) THEN
+            SURF_TRIAN_ORDERED(I)%NUMTR = NMT
+            IF (ASSOCIATED(SURF_TRIAN_ORDERED(I)%ITRIAS)) THEN
+              IF (NMT.ne.UBOUND(SURF_TRIAN_ORDERED(I)%ITRIAS,1)) THEN
+                DEALLOCATE (SURF_TRIAN_ORDERED(I)%ITRIAS)
+                NULLIFY (SURF_TRIAN_ORDERED(I)%ITRIAS)
+                ALLOCATE (SURF_TRIAN_ORDERED(I)%ITRIAS(NMT))
+              ENDIF
+            ELSE  ! IYS
+              ALLOCATE (SURF_TRIAN_ORDERED(I)%ITRIAS(NMT))
+            ENDIF
+            IF (ASSOCIATED(SURF_TRIAN_ORDERED(I)%ITRISI)) THEN
+              IF (NMT.ne.UBOUND(SURF_TRIAN_ORDERED(I)%ITRISI,1)) THEN
+                 DEALLOCATE (SURF_TRIAN_ORDERED(I)%ITRISI)
+                 NULLIFY (SURF_TRIAN_ORDERED(I)%ITRISI)
+                ALLOCATE (SURF_TRIAN_ORDERED(I)%ITRISI(NMT))
+              ENDIF
+            ELSE  ! IYS
+              ALLOCATE (SURF_TRIAN_ORDERED(I)%ITRISI(NMT))
+            ENDIF
+            IF (ASSOCIATED(SURF_TRIAN_ORDERED(I)%BGLT)) THEN
+              IF (NMT+1.ne.UBOUND(SURF_TRIAN_ORDERED(I)%BGLT,1)) THEN
+                DEALLOCATE (SURF_TRIAN_ORDERED(I)%BGLT)
+                NULLIFY (SURF_TRIAN_ORDERED(I)%BGLT)
+                ALLOCATE (SURF_TRIAN_ORDERED(I)%BGLT(NMT+1))
+              ENDIF
+            ELSE  ! IYS
+              ALLOCATE (SURF_TRIAN_ORDERED(I)%BGLT(NMT+1))
+            END IF
+          END IF
+          CALL MPI_BCAST (SURF_TRIAN_ORDERED(I)%ITRIAS,NMT,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (SURF_TRIAN_ORDERED(I)%ITRISI,NMT,
+     .                    MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+          CALL MPI_BCAST (SURF_TRIAN_ORDERED(I)%BGLT,NMT+1,
+     .                    MPI_REAL8,0,MPI_COMM_WORLD,ier)
+        END IF
+      END DO
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
+      RETURN
+      END SUBROUTINE EIRENE_BROADCAST_CTRIG
+
+      END MODULE EIRMOD_CTRIG

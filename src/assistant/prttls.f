@@ -28,6 +28,7 @@ C
      .           IC, IT, IP, NRM, NS, NTM, NPM, IRAD, IST, NCOL, IR,
      .           IR2M, IP2M, IT2M
       CHARACTER(1) :: TL(72)
+      EXTERNAL :: EIRENE_LEER
 
       DATA TL/72*'='/
       SAVE

@@ -27,6 +27,7 @@ MODULE EIRMOD_PRESSURELOOP
       INTEGER, INTENT(in):: cellRef
       REAL(DP), INTENT(in):: pressureRef
       TYPE(pressureFeedback), INTENT(inout):: PFL
+      EXTERNAL :: EIRENE_EXIT_OWN
 
       !Surface cell id
       PFL%id = id

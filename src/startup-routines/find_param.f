@@ -10,16 +10,15 @@ C
       USE EIRMOD_COMPRT, ONLY: IUNIN, IUNOUT
       USE EIRMOD_CPES, ONLY: NPRS
       USE EIRMOD_CESTIM
-      USE EIRMOD_OPENMP, ONLY: EIRENE_ITHREAD, EIRENE_NTHREADS
-      USE EIRMOD_CPES, ONLY: MY_PE
 
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: STANDARD_INPUT
       INTEGER :: IUNIN_OLD
       character(80) :: ZEILE
-      character(20), save :: outname
-      character(6), save :: outpos
       LOGICAL :: UEX, op
+      EXTERNAL :: EIRENE_COUPLE_INIT_OUTPUT, EIRENE_DEFAULTS_USR,
+     .            EIRENE_FIND_PARAM_FIXFORM, EIRENE_FIND_PARAM_JSON,
+     .            EIRENE_LEER, EIRENE_MASL5, EIRENE_EXIT_OWN
 C
 C  UNIT NUMBER FOR INPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15
@@ -80,7 +79,7 @@ C     Add IFOFF again if IUNIN is adapted in EIRENE_DEFAULTS_USR.
         ENDIF
       ENDIF
 
-      READ (IUNIN,'(A80)') ZEILE
+      READ (IUNIN,'(A80)',END=6999) ZEILE
 
       REWIND IUNIN
 
@@ -125,6 +124,10 @@ C     Add IFOFF again if IUNIN is adapted in EIRENE_DEFAULTS_USR.
 
       RETURN
 
+ 6999 WRITE (IUNOUT,*) 'Empty input file found!'
+      WRITE (IUNOUT,*)
+     . 'Either remove it or replace it with a correct file.'
+      CALL EIRENE_EXIT_OWN(1)
  7999 WRITE (IUNOUT,*) 'Could not open input file!'
       CALL EIRENE_EXIT_OWN(1)
       RETURN

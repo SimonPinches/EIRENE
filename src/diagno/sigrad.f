@@ -46,6 +46,7 @@ C
      .          ZEXP2, ATTENU, ZEXP3, SIGADD, ARGU,
      .          ZMAX, VXS, VYS, VZS, EIRENE_FPATHPH,
      .          FAC, RES
+      EXTERNAL :: EIRENE_FPATHPH
       INTEGER :: NCELC, ICELL, IIPL, KK, ICOUNT, IPHT, ISAVE
       LOGICAL :: LARGST
 c

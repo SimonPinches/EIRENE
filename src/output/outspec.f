@@ -27,6 +27,7 @@ cdr  oct.2014:  parameter istr (stratum number) in argument list
       REAL(DP) :: EN,EN1,EN2
       CHARACTER(10) :: TEXTYP(0:4)
       CHARACTER(8) :: UNITINT(1:3), UNITOUT
+      EXTERNAL :: EIRENE_LEER
 
 C  SPECTRA
 

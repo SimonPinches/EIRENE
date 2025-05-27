@@ -13,7 +13,7 @@ cdr No projection to plasma flux tube is done.
 
       INTEGER, INTENT(IN) :: IS, ITET, ISIDE
       INTEGER, INTENT(INOUT) :: NRS
-      REAL(DP) :: EIRENE_ARTRI3
+      REAL(DP), EXTERNAL :: EIRENE_ARTRI3
       INTEGER :: I1, I2, I3
       INTEGER ITSIDE(3,4)
       DATA ITSIDE /1,2,3,

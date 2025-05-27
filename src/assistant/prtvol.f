@@ -39,6 +39,7 @@ C
      .           NTTS
       CHARACTER(1) :: TL(72)
 C     INTEGER :: I
+      EXTERNAL :: EIRENE_LEER
 
       DATA TL/72*'='/
 C  ISTREAM: BLOCK A FEW RESERVED OUTPUT STREAMS.

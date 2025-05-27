@@ -34,6 +34,7 @@
      .                 '"/>'
         write (ivtkout,'(a)') '<viewup coordinate="0,0,0"/>'
         write (ivtkout,'(a)') '</camera>'
+        return
       end subroutine eirene_vtkout_head
 
 
@@ -44,6 +45,7 @@
 
         write (ivtkout,'(a)') '</geometry>'
         write (ivtkout,'(a)') '</input>'
+        return
       end subroutine eirene_vtkout_tail
 
 
@@ -143,4 +145,6 @@ c         skip invis and non tri/quad/pentagons
 
         end do
         write (ivtkout,'(a)') '</planes>'
+        return
+
       end subroutine eirene_vtkout_surfaces

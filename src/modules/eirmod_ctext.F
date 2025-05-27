@@ -1,0 +1,268 @@
+cdr  sept 18: typo in CTEXT(2)  (size of array) corrected
+
+      MODULE EIRMOD_CTEXT
+
+      USE EIRMOD_PARMMOD
+
+      IMPLICIT NONE
+
+      PRIVATE
+
+      PUBLIC :: EIRENE_ALLOC_CTEXT, EIRENE_DEALLOC_CTEXT,
+     P          EIRENE_INIT_CTEXT, EIRENE_BROADCAST_CTEXT,
+     p          EIRENE_DEALLOC_CTEXT3
+
+      CHARACTER(72), PUBLIC, ALLOCATABLE, SAVE ::
+     C TXTSFL(:),   TXTTAL(:,:), TXTPLS(:,:),
+     C TXTSOU(:),   TXTSIG(:),
+     C TXTTLW(:,:),
+     C CHRTAL(:),   CHRTLS(:)
+
+      CHARACTER(72), PUBLIC, SAVE :: TXTRUN
+
+      CHARACTER(24), PUBLIC, ALLOCATABLE, SAVE ::
+     C TXTUNT(:,:), TXTSPC(:,:),
+     C TXTPUN(:,:), TXTPSP(:,:),
+     C TXTUNW(:,:), TXTSPW(:,:),
+     C TEXTLA(:),   TEXTLS(:)
+
+      CHARACTER(72), PUBLIC, ALLOCATABLE, SAVE ::
+     .               TXTTLA(:), TXTTLC(:), TXTTLR(:), TXTTLT(:)
+      CHARACTER(24), PUBLIC, ALLOCATABLE, SAVE ::
+     .               TXTSCA(:), TXTSCC(:), TXTSCR(:), TXTSCT(:),
+     .               TXTUTA(:), TXTUTC(:), TXTUTR(:), TXTUTT(:)
+
+
+      CONTAINS
+
+
+      SUBROUTINE EIRENE_ALLOC_CTEXT (ICAL)
+
+      INTEGER, INTENT(IN) :: ICAL
+
+      IF (ICAL == 1) THEN
+
+        IF (ALLOCATED(TXTSFL)) RETURN
+
+        ALLOCATE (TXTSFL(NLIMPS))
+        ALLOCATE (TXTSOU(NSTRA))
+        ALLOCATE (TXTSIG(NCHOR))
+        ALLOCATE (TXTTLW(N2MX,NTALS))
+        ALLOCATE (CHRTAL(NALV))
+        ALLOCATE (CHRTLS(NALS))
+        ALLOCATE (TXTUNW(N2MX,NTALS))
+        ALLOCATE (TXTSPW(N2MX,NTALS))
+        ALLOCATE (TEXTLA(5))
+        ALLOCATE (TEXTLS(3))
+
+        WRITE (IUNMEM,'(A,T25,I15)')
+     .        ' CTEXT(1) ',(NLIMPS+NSTRA+NCHOR+N2MX*NTALS+NALV+
+     .                      NALS)*72 +
+     .                     (2*N2MX*NTALS+8)*24
+
+      ELSE IF (ICAL == 2) THEN
+
+        IF (ALLOCATED(TXTTAL)) RETURN
+cdr output tallies
+        ALLOCATE (TXTTAL(N1MX,NTALV))
+        ALLOCATE (TXTSPC(N1MX,NTALV))
+        ALLOCATE (TXTUNT(N1MX,NTALV))
+cdr input tallies
+        ALLOCATE (TXTPLS(N1MX,NTALI))
+        ALLOCATE (TXTPSP(N1MX,NTALI))
+        ALLOCATE (TXTPUN(N1MX,NTALI))
+
+        WRITE (IUNMEM,'(A,T25,I15)')
+     .        ' CTEXT(2) ',  N1MX*(NTALV+NTALI)*72 +
+     .                     2*N1MX*(NTALV+NTALI)*24
+
+
+      ELSE IF (ICAL == 3) THEN
+
+        IF (ALLOCATED(TXTTLA)) RETURN
+
+        ALLOCATE (TXTTLA(NADV))
+        ALLOCATE (TXTSCA(NADV))
+        ALLOCATE (TXTUTA(NADV))
+
+        ALLOCATE (TXTTLC(NCLV))
+        ALLOCATE (TXTSCC(NCLV))
+        ALLOCATE (TXTUTC(NCLV))
+
+        ALLOCATE (TXTTLR(NALV))
+        ALLOCATE (TXTSCR(NALV))
+        ALLOCATE (TXTUTR(NALV))
+
+        ALLOCATE (TXTTLT(NSNV))
+        ALLOCATE (TXTSCT(NSNV))
+        ALLOCATE (TXTUTT(NSNV))
+
+        WRITE (IUNMEM,'(A,T25,I15)')
+     .       ' CTEXT(3) ', (NADV+NCLV+NALV+NSNV)*(72 + 2*24)
+      END IF
+
+      CALL EIRENE_INIT_CTEXT (ICAL)
+
+      RETURN
+      END SUBROUTINE EIRENE_ALLOC_CTEXT
+
+
+      SUBROUTINE EIRENE_DEALLOC_CTEXT
+
+      IF (ALLOCATED(TXTSFL)) THEN
+        DEALLOCATE (TXTSFL)
+        DEALLOCATE (TXTSOU)
+        DEALLOCATE (TXTSIG)
+        DEALLOCATE (TXTTLW)
+        DEALLOCATE (CHRTAL)
+        DEALLOCATE (CHRTLS)
+        DEALLOCATE (TXTUNW)
+        DEALLOCATE (TXTSPW)
+        DEALLOCATE (TEXTLA)
+        DEALLOCATE (TEXTLS)
+      END IF
+
+      IF (ALLOCATED(TXTTAL)) THEN
+        DEALLOCATE (TXTTAL)
+        DEALLOCATE (TXTSPC)
+        DEALLOCATE (TXTUNT)
+        DEALLOCATE (TXTPLS)
+        DEALLOCATE (TXTPSP)
+        DEALLOCATE (TXTPUN)
+      END IF
+
+      CALL EIRENE_DEALLOC_CTEXT3
+
+      RETURN
+      END SUBROUTINE EIRENE_DEALLOC_CTEXT
+
+
+      SUBROUTINE EIRENE_DEALLOC_CTEXT3
+
+      IF (ALLOCATED(TXTTLA)) THEN
+        DEALLOCATE (TXTTLA)
+        DEALLOCATE (TXTSCA)
+        DEALLOCATE (TXTUTA)
+
+        DEALLOCATE (TXTTLC)
+        DEALLOCATE (TXTSCC)
+        DEALLOCATE (TXTUTC)
+
+        DEALLOCATE (TXTTLR)
+        DEALLOCATE (TXTSCR)
+        DEALLOCATE (TXTUTR)
+
+        DEALLOCATE (TXTTLT)
+        DEALLOCATE (TXTSCT)
+        DEALLOCATE (TXTUTT)
+      ENDIF
+
+      RETURN
+      END SUBROUTINE EIRENE_DEALLOC_CTEXT3
+
+
+      SUBROUTINE EIRENE_INIT_CTEXT (ICAL)
+
+      INTEGER, INTENT(IN) :: ICAL
+
+      IF (ICAL == 1) THEN
+
+        TXTSFL = ' '
+        TXTSOU = ' '
+        TXTSIG = ' '
+        TXTTLW = ' '
+        CHRTAL = ' '
+        CHRTLS = ' '
+        TXTUNW = ' '
+        TXTSPW = ' '
+        TEXTLA = ' '
+        TEXTLS = ' '
+
+      ELSE IF (ICAL == 2) THEN
+
+        TXTTAL = ' '
+        TXTSPC = ' '
+        TXTUNT = ' '
+
+        TXTPLS = ' '
+        TXTPSP = ' '
+        TXTPUN = ' '
+
+      ELSE IF (ICAL == 3) THEN
+
+        TXTTLA = ' '
+        TXTSCA = ' '
+        TXTUTA = ' '
+
+        TXTTLC = ' '
+        TXTSCC = ' '
+        TXTUTC = ' '
+
+        TXTTLR = ' '
+        TXTSCR = ' '
+        TXTUTR = ' '
+
+        TXTTLT = ' '
+        TXTSCT = ' '
+        TXTUTT = ' '
+
+      END IF
+
+      RETURN
+      END SUBROUTINE EIRENE_INIT_CTEXT
+
+
+      SUBROUTINE EIRENE_BROADCAST_CTEXT(ME)
+      USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
+      INTEGER :: IER
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
+
+      IF (ME /= 0) THEN
+        CALL EIRENE_ALLOC_CTEXT(1)
+        CALL EIRENE_ALLOC_CTEXT(2)
+      END IF
+
+      CALL MPI_BCAST (TXTSFL,72*NLIMPS,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTTAL,72*N1MX*NTALV,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTPLS,72*N1MX*NTALI,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTSOU,72*NSTRA,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTSIG,72*NCHOR,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTTLW,72*N2MX*NTALS,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (CHRTAL,72*NALV,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (CHRTLS,72*NALS,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTRUN,72,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTSPC,24*N1MX*NTALV,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTUNT,24*N1MX*NTALV,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTPSP,24*N1MX*NTALI,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTPUN,24*N1MX*NTALI,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTUNW,24*N2MX*NTALS,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TXTSPW,24*N2MX*NTALS,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TEXTLA,24*5,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (TEXTLS,24*3,MPI_CHARACTER,
+     .                0,MPI_COMM_WORLD,ier)
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
+      RETURN
+      END SUBROUTINE EIRENE_BROADCAST_CTEXT
+
+      END MODULE EIRMOD_CTEXT

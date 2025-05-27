@@ -34,6 +34,7 @@ c  hard-wired: cut-off (density) parameter for fits: 1e8
       INTEGER, INTENT(IN) :: IREL, K
       REAL(DP) :: EIRENE_FTABEL3, DEIMIN, TII, PLS, TBEL,
      .            EIRENE_RATE_COEFF
+      EXTERNAL :: EIRENE_RATE_COEFF
       INTEGER :: KK, IPLSTI
 
       TBEL=0.D0
@@ -55,4 +56,4 @@ c
       EIRENE_FTABEL3 = TBEL
 
       RETURN
-      END
+      END FUNCTION EIRENE_FTABEL3

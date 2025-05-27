@@ -8,4 +8,4 @@ C
       EIRENE_GERADX=Y
       Y=A0*Y+A1
       RETURN
-      END
+      END FUNCTION EIRENE_GERADX

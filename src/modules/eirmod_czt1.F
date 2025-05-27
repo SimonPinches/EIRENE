@@ -1,0 +1,193 @@
+cdr Dec. 16.  added cndyn arrays into RCZT1 (formerly in : update, etc....)
+cdr Apr. 18:  added: RSQDVPH,...CNDYNPH, for species-wise synchronised pointers and targets
+
+      MODULE EIRMOD_CZT1
+
+      USE EIRMOD_PRECISION
+      USE EIRMOD_PARMMOD
+
+      IMPLICIT NONE
+
+      PRIVATE
+
+      PUBLIC :: EIRENE_ALLOC_CZT1, EIRENE_DEALLOC_CZT1,
+     P          EIRENE_INIT_CZT1, EIRENE_BROADCAST_CZT1
+
+      REAL(DP), PUBLIC, TARGET, ALLOCATABLE, SAVE :: RCZT1(:), RCZT2(:)
+
+      REAL(DP), PUBLIC, POINTER, SAVE ::
+C  ZT1 ARRAY  RCZT1(NZT1)
+     R RSQDVI(:), CVRSSI(:), ALMASI(:), CNDYNI(:),
+     R RSQDVP(:), CVRSSP(:), ALMASP(:), CNDYNP(:),
+     R RSQDVA(:), CVRSSA(:), ALMASA(:), CNDYNA(:),
+     R RSQDVM(:), CVRSSM(:), ALMASM(:), CNDYNM(:),
+     R RSQDVPH(:),CVRSSPH(:),ALMASPH(:),CNDYNPH(:),
+     R DENE,      DENI,
+C  ZT2 ARRAY  RCZT2(NZT2)
+     R DEFCX(:),  EEFCX(:),
+     R DEFEL(:),  EEFEL(:),
+     R DEFPI(:),  EEFPI(:)
+
+
+      REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
+     R ZT1(:,:),  ZRG(:,:)
+
+!  POINTER FOR UNIFIED "A,M,I,PH" SUBROUTINES
+      REAL(DP), PUBLIC, POINTER, SAVE ::
+     R RSQDVX, CVRSSX, ALMASX, CNDYNX
+
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP  THREADPRIVATE(RSQDVX,CVRSSX,ALMASX,CNDYNX)
+#endif
+cym turned into public
+      INTEGER, PRIVATE, SAVE :: NZT1, NZT2
+
+
+      CONTAINS
+
+
+      SUBROUTINE EIRENE_ALLOC_CZT1(ICAL)
+
+      INTEGER, INTENT(IN) :: ICAL
+      INTEGER IND
+
+      IF (ICAL == 1) THEN
+
+        IF (ALLOCATED(RCZT1)) RETURN
+
+        NZT1=4*(NION+NPLS+NATM+NMOL+NPHOT) + 2
+
+        ALLOCATE (RCZT1(NZT1))
+        ALLOCATE (ZT1(NPLS,NRAD))
+        ALLOCATE (ZRG(NPLS,NRAD))
+
+        WRITE (IUNMEM,'(A,T25,I15)')
+     .        ' CZT1(1) ',(NZT1+2*NPLS*NRAD)*8
+
+        IND = 0
+        RSQDVI => RCZT1(1+IND+0*NION : IND+1*NION)
+        CVRSSI => RCZT1(1+IND+1*NION : IND+2*NION)
+        ALMASI => RCZT1(1+IND+2*NION : IND+3*NION)
+        CNDYNI => RCZT1(1+IND+3*NION : IND+4*NION)
+
+        IND = IND+4*NION
+        RSQDVP => RCZT1(1+IND+0*NPLS : IND+1*NPLS)
+        CVRSSP => RCZT1(1+IND+1*NPLS : IND+2*NPLS)
+        ALMASP => RCZT1(1+IND+2*NPLS : IND+3*NPLS)
+        CNDYNP => RCZT1(1+IND+3*NPLS : IND+4*NPLS)
+
+        IND = IND+4*NPLS
+        RSQDVA => RCZT1(1+IND+0*NATM : IND+1*NATM)
+        CVRSSA => RCZT1(1+IND+1*NATM : IND+2*NATM)
+        ALMASA => RCZT1(1+IND+2*NATM : IND+3*NATM)
+        CNDYNA => RCZT1(1+IND+3*NATM : IND+4*NATM)
+
+        IND = IND+4*NATM
+        RSQDVM => RCZT1(1+IND+0*NMOL : IND+1*NMOL)
+        CVRSSM => RCZT1(1+IND+1*NMOL : IND+2*NMOL)
+        ALMASM => RCZT1(1+IND+2*NMOL : IND+3*NMOL)
+        CNDYNM => RCZT1(1+IND+3*NMOL : IND+4*NMOL)
+
+        IND = IND+4*NMOL
+        RSQDVPH => RCZT1(1+IND+0*NPHOT: IND+1*NPHOT)
+        CVRSSPH => RCZT1(1+IND+1*NPHOT: IND+2*NPHOT)
+        ALMASPH => RCZT1(1+IND+2*NPHOT: IND+3*NPHOT)
+        CNDYNPH => RCZT1(1+IND+3*NPHOT: IND+4*NPHOT)
+
+        IND = IND+4*NPHOT
+
+        DENE   => RCZT1(1+IND)
+        DENI   => RCZT1(2+IND)
+
+      ELSE IF (ICAL == 2) THEN
+
+        IF (ALLOCATED(RCZT2)) RETURN
+
+        NZT2=2*NREL+2*NRCX+2*NRPI
+
+        ALLOCATE (RCZT2(NZT2))
+
+        WRITE (IUNMEM,'(A,T25,I15)')
+     .         ' CZT1(2) ',NZT2*8
+
+        IND = 0
+        DEFCX  => RCZT2(1+IND+0*NRCX : IND+1*NRCX)
+        EEFCX  => RCZT2(1+IND+1*NRCX : IND+2*NRCX)
+
+        IND = IND+2*NRCX
+        DEFEL  => RCZT2(1+IND+0*NREL : IND+1*NREL)
+        EEFEL  => RCZT2(1+IND+1*NREL : IND+2*NREL)
+
+        IND = IND+2*NREL
+        DEFPI  => RCZT2(1+IND+0*NRPI : IND+1*NRPI)
+        EEFPI  => RCZT2(1+IND+1*NRPI : IND+2*NRPI)
+
+      END IF
+
+      CALL EIRENE_INIT_CZT1(ICAL)
+
+      RETURN
+      END SUBROUTINE EIRENE_ALLOC_CZT1
+
+
+      SUBROUTINE EIRENE_DEALLOC_CZT1
+
+      IF (.NOT.ALLOCATED(RCZT1)) RETURN
+
+      DEALLOCATE (RCZT1)
+      DEALLOCATE (RCZT2)
+      DEALLOCATE (ZT1)
+      DEALLOCATE (ZRG)
+
+      RETURN
+      END SUBROUTINE EIRENE_DEALLOC_CZT1
+
+
+      SUBROUTINE EIRENE_INIT_CZT1(ICAL)
+
+      INTEGER, INTENT(IN) :: ICAL
+
+      IF (ICAL == 1) THEN
+
+        RCZT1 = 0._DP
+        ZT1   = 0._DP
+        ZRG   = 0._DP
+
+      ELSE IF (ICAL == 2) THEN
+
+        RCZT2 = 0._DP
+
+      END IF
+
+      RETURN
+      END SUBROUTINE EIRENE_INIT_CZT1
+
+
+      SUBROUTINE EIRENE_BROADCAST_CZT1(ME)
+      USE EIRMOD_MPI
+      INTEGER, INTENT(IN) :: ME
+      INTEGER :: IER
+#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+      EXTERNAL :: MPI_BCAST
+#endif
+
+      IF (ME /= 0) THEN
+        CALL EIRENE_ALLOC_CZT1(1)
+        CALL EIRENE_ALLOC_CZT1(2)
+      END IF
+
+      CALL MPI_BCAST (RCZT1,NZT1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (RCZT2,NZT2,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+cdr these next two fields ZT1 and ZRG should go into COMXS,
+cdr they belong, logically, to the pre-computed
+cdr plasma tallies DEINL, DIINL, TEINL, TIINL used to speed up code.
+cdr They all should be removed in "storage save mode"
+      CALL MPI_BCAST (ZT1,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (ZRG,NPLS*NRAD,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+
+      CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
+
+      RETURN
+      END SUBROUTINE EIRENE_BROADCAST_CZT1
+
+      END MODULE EIRMOD_CZT1

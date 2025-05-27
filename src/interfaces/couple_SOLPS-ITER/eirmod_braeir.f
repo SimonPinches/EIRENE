@@ -26,8 +26,6 @@ C  PLASMA DATA: NI,TE,TI,VV,UU,PR,UP,RR,FNIX,FNIY.. (BRAAMS ---> EIRENE)
      R  UUDIAB(:,:,:),  VVDIAB(:,:,:),
      R  POB(:,:), WWB(:,:,:), ZIB(:,:,:)
 
-      INTEGER, SAVE :: NDXP, NDYP, NFL
-
 
       CONTAINS
 

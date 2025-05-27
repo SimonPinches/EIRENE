@@ -19,6 +19,7 @@ cdr       e.g. in recombination (RC) reactions. So far that EPEL tally is missin
       REAL(DP) :: PLS, ADD, EPEL, EIRENE_FEPLEL3,
      .            EIRENE_RATE_COEFF
       INTEGER :: KK, IPLSTI
+      EXTERNAL :: EIRENE_RATE_COEFF
 
       EIRENE_FEPLEL3=0.D0
       KK=NELREL(IREL)

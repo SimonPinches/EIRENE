@@ -17,4 +17,4 @@ C
       NPTRGT=1
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_IF0PRM_JSON

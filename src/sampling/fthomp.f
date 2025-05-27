@@ -15,13 +15,13 @@ C
       REAL(DP) :: A, E, ARG, BETAD2, EIRENE_FTHOMP, EMU
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
 
-      EMU=1./(EMAX/UB+1.)
-      BETAD2=1./(EMU*EMU-EMU-EMU+1.)
+      EMU=1.0_DP/(EMAX/UB+1.0_DP)
+      BETAD2=1.0_DP/((1.0_DP-EMU)*(1.0_DP-EMU))
 C
       A=RANF_EIRENE()
       ARG=A/BETAD2
-      E=UB/(1.-SQRT(ARG))-UB
+      E=UB/(1.0_DP-SQRT(ARG))-UB
       EIRENE_FTHOMP=E
 C
       RETURN
-      END
+      END FUNCTION EIRENE_FTHOMP

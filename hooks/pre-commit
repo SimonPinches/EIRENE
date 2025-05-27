@@ -12,8 +12,8 @@ ver=$(head -n 1 version.txt)
 
 echo "Running pre-commit hook for EIRENE version" $EIRENE_VERSION
 
-# Set the version text in modules/eirmod_parmmod.f90 to the value in version.txt
-src_file="src/modules/eirmod_parmmod.f"
+# Set the version text in modules/eirmod_parmmod.F to the value in version.txt
+src_file="src/modules/eirmod_parmmod.F"
 src_ver=$(awk 'BEGIN { FS = "=" }/EIRENE_VERSION_STRING/{ print $2 }' $src_file )
 src_ver=${src_ver:1:-1}
 if [ -z $src_ver ]; then
