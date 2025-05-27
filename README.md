@@ -14,14 +14,8 @@ to study interaction of neutral gas and radiation with magnetized plasmas.
 The EIRENE code is a continuously updated "moving target", developed at
 Forschungszentrum Jülich GmbH (FZJ) mainly for own scientific applications.
 
-The EIRENE team at FZJ is not a "code provider". We do not offer technical and
-3rd party support at the level which would be necessary for such a complex
-numerical tool.
-
-For this reason no download of EIRENE as ready-to-use software is foreseen.
-
-On the other hand, EIRENE is an open source code, which we are happy to provide
-and jointly employ within projects and collaborations of mutual interest.
+We cannot offer technical support beyond the documentation. On the other hand, EIRENE is an open source code, which we are happy to provide
+and jointly employ within research projects and collaborations of mutual interest.
 
 
 
