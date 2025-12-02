@@ -1,7 +1,9 @@
       MODULE EIRMOD_LININT
+cdr  Nov. 21:
+cdr  remove helium line specific routines, because line emissivities are
+cdr  now generalized to any element, which has been assigned an emission profile in block 4
       USE EIRMOD_PRECISION
       USE EIRMOD_LEARC1, ONLY: EIRENE_LEARC1
-      USE EIRMOD_SIGHE, ONLY: EIRENE_SIGHE
       USE EIRMOD_SIGLINE, ONLY: EIRENE_SIGLINE
       USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA1
       USE EIRMOD_ADDCOL, ONLY: EIRENE_ADDCOL
@@ -777,12 +779,13 @@ C
       IF (IFIRST >= 0) THEN
         IF (NCHTAL(ICHORI).EQ.1) THEN
           CALL EIRENE_SIGCX (0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
-        ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
+        ELSEIF (NCHTAL(ICHORI).EQ.2) THEN !dr now valid for all species,
+                                          !   for which we have
+                                          !   an emissivity
           CALL EIRENE_SIGLINE (0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,ICHORI)
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
           CALL EIRENE_SIGRAD(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
-        ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
-          CALL EIRENE_SIGHE (0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
+cdr     ELSEIF (NCHTAL(ICHORI).EQ.5) THEN  !dr  removed, was a Helium specific line emis. option.
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
           CALL EIRENE_SIGUSR(0,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,
      .                XD0,YD0,ZD0,XD1,YD1,ZD1)
@@ -951,8 +954,7 @@ C  contribution to line-of-sight integral, segment no. jjj
             CALL EIRENE_SIGLINE (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,ICHORI)
           ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
             CALL EIRENE_SIGRAD (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
-          ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
-            CALL EIRENE_SIGHE (1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST)
+cdr       ELSEIF (NCHTAL(ICHORI).EQ.5) THEN  !dr  out, now combined with generalized nchtal=2 option
           ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
             CALL EIRENE_SIGUSR(1,JJJ,ZDS,PEN,PSIG,TIMAX,ARGST,
      .                  XD0,YD0,ZD0,XD1,YD1,ZD1)

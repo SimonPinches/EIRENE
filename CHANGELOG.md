@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin - SOLPS_DR_changes -
+## X. Bonnin - SOLPS_DR_changes - b613562563c587526dfc663960e75f1b0fc36bb4
 
 ### Based on SOLPS_coupling - db157c759dbe59d340df6a0aca48200c1c024fe4
 
 ** Changes **
 
+- Removing obsolete Helium emissivity routines
 - Code clean-up from D. Reiter and new arguments in EIRENE_SLOPE
 
 ---

@@ -311,6 +311,8 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LMSVZDENA, LMSVZDENM, LMSVZDENI, LMSVZDENPH,
      L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL,
      L LMSRAEL,  LMSRMEL,  LMSRIEL  !  ph tally still missing?
+cdr  ? next line: tbd.: also a pointer ?
+      LOGICAL, PUBLIC, TARGET, SAVE :: LMSRPHEL
 
 c  logical, for each surface-averaged tally, particle flux.
 c  either active tally (if true) or deactivated tally, no storage (if false)
@@ -1865,6 +1867,7 @@ cdr  default: no tallies turned off in input block 11
         LMSRAEL    => LMISTALV(101)
         LMSRMEL    => LMISTALV(102)
         LMSRIEL    => LMISTALV(103)
+        LMSRPHEL   = .FALSE.
 
 ! surface-averaged tallies
 

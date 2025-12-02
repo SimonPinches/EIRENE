@@ -1,6 +1,9 @@
 CDR  aug. 17:  printout of post-processed spectra (diagno line of sight):
 cdr            conditional on prspec
 c              plot of spectra vs. energy /wavelength: conditional on plspec
+cdr  oct 20:  I think option nchtal(ichori)=5 is obsolete now.
+cdr           Was specifically for He lines from AMJUEL population coefficients
+cdr           Now: more general line emission tallies are available.
 C
 C*DK OUTSIG
       SUBROUTINE EIRENE_OUTSIG(ENSAVE,L_CHOR)
@@ -91,11 +94,12 @@ C
      .      ('CX-DETECTOR SIGNAL, MAXW. NEUTRL. DISTR. ',41)
           TXHEAD(1:41) =
      .      'CX-DETECTOR SIGNALS, MAXW. NEUTRL. DISTR.'
+cdr This next option was for H line emission only. Now: any line emission
         ELSEIF (NCHTAL(ICHORI).EQ.2) THEN
           CALL EIRENE_HEADNG
-     .      ('H emission SIGNAL: #/S/CM2/STERAD  ',41)
+     .      ('Line emission SIGNAL: #/S/CM2/STERAD  ',41)
           TXHEAD(1:41) =
-     .      'H emission SIGNALS: #/S/CM2/STERAD '
+     .      'Line emission SIGNALS: #/S/CM2/STERAD '
         ELSEIF (NCHTAL(ICHORI).EQ.3) THEN
           CALL EIRENE_HEADNG
      .      ('SIDE ON SPECTRAL RADIANCE: #/S/CM2/NM/STERAD',44)
@@ -106,11 +110,12 @@ C
      .      ('DETECTOR SIGNALS VIA SPECTRA ALONG LOS',38)
           TXHEAD(1:44) =
      .      'DETECTOR SIGNALS VIA SPECTRA ALONG LOS'
-        ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
-          CALL EIRENE_HEADNG
-     .     ('He emission SIGNAL: #/S/CM2/STERAD  ',33)
-          TXHEAD(1:33) =
-     .      'He emission SIGNALS: #/S/CM2/STERAD '
+cdr this next option should be out. Was for He line emission
+cdr     ELSEIF (NCHTAL(ICHORI).EQ.5) THEN
+cdr       CALL EIRENE_HEADNG
+cdr   .     ('He emission SIGNAL: #/S/CM2/STERAD  ',33)
+cdr       TXHEAD(1:33) =
+cdr  .      'He emission SIGNALS: #/S/CM2/STERAD '
         ELSEIF (NCHTAL(ICHORI).EQ.10) THEN
           CALL EIRENE_HEADNG
      .      ('USER-DEFINED LINE INTEGRAL (SUBR. SIGUSR)',41)
