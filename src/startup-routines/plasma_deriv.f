@@ -226,7 +226,7 @@ cdr to be checked first: allocated: plasma_bckgrnd, and: associated: diintf
             IF (any(diintf(iold,:).ne. 0._DP))  then
 
               IF (NLMLTI) THEN
-                TIIN(IPLSTI,:)=TIINTF(IOLDTI,:)
+                TIIN(IPLSTI,:)=MAX(TVAC,TIINTF(IOLDTI,:))
 CDR           ELSE
 CDR   in single TI cases: all TIIN(IPLS,:) are the same, and == TIIN(1,:)
               ENDIF
@@ -266,7 +266,7 @@ cdr         itold=?                         ! type
             DIIN(IPLS,1:NSBOX)=MAX(DVAC,BASE_DENSITY(1:NSBOX))
 
             IF (NLMLTI) THEN
-              TIIN(IPLSTI,:)=BASE_TEMP(:)
+              TIIN(IPLSTI,:)=MAX(TVAC,BASE_TEMP(:))
 cdr ???     ELSE
             ENDIF
             IF (NLMLV) THEN

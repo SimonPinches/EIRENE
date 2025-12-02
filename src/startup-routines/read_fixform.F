@@ -3821,6 +3821,11 @@ c                 i.e. the ADDV tallies are only saved for one emissivity at a t
      .         (EMIS_LINES(ILINE)%COMPO(JCOMP)%CONTRIB(NUM_CONTRIB))
 cdr  for each new component: store emission profile on addv(iadv)
               IADV = IADV + 1
+              if (iadv.gt.nadv) then
+                write (iunout,*) 'storage conflict on ADDV tally'
+                write (iunout,*) 'iadv,nadv ',iadv,nadv
+                call eirene_exit_own(1)
+              endif
               EMIS_LINES(ILINE)%COMPO(JCOMP)%IADV = IADV
 
 cdr  now we dwell on the contributions to JCOMP:

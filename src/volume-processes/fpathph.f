@@ -177,8 +177,13 @@ cdr       kk   = nreaph(IRPH)
 cdr   effective energy e0_eff due to doppler shift from directed motion
 cdr       e0_eff=
 cdr  getcoeff liefert nun maxw. average ueber Ti(ipls) (background neutrals), z.b. voigt, ....
-          call EIRENE_PH_GETCOEFF(kk,iphot,0,k,ipls,fac,sigv)
-          sigv=sigv*diin(ipls,k)
+crc check if diin > 0
+          IF (diin(ipls,k) > 0.D0) THEN
+              call EIRENE_PH_GETCOEFF(kk,iphot,0,k,ipls,fac,sigv)
+              sigv=sigv*diin(ipls,k)
+          ELSE
+              sigv=0.D0
+          ENDIF
           if(phv_muldens .EQ. 0) then
 cdr  hier in fpathph kann es keine spontanen raten (1/s) geben.
 cdr  spaeter: allgemein raten (1/s) auch fuer testteilchen (fpatha, fpathm, fpat
@@ -197,8 +202,13 @@ cdr       e0_eff=
 cdr       ireac=modcol(7,1,IRPH)
 cdr  ireac entspricht "typ" in Getcoeff - cross-section (lorentz, vdw, ...)
 cdr  allerdings kann hier der "querschnitt" von hintergrundparametern abhaengen
-          call EIRENE_PH_GETCOEFF(kk,iphot,0,k,ipls,fac,sigv)
-          sigv=sigv*diin(ipls,k)
+crc check if diin > 0
+          IF (diin(ipls,k) > 0.D0) THEN
+              call EIRENE_PH_GETCOEFF(kk,iphot,0,k,ipls,fac,sigv)
+              sigv=sigv*diin(ipls,k)
+          ELSE
+              sigv=0.D0
+          ENDIF
 cdr  besser: sig vc. E0_effective, ohne v = vrel = c, dann
 cdr  dann:   sigv=sig * c * diin
 cdr  denn:   sigv enthaelt hier keine faltung ueber background maxw. vel-verteil

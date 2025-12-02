@@ -1296,9 +1296,9 @@ cdr   (drift energy and total energy cancel exactly)
       ET=EDEN(IRAD)/(PDEN(IRAD)+EPS60)
       T=0.0_dp
       if (abs(ed-et).gt.eps10) T=(ET-ED)/1.5
-      TIIN(IPLSTI,IRAD)=T
+      TIIN(IPLSTI,IRAD)=MAX(TVAC,T)
 C NEW N
-      DIIN(IPLS,IRAD)=PDEN(IRAD)
+      DIIN(IPLS,IRAD)=MAX(DVAC,PDEN(IRAD))
 
 C  For normalization of global residuals:
 c  RRN: total particle [1], new
