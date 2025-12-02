@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin - SOLPS_coupling - 6b15f6460fc69c156f330dfdde9b35d138b9e20f
+## X. Bonnin - SOLPS_coupling - da55a7904870a46555587c81677292bdb8575c5c
 
 ### Based on SOLPS_bug_fixes - 765b12f7f7ab978e8340d215d330ec49c6c5417b
 
 ** Changes **
 
+- Bug fix for data mapping in snowflake geometries
 - New IMPROVED MPI parallelization strategy
 - Bug fixes for time-dependent runs and ensuring we always have a filled-in background for coupled runs
 - Debugged hybrid OpenMP+MPI parallelization
