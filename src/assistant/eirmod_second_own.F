@@ -27,10 +27,10 @@ cdr returns wall clock time (in seconds) since the last call to function eirene_
 #ifndef NAGFOR
       double precision, external :: omp_get_wtime
 #endif
-      time=omp_get_wtime()
+      time=real(omp_get_wtime(),DP)
 #elif USE_MPI
       double precision, external :: mpi_wtime
-      time=mpi_wtime()
+      time=real(mpi_wtime(),DP)
 #else
       call cpu_time(time)
 #endif
@@ -47,10 +47,10 @@ cdr returns wall clock time (in seconds)
 #ifndef NAGFOR
       double precision, external :: omp_get_wtime
 #endif
-      start=omp_get_wtime()
+      start=real(omp_get_wtime(),DP)
 #elif USE_MPI
       double precision, external :: mpi_wtime
-      start=mpi_wtime()
+      start=real(mpi_wtime(),DP)
 #else
       call cpu_time(start)
 #endif

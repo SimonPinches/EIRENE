@@ -150,7 +150,7 @@ C
 cym IC ?
       INTEGER :: NPTS_SAVE(NSTRA), NINITL_SAVE(NSTRA), IPTSI
       INTEGER, SAVE :: ISDV, IALS, ISTRAA, ISTRAE, ICELL, ISTRAI,
-     .           IENTRY, IGFFT, IALV, IDV, I, IER, IRC, NMX,
+     .           IENTRY, IGFFT, IALV, IDV, I, IRC, NMX,
      .           NINIST, IPANU, ISEED_ISTRA, ISEED_IPTSI, IDUMRAN,
      .           NDIGITS, NINIMAX, NAVAIL,
      .           ISTR, NPTTOT, NREC11,
@@ -644,7 +644,6 @@ C                    one by one re-launch of ALL particles from census
 c    if not nlmovie: census stratum istra=nstrai comes last.
 #if ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
         CALL EIRENE_CHECK_EXIT
-        CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 !$OMP BARRIER
 #endif
         IF (.NOT.NLSRON(ISTRA)) THEN
@@ -883,7 +882,6 @@ csw 19feb2013
 csw
 #if ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
           call eirene_check_exit
-          call mpi_barrier(mpi_comm_world,ier)
 !$OMP BARRIER
 #endif
 C  PARTICLE LOOP WITHIN STRATUM ISTRA
@@ -1608,7 +1606,6 @@ cdr  not ready. currently we do this in next time-cycle
         call ioflush_usr
 #if( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
         CALL EIRENE_CHECK_EXIT
-        CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 !$OMP BARRIER
 #endif
 
@@ -1860,7 +1857,6 @@ cdr  see above. Routine UPDLIN.f contains linear combination of tallies
       if (nmode.gt.0) call eirene_reset_updlin
 
       CALL EIRENE_CHECK_EXIT
-      CALL MPI_BARRIER (MPI_COMM_WORLD,IER)
 #if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP END MASTER
 #endif

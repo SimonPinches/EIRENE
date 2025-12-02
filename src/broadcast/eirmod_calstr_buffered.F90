@@ -103,7 +103,13 @@ module eirmod_calstr_buffered
       return
     endif
     if (n > next_check(istra)) then
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP MASTER
+#endif
       call MPI_Testall(N_BUFFERS, calstr_request, flag, MPI_STATUSES_IGNORE, ierr)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP END MASTER
+#endif
       next_check(istra) = next_check(istra) + &
                           max(1, nparts_loc(istra)/n_progress_check)
     endif

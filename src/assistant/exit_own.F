@@ -9,11 +9,11 @@ C
       INTEGER, INTENT(IN) :: ICC
 #ifdef USE_MPI
       INTEGER :: IER
+      LOGICAL :: LXOWN
 #ifndef GFORTRAN
       EXTERNAL :: MPI_ALLGATHER
 #endif
 #endif
-      LOGICAL :: LXOWN
       EXTERNAL :: EIRENE_PLEND, IOFLUSH_USR
 
       WRITE(IUNOUT,*) 'EIRENE EXIT_OWN ENTERED FROM '//
@@ -22,10 +22,16 @@ C
 !$OMP ATOMIC WRITE
 #endif
       LGEXIT = .TRUE.
-      LXOWN = .TRUE.
 #ifdef USE_MPI
+      LXOWN = .TRUE.
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP MASTER
+#endif
       CALL MPI_ALLGATHER (LXOWN, 1, MPI_LOGICAL,
      .                    LEXIT, 1, MPI_LOGICAL, MPI_COMM_WORLD, IER)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP END MASTER
+#endif
 C  LEGAL ENDING OF GR PLOTTING SOFTWARE
       CALL EIRENE_PLEND
       CALL MPI_ABORT(MPI_COMM_WORLD, -1, IER)
@@ -49,36 +55,32 @@ C  LEGAL ENDING OF GR PLOTTING SOFTWARE
 #ifdef USE_MPI
       INTEGER :: IER
       INTEGER IPRS
+      LOGICAL :: LXOWN
       EXTERNAL :: EIRENE_PLEND
 #ifndef GFORTRAN
       EXTERNAL :: MPI_ALLGATHER
 #endif
 #endif
-      LOGICAL :: LXOWN
       EXTERNAL :: IOFLUSH_USR
-
-      LXOWN = .FALSE.
 
 C  LEGAL ENDING OF GR PLOTTING SOFTWARE
 #ifdef USE_MPI
-      CALL MPI_ALLGATHER (LXOWN, 1, MPI_LOGICAL,
-     .                    LEXIT, 1, MPI_LOGICAL, MPI_COMM_WORLD, IER)
-      DO IPRS = 0, NPRS-1
-        IF (LEXIT(IPRS)) THEN
-          WRITE(0,*) 'ERROR DETECTED FROM PROCESSOR ', IPRS,
-     .             ', THREAD ', EIRENE_ITHREAD
-          WRITE(0,*) 'EXITING...'
-          FLUSH(0)
-          CALL EIRENE_PLEND
-          CALL MPI_ABORT(MPI_COMM_WORLD, -1, IER)
-          CALL MPI_FINALIZE(IER)
+      LXOWN = .FALSE.
+
+      IF (LXOWN) THEN
+        WRITE(0,*) 'ERROR DETECTED FROM PROCESSOR ', IPRS,
+     .           ', THREAD ', EIRENE_ITHREAD
+        WRITE(0,*) 'EXITING...'
+        FLUSH(0)
+        CALL EIRENE_PLEND
+        CALL MPI_ABORT(MPI_COMM_WORLD, -1, IER)
+        CALL MPI_FINALIZE(IER)
 #if defined(G95) || ( defined(PGF90) && COMPILER_MAJOR_VERSION < 19 ) || ( defined(GFORTRAN) && COMPILER_MAJOR_VERSION < 5 && COMPILER_MINOR_VERSION < 6 )
-          STOP 'EIRENE_EXIT'
+        STOP 'EIRENE_EXIT'
 #else
-          ERROR STOP 'EIRENE_EXIT'
+        ERROR STOP 'EIRENE_EXIT'
 #endif
-        END IF
-      END DO
+      END IF
 #endif
       IF (LGEXIT) THEN
         call ioflush_usr
