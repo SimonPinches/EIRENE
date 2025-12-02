@@ -18,6 +18,7 @@ C
       USE EIRMOD_PRECISION  ! istream(nstream)
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_CGRID, ONLY: LEVGEO
       IMPLICIT NONE
 
       CHARACTER(*), INTENT(IN) :: T1, T2, T3
@@ -130,7 +131,11 @@ C
             IP=IP+1
             IJ=IJ+1
             K(IP)=JP
-            H(IP)=PROF(IC)
+            IF (LEVGEO.LE.3) THEN
+              H(IP)=PROF(IC)
+            ELSE
+              H(IP)=PROF(IC-IP1+1)
+            ENDIF
             IF (IP.GE.NCOL) GOTO 223
   222     CONTINUE
   223     CONTINUE
@@ -158,7 +163,11 @@ C
             IR=IR+1
             IJ=IJ+1
             K(IR)=JR
-            H(IR)=PROF(IC)
+            IF (LEVGEO.LE.3) THEN
+              H(IR)=PROF(IC)
+            ELSE
+              H(IR)=PROF(IC-IR1+1)
+            ENDIF
             IF (IR.GE.NCOL) GOTO 334
   333     CONTINUE
   334     CONTINUE
@@ -186,7 +195,11 @@ C
             IR=IR+1
             IJ=IJ+1
             K(IR)=JR
-            H(IR)=PROF(IC)
+            IF (LEVGEO.LE.3) THEN
+              H(IR)=PROF(IC)
+            ELSE
+              H(IR)=PROF(IC-IR1+1)
+            ENDIF
             IF (IR.GE.NCOL) GOTO 445
   444     CONTINUE
   445     CONTINUE
@@ -219,7 +232,11 @@ C
           IR=IR+1
           IJ=IJ+1
           K(IR)=JR
-          H(IR)=PROF(IC)
+          IF (LEVGEO.LE.3) THEN
+            H(IR)=PROF(IC)
+          ELSE
+            H(IR)=PROF(IC-IR1+1)
+          ENDIF
           IF (IR.GE.NCOL) GOTO 1112
  1111   CONTINUE
  1112   CONTINUE
@@ -244,7 +261,11 @@ C
           IP=IP+1
           IJ=IJ+1
           K(IP)=JP
-          H(IP)=PROF(IC)
+          IF (LEVGEO.LE.3) THEN
+            H(IP)=PROF(IC)
+          ELSE
+            H(IP)=PROF(IC-IP1+1)
+          ENDIF
           IF (IP.GE.NCOL) GOTO 1223
  1222   CONTINUE
  1223   CONTINUE
@@ -269,7 +290,11 @@ C
           IT=IT+1
           IJ=IJ+1
           K(IT)=JT
-          H(IT)=PROF(IC)
+          IF (LEVGEO.LE.3) THEN
+            H(IT)=PROF(IC)
+          ELSE
+            H(IT)=PROF(IC-IT1+1)
+          ENDIF
           IF (IT.GE.NCOL) GOTO 1334
  1333   CONTINUE
  1334   CONTINUE

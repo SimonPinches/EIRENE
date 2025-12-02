@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin and D. Reiter - SOLPS_bug_fixes - 48908c85f7aaaa51c423f3bb4b5c08438f9968fd
+## X. Bonnin and D. Reiter - SOLPS_bug_fixes - 949cdb08a88084e08b39f39a4bc70cb6c8d1d198
 
 ### Based on V1.2.0 (develop - b0027581a7c95e4fc92671f7a354b6c556eacb23)
 
 ** Changes **
 
+- Bug fixes to tally print-outs for special cases
 - Performance improvements for MPI parallelization
 - Added OPEN_MPI pragma to better manage compiler warnings
 - Variable type corrections
