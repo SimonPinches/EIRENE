@@ -1541,7 +1541,7 @@ cdr  surface model for particles type 0 ("photons")
      .               ISRF(ISPZ,MSURF),ISRT(ISPZ,MSURF))
         ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
         IF (LGPART) THEN
-cdr  switch part info ?  tbd      
+          CALL EIRENE_SWITCH_PARTINFO
         ELSE
           WEIGHT=0.
         ENDIF

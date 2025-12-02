@@ -130,6 +130,7 @@ cdr  first call is with ityp_old=-1
         ALLOCATE (LGXEI(0:NREI))
         ALLOCATE (LGXEL(0:NREL,0:1))
         ALLOCATE (LGXPI(0:NRPI,0:1))
+        ALLOCATE (LGXPH(0:NRPH,0:1))
       endif
 
 C  save stratum, old type, species
@@ -285,22 +286,26 @@ C  save stratum, old type, species
 !       LGXEI => LGPHEI
 !       LGXEL => LGPHEL
 !       LGXPI => LGPHPI
+!       LGXPH => LGPHPH
 cdr now: allocatable, rather than pointer
 !pb that means: here we do a copy
        LGXCX(0:NRCX,0:1) = LGPHCX(IPHOT,0:NRCX,0:1)
        LGXEI(0:NREI)     = LGPHEI(IPHOT,0:NREI)
        LGXEL(0:NREL,0:1) = LGPHEL(IPHOT,0:NREL,0:1)
        LGXPI(0:NRPI,0:1) = LGPHPI(IPHOT,0:NRPI,0:1)
+       LGXPH(0:NRPH,0:1)  = LGPHPH(IPHOT,0:NRPH,0:1)
 
        NXEII => NPHEII(IPHOT)
        NXCXI => NPHCXI(IPHOT)
        NXELI => NPHELI(IPHOT)
        NXPII => NPHPII(IPHOT)
+       NXPHI => NPHPHI(IPHOT)
 
        NXEIIM => NPHEIIM(IPHOT)
        NXCXIM => NPHCXIM(IPHOT)
        NXELIM => NPHELIM(IPHOT)
        NXPIIM => NPHPIIM(IPHOT)
+       NXPHIM => NPHPHIM(IPHOT)
 
        NPBGKX => NPBGKPH(IPHOT)
        NGENX  => NGENPH(IPHOT)

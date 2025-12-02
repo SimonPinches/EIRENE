@@ -238,13 +238,15 @@ c  post-collision energies: to EL (electrons), PI (background) or HV (heavy test
 
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I MODCOL(:,:,:),
-     I IESTCX(:,:), IESTEL(:,:), IESTPI(:,:), IESTEI(:,:)
+     I IESTCX(:,:), IESTEL(:,:), IESTPI(:,:), IESTEI(:,:),
+     I IESTPH(:,:)
 
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
      I NAEII(:),    NMEII(:),    NIEII(:),  NPHEII(:),
      I NACXI(:),    NMCXI(:),    NICXI(:),  NPHCXI(:),
      I NAELI(:),    NMELI(:),    NIELI(:),  NPHELI(:),
      I NAPII(:),    NMPII(:),    NIPII(:),  NPHPII(:),
+     I                                      NPHPHI(:),
      I NPBGKA(:),   NPBGKM(:),   NPBGKI(:), NPBGKPH(:),
      I NPBGKP(:,:)
 
@@ -252,13 +254,13 @@ c  post-collision energies: to EL (electrons), PI (background) or HV (heavy test
       INTEGER, PUBLIC, POINTER, SAVE ::
 cdr  No need for pointer attributes. These are just scalar integers
 cdr  Just set these values in SWITCH_PARTINFO.f
-     I NXEII, NXCXI, NXELI, NXPII,
-     I NXEIIM, NXCXIM, NXELIM, NXPIIM,
+     I NXEII, NXCXI, NXELI, NXPII, NXPHI,
+     I NXEIIM, NXCXIM, NXELIM, NXPIIM, NXPHIM,
      I NPBGKX
 cym p2nei removed from threadprivate list
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
-!$OMP  THREADPRIVATE(NXEII,NXCXI,NXELI,NXPII,
-!$OMP& NXEIIM,NXCXIM,NXELIM,NXPIIM,NPBGKX)
+!$OMP  THREADPRIVATE(NXEII,NXCXI,NXELI,NXPII,NXPHI,
+!$OMP& NXEIIM,NXCXIM,NXELIM,NXPIIM,NXPHIM,NPBGKX)
 #endif
 
       INTEGER, PUBLIC, TARGET, ALLOCATABLE, SAVE ::
@@ -266,8 +268,10 @@ cym p2nei removed from threadprivate list
      I NACXIM(:),   NMCXIM(:),   NICXIM(:),  NPHCXIM(:),
      I NAELIM(:),   NMELIM(:),   NIELIM(:),  NPHELIM(:),
      I NAPIIM(:),   NMPIIM(:),   NIPIIM(:),  NPHPIIM(:),
+     I                                       NPHPHIM(:),
 
-     I NPRCI(:),    NPRCIM(:)
+     I NPRCI(:),    NPRCIM(:),
+     I NPPHI(:),    NPPHIM(:)
 c  secondaries, species distribution, for RC processes
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
      I NATPRC(:),    NMLPRC(:),   NIOPRC(:),   NPLPRC(:),   NPHPRC(:),
@@ -320,8 +324,12 @@ c  RC type processes
 c  PI type processes
      I LGAPI(:,:,:),LGMPI(:,:,:),
      I LGIPI(:,:,:),
-     I LGPHPI(:,:,:)
-c  PH type processes
+     I LGPHPI(:,:,:),
+c  PH type processes,
+c  photon + bulk ph process Bik, Bki, photo-ionisation, etc.
+     I LGPHPH(:,:,:),
+     I LGPPH(:,:,:)  !  e.g. Aik, or e + H+ --> H + ph,
+                     !  and ph (photon) is the resulting test particle
 
 cdr  begin threadprivate here
 
@@ -330,9 +338,9 @@ cdr values assigned in SWITCH_PARTINFO during particle tracing
 cdr April 22: Remove redundant leading dimension in 3d arrays LGX...
 cdr           Remove POINTER attribute, use ALLOCATABLE instead
       INTEGER, PUBLIC, ALLOCATABLE, SAVE ::
-     I LGXCX(:,:), LGXEI(:), LGXEL(:,:), LGXPI(:,:)
+     I LGXCX(:,:), LGXEI(:), LGXEL(:,:), LGXPI(:,:), LGXPH(:,:)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
-!$OMP  THREADPRIVATE(LGXCX,LGXEI,LGXEL,LGXPI)
+!$OMP  THREADPRIVATE(LGXCX,LGXEI,LGXEL,LGXPI,LGXPH)
 #endif
 
       INTEGER, PUBLIC, SAVE ::
@@ -433,6 +441,8 @@ cdr  Range for looping over type of processes: DO IXYY=1:NXYYI(NSPZ)
         ALLOCATE (NIPII(NION))
         ALLOCATE (NPHPII(NPHOT))
 
+        ALLOCATE (NPHPHI(NPHOT))
+        ALLOCATE (NPPHI(NPLS))
 c  for background field particles we allow only RC type reactions
         ALLOCATE (NPRCI(NPLS))
 
@@ -456,6 +466,9 @@ cdr  Now the same arrays, all values reduced by one. To avoid unnecessary do loo
         ALLOCATE (NMPIIM(NMOL))
         ALLOCATE (NIPIIM(NION))
         ALLOCATE (NPHPIIM(NPHOT))
+cdr new for photon options
+        ALLOCATE (NPHPHIM(NPHOT))
+        ALLOCATE (NPPHIM(NPLS))
 
         ALLOCATE (NPRCIM(NPLS))
 c  for BGK reactions
@@ -749,6 +762,7 @@ c   for particle (1), momentum (2) and energy (3) source rates, resp.
         ALLOCATE (IESTEL(NREL,3))
         ALLOCATE (IESTPI(NRPI,3))
         ALLOCATE (IESTEI(NREI,3))
+        ALLOCATE (IESTPH(NRPH,3))
 
         ALLOCATE (NATPRC(NREC))
         ALLOCATE (NMLPRC(NREC))
@@ -823,6 +837,9 @@ c
         ALLOCATE (LGIPI(0:NION,0:NRPI,0:1))
         ALLOCATE (LGPHPI(0:NPHOT,0:NRPI,0:1))
 
+        ALLOCATE (LGPPH(0:NPLS,0:NRPH,0:1))   ! new in
+        ALLOCATE (LGPHPH(0:NPHOT,0:NRPH,0:5))  ! new in
+
 cdr  for unified routines UPDATE, FPATH, COLLIDE
 cdr  (single code of atoms, molecules and test ions. tbd: photons)
 !pb  allocation moved to EIRENE_SWITCH_PARTINFO
@@ -832,6 +849,7 @@ cdr  (single code of atoms, molecules and test ions. tbd: photons)
 !pb     ALLOCATE (LGXEI(0:NREI))
 !pb     ALLOCATE (LGXEL(0:NREL,0:1))
 !pb     ALLOCATE (LGXPI(0:NRPI,0:1))
+!pb     ALLOCATE (LGXPH(0:NRPH,0:1))
 
         MEM = (MSTOR1*MSTOR2+NMDTA)*8_ILONG +
      .                       MMDTA*4_ILONG
@@ -914,6 +932,7 @@ cdr  (single code of atoms, molecules and test ions. tbd: photons)
       DEALLOCATE (IESTEL)
       DEALLOCATE (IESTPI)
       DEALLOCATE (IESTEI)
+      DEALLOCATE (IESTPH)
 
       DEALLOCATE (NAEII)
       DEALLOCATE (NMEII)
@@ -934,6 +953,9 @@ cdr  (single code of atoms, molecules and test ions. tbd: photons)
       DEALLOCATE (NMPII)
       DEALLOCATE (NIPII)
       DEALLOCATE (NPHPII)
+
+      DEALLOCATE (NPHPHI)
+      DEALLOCATE (NPPHI)
 
       DEALLOCATE (NPRCI)
 
@@ -956,6 +978,9 @@ cdr  (single code of atoms, molecules and test ions. tbd: photons)
       DEALLOCATE (NMPIIM)
       DEALLOCATE (NIPIIM)
       DEALLOCATE (NPHPIIM)
+
+      DEALLOCATE (NPHPHIM)
+      DEALLOCATE (NPPHIM)
 
       DEALLOCATE (NPRCIM)
 
@@ -1041,11 +1066,15 @@ cdr  (single code of atoms, molecules and test ions. tbd: photons)
       DEALLOCATE (LGIPI)
       DEALLOCATE (LGPHPI)
 
+      DEALLOCATE (LGPPH)   ! new in
+      DEALLOCATE (LGPHPH)  ! new in
+
       IF (ALLOCATED(LGXCX)) THEN
         DEALLOCATE (LGXCX)
         DEALLOCATE (LGXEI)
         DEALLOCATE (LGXEL)
         DEALLOCATE (LGXPI)
+        DEALLOCATE (LGXPH)
       END IF
 
       DEALLOCATE (DELPOT)
@@ -1182,6 +1211,9 @@ cdr  ical=2: ??
         NIPII   = 0
         NPHPII  = 0
 
+        NPHPHI  = 0
+        NPPHI   = 0
+
         NPRCI   = 0
 
         NAEIIM  = 0
@@ -1203,6 +1235,9 @@ cdr  ical=2: ??
         NMPIIM  = 0
         NIPIIM  = 0
         NPHPIIM = 0
+
+        NPHPHIM = 0
+        NPPHIM  = 0
 
         NPRCIM  = 0
 
@@ -1421,6 +1456,7 @@ c  ditto, for upper limit value of 2nd parameter in 2-parameter fits or tables
         IESTEL  = 0
         IESTPI  = 0
         IESTEI  = 0
+        IESTPH  = 0
 
 cdr  RC secondaries
         NATPRC  = 0
@@ -1446,6 +1482,7 @@ cdr  These will be counted in setamd.f and subprograms
         NRELI   = 0
         NRRCI   = 0
         NRPHI   = 0
+        NROTI   = 0
 cdr  number of bgk reactions (nonlinear mode), counted in setamd.f and subprograms
         NRBGI   = 0
 
@@ -1499,6 +1536,9 @@ cdr  number of bgk reactions (nonlinear mode), counted in setamd.f and subprogra
         LGAPI   = 0
         LGMPI   = 0
         LGIPI   = 0
+
+        LGPHPH  = 0
+        LGPPH   = 0
 
       END IF
 
@@ -2655,6 +2695,8 @@ c  EL post-collision energetics
       CALL MPI_BCAST (NRCXI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRELI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRRCI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NRPHI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NROTI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NRBGI,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (NAEII,NATM,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -2669,6 +2711,8 @@ c  EL post-collision energetics
       CALL MPI_BCAST (NAPII,NATM,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NMPII,NMOL,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NIPII,NION,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NPHPHI,NPHOT,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NPPHI,NPLS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPRCI,NPLS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (NAEIIM,NATM,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -2683,6 +2727,8 @@ c  EL post-collision energetics
       CALL MPI_BCAST (NAPIIM,NATM,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NMPIIM,NMOL,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NIPIIM,NION,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NPHPHIM,NPHOT,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (NPPHIM,NPLS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (NPRCIM,NPLS,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
       CALL MPI_BCAST (NPBGKA,NATM,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
@@ -2787,6 +2833,11 @@ c  PI
       CALL MPI_BCAST (LGMPI,NMOLP*(NRPI+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (LGIPI,NIONP*(NRPI+1)*2,MPI_INTEGER,
+     .                0,MPI_COMM_WORLD,ier)
+c  PH
+      CALL MPI_BCAST (LGPPH,NPLSP*(NRPH+1)*2,MPI_INTEGER,
+     .                0,MPI_COMM_WORLD,ier)
+      CALL MPI_BCAST (LGPHPH,NPHOTP*(NRPH+1)*2,MPI_INTEGER,
      .                0,MPI_COMM_WORLD,ier)
 c  RC
       CALL MPI_BCAST (LGPRC,NPLSP*(NREC+1),MPI_INTEGER,
