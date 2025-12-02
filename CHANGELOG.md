@@ -14,12 +14,15 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin - SOLPS_coupling
+## X. Bonnin - SOLPS_coupling - c58f7740b863c0387a672cb0c6a9decbeb5d90c5
 
 ### Based on SOLPS_bug_fixes - 765b12f7f7ab978e8340d215d330ec49c6c5417b
 
 ** Changes **
 
+- Added passing of ZI to SAMSRF
+- Output prettifying
+- Added 1 more significant digit to fort.44 and fort.46 output files
 - Modifed CMakeLists.txt to handle compilation within and for SOLPS-ITER coupling environment
 - Added configuration files for CMAKE-less compilation
 - Added NO_JSON pragma to allow for compilation without JSON library

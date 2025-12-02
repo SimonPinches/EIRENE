@@ -65,7 +65,7 @@ C+---------------------------------------------------------------+
      .           ITEC1, ITEC2, ITEC3, ISTEP, INDSRF, IS1, IERROR, IPLS
       INTEGER :: EIRENE_IDEZ
       INTEGER, ALLOCATABLE :: KSTEP(:), INOSRC(:), IPLAN(:), IPLEN(:)
-      REAL(DP) :: FLX, TE, TI, DE, MC, FE, FI, FSH, VP, FEL, DUM
+      REAL(DP) :: FLX, TE, TI, DE, MC, FE, FI, FSH, VP, FEL, ZI, DUM
       REAL(DP) :: DELR, FL, MCC, FFEL, CS, vx,vy,vz,di,usrval
       real(dp) :: xref, yref, bzref, facbz, x, y, rad, bx, by, bz, bf,
      .            errbx, errby, errbz, errbf, bxmax, bymax, bzmax,
@@ -147,7 +147,7 @@ c     set default namelist values
 cdmh
       eirene_fstoreneutflux = 'eirene.chemFluxDep'
       eirene_wallFluxModel = 1
-      NeutralFluxFileVersion = 1.2
+      NeutralFluxFileVersion = 1.2_DP
 cdmh
 
 c     get namelist config
@@ -175,7 +175,7 @@ c first get number of triangles from misc plasma data:
            read(fp+ifoff,'(a)') line
         enddo
 
-        read(fp+ifoff,'(i7)') ntr
+        read(fp+ifoff,'(i8)') ntr
         if (ntr /= nr1st-1) then
            write (*,*) 'PLAUSR:', sstr
            write (*,*) ' wrong number of triangles in plasma file'
@@ -184,10 +184,10 @@ c first get number of triangles from misc plasma data:
         endif
 c allocate temporary array to store plasma flux (hydrogen isotope)
         allocate(hydIonFLX(3,ntr))
-        hydIonFLX(:,:) = 0.0
+        hydIonFLX(:,:) = 0.0_DP
 c allocate temporary array to store wall area of elements
         allocate(EIRENE_wall_area(3,ntr))
-        EIRENE_wall_area(:,:) = 0.0
+        EIRENE_wall_area(:,:) = 0.0_DP
 c end dmh added 21.06.2010
 
 c firstly, read misc target data
@@ -294,12 +294,12 @@ c     search target tag in .zplasma file
 c     read step functions
             READ (fp+ifoff,*) NLINES
             DO I=1, NLINES
-               read(fp+ifoff,'(i7,11(1x,e14.7))')
+               read(fp+ifoff,'(i7,12(1x,e14.7))')
      .              ind,
      .              flx,ti,di,
      .              vx,vy,vz,
      .              fi,fel,
-     .              vp,mc,
+     .              vp,mc,zi,
      .              usrval
 
                iseg = isegtmp(ind)
@@ -317,7 +317,7 @@ c     store ion flux in [A] of main plasma
 c end added dmh 21.06.2010
 
                IF (INMTI(ISIDE,ITRI) == INDSRF) THEN
-                  IF (KSTEP(ISTEP) == 0) RRSTEP(ISTEP,1) = 0._DP
+                  IF (KSTEP(ISTEP) == 0) RRSTEP(ISTEP,1) = 0.0_DP
                   KSTEP(ISTEP) = KSTEP(ISTEP) + 1
                   INOSRC(ISTEP) = ISTRA
                   IS1 = ISIDE + 1
@@ -341,15 +341,16 @@ C     FLUX BY SUBTRACTING THE KINETIC CONTRIBUTION 2.0*TE
                   IF (FSH.EQ.0..AND.FE.GE.2.0) FSH=FE-2.0
                   SHSTEP(ISTEP,KSTEP(ISTEP)) = FSH
                   DO IPLS=IPLAN(ISTEP), IPLEN(ISTEP)
+                     ZISTEP(IPLS,ISTEP,KSTEP(ISTEP)) = ZI ! NCHARP(IPLS)
                      TISTEP(IPLS,ISTEP,KSTEP(ISTEP)) = TI ! eV
                      DISTEP(IPLS,ISTEP,KSTEP(ISTEP)) = DI ! 1/cm**3
                      FISTEP(IPLS,ISTEP,KSTEP(ISTEP)) = FI !   1
                      VPSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = abs(VP) ! cm/s
 C     VP OVERRULES MC, IF VP IS GIVEN and MC=0
-                     MCC=0.0
-                     IF (VP.NE.0.0) THEN
+                     MCC=0.0_DP
+                     IF (VP.NE.0.0_DP) THEN
                         CS=SQRT((TI+TE)/RMASSP(IPLS))*CVEL2A
-                        IF (CS.GT.0.) MCC=VP/CS
+                        IF (CS.GT.0.0_DP) MCC=VP/CS
                      ENDIF
                      jjj=kstep(istep)
                      IF (MC.EQ.0.) MC=MCC
@@ -363,11 +364,11 @@ c                     VYSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VY
 c                     VZSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = VZ
                      FLSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = ABS(FLX)/DELR
 C     IF NO ION KINETIC ENERGY FLUX IS SPECIFIED, DERIVE IT FROM  FI,MC,VP
-                     ffel=0.
-                     IF (FI.gt.0..or.mc.gt.0.) then
-                        ffel=(FI*TI+0.5*MC*MC*(TE+TI))*abs(FLX)
+                     ffel=0.0_DP
+                     IF (FI.gt.0.0_DP.or.mc.gt.0.0_DP) then
+                        ffel=(FI*TI+0.5_DP*MC*MC*(TE+TI))*abs(FLX)
                      endif
-                     IF (FEL.EQ.0.) FEL=FFEL
+                     IF (FEL.EQ.0.0_DP) FEL=FFEL
                      IF (eirene_use_elstepdat_bug) THEN
                         ELSTEP(IPLS,ISTEP,KSTEP(ISTEP)) = FEL
                      ELSE
@@ -418,7 +419,7 @@ c begin added dmh 21.06.2010 for flux dependency of chemical sputtering
 c     read neutral flux [A] to target and walls from last EIRENE run
 
       allocate(hydNeutFLX(NLMPGS))
-      hydNeutFLX(:) = 0.0
+      hydNeutFLX(:) = 0.0_DP
       allocate(hydNeutFLX_info(NLMPGS,3))
       hydNeutFLX_info = 0
       NLIM_tmp   = NLIM
@@ -640,8 +641,8 @@ c     Debug output of boundary
             enddo
          enddo
          if (.not.lex) then
-            write(fp2,'(I8,I7,8(x,e13.6))')
-     &           i,0,0.D0,0.D0,0.D0,0.D0,FLXOUT(i),hydNeutFLX(i),0.D0
+            write(fp2,'(I8,I7,8(x,e13.6))') i,
+     &     0,0.0_DP,0.0_DP,0.0_DP,0.0_DP,FLXOUT(i),hydNeutFLX(i),0.0_DP
          endif
       enddo
       close(fp2)

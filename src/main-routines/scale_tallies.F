@@ -32,6 +32,7 @@ C
       REAL(DP) :: FADD
       INTEGER :: IATM, IMOL, IION, IPLS, IPHOT, IADV, ICLV, IBGV, ICPV,
      .           JATM, J, ISPC
+      CHARACTER*24 HLP_FRM
       EXTERNAL :: EIRENE_GETSCL4, EIRENE_GETSCLS,
      .            EIRENE_TALLY_SANITY_CHECK,
      .            EIRENE_LEER, EIRENE_MASR4, EIRENE_MASRR1
@@ -75,10 +76,14 @@ C
         END IF
         call eirene_leer(1)
         write (iunout,*) 'ISTRA = ',ISTRA
-        write (iunout,*) 'FASCL = ',FASCL(:,ISTRA)
-        write (iunout,*) 'FMSCL = ',FMSCL(:,ISTRA)
-        write (iunout,*) 'FISCL = ',FISCL(:,ISTRA)
-        write (iunout,*) 'FPHSCL= ',FPHSCL(:,ISTRA)
+        write (hlp_frm,'(a,i2,a)') '(a,',NATM+1,'f15.8)'
+        write (iunout,hlp_frm) 'FASCL = ',FASCL(:,ISTRA)
+        write (hlp_frm,'(a,i2,a)') '(a,',NMOL+1,'f15.8)'
+        write (iunout,hlp_frm) 'FMSCL = ',FMSCL(:,ISTRA)
+        write (hlp_frm,'(a,i2,a)') '(a,',NION+1,'f15.8)'
+        write (iunout,hlp_frm) 'FISCL = ',FISCL(:,ISTRA)
+        write (hlp_frm,'(a,i2,a)') '(a,',NPHOT+1,'f15.8)'
+        write (iunout,hlp_frm) 'FPHSCL= ',FPHSCL(:,ISTRA)
         CALL EIRENE_LEER(2)
 C
 C  CARRY OUT SCALING OF VOLUME AND SURFACE TALLIES, RESP.

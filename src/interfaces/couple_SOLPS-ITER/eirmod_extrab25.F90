@@ -384,32 +384,32 @@
 !tf printed. Alternative solution would be to always allocate and initialize
 !tf the variables in WNEUTRAL_FLUXES before it returns.
           call write_title(44,'sarea_res',ncl)
-          WRITE(44,'(6e15.7)') (sarea_res(i),i=1,NCL)
+          WRITE(44,'(1p,6e15.7)') (sarea_res(i),i=1,NCL)
           call write_title(44,'wldna_res',ncl*natm)
-          WRITE(44,'(6e15.7)') ((wldna_res(j,i),j=1,natm),i=1,NCL)
+          WRITE(44,'(1p,6e15.7)') ((wldna_res(j,i),j=1,natm),i=1,NCL)
           call write_title(44,'wldnm_res',ncl*nmol)
-          WRITE(44,'(6e15.7)') ((wldnm_res(j,i),j=1,nmol),i=1,NCL)
+          WRITE(44,'(1p,6e15.7)') ((wldnm_res(j,i),j=1,nmol),i=1,NCL)
           call write_title(44,'ewlda_res',ncl*natm)
-          WRITE(44,'(6e15.7)') ((ewlda_res(j,i),j=1,natm),i=1,NCL)
+          WRITE(44,'(1p,6e15.7)') ((ewlda_res(j,i),j=1,natm),i=1,NCL)
           call write_title(44,'ewldm_res',ncl*nmol)
-          WRITE(44,'(6e15.7)') ((ewldm_res(j,i),j=1,nmol),i=1,NCL)
+          WRITE(44,'(1p,6e15.7)') ((ewldm_res(j,i),j=1,nmol),i=1,NCL)
           call write_title(44,'ewldea_res',ncl*natm)
-          WRITE(44,'(6e15.7)') ((ewldea_res(j,i),j=1,natm),i=1,NCL)
+          WRITE(44,'(1p,6e15.7)') ((ewldea_res(j,i),j=1,natm),i=1,NCL)
           call write_title(44,'ewldem_res',ncl*nmol)
-          WRITE(44,'(6e15.7)') ((ewldem_res(j,i),j=1,nmol),i=1,NCL)
+          WRITE(44,'(1p,6e15.7)') ((ewldem_res(j,i),j=1,nmol),i=1,NCL)
           call write_title(44,'ewldrp_res',ncl)
-          WRITE(44,'(6e15.7)') (ewldrp_res(i),i=1,NCL)
+          WRITE(44,'(1p,6e15.7)') (ewldrp_res(i),i=1,NCL)
           call write_title(44,'ewldmr_res',ncl*nmol)
-          WRITE(44,'(6e15.7)') ((ewldmr_res(j,i),j=1,nmol),i=1,NCL)
+          WRITE(44,'(1p,6e15.7)') ((ewldmr_res(j,i),j=1,nmol),i=1,NCL)
           if (jvft44.ge.20170228) then
             call write_title(44,'wldspt_res',ncl)
-            WRITE(44,'(6e15.7)') (wldspt_res(i),i=1,NCL)
+            WRITE(44,'(1p,6e15.7)') (wldspt_res(i),i=1,NCL)
           end if
           if (jvft44.ge.20170328) then
             call write_title(44,'wldspta_res',ncl*natm)
-            WRITE(44,'(6e15.7)') ((wldspta_res(j,i),j=1,natm),i=1,NCL)
+            WRITE(44,'(1p,6e15.7)') ((wldspta_res(j,i),j=1,natm),i=1,NCL)
             call write_title(44,'wldsptm_res',ncl*nmol)
-            WRITE(44,'(6e15.7)') ((wldsptm_res(j,i),j=1,nmol),i=1,NCL)
+            WRITE(44,'(1p,6e15.7)') ((wldsptm_res(j,i),j=1,nmol),i=1,NCL)
             k=0
             call write_title(44,'wlpump_res(A)',ncl*nnatmi)
             write(44,'(6a13)') (eirtxt(j+k),j=1,nnatmi)
@@ -429,35 +429,35 @@
           end if
           if (jvft44.ge.20201006) then
             call write_title(44,'ewldt_res',ncl)
-            WRITE(44,'(6e15.7)') (ewldt_res(i),i=1,NCL)
+            WRITE(44,'(1p,6e15.7)') (ewldt_res(i),i=1,NCL)
           end if
         end if
 
       !c*** from 20081111 on. Integrals over EIRENE tallies
         call write_title(44,'pdena_int',(nstrai+1)*natm)
-        WRITE(44,'(6e15.7)') ((PDENA_INT(I,J),I=1,NATM),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((PDENA_INT(I,J),I=1,NATM),J=0,NSTRAI)
         call write_title(44,'pdenm_int',(nstrai+1)*nmol)
-        WRITE(44,'(6e15.7)') ((PDENM_INT(I,J),I=1,NMOL),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((PDENM_INT(I,J),I=1,NMOL),J=0,NSTRAI)
         call write_title(44,'pdeni_int',(nstrai+1)*nion)
-        WRITE(44,'(6e15.7)') ((PDENI_INT(I,J),I=1,NION),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((PDENI_INT(I,J),I=1,NION),J=0,NSTRAI)
         call write_title(44,'pdena_int_b2',(nstrai+1)*natm)
-        WRITE(44,'(6e15.7)') ((PDENA_INT_B2(I,J),I=1,NATM),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((PDENA_INT_B2(I,J),I=1,NATM),J=0,NSTRAI)
         call write_title(44,'pdenm_int_b2',(nstrai+1)*nmol)
-        WRITE(44,'(6e15.7)') ((PDENM_INT_B2(I,J),I=1,NMOL),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((PDENM_INT_B2(I,J),I=1,NMOL),J=0,NSTRAI)
         call write_title(44,'pdeni_int_b2',(nstrai+1)*nion)
-        WRITE(44,'(6e15.7)') ((PDENI_INT_B2(I,J),I=1,NION),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((PDENI_INT_B2(I,J),I=1,NION),J=0,NSTRAI)
         call write_title(44,'edena_int',(nstrai+1)*natm)
-        WRITE(44,'(6e15.7)') ((EDENA_INT(I,J),I=1,NATM),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((EDENA_INT(I,J),I=1,NATM),J=0,NSTRAI)
         call write_title(44,'edenm_int',(nstrai+1)*nmol)
-        WRITE(44,'(6e15.7)') ((EDENM_INT(I,J),I=1,NMOL),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((EDENM_INT(I,J),I=1,NMOL),J=0,NSTRAI)
         call write_title(44,'edeni_int',(nstrai+1)*nion)
-        WRITE(44,'(6e15.7)') ((EDENI_INT(I,J),I=1,NION),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((EDENI_INT(I,J),I=1,NION),J=0,NSTRAI)
         call write_title(44,'edena_int_b2',(nstrai+1)*natm)
-        WRITE(44,'(6e15.7)') ((EDENA_INT_B2(I,J),I=1,NATM),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((EDENA_INT_B2(I,J),I=1,NATM),J=0,NSTRAI)
         call write_title(44,'edenm_int_b2',(nstrai+1)*nmol)
-        WRITE(44,'(6e15.7)') ((EDENM_INT_B2(I,J),I=1,NMOL),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((EDENM_INT_B2(I,J),I=1,NMOL),J=0,NSTRAI)
         call write_title(44,'edeni_int_b2',(nstrai+1)*nion)
-        WRITE(44,'(6e15.7)') ((EDENI_INT_B2(I,J),I=1,NION),J=0,NSTRAI)
+        WRITE(44,'(1p,6e15.7)') ((EDENI_INT_B2(I,J),I=1,NION),J=0,NSTRAI)
 
       else  ! Run with no triangular mesh
       !c*** from 20071209 on:
@@ -578,124 +578,124 @@
 
         if (lpdena) then
           call write_title(46,'pdena',ntrii*natmi)
-          write(46,'(6e15.7)') ((PDENA(i,j),j=1,ntrii),i=1,natmi)
+          write(46,'(1p,6e15.7)') ((PDENA(i,j),j=1,ntrii),i=1,natmi)
         else
           call write_title(46,'pdena (not computed)',ntrii)
-          write(46,'(6e15.7)') (PDENA(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (PDENA(1,j),j=1,ntrii)
         end if
         if (lpdenm) then
           call write_title(46,'pdenm',ntrii*nmoli)
-          write(46,'(6e15.7)') ((PDENM(i,j),j=1,ntrii),i=1,nmoli)
+          write(46,'(1p,6e15.7)') ((PDENM(i,j),j=1,ntrii),i=1,nmoli)
         else
           call write_title(46,'pdenm (not computed)',ntrii)
-          write(46,'(6e15.7)') (PDENM(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (PDENM(1,j),j=1,ntrii)
         end if
         if (lpdeni) then
           call write_title(46,'pdeni',ntrii*nioni)
-          write(46,'(6e15.7)') ((PDENI(i,j),j=1,ntrii),i=1,nioni)
+          write(46,'(1p,6e15.7)') ((PDENI(i,j),j=1,ntrii),i=1,nioni)
         else
           call write_title(46,'pdeni (not computed)',ntrii)
-          write(46,'(6e15.7)') (PDENI(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (PDENI(1,j),j=1,ntrii)
         end if
 
         if (ledena) then
           call write_title(46,'edena',ntrii*natmi)
-          write(46,'(6e15.7)') ((EDENA(i,j),j=1,ntrii),i=1,natmi)
+          write(46,'(1p,6e15.7)') ((EDENA(i,j),j=1,ntrii),i=1,natmi)
         else
           call write_title(46,'edena (not computed)',ntrii)
-          write(46,'(6e15.7)') (EDENA(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (EDENA(1,j),j=1,ntrii)
         end if
         if (ledenm) then
           call write_title(46,'edenm',ntrii*nmoli)
-          write(46,'(6e15.7)') ((EDENM(i,j),j=1,ntrii),i=1,nmoli)
+          write(46,'(1p,6e15.7)') ((EDENM(i,j),j=1,ntrii),i=1,nmoli)
         else
           call write_title(46,'edenm (not computed)',ntrii)
-          write(46,'(6e15.7)') (EDENM(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (EDENM(1,j),j=1,ntrii)
         end if
         if (ledeni) then
           call write_title(46,'edeni',ntrii*nioni)
-          write(46,'(6e15.7)') ((EDENI(i,j),j=1,ntrii),i=1,nioni)
+          write(46,'(1p,6e15.7)') ((EDENI(i,j),j=1,ntrii),i=1,nioni)
         else
           call write_title(46,'edeni (not computed)',ntrii)
-          write(46,'(6e15.7)') (EDENI(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (EDENI(1,j),j=1,ntrii)
         end if
 
         if (lvxdena) then
           call write_title(46,'vxdena',ntrii*natmi)
-          write(46,'(6e15.7)') ((VXDENA(i,j),j=1,ntrii),i=1,natmi)
+          write(46,'(1p,6e15.7)') ((VXDENA(i,j),j=1,ntrii),i=1,natmi)
         else
           call write_title(46,'vxdena (not computed)',ntrii)
-          write(46,'(6e15.7)') (VXDENA(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (VXDENA(1,j),j=1,ntrii)
         end if
         if (lvxdenm) then
           call write_title(46,'vxdenm',ntrii*nmoli)
-          write(46,'(6e15.7)') ((VXDENM(i,j),j=1,ntrii),i=1,nmoli)
+          write(46,'(1p,6e15.7)') ((VXDENM(i,j),j=1,ntrii),i=1,nmoli)
         else
           call write_title(46,'vxdenm (not computed)',ntrii)
-          write(46,'(6e15.7)') (VXDENM(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (VXDENM(1,j),j=1,ntrii)
         end if
         if (lvxdeni) then
           call write_title(46,'vxdeni',ntrii*nioni)
-          write(46,'(6e15.7)') ((VXDENI(i,j),j=1,ntrii),i=1,nioni)
+          write(46,'(1p,6e15.7)') ((VXDENI(i,j),j=1,ntrii),i=1,nioni)
         else
           call write_title(46,'vxdeni (not computed)',ntrii)
-          write(46,'(6e15.7)') (VXDENI(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (VXDENI(1,j),j=1,ntrii)
         end if
 
         if (lvydena) then
           call write_title(46,'vydena',ntrii*natmi)
-          write(46,'(6e15.7)') ((VYDENA(i,j),j=1,ntrii),i=1,natmi)
+          write(46,'(1p,6e15.7)') ((VYDENA(i,j),j=1,ntrii),i=1,natmi)
         else
           call write_title(46,'vydena (not computed)',ntrii)
-          write(46,'(6e15.7)') (VYDENA(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (VYDENA(1,j),j=1,ntrii)
         end if
         if (lvydenm) then
           call write_title(46,'vydenm',ntrii*nmoli)
-          write(46,'(6e15.7)') ((VYDENM(i,j),j=1,ntrii),i=1,nmoli)
+          write(46,'(1p,6e15.7)') ((VYDENM(i,j),j=1,ntrii),i=1,nmoli)
         else
           call write_title(46,'vydenm (not computed)',ntrii)
-          write(46,'(6e15.7)') (VYDENM(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (VYDENM(1,j),j=1,ntrii)
         end if
         if (lvydeni) then
           call write_title(46,'vydeni',ntrii*nioni)
-          write(46,'(6e15.7)') ((VYDENI(i,j),j=1,ntrii),i=1,nioni)
+          write(46,'(1p,6e15.7)') ((VYDENI(i,j),j=1,ntrii),i=1,nioni)
         else
           call write_title(46,'vydeni (not computed)',ntrii)
-          write(46,'(6e15.7)') (VYDENI(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (VYDENI(1,j),j=1,ntrii)
         end if
 
         if (lvzdena) then
           call write_title(46,'vzdena',ntrii*natmi)
-          write(46,'(6e15.7)') ((VZDENA(i,j),j=1,ntrii),i=1,natmi)
+          write(46,'(1p,6e15.7)') ((VZDENA(i,j),j=1,ntrii),i=1,natmi)
         else
           call write_title(46,'vzdena (not computed)',ntrii)
-          write(46,'(6e15.7)') (VZDENA(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (VZDENA(1,j),j=1,ntrii)
         end if
         if (lvzdenm) then
           call write_title(46,'vzdenm',ntrii*nmoli)
-          write(46,'(6e15.7)') ((VZDENM(i,j),j=1,ntrii),i=1,nmoli)
+          write(46,'(1p,6e15.7)') ((VZDENM(i,j),j=1,ntrii),i=1,nmoli)
         else
           call write_title(46,'vzdenm (not computed)',ntrii)
-          write(46,'(6e15.7)') (VZDENM(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (VZDENM(1,j),j=1,ntrii)
         end if
         if (lvzdeni) then
           call write_title(46,'vzdeni',ntrii*nioni)
-          write(46,'(6e15.7)') ((VZDENI(i,j),j=1,ntrii),i=1,nioni)
+          write(46,'(1p,6e15.7)') ((VZDENI(i,j),j=1,ntrii),i=1,nioni)
         else
           call write_title(46,'vzdeni (not computed)',ntrii)
-          write(46,'(6e15.7)') (VZDENI(1,j),j=1,ntrii)
+          write(46,'(1p,6e15.7)') (VZDENI(1,j),j=1,ntrii)
         endif
 
         call write_title(46,'volumes',ntrii)
-        write(46,'(6e15.7)') (VOL(j),j=1,ntrii)
+        write(46,'(1p,6e15.7)') (VOL(j),j=1,ntrii)
         call write_title(46,'pux',ntrii)
-        write(46,'(6e15.7)') (PUX(j),j=1,ntrii)
+        write(46,'(1p,6e15.7)') (PUX(j),j=1,ntrii)
         call write_title(46,'puy',ntrii)
-        write(46,'(6e15.7)') (PUY(j),j=1,ntrii)
+        write(46,'(1p,6e15.7)') (PUY(j),j=1,ntrii)
         call write_title(46,'pvx',ntrii)
-        write(46,'(6e15.7)') (PVX(j),j=1,ntrii)
+        write(46,'(1p,6e15.7)') (PVX(j),j=1,ntrii)
         call write_title(46,'pvy',ntrii)
-        write(46,'(6e15.7)') (PVY(j),j=1,ntrii)
+        write(46,'(1p,6e15.7)') (PVY(j),j=1,ntrii)
 
         rewind(46)
         close (46)
@@ -712,96 +712,96 @@
           if (lpdena) then
             call write_title(46,'pdena_aver',ntrii*natmi)
             call remove_small_values(ntrii*natmi, pdena_aver, EPS60)
-            write(46,'(6e15.7)') ((PDENA_aver(i,j),j=1,ntrii),i=1,natmi)
+            write(46,'(1p,6e15.7)') ((PDENA_aver(i,j),j=1,ntrii),i=1,natmi)
           else
             call write_title(46,'pdena (not computed)',ntrii)
             call remove_small_values(ntrii, pdena_aver, EPS60)
-            write(46,'(6e15.7)') (PDENA_aver(1,j),j=1,ntrii)
+            write(46,'(1p,6e15.7)') (PDENA_aver(1,j),j=1,ntrii)
           end if
           if (lpdenm) then
             call write_title(46,'pdenm_aver',ntrii*nmoli)
             call remove_small_values(ntrii*nmoli, pdenm_aver, EPS60)
-            write(46,'(6e15.7)') ((PDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
+            write(46,'(1p,6e15.7)') ((PDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
           else
             call write_title(46,'pdenm (not computed)',ntrii)
             call remove_small_values(ntrii, pdenm_aver, EPS60)
-            write(46,'(6e15.7)') (PDENM_aver(1,j),j=1,ntrii)
+            write(46,'(1p,6e15.7)') (PDENM_aver(1,j),j=1,ntrii)
           end if
 
           if (ledena) then
             call write_title(46,'edena_aver',ntrii*natmi)
             call remove_small_values(ntrii*natmi, edena_aver, EPS60)
-            write(46,'(6e15.7)') ((EDENA_aver(i,j),j=1,ntrii),i=1,natmi)
+            write(46,'(1p,6e15.7)') ((EDENA_aver(i,j),j=1,ntrii),i=1,natmi)
           else
             call write_title(46,'edena (not computed)',ntrii)
             call remove_small_values(ntrii, edena_aver, EPS60)
-            write(46,'(6e15.7)') (EDENA_aver(1,j),j=1,ntrii)
+            write(46,'(1p,6e15.7)') (EDENA_aver(1,j),j=1,ntrii)
           end if
           if (ledenm) then
             call write_title(46,'edenm_aver',ntrii*nmoli)
             call remove_small_values(ntrii*nmoli, edenm_aver, EPS60)
-            write(46,'(6e15.7)') ((EDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
+            write(46,'(1p,6e15.7)') ((EDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
           else
             call write_title(46,'edenm (not computed)',ntrii)
             call remove_small_values(ntrii, edenm_aver, EPS60)
-            write(46,'(6e15.7)') (EDENM_aver(1,j),j=1,ntrii)
+            write(46,'(1p,6e15.7)') (EDENM_aver(1,j),j=1,ntrii)
           end if
 
           if (lvxdena) then
             call write_title(46,'vxdena_aver',ntrii*natmi)
             call remove_small_values(ntrii*natmi, vxdena_aver, EPS60)
-            write(46,'(6e15.7)') ((VXDENA_aver(i,j),j=1,ntrii),i=1,natmi)
+            write(46,'(1p,6e15.7)') ((VXDENA_aver(i,j),j=1,ntrii),i=1,natmi)
           else
             call write_title(46,'vxdena (not computed)',ntrii)
             call remove_small_values(ntrii, vxdena_aver, EPS60)
-            write(46,'(6e15.7)') (VXDENA_aver(1,j),j=1,ntrii)
+            write(46,'(1p,6e15.7)') (VXDENA_aver(1,j),j=1,ntrii)
           end if
           if (lvxdenm) then
             call write_title(46,'vxdenm_aver',ntrii*nmoli)
             call remove_small_values(ntrii*nmoli, vxdenm_aver, EPS60)
-            write(46,'(6e15.7)') ((VXDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
+            write(46,'(1p,6e15.7)') ((VXDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
           else
             call write_title(46,'vxdenm (not computed)',ntrii)
             call remove_small_values(ntrii, vxdenm_aver, EPS60)
-            write(46,'(6e15.7)') (VXDENM_aver(1,j),j=1,ntrii)
+            write(46,'(1p,6e15.7)') (VXDENM_aver(1,j),j=1,ntrii)
           end if
 
           if (lvydena) then
             call write_title(46,'vydena_aver',ntrii*natmi)
             call remove_small_values(ntrii*natmi, vydena_aver, EPS60)
-            write(46,'(6e15.7)') ((VYDENA_aver(i,j),j=1,ntrii),i=1,natmi)
+            write(46,'(1p,6e15.7)') ((VYDENA_aver(i,j),j=1,ntrii),i=1,natmi)
           else
             call write_title(46,'vydena (not computed)',ntrii)
             call remove_small_values(ntrii, vydena_aver, EPS60)
-            write(46,'(6e15.7)') (VYDENA_aver(1,j),j=1,ntrii)
+            write(46,'(1p,6e15.7)') (VYDENA_aver(1,j),j=1,ntrii)
           end if
           if (lvydenm) then
             call write_title(46,'vydenm_aver',ntrii*nmoli)
             call remove_small_values(ntrii*nmoli, vydenm_aver, EPS60)
-            write(46,'(6e15.7)') ((VYDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
+            write(46,'(1p,6e15.7)') ((VYDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
           else
             call write_title(46,'vydenm (not computed)',ntrii)
             call remove_small_values(ntrii, vydenm_aver, EPS60)
-            write(46,'(6e15.7)') (VYDENM_aver(1,j),j=1,ntrii)
+            write(46,'(1p,6e15.7)') (VYDENM_aver(1,j),j=1,ntrii)
           end if
 
           if (lvzdena) then
             call write_title(46,'vzdena_aver',ntrii*natmi)
             call remove_small_values(ntrii*natmi, vzdena_aver, EPS60)
-            write(46,'(6e15.7)') ((VZDENA_aver(i,j),j=1,ntrii),i=1,natmi)
+            write(46,'(1p,6e15.7)') ((VZDENA_aver(i,j),j=1,ntrii),i=1,natmi)
           else
             call write_title(46,'vzdena (not computed)',ntrii)
             call remove_small_values(ntrii, vzdena_aver, EPS60)
-            write(46,'(6e15.7)') (VZDENA_aver(1,j),j=1,ntrii)
+            write(46,'(1p,6e15.7)') (VZDENA_aver(1,j),j=1,ntrii)
           end if
           if (lvzdenm) then
             call write_title(46,'vzdenm_aver',ntrii*nmoli)
             call remove_small_values(ntrii*nmoli, vzdenm_aver, EPS60)
-            write(46,'(6e15.7)') ((VZDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
+            write(46,'(1p,6e15.7)') ((VZDENM_aver(i,j),j=1,ntrii),i=1,nmoli)
           else
             call write_title(46,'vzdenm (not computed)',ntrii)
             call remove_small_values(ntrii, vzdenm_aver, EPS60)
-            write(46,'(6e15.7)') (VZDENM_aver(1,j),j=1,ntrii)
+            write(46,'(1p,6e15.7)') (VZDENM_aver(1,j),j=1,ntrii)
           end if
           rewind(46)
           close (46)
@@ -890,9 +890,9 @@
       real(DP), intent(in) :: dummy(nlimps,*)
 
       do iif=1,ldmf
-        if(nlimi.gt.0) write(kard,'(5(1x,1e15.8))') &
+        if(nlimi.gt.0) write(kard,'(1p,5(1x,1e15.8))') &
                        (dummy(is,iif),is=1,nlimi)
-        if(nstsi.gt.0) write(kard,'(5(1x,1e15.8))') &
+        if(nstsi.gt.0) write(kard,'(1p,5(1x,1e15.8))') &
                        (dummy(is+nlim,iif),is=1,nstsi)
       enddo
       return
