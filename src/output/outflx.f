@@ -237,7 +237,7 @@ C  TOROIDAL SURFACE
                 nt=1
                 do nr=1,nr1st
                   do np=1,np2nd
-                    MSURFG=Nr+(Np-1)*Nr1p2
+                    MSURFG=NR+(NP-1)*NR1P2
                     MSURFG=NLIM+NSTS+MSURFG+(ISTS-1)*NGITT
                     NCELL=NR+((NP-1)+(NT-1)*NP2T3)*NR1P2
                     HELP(ncell)=HELPP(MSURFG)
@@ -286,13 +286,13 @@ C  TOROIDAL SURFACE
      .                  HELP,N1,N2,N3,1,NTOTAL,MOD(NFLAGS(ISPR),10),
      .                  NTLSFL(ISPR),
      .                  IRA,IRE,IPA,IPE,1,1)
-               ELSE
-                 CALL EIRENE_PRTTLS(TXTTLW(K,ITALS),TXTSPW(K,ITALS),
+              ELSE
+                CALL EIRENE_PRTTLS(TXTTLW(K,ITALS),TXTSPW(K,ITALS),
      .                  TXTUNW(K,ITALS),
      .                  HELP,N1,N2,N3,1,NTOTAL,-1,
      .                  NTLSFL(ISPR),
      .                  IRA,IRE,IPA,IPE,1,1)
-                 CALL EIRENE_MASAGE
+                CALL EIRENE_MASAGE
      .            ('IDENTICALLY ZERO, NOT PRINTED                ')
                 CALL EIRENE_LEER(2)
               END IF
@@ -324,6 +324,7 @@ C  SPECTRA
           TEXTYP(2) = 'MOLECULES '
           TEXTYP(3) = 'TEST IONS '
           TEXTYP(4) = 'BULK IONS '
+
           IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
 
           DO ISPC=1,NADSPC
@@ -340,6 +341,8 @@ C  SPECTRA
                 WRITE (IOUT,'(A,A)') ' TYPE OF SPECTRUM : ',
      .                            'ENERGY FLUX IN WATT '
               END IF
+c................................................................
+
               WRITE (IOUT,'(A20,A9)') ' TYPE OF PARTICLE : ',
      .              TEXTYP(ESTIML(ISPC)%IPRTYP)
               IF (ESTIML(ISPC)%IPRSP == 0) THEN
@@ -368,7 +371,10 @@ C  SPECTRA
               WRITE (IOUT,*)
               IF (ESTIML(ISPC)%SPCS > EPS60) THEN
                 IF (NSIGI_SPC == 0) THEN
+C  STANDARD DEVIATION IS NOT AVAILABLE
                   DO IE=1, ESTIML(ISPC)%NSPC
+C  DEAL WITH ENERGY BIN NO. IE
+C  central energy bin value
                     EN = ESTIML(ISPC)%SPCMIN +
      .                   (IE-0.5)*ESTIML(ISPC)%SPCDEL
                     IF (ESTIML(ISPC)%LOG) THEN
@@ -380,6 +386,9 @@ C  SPECTRA
                     END IF
                   END DO
                 ELSE
+c
+C  STANDARD DEVIATION IS AVAILABLE
+C
                   DO IE=1, ESTIML(ISPC)%NSPC
                     EN = ESTIML(ISPC)%SPCMIN +
      .                   (IE-0.5)*ESTIML(ISPC)%SPCDEL
@@ -411,6 +420,8 @@ chk Legendre polynomial expansion tallies
               ELSE
                 WRITE (IOUT,*) ' SPECTRUM IDENTICALLY 0 '
               END IF
+C
+C  PRINTOUT OF ENERGY INTEGRAL OVER SPECTRA
               WRITE (IOUT,*)
               WRITE (IOUT,*) ' INTEGRAL OF SPECTRUM ',
      .               ESTIML(ISPC)%SPCS
@@ -424,7 +435,7 @@ chk Legendre polynomial expansion tallies
         IF (PRINTED(I)) CYCLE
 C
 C  *****************************************************
-C   INCIDENT FLUXES, POSITIVE PARTIAL FLUXES, NET FLUXES
+C   INCIDENT FLUXES, POSITIVE PARTIAL CURRENTS, ALSO: NET FLUXES
 C  *****************************************************
 C
 C
@@ -2953,7 +2964,7 @@ C  SURFACE-AVERAGED TALLY NO. 75
 C
 C   ADDITIONAL SURFACE-AVERAGED TALLIES
 C
-C   SURFACE-AVERAGED TALLY NO. 82
+C   SURFACE-AVERAGED TALLY NO. 82 (=NTLSA)
 C
       SUMMS=0.
       SUMS(:,ISTRA)=0._DP
@@ -3043,8 +3054,7 @@ C  SURFACE-AVERAGED TALLY NO. 83
 C
   405 CONTINUE
 C
-
-C  SPECTRA
+C   SURFACE AVERAGED SPECTRA, INTEGRALS, SURFACE I, ISP
       TEXTYP(0) = 'PHOTONS   '
       TEXTYP(1) = 'ATOMS     '
       TEXTYP(2) = 'MOLECULES '
@@ -3065,6 +3075,7 @@ C  SPECTRA
             WRITE (iunout,'(A20,A40)') ' TYPE OF SPECTRUM : ',
      .                'INCIDENT ENERGY FLUX IN WATT/BIN(EV)    '
           END IF
+
           WRITE (iunout,'(A20,A8)') ' TYPE OF PARTICLE : ',
      .                       TEXTYP(ESTIML(ISPC)%IPRTYP)
           IF (ESTIML(ISPC)%IPRSP == 0) THEN
@@ -3084,7 +3095,7 @@ C  SPECTRA
       END DO
 
         PRINTED(I) = .TRUE.
-10000 CONTINUE  ! END OF LOOP OVER SURFACES,
+10000 CONTINUE  ! END OF LOOP OVER SURFACES I OR IST,
                 ! FOR WHICH PRINTOUT WAS REQUESTED
       RETURN
  9999 FORMAT (1X,A32)

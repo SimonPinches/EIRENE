@@ -5,4 +5,4 @@ c------------------------------------------------------------------------
       character(20) :: chaxs(3)
       logical ll
       return
-      end
+      end subroutine gr3axs

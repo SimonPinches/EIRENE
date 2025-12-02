@@ -3,4 +3,4 @@ c------------------------------------------------------------------------
       real xp, yp, xtip, ytip, alen, awid
       integer icode
       RETURN
-      END
+      END SUBROUTINE GRARRW

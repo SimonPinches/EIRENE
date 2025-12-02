@@ -104,6 +104,7 @@ c
         deallocate(lhelp)
 
         if (nsmstra > 0) then
+
 c  volume-averaged output tallies
 
          do ir = 1, nrtal

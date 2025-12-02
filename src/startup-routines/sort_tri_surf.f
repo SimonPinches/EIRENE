@@ -3,9 +3,9 @@
       use eirmod_precision
       use eirmod_parmmod
       use eirmod_ctrig
-      
+
       implicit none
-      
+
       type(tri_surf),intent(in) :: orig_srf
       type(tri_surf), intent(inout) :: srf
       integer :: i, nt, it, is, is1, i1, i2, nsingle, nmulti, inew,
@@ -23,7 +23,7 @@
       if (.not.associated(srf%itrisi)) allocate(srf%itrisi(nt))
       if (.not.associated(srf%bglt)) allocate(srf%bglt(nt+1))
       srf%numtr = nt
-      
+
       allocate (ivert(nt,2))
       allocate (visit(nt))
       ivert = 0
@@ -35,7 +35,7 @@
          is1 = mod(is,3) + 1
          i1 = necke(is,it)
          i2 = necke(is1,it)
-!  find vertices of triangle face 
+!  find vertices of triangle face
          ivert(i,1) = i1
          ivert(i,2) = i2
          nodes(i1) = nodes(i1) + 1
@@ -52,7 +52,7 @@
       srf%bglt(1) = 0._dp
 
  100  continue
-      
+
 !  identify starting point
       if (nsingle > 0) then
 !  find endpoint of open contour
@@ -101,9 +101,9 @@
         end do
 
       end do outer_loop
-      
+
       if (any(visit)) goto 100
-      
+
       deallocate(ivert)
       deallocate(visit)
 

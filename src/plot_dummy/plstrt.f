@@ -1,5 +1,5 @@
-        Subroutine eirene_plstrt
+      subroutine eirene_plstrt
 cdr  initialize proprietary EIRENE "GR plotting software"
 
-        return
-        end
+      return
+      end subroutine eirene_plstrt

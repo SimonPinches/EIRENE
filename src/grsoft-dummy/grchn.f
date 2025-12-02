@@ -3,4 +3,4 @@ c-------------------------------------------------------------------------
       integer :: m, nr
       real :: xx(m), yy(m)
       RETURN
-      END
+      END SUBROUTINE GRCHN

@@ -1,8 +1,8 @@
       SUBROUTINE EIRENE_SCAL_SURF_TALLIES (ISTR)
 cdr May 19:    scoring of surface-averaged spectra:
 cdr          part. balance scaling with FATM, FMOL,... is done in SCALE_TALLIES
-cdr Mar 23:  remove ADDS tally from universal scaling with FLXFAC,
-cdr          and apply the input flags IADSE from block 10D instead
+cdr Mar 23:  Remove ADDS tally scaling from universal scaling loop with FLXFAC,
+cdr          and apply the input flags IADSE from block 10D instead.
 cdr          Not ready, but ZWW, ZW are already here?
 
       USE EIRMOD_PRECISION

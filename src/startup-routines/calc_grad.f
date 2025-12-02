@@ -190,4 +190,3 @@ c  3d grid of tetrahedra
       return
 
       end subroutine eirene_calc_grad
-

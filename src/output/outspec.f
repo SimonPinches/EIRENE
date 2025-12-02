@@ -1,3 +1,5 @@
+cdr  Mar. 24 :  correcting text of quoted units of spectra, in printout.
+cdr             Energy spectra are per eV, not per bin.
 cdr  25.08.15:  formated spectrum printout improved
 cdr  26.09.14:  commments, units added
 cdr  oct.2014:  parameter istr (stratum number) in argument list
@@ -42,6 +44,7 @@ cdr   OPEN (UNIT=IOUT,FILE='spectra.out')
       TEXTYP(3) = 'TEST IONS '
       TEXTYP(4) = 'BULK IONS '
 
+cdr units of energy integrated totals
       UNITINT(1)= '(AMP)   '
       UNITINT(2)= '(WATT)  '
       UNITOUT   = '(?)     '
@@ -49,7 +52,8 @@ cdr   OPEN (UNIT=IOUT,FILE='spectra.out')
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
 
       DO ISPC=1,NADSPC
-        I = ESTIML(ISPC)%ISPCSRF
+        I  = ESTIML(ISPC)%ISPCSRF  !  no. of scoring cell
+                                   !      or scoring surface
         IT = ESTIML(ISPC)%ISPCTYP
 
         WRITE (IOUT,*)
@@ -66,17 +70,18 @@ c  surface-averaged spectra
             WRITE (IOUT,'(A,A,I6)') ' SPECTRUM CALCULATED FOR',
      .                     ' ADDITIONAL SURFACE ',I
           END IF
+
           IF (ESTIML(ISPC)%IDIREC > 0) THEN
 cdr  this option apparently does not exist yet, in update_spectrum
             WRITE (iunout,'(A,3(ES12.4,A1))')
      .      ' IN DIRECTION (',ESTIML(ISPC)%SPCVX,',',
      .      ESTIML(ISPC)%SPCVY,',',ESTIML(ISPC)%SPCVZ,')'
           END IF
+
           IF (IT == 1) THEN
             WRITE (IOUT,'(A,A)') ' TYPE OF SPECTRUM : ',
      .                'INCIDENT PARTICLE FLUX IN AMP/BIN(EV)   '
             UNITOUT=UNITINT(1)
-
           ELSE IF (IT == 2) THEN
             WRITE (IOUT,'(A,A)') ' TYPE OF SPECTRUM : ',
      .                'INCIDENT ENERGY FLUX IN WATT/BIN(EV)    '
@@ -113,6 +118,7 @@ cdr  otherwise: identical code as above
      .      ' IN DIRECTION (',ESTIML(ISPC)%SPCVX,',',
      .      ESTIML(ISPC)%SPCVY,',',ESTIML(ISPC)%SPCVZ,')'
           END IF
+
           IF (IT == 1) THEN
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
      .        'SPECTRAL PARTICLE DENSITY IN #/CM**3/BIN(EV)   '
@@ -124,6 +130,7 @@ cdr  otherwise: identical code as above
      .        'SPECTRAL MOMENTUM DENSITY IN (G*CM/S)/CM**3/BIN(EV)    '
           END IF
         END IF
+c................................................................
 
         WRITE (IOUT,'(A20,A9)') ' TYPE OF PARTICLE : ',
      .         TEXTYP(ESTIML(ISPC)%IPRTYP)
@@ -236,6 +243,7 @@ c  first and last bin: all the fluxes outside specified spectral range
             END DO
 
           END IF
+
 chk Legendre polynomial expansion tallies of angular spectra for each bin
           IF (ESTIML(ISPC)%ISPCOPT==2) THEN
             IF (I > NLIM) THEN

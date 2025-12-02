@@ -3,4 +3,4 @@ c-------------------------------------------------------------------------
       integer :: ints
       real :: HEIGHT,ANGLE
       RETURN
-      END
+      END SUBROUTINE GRCHRC

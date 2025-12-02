@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
       SUBROUTINE GREND
       RETURN
-      END
+      END SUBROUTINE GREND

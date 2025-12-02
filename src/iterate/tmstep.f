@@ -16,7 +16,7 @@ cdr              the really necessary components of state vectors.
 cdr  jun. 2022:  include particle balance scaling factors in the
 cdr              census fluxes and weights.
 cdr  jan. 2023:  separate counting of Scores and Histories on census,
-cdr              due to new cascading options
+cdr              due to new cascading options.
 
 C
       SUBROUTINE EIRENE_MOD_TMSTEP
@@ -137,7 +137,6 @@ cdr oct.21: I am not sure if that option still works properly
         NMINPTS(NSTRAI)=IPRNL  !ENFORCE: FULL RE-LOCATION
                                !OF ALL PARTICLES FROM OLD CENSUS
       ENDIF
-
 
 C  B: set FLUX for time stratum NSTRAI IN NEXT TIME STEP
       FLUX(NSTRAI)=0.

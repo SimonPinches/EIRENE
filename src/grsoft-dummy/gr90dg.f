@@ -1,4 +1,4 @@
 c-------------------------------------------------------------------------
       SUBROUTINE GR90DG
       RETURN
-      END
+      END SUBROUTINE GR90DG

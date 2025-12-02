@@ -50,5 +50,6 @@ c
       end if
 
       close (iout)
+      return
 
-      end  subroutine eirene_outidlsrf
+      end subroutine eirene_outidlsrf

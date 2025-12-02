@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
       SUBROUTINE EIRENE_RPSOUT
       RETURN
-      END
+      END SUBROUTINE EIRENE_RPSOUT

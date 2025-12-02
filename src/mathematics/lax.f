@@ -1,5 +1,5 @@
 cdr  March 2020:
-cdr  linear algebraic eq. solver A x= b, simultaneously for multiple right hand side terms b.
+cdr  linear matrix equation solver A x= b, simultaneously for multiple right hand side terms b.
 cdr  based on (and calling) routine GALPD.F: Gauss elimination, full pivoting.
 cdr  Then: after transformation to upper triangular form: closed form solution.
 cdr
@@ -25,7 +25,7 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_COMPRT, ONLY: IUNOUT
 
-      integer n1, n,nb, nbi, ifl, is, icon
+      integer n1,n,nb,nbi,ifl,is,icon
       real(dp) a(n1,n1),B(nb,*),vw(*)
       real(dp) eps
       integer ip(*)
@@ -38,7 +38,7 @@ C
       endif
       call EIRENE_galpd_m(a,n1,n,b,nb,nbi,iw,ier)
       if (ier.eq.1) then
-        write (iunout,*) 'error in lax, matrix ist singulaer'
+        write (iunout,*) 'error in lax, matrix is singular'
       endif
       return
       end subroutine EIRENE_LAX_M

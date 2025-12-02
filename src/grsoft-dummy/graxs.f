@@ -3,4 +3,4 @@ c-------------------------------------------------------------------------
       character*(*) option,textx,textxy
       integer :: lopt, ltxtx, ltxtxy
       RETURN
-      END
+      END SUBROUTINE GRAXS

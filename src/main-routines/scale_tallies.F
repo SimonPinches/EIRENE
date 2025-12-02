@@ -4,10 +4,6 @@ cdr    dec. 15:  added species index ipls, for volumetric energy source tallies 
 cdr              eapl,empl,eipl,ephpl
 cdr   24.09.14:  scaling of new sputter tallies with fatm, fmol,fion,nphot: corrected
 c  spring 2014:  new sputter tallies introduced: emitted species-resolved
-C  15.02.05 :    double printout: fatm2,....taken out. use only getscl4, not getscl
-C   6. 7.05 :    call ph_integrate for photon-background tallies taken out.
-C                no more additional photon background tallies active
-C  15.12.05 :    rescaling connected to spump surface tally
 
 
       SUBROUTINE EIRENE_SCALE_TALLIES (ISTRA)
@@ -46,6 +42,7 @@ C
       ALLOCATE(FPHOT(0:NPHOTI))
 cdr  always find particle balance scaling factors, per type
       CALL EIRENE_GETSCL4 (ISTRA,FATM(0),FMOL(0),FION(0),FPHOT(0))
+cdr  optional: also finer rescaling per species
       IF (NLSPCSCL) THEN
         CALL EIRENE_TALLY_SANITY_CHECK(ISTRA)
         CALL EIRENE_GETSCLS (ISTRA,NATMI,NMOLI,NIONI,NPHOTI,
@@ -139,7 +136,7 @@ c  volumetric atomic tallies
             IF (LVZDENA) VZDENA(IATM,J)=VZDENA(IATM,J)*FATM(IATM)
             IF (LRAEL) RAEL(IATM,J)=RAEL(IATM,J)*FATM(IATM)
   111     CONTINUE
-c  atomic surface tallies
+c  atomic surface tallies, outgoing species: iatm
           DO 310 J=1,NLMPGS
             IF (LPOTAT) POTAT(IATM,J)=POTAT(IATM,J)*FATM(IATM)
             IF (LPRFAAT) THEN
@@ -219,6 +216,7 @@ c  integrated atomic tallies, both volumetric and surface-averaged
           ERFMAI(IATM,ISTRA)=ERFMAI(IATM,ISTRA)*FMOL(0)
           ERFIAI(IATM,ISTRA)=ERFIAI(IATM,ISTRA)*FION(0)
           ERFPHAI(IATM,ISTRA)=ERFPHAI(IATM,ISTRA)*FPHOT(0)
+
           SPTAATI(IATM,ISTRA)=SPTAATI(IATM,ISTRA)*FATM(IATM)
           SPTMATI(IATM,ISTRA)=SPTMATI(IATM,ISTRA)*FMOL(0)
           SPTIATI(IATM,ISTRA)=SPTIATI(IATM,ISTRA)*FION(0)
@@ -296,6 +294,7 @@ cdr  ?? scaling with bulk flux ??
           ERFMAI(0,ISTRA)=SUM(ERFMAI(1:NATMI,ISTRA))
           ERFIAI(0,ISTRA)=SUM(ERFIAI(1:NATMI,ISTRA))
           ERFPHAI(0,ISTRA)=SUM(ERFPHAI(1:NATMI,ISTRA))
+
           SPTAATI(0,ISTRA)=SUM(SPTAATI(1:NATMI,ISTRA))
           SPTMATI(0,ISTRA)=SUM(SPTMATI(1:NATMI,ISTRA))
           SPTIATI(0,ISTRA)=SUM(SPTIATI(1:NATMI,ISTRA))
@@ -466,6 +465,7 @@ C
             IF (LERFMML) ERFMML(IMOL,J)=ERFMML(IMOL,J)*FMOL(IMOL)
             IF (LERFIML) ERFIML(IMOL,J)=ERFIML(IMOL,J)*FION(0)
             IF (LERFPHML) ERFPHML(IMOL,J)=ERFPHML(IMOL,J)*FPHOT(0)
+
             IF (LSPTAML) SPTAML(IMOL,J)=SPTAML(IMOL,J)*FATM(0)
             IF (LSPTMML) SPTMML(IMOL,J)=SPTMML(IMOL,J)*FMOL(IMOL)
             IF (LSPTIML) SPTIML(IMOL,J)=SPTIML(IMOL,J)*FION(0)
@@ -495,6 +495,7 @@ cdr  ?? scaling with bulk flux ??
           ERFMMI(IMOL,ISTRA)=ERFMMI(IMOL,ISTRA)*FMOL(IMOL)
           ERFIMI(IMOL,ISTRA)=ERFIMI(IMOL,ISTRA)*FION(0)
           ERFPHMI(IMOL,ISTRA)=ERFPHMI(IMOL,ISTRA)*FPHOT(0)
+
           SPTAMLI(IMOL,ISTRA)=SPTAMLI(IMOL,ISTRA)*FATM(0)
           SPTMMLI(IMOL,ISTRA)=SPTMMLI(IMOL,ISTRA)*FMOL(IMOL)
           SPTIMLI(IMOL,ISTRA)=SPTIMLI(IMOL,ISTRA)*FION(0)
@@ -572,6 +573,7 @@ cdr  ?? scaling with bulk flux ??
           ERFMMI(0,ISTRA)=SUM(ERFMMI(1:NMOLI,ISTRA))
           ERFIMI(0,ISTRA)=SUM(ERFIMI(1:NMOLI,ISTRA))
           ERFPHMI(0,ISTRA)=SUM(ERFPHMI(1:NMOLI,ISTRA))
+
           SPTAMLI(0,ISTRA)=SUM(SPTAMLI(1:NMOLI,ISTRA))
           SPTMMLI(0,ISTRA)=SUM(SPTMMLI(1:NMOLI,ISTRA))
           SPTIMLI(0,ISTRA)=SUM(SPTIMLI(1:NMOLI,ISTRA))
@@ -1212,11 +1214,6 @@ cdr  ?? scaling with bulk flux ??
         EIPHTI(ISTRA)=EIPHTI(ISTRA)*FION(0)
         EPHPHTI(ISTRA)=EPHPHTI(ISTRA)*FPHOT(0)
 
-csw integrate/scale internal photon tallies
-cdr     IF (NPHOTI > 0)
-cdr  .    CALL PH_INTEGRATE(ISTRA,FLXFAC(ISTRA)/ELCHA,
-cdr  .                    fphot,fatm,fmol,fion)
-C
 C  ADDITIONAL TRACKLENGTH-ESTIMATED TALLIES
 C
         IF (LADDV) THEN
@@ -1230,11 +1227,11 @@ C
             ELSEIF (IADRC(IADV).EQ.3) THEN
               FADD=FION(IADVS(IADV))
             ELSE
-              GOTO 423
+              CYCLE
             ENDIF
-            DO 424 J=1,NSBOX_TAL
+            DO J=1,NSBOX_TAL
               ADDV(IADV,J)=ADDV(IADV,J)*FADD
-  424       CONTINUE
+            ENDDO
             ADDVI(IADV,ISTRA)=ADDVI(IADV,ISTRA)*FADD
   423     CONTINUE
         END IF
@@ -1252,11 +1249,11 @@ C
             ELSEIF (ICLRC(ICLV).EQ.3) THEN
               FADD=FION(ICLVS(ICLV))
             ELSE
-              GOTO 426
+              CYCLE
             ENDIF
-            DO 427 J=1,NSBOX_TAL
+            DO J=1,NSBOX_TAL
               COLV(ICLV,J)=COLV(ICLV,J)*FADD
-  427       CONTINUE
+            ENDDO
             COLVI(ICLV,ISTRA)=COLVI(ICLV,ISTRA)*FADD
   426     CONTINUE
         END IF
@@ -1278,11 +1275,11 @@ C
             ELSEIF (ICPRC(ICPV).EQ.0) THEN
               FADD=FPHOT(ICPVS(ICPV))
             ELSE
-              GOTO 435
+              CYCLE
             ENDIF
-            DO 436 J=1,NSBOX_TAL
+            DO J=1,NSBOX_TAL
               COPV(ICPV,J)=COPV(ICPV,J)*FADD
-  436       CONTINUE
+            ENDDO
             COPVI(ICPV,ISTRA)=COPVI(ICPV,ISTRA)*FADD
   435     CONTINUE
         END IF
@@ -1300,11 +1297,11 @@ C
             ELSEIF (IBGRC(IBGV).EQ.0) THEN
               FADD=FPHOT(IBGVS(IBGV))
             ELSE
-              GOTO 437
+              CYCLE
             ENDIF
-            DO 438 J=1,NSBOX_TAL
+            DO J=1,NSBOX_TAL
               BGKV(IBGV,J)=BGKV(IBGV,J)*FADD
-  438       CONTINUE
+            ENDDO
             BGKVI(IBGV,ISTRA)=BGKVI(IBGV,ISTRA)*FADD
   437     CONTINUE
         END IF

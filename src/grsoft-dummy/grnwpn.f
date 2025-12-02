@@ -2,4 +2,4 @@ c------------------------------------------------------------------------
       SUBROUTINE GRNWPN(I)
       integer :: i
       RETURN
-      END
+      END SUBROUTINE GRNWPN

@@ -17,7 +17,7 @@ c  ne, electron density,  #/cm^3
       REAL(DP) :: EIRENE_NGFFMH_B, brems, RES
       EXTERNAL :: EIRENE_NGFFMH_B
 
-c  bremsstrahlung in W, per ion, based on free-free Gaunt factors
+c  bremsstrahlung in Watt, per ion, based on free-free Gaunt factors
 c  formula from ADAS, see function ngffmh_b
       if (zi.ne.0._DP) then
         BREMS = 1.54E-32_DP * TE**0.5 * ZI**2 *
@@ -74,7 +74,6 @@ C-----------------------------------------------------------------------
        REAL(DP) :: EIRENE_NGFFMH_B, GAM2L
        INTEGER :: K
 
-!PB    DIMENSION GAM2LA(17),GA(17)
        REAL(DP) :: GAM2LA(17),GA(17)
        DATA GAM2LA/-3.0D0,-2.75D0,-2.50D0,-2.25D0,-2.00D0,-1.75D0,
      &-1.50D0,-1.25D0,-1.00D0,-0.75D0,-0.50D0,-0.25D0,0.00D0,0.25D0,

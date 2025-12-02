@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
       SUBROUTINE SETGKS(IVECT,IERR)
       RETURN
-      END
+      END SUBROUTINE SETGKS

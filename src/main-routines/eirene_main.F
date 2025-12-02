@@ -1,6 +1,6 @@
 Cdr  june 17: gr-cleanup: call grstrt, grend --> call eirene_plstrt, eirene_plend
 cdr  comments
-cd   oct 20: modified to obtain total cpu time, sum over all iterations.
+cdr   oct 20: modified to obtain total cpu time, sum over all iterations.
 C
 C     EIRENE VERSION SVN ....  (Jan.2014)... MOVED TO GIT REPOSITORY
 C
@@ -87,8 +87,9 @@ C
       CALL EIRENE_PLEND
 C
       TIMEND=EIRENE_RESET_SECOND()
-      IF (MY_PE == 0) WRITE (*,*) 'TOTAL CPU_TIME (SEC) OF THIS RUN: ',
-     .                  TIMEND-TIMI0
+      IF (MY_PE == 0)
+     . WRITE (*,*) 'TOTAL CPU_TIME (SEC) OF THIS RUN: ',
+     .                   TIMEND-TIMI0
 C     Finalize MPI
       CALL MPI_FINALIZE(IER)
 C

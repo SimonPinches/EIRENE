@@ -14,6 +14,16 @@
 # Changelog of EIRENE repository:
 ---
 
+## X. Bonnin and D. Reiter - SOLPS_bug_fixes - First GitHub attempt
+
+### Based on V1.2.0 (develop - b0027581a7c95e4fc92671f7a354b6c556eacb23)
+
+** Changes **
+
+- Corrected comments and typos in printout statements
+- Removed trailing whitespaces and alignment corrections
+- Minor code clean-up
+
 ---
 
 ## D. Harting - New EIRENE version: Release-V1.2.0 - 1ae241d96213ee7f22f83da44a15d1a561d2f476

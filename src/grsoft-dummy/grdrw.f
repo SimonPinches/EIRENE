@@ -2,4 +2,4 @@ c-------------------------------------------------------------------------
       SUBROUTINE GRDRW(X,Y)
       real :: x, y
       RETURN
-      END
+      END SUBROUTINE GRDRW

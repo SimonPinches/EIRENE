@@ -17,4 +17,5 @@ C   G2 IS DEFINED BY POINTS 3 AND 4
      .      ((X1-X2)*(Y3-Y4)-(Y1-Y2)*(X3-X4)+1.D-20)
       EX = X2 + MUE * (X1-X2)
       EY = Y2 + MUE * (Y1-Y2)
-      END
+      RETURN
+      END SUBROUTINE EIRENE_SCHNITP

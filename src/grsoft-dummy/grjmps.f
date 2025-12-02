@@ -3,4 +3,4 @@ c-------------------------------------------------------------------------
       real :: x, y
       integer :: nr
       RETURN
-      END
+      END SUBROUTINE GRJMPS

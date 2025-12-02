@@ -5,4 +5,4 @@ c-------------------------------------------------------------------------
       INTEGER, INTENT(IN) :: M
       REAL(SP), DIMENSION(M), INTENT(IN) :: XX, YY
       RETURN
-      END
+      END SUBROUTINE GRLN

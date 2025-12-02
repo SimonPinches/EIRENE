@@ -5,4 +5,4 @@ c------------------------------------------------------------------------
       REAL, INTENT(IN OUT) :: AR(46*128*128), EXT(3,3)
       IER=0
       RETURN
-      END
+      END SUBROUTINE GR3EXT

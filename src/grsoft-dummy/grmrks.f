@@ -2,4 +2,4 @@ c------------------------------------------------------------------------
       SUBROUTINE GRMRKS(X)
       real :: x
       RETURN
-      END
+      END SUBROUTINE GRMRKS

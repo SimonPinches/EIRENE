@@ -2,4 +2,4 @@ c------------------------------------------------------------------------
       SUBROUTINE GRCLP(K)
       integer :: k
       RETURN
-      END
+      END SUBROUTINE GRCLP

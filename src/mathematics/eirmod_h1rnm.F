@@ -7,7 +7,7 @@ cym common /raset1/ /raset2/ removed
       PRIVATE
 
       PUBLIC :: H1RN,H1RNIN,H1RNIV,H1RNSV,H1RNV
-cym care needs to taken that some variables chaneg names in the commons
+cym care needs to taken that some variables change names in the commons
 cmathematics/h1rn.f:40:      COMMON /RASET1/ U(97),C,CD,CM,I,J
 cmathematics/h1rn.f:41:!$omp threadprivate(/raset1/)
 cmathematics/h1rnin.f:31:      COMMON /RASET1/ U(97),C,CD,CM,IP,JP

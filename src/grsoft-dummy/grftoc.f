@@ -4,4 +4,4 @@ c-------------------------------------------------------------------------
       real :: f
       character(*) :: c
       RETURN
-      END
+      END SUBROUTINE GRFTOC

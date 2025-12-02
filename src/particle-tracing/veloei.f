@@ -1,10 +1,6 @@
 C  27. 6.05:  test for photon secondaries added
 c  15.12.05:  irds --> irei,  comments
 cdr Nov. 15:  comments re zep_in added
-!pb APR  16:  eatds -> eatei
-!pb APR  16:  emlds -> emlei
-!pb APR  16:  eiods -> eioei
-!pb JUL  16:  ehvds1 -> ehvei1
 cdr june 17:  comments
 cdr ?         connect with fehvei1 function for storage saving mode
 C
@@ -60,7 +56,6 @@ C
       REAL(DP) :: EIRENE_FEHVEI1, VXDIS, VYDIS, VZDIS, EHEAVY,
      .            VX, VY, VZ,
      .            VELQ, CVRSS, RSQDV, EFRAC, EDISS, ZEP3, VELDS
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISPZI, ISPZM, ISPZA, JATM, JMOL, JION
       EXTERNAL :: EIRENE_FEHVEI1, EIRENE_FISOTR, EIRENE_EXIT_OWN
 

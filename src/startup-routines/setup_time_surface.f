@@ -131,8 +131,8 @@ C
           CALL EIRENE_MASR1('FLUX    ',FLUX(NSTRAI))
 C
           IF (DTIMVN.NE.DTIMVO) THEN
-             FLUX(NSTRAI)=FLUX(NSTRAI)*DTIMVO/DTIMVN
-             FLXCEN=FLUX(NSTRAI)   ! for later use of FLXCEN
+            FLUX(NSTRAI)=FLUX(NSTRAI)*DTIMVO/DTIMVN
+            FLXCEN=FLUX(NSTRAI)   ! for later use of FLXCEN
 C
             WRITE (iunout,*)
      .        'CENSUS FLUX IS RESCALED BY DTIMV_OLD/DTIMV_NEW'

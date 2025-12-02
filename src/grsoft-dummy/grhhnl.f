@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
       SUBROUTINE GRHHNL
       RETURN
-      END
+      END SUBROUTINE GRHHNL

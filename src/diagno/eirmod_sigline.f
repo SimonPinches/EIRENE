@@ -42,7 +42,7 @@ cdr    The corresponding emissivity profiles are specified as
 cdr    reaction decks in block 4.
 
 cdr Old version (up to May 2018), Hydrogen only:
-c    Currently there are up to 6 contributions to each particular pre-programmed
+c    Currently there are up to 6 components to each particular pre-programmed
 c    transition (depending on population coefficient data stored
 c    in file AMJUEL, section H.11 and H.12)
 c  aug.16: available transitions in H-atom:

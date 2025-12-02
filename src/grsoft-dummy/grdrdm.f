@@ -3,4 +3,4 @@ c-------------------------------------------------------------------------
       integer :: nrow
       real :: pa(*), x(*), y(*), tab(1,1)
       RETURN
-      END
+      END SUBROUTINE GRDRDM

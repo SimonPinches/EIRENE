@@ -3,4 +3,4 @@ c------------------------------------------------------------------------
       character*(*) text
       integer :: ltext
       RETURN
-      END
+      END SUBROUTINE GRTXTC

@@ -209,8 +209,6 @@ c  energy balance tallies: from bulk (ipls) to species a,m,i,ph,pl
      .       mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
         if (my_pe_gr==0) EPPLI(0:nplsi,istra) = helpp(0:nplsi)
 
-C
-C
 c  all volume-averaged tallies: estimv
         allocate (helpv(nrtal+1), dummyv(nrtal+1))
         do ir=1,nvoltl
@@ -310,7 +308,6 @@ cdr in case of nrtal < ncv: crash ?
         end if
 
         mxdim = max (nmoli+1,natmi+1,nioni+1,nphoti+1,nplsi+1)
-
         allocate (lhelp(mxdim))
 
         call mpi_reduce(LOGMOL(0:nmoli,ISTRA),lhelpm,NMOLI+1,

@@ -3716,7 +3716,7 @@ cdr   ntalm is a copv tally.
 !                    INC=NCLTAL(IT)
                      INC=IY+(IX-1)*NR1TAL_SAVE
                      SIGNUM = 1._DP
-                     IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))                
+                     IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                      SMORES=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+
      .                       MIPL(IPLS,INC))*
      .                       VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR

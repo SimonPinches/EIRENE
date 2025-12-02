@@ -1,5 +1,3 @@
-!pb  22.11.06: flag for shift of first parameter to rate_coeff introduced
-
 
       FUNCTION EIRENE_FEPLEL3 (IREL,K)
 
@@ -47,4 +45,4 @@ C  MEAN ENERGY FROM SINGLE PARAMETER FIT KK
       END IF
 
       RETURN
-      END
+      END FUNCTION EIRENE_FEPLEL3

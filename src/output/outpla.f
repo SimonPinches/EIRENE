@@ -23,12 +23,11 @@ cdr jan 22    : bug fix: missing weighting function for PARMOM tally added
 cdr             as long as fine-grid data are identical to coarse grid
 cdr             data, as e.g. in B2.5 interfaces, this bug made no difference.
 cdr mar 23    : account for bgk virt. species as if they were "densmodel" species
-
 C
       SUBROUTINE EIRENE_OUTPLA(ICAL)
 C  This routine prints background tallies as requested in input block 11.
 C  ical=0: called after initialization phase, prior to Monte Carlo loop.
-C  ical=1: called in postprocessing phase from iteration loop
+C  ical=1: called in postprocessing phase after internal iteration loop
 C          Some background parameters
 C          may have been modified due to iteration loop.
 C          Print only the modified tallies.
@@ -88,7 +87,7 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(11)=3
       TALTYP(12)=4
       TALTYP(13)=0
-      TALTYP(14)=2
+      TALTYP(14)=2   ! CELL VOLUME
       TALTYP(15)=3
       TALTYP(16)=3
       TALTYP(17)=3
@@ -186,7 +185,7 @@ cdr            not: NFTE = NPLSTI or NPLSV, resp.
 cdr  due to different density weighting.
 cdr  Full physical species range is needed even if
 cdr  "intensive" tallies Ti or Vin_VEC are made identical
-cdr  for different IPLS, e.g. EVEN IF NFRSTP(ITALI)=1
+cdr  for different IPLS, e.g. even IF NFRSTP(ITALI)=1
 
           NFTE=NFSTPI(ITALI)
           IF (NSPEZV(IPRV,1).GT.0) THEN
@@ -298,8 +297,11 @@ C  IF NCLTAL(I_FINE)==I_COARSE, EVERYWHERE, THEN THERE IS ONLY ONE GRID
 
 cdr  Apr.22  coarse graining may be incorrect for Ti, VXIN,... and BVIN,
 cdr          i.e. for tallies with indirect species index addressing
+cdr  Apr.24  If no coarser grid was defined, e.g. in interfacing routines,
+cdr          then the next two options should be identical.
             if (nflagv(iprv).lt.0) then
-c  before printing: reset input tallies onto coarse (structured) grid
+c  before printing: reset (by weighted averaging) input tallies
+c                   onto coarser (structured) grid
               nr1pr  =nr1tal
               np2pr  =np2tal
               nt3pr  =nt3tal
@@ -309,7 +311,8 @@ c  before printing: reset input tallies onto coarse (structured) grid
                 ncltpr(i_fine) = ncltal(i_fine)
               enddo
             else
-c  default: print on underlying fine grid, or in case there is only one single grid
+c  no coarse graining of input tallies (default):
+c  print on underlying fine grid. Also if there is only one single grid
               nr1pr  =nr1st
               np2pr  =np2nd
               nt3pr  =nt3rd
@@ -324,6 +327,8 @@ C
 C  SET WEIGHTING FUNCTION HELPW FOR INPUT TALLY ITALI
 C  CURRENTLY INPUT TALLIES ARE GIVEN ON FINE "GEOMETRY MESH", STRUCTURE NR1ST,NP2ND,....
 C  USE NCLTPR(I) = NCELL ARRAY TO COARSE GRAIN ONTO STRUCTURED GRID.
+C  The same cell indexing is also used to score output tallies directly
+C  on coarse grained grid.
 C
             TOTALW=0.D0
             HELPW = 0.D0
@@ -339,10 +344,15 @@ c                         ! otherwise: helpp=helps
              DO IT=1,NZM
               I_FINE=IR + ((IP-1)+(IT-1)*NP2T3)*NR1P2 + NBLCKA
 C  COARSE-GRAINING OF INPUT TALLY ITAL ONTO GRID DEFINED BY NCLTPR(I-FINE),
-C  STRUCTURE NR1TAL,NP2TAL,....
-C  WHEN THERE IS ONLY ONE SINGLE GRID, THEN NCLTPR(I)==I, AND NO COARSE-GRAINING IS DONE
+C  STRUCTURE NR1TAL,NP2TAL,...
+C  IF THERE IS ONLY ONE SINGLE GRID, THEN NCLTPR(I)==I,
+C  AND NO COARSE-GRAINING IS DONE
               I=NCLTPR(I_FINE)
               SELECT CASE (ITALI)
+
+cdr  we should use TALTYP(ITALI) for the weights HELP,HELPW,
+cdr  rather than explicit coding here for each tally.
+
               CASE (1)
 C  1: ELECTR. TEMPERATURE: NE*VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*DEIN(I_FINE)*VOL(I_FINE)
@@ -379,7 +389,7 @@ C  14: CELL VOLUME  = UNWEIGHTED SUM
                 HELPW(I)=1.D0
               CASE (12,15)
 C  12: ADDITIONAL TALLY (NO.12)
-C  15: WEIGHT FUNCTION  (NO.15)
+C  15: WEIGHT WINDOW FUNCTION  (NO.15)
 C  "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
@@ -491,7 +501,7 @@ C  CELL VOLUME  = UNWEIGHTED SUM
                 HELPW(I)=1.D0
               CASE (12,15)
 C  ADDITIONAL TALLY (NO.12)
-C  WEIGHT FUNCTION  (NO.15)
+C  WEIGHT WINDOW FUNCTION  (NO.15)
 C  "1 - WEIGHTED" AVERAGES, = ARITHM. MEAN
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
@@ -577,7 +587,8 @@ C  SAME FOR TALLY NTALO: CELL VOLUME
 C
             IF (TALTOT.EQ.0.D0) GOTO 118
 
-C   PRINT TALLY, USING UNDERLYING COARSE GRID
+C   PRINT TALLY.
+C   IN CASE NFLAGV<0: USING UNDERLYING COARSER GRID
             IF (ITALI.NE.NTALO) THEN
               CALL EIRENE_PRTTAL(TXTPLS(K,ITALI),TXTPSP(K,ITALI),
      .                    TXTPUN(K,ITALI),

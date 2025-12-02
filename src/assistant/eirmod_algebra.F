@@ -20,7 +20,6 @@ cdr            SUBTIT, SCHRIT, SIGNOK can also
 cdr            be made local to this present module.
 cdr
 Cdr  Sept. 16: Bug fix: added option: two or more constants next to each other
-c  summer 2019: added function eirene_replace(...)
 C
 C-----------------------------------------------------------------------
       SUBROUTINE EIRENE_ALGEBR (TERM,OPER,IZIF,CONST,NOP,IOUT)

@@ -4,4 +4,4 @@ c------------------------------------------------------------------------
       real :: x,y
       integer :: ltext
       RETURN
-      END
+      END SUBROUTINE GRTXT

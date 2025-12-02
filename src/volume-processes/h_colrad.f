@@ -539,10 +539,10 @@ C  for high Te use the d ln(K)/d ln(T) from the old Claudine (Mahn-Welge) code.
                            ! for all I > 26
             ELN=LOG(TEMP)
 C  EKIN=  <SIGMA * V * EKIN(ELEC)>   (EV*CM**3/S)
-            DCCX=RECOMB(9,iii)*8
+            DCCX=RECOMB(9,III)*8
             DO 57 II=1,7
               JJ=8-II
-              DCCX=DCCX*ELN+RECOMB(JJ+1,Iii)*JJ
+              DCCX=DCCX*ELN+RECOMB(JJ+1,III)*JJ
    57       CONTINUE
             EBETA(I)=TEMP*BETA(I)*(DCCX+1.5)
           ENDIF
@@ -1021,10 +1021,10 @@ C
       END SUBROUTINE EIRENE_COFVS
 
 cdr
-      FUNCTION EIRENE_GINT(xX)
+      FUNCTION EIRENE_GINT(XX)
       USE EIRMOD_PRECISION
       REAL(DP) EIRENE_GINT
-      REAL(DP) Xx
+      REAL(DP) XX
       REAL(DP) X,GG(8)
 cdr
       DATA GG/0.2677737343_DP, 8.6347608925_DP,
@@ -1807,4 +1807,3 @@ C
       ENDIF
       RETURN
       END SUBROUTINE EIRENE_MIDPNT
-c

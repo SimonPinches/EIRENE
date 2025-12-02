@@ -9,7 +9,7 @@ c april05:  *sqrt(ze) moved from here (for CX spectra) into sigcx
 c april06:  restriction to iphot.eq.isp in case of los-radiances
 c
 cdr aug.16:  to be done: psig: allocatable, psig(0,nspi), NSPI depends on NCHTAL option
-c            option NCHTAL=4 is unfinished. print warning and return
+c            Option NCHTAL=4 is unfinished. print warning and return
 cdr nov.16:  avoid reading strata, in case of single stratum runs (NSTRAI=1)
 c            set default ncheni=1 for nchtal=2 already in calling routine,
 c            to avoid that chords are erroneously turned off there.
@@ -72,8 +72,8 @@ C
       INTEGER :: IISTR
       REAL(DP), ALLOCATABLE, SAVE :: PSIG(:)
       REAL(DP) :: C1(3),C2(3),
-     .          BUFFER(NCHOR,NCHEN),ESTART(NCHOR),ENDFIT(NCHOR),
-     .          FP1(6), FP2(6), DUM(9)
+     .            BUFFER(NCHOR,NCHEN),ESTART(NCHOR),ENDFIT(NCHOR),
+     .            FP1(6), FP2(6), DUM(9)
       REAL(DP) :: ZE1, ZE2, ZSCALE, ZZ, EIRENE_SLOPE, STEIG, PMI, PMA,
      .            XMI, XMAX, XMIN, ZSI, TIMAX, ZE, SUMM, ADD, FAC32,
      .            TEF, DEF, DE, TE, ZDS, RATE, CHKSUM,
@@ -81,6 +81,9 @@ C
      .            RC1MIN, RC1MAX, RC2MIN, RC2MAX
       REAL(DP) :: EIRENE_FTABRC1
       EXTERNAL :: EIRENE_FTABRC1, EIRENE_SLOPE
+      EXTERNAL :: EIRENE_DBL_POLY, EIRENE_EXIT_OWN,
+     .            EIRENE_MASAGE, EIRENE_MASJ1,
+     .            EIRENE_MAXMN2, EIRENE_RSTRT, EIRENE_SYMET
       INTEGER :: I1, I2, IN, I, IS, NAC2, NBC2, ICHRD, IPVOT, NCHNI,
      .           IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR, IZ,
      .           KREC, IRRC, MAXREC, IFLAG, ISPC,
@@ -120,9 +123,6 @@ C
         END SUBROUTINE EIRENE_SLREAC
       END INTERFACE
 
-      EXTERNAL :: EIRENE_DBL_POLY, EIRENE_EXIT_OWN,
-     .            EIRENE_MASAGE, EIRENE_MASJ1,
-     .            EIRENE_MAXMN2, EIRENE_RSTRT, EIRENE_SYMET
 C
       ISTRA=IISTR
       NCHNI=IABS(NCHENI)

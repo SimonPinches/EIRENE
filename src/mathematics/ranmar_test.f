@@ -49,7 +49,6 @@ c  save the current status on VEC(100)
       CALL H1RNSV(VEC)
 
 c  fetch new random number and save it for testing further below.
-!pb   RAN_I= H1RN()
       RAN_I= H1RN(dum)
 
 c  Set the original Marsaglia-seed (converted to single integer seed):
@@ -72,7 +71,6 @@ c  this single call should do the same as the above loop.
 cdr  next: the next 6 random number should produce the
 cdr        Marsaglia sequence exactly.
       Do IRAN=1,6
-!pb     ran=H1RN()
         ran=H1RN(dum)
         ran=ran*4096*4096
         if (RAN.EQ.RMARSAG(IRAN)) cycle
@@ -83,7 +81,6 @@ cdr        Marsaglia sequence exactly.
 cdr back to original status, VEC(100) --> Common
       call H1RNIV(VEC)
 cdr  check, if same status as before indeed ?
-!pb   ran_e=H1RN()
       ran_e=H1RN(dum)
 cdr check: ran_i=ran_e ??
       if (ran_i.ne.ran_e) then
@@ -101,7 +98,6 @@ c  random sequence is one step further, due to one call to H1RN
       elseif (IADD.gt.1) then
 cdr one step is already done, now the further IADD-1 steps
         do IRAN=1,IADD-1
-!pb       RAN=H1RN()
           RAN=H1RN(dum)
         enddo
       endif

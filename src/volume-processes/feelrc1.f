@@ -1,5 +1,3 @@
-!pb  19.12.06: bremsstrahlung added
-!dr  31.07.07: bug fix: tein(j) --> tein(k)
 cdr  nov.14:  function brems, replaces Gaunt factor function,
 cdr           reaction scaling factor factkk removed from bremsstrahlung
 cdr  nov 17:  comments. bremsstrahlung handling is currently connected

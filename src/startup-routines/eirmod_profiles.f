@@ -219,7 +219,6 @@ C
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: IINDEX, NSPZI, NSPZ1, NDAT
-!     REAL(DP), INTENT(OUT) :: PRO(NSPZ1,NDAT)
       REAL(DP), INTENT(OUT) :: PRO(:,:)
       if (nspzi.gt.nspz1 .or. nspz1.le.0) then
         write (iunout,*) 'error in PROFR'

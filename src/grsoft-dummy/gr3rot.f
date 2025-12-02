@@ -6,4 +6,4 @@ c------------------------------------------------------------------------
       real :: x1, x2, x3
       integer :: ier
       return
-      end
+      end subroutine gr3rot

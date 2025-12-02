@@ -42,6 +42,10 @@ C
       WRITE (iunout,*) TL
       WRITE (iunout,*) TL
       CALL EIRENE_LEER(1)
+
+C..................................................................
+C  WRITE ONTO STREAM "IFILE"
+
       IF (IFILE.GT.0) THEN
         DO IST=1,NSTREAM
           IF (IFILE.EQ.ISTREAM(IST)) GOTO 11111
@@ -55,6 +59,7 @@ C
         WRITE (IFILE,*) TL
         WRITE (IFILE,*) TL
         WRITE (IFILE,*) NR,NP,NT,NB,NTT
+
         DO IRAD=1,NTT,5
           WRITE (IFILE,5) (PROF(IR),IR=IRAD,MIN(IRAD+4,NTT))
         ENDDO
@@ -62,6 +67,10 @@ C
       ENDIF
 C
 11111 IF (IFLAG.LT.0) RETURN
+
+C...................................................................
+C  WRITING ONTO STREAM "IFILE" COMPLETED FOR THIS TALLY
+
 C  NCOL: NUMBER OF PRINTED DATA PER LINE, .LE.6
       NCOL=5
 C
@@ -282,6 +291,7 @@ C
 C
     5 FORMAT (1X,5(1PE12.4,2X))
     6 FORMAT (1X,6(I6,2X,1PE12.4,2X))
+
     7 FORMAT (1X,'Y- OR POLOIDAL SEGMENT NUMBER ',I6)
    77 FORMAT (1X,'Z- OR TOROIDAL SEGMENT NUMBER ',I6)
   777 FORMAT (1X,'STANDARD MESH BLOCK NUMBER ',I6)

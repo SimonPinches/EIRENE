@@ -595,7 +595,6 @@ cdr nsbox rather than nsurf? Otherwise this will not work in additional cells
               TEF=max(-2.3_DP,LOG(TE)) ! cut off at 0.1 eV
 
               RCOLRAD=EIRENE_OTHER_RATE_COEFF(IRC,IR,TEF,DEF,.TRUE.,1)
-
               DIIN(IPLS,IR)=DIIN(IPLS,IR)+BASE_DENSITY(IR)*RCOLRAD
               if (nlmlti) then
                 TIIN(IPLSTI,IR)=TIIN(IPLSTI,IR)+
@@ -772,7 +771,6 @@ C                        BUT PERHAPS FOR NEUTRAL BACKGROUND
           LGVAC(J,0)   =LGVAC(J,0).AND.LGVAC(J,IPLS)
  5106   CONTINUE
  5103 CONTINUE
-
       IF (LEVGEO.EQ.3) THEN
 cdr set vacuum flags in polygonal grid cut cells (if any)
         DO 5161 I=1,NPPLG-1

@@ -158,7 +158,7 @@ c             modcol=1: rates depend only on background parameters,
 c                       not on test particle parameters
 c             modcol=2: rates depend also on test particle energy.
 c                       Use E_test=1.5 kT_background
-c  to be done: (e.g. for Beams)
+c  to be done: (e.g. for beams)
 c             modcol=3: use sigma(E_test) * sqrt(E_test), ignore thermal background parameters
 c
 c.....................................................................
@@ -234,7 +234,7 @@ cdr  avoid repeated augmenting of tally-name in iterative mode
             DO 1720 ICELL=1,NSBOX
               if (lgvac(icell,npls+1)) cycle
               IF (NSTORDR >= NRAD) THEN
-                TBEI=TABEI1(irei,ICELL)
+                TBEI=TABEI1(IREI,ICELL)
               ELSE
                 TBEI=EIRENE_FTABEI1(IREI,ICELL)
               END IF
@@ -264,8 +264,8 @@ cdr  avoid repeated augmenting of tally-name in iterative mode
             DO 1721 ICELL=1,NSBOX
               if (lgvac(icell,npls+1)) cycle
               IF (NSTORDR >= NRAD) THEN
-                TBEI=TABEI1(irei,ICELL)
-                ELEI=EELEI1(irei,ICELL)
+                TBEI=TABEI1(IREI,ICELL)
+                ELEI=EELEI1(IREI,ICELL)
               ELSE
                 TBEI=EIRENE_FTABEI1(IREI,ICELL)
                 ELEI=EIRENE_FEELEI1(IREI,ICELL)

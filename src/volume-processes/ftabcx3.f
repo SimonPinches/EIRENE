@@ -44,6 +44,7 @@ cdr  hard-wired: cut-off (density) parameter for fits: 1e8. TO BE CHECKED WITH X
       TBCX=0.D0
 
       KK = NREACX(IRCX)
+cdr careful: modclf is only 1:nreac, not for minimal model reactions kk .lt.0
       MODC=EIRENE_IDEZ(MODCLF(KK),3,5)
 
 cdr  for electron density dependence in condensed rates, e.g. MAR, MAD

@@ -13,4 +13,4 @@
       EY = 0._DP
 
       RETURN
-      END
+      END SUBROUTINE EIRENE_SCHNITP

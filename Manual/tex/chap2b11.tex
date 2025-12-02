@@ -1,8 +1,8 @@
 \section{Data for numerical and graphical Output} \label{sec2.11}
 
-\textbf{General remarks} 
+\textbf{General remarks}
 
-\medskip 
+\medskip
 
 The input flags in this block control all the numerical and graphical output of
 an EIRENE run.
@@ -68,9 +68,9 @@ ITALI=13 in \cref{tab1}).
 
 \medskip
 
-\textbf{The Input Block} 
+\textbf{The Input Block}
 
-\medskip 
+\medskip
 
 \begin{lstlisting}
 * 11 Data for numerical and graphical output
@@ -91,7 +91,7 @@ ITALI=13 in \cref{tab1}).
         NSRF NPRTLS(J) NFLAGS(J) NSPEZS(J,1) NSPEZS(J,2)
      .    NTLSFL(J)
   102 CONTINUE
-\end{lstlisting} 
+\end{lstlisting}
 
 optional: unless block 11B starts:
 
@@ -113,11 +113,11 @@ C (12 values per card, FORMAT 12I6)
       NPLINR NPLOTR NPLDLR NPLINP NPLOTP NPLDLP NPLINT NPLOTT
      .  NPLDLT
       DO 1140 J=1,5
-        PL3A(J) TEXTLA(J) IPLTA(J) 
+        PL3A(J) TEXTLA(J) IPLTA(J)
      .    (IPLAA(J,I) IPLEA(J,I) I=1,IPLTA(J))
  1140 CONTINUE
       DO 1141 J=1,3
-        PL3S(J) TEXTLS(J) IPLTS(J) 
+        PL3S(J) TEXTLS(J) IPLTS(J)
      .    (IPLAS(J,I) IPLES(J,I) I=1,IPLTS(J))
  1141 CONTINUE
       CH2MX  CH2MY         CH2X0  CH2Y0  CH2Z0
@@ -128,11 +128,11 @@ C (12 values per card, FORMAT 12I6)
       NVOLPL
       PLTSRC(J), J= 0, NSTRAI
       DO 116 N=1,NVOLPL
-C optional: one text card starting with *... to label the 
+C optional: one text card starting with *... to label the
 C           plot
         NSPTAL(N)
         PLTL2D(N) PLTL3D(N) PLTLLG(N) PLTLER(N)
-        TALZMI(N) TALZMA(N) TALXMI(N) TALXMA(N) TALYMI(N) 
+        TALZMI(N) TALZMA(N) TALXMI(N) TALXMA(N) TALYMI(N)
      .    TALYMA(N)
         IF (PLTL2D(NTL)) THEN
           LHIST2(N) LSMOT2(N)
@@ -159,7 +159,7 @@ C           plot
 
 \textbf{Meaning of the Input Variables for numerical and graphical Output}
 
-\medskip 
+\medskip
 
 \textsl{* 11A.
   Block for numerical output written on unit 6}
@@ -187,7 +187,7 @@ C           plot
   \item[TRCFLE] Trace-back from subroutines WRSTRT, WRGEOM, WRPLAS (writing on
         and reading from the dump files FT10, FT11, FT12, FT13 etc.
   \item[TRCAMD]
-        Trace-back from atomic and molecular data routines 
+        Trace-back from atomic and molecular data routines
 
         XSECTA, XSECTM, XSECTI
   \item[TRCINT] Trace back from user specified interfacing
@@ -229,9 +229,9 @@ C           plot
         etc., mostly for testing ``correlated sampling'' options (flag: NLCRR).
   \item[TRCHKTIM] printout of CPU usage during particle tracing and scoring
         (excluding overhead), separated by particle type, species and strata.
-  \item[TRCSCL] test output of quantities entering the species specific 
+  \item[TRCSCL] test output of quantities entering the species specific
         scaling procedure
-  \item[TRCSRC(ISTRA), ISTRA = 0, NSTRAI] ~ 
+  \item[TRCSRC(ISTRA), ISTRA = 0, NSTRAI] ~
 
         The selected global, volumetric and surface crossing tallies are printed for
         those strata for which TRCSTR(ISTRA) = .TRUE..
@@ -244,15 +244,15 @@ C           plot
         sum over strata) is available.
   \item[NVOLPR] Total number of volume averaged tallies to be printed.
   \item[NSPCPR] Flag for printout of surface or cell based spectra (defined in
-        input block 10F) If NSPCPR $> 0$: spectra are printed on output stream 
+        input block 10F) If NSPCPR $> 0$: spectra are printed on output stream
         fort.(20+ioff), name: spectra.out
   \item[NPRTLV] Index of the tally to be printed
         (first column in \cref{tab1} or \cref{tab2}).
         If the tally has a species index, it is printed for all species, for which the
         integral of the tally over the computational area is nonzero.
-        Otherwise the statement 
+        Otherwise the statement
 
-        ZERO INTEGRAL FOR SPECIES ISPZ = \dots 
+        ZERO INTEGRAL FOR SPECIES ISPZ = \dots
 
         is printed below the header for this tally.
         The term ``species index" is used here in a more general sense	for the first
@@ -281,7 +281,7 @@ C           plot
   \item[NSPEZV] If NSPEZV(\dots, 1) $\ne
           0$, then this tally is printed only for the species index range:
 
-        $I1 = NSPEZV(\dots,1)$ to $I2 = MAX(I1,NSPEZV(\dots,2))$, 
+        $I1 = NSPEZV(\dots,1)$ to $I2 = MAX(I1,NSPEZV(\dots,2))$,
 
         rather than for all species relevant for the specified tally.
   \item[NTLVFL] In addition to the standard output stream fort.IUNOUT, this tally
@@ -317,7 +317,7 @@ numbers) are selected here by input flag NSRF.
         triggers the production of a additional table holding information about
         the spatially resolved surface namely start and end points of the triangle
         edges forming the surface, the arc length along the surface and the values
-        of the surface tally for the requested species. 
+        of the surface tally for the requested species.
       \item[NTLSFL(J)] The spatially resolved tallies (if any) including the newly provided
         table (see above) and/or the flux energy spectra (if any, see input block 10F)
         are printed on additional output stream fort.NTLSFL(J) for this surface.
@@ -339,7 +339,7 @@ activated and deactivated tallies.
   \item[NTLSOUT] to be written
 \end{description}
 
-\textsl{* 11B.1 Data for 2D plot of geometry} 
+\textsl{* 11B.1 Data for 2D plot of geometry}
 
 \begin{description}
   \item[PL1ST] plot the x- (radial) standard grid surfaces
@@ -398,25 +398,25 @@ activated and deactivated tallies.
   \item[CH2Y0] vertical co-ordinate of midpoint of 2D plot window
         (\si{\centi\metre}).
   \item[CH2Z0] distance CONST of plotting plane to origin.
-  \item[NPLINR NPLOTR NPLDLR] ~ 
+  \item[NPLINR NPLOTR NPLDLR] ~
 
-        radial standard surfaces with labels 
+        radial standard surfaces with labels
 
-        IR1ST = NPLINR, NPLOTR, NPLDLR 
-
-        are plotted.
-  \item[NPLINP NPLOTP NPLDLP] ~ 
-
-        poloidal standard surfaces with labels 
-
-        IP2ND= NPLINP, NPLOTP, NPLDLP 
+        IR1ST = NPLINR, NPLOTR, NPLDLR
 
         are plotted.
-  \item[NPLINT NPLOTT NPLDLT] ~ 
+  \item[NPLINP NPLOTP NPLDLP] ~
 
-        toroidal standard surfaces with labels 
+        poloidal standard surfaces with labels
 
-        IT3RD= NPLINT, NPLOTT, NPLDLT 
+        IP2ND= NPLINP, NPLOTP, NPLDLP
+
+        are plotted.
+  \item[NPLINT NPLOTT NPLDLT] ~
+
+        toroidal standard surfaces with labels
+
+        IT3RD= NPLINT, NPLOTT, NPLDLT
 
         are plotted.
 \end{description}
@@ -437,7 +437,7 @@ activated and deactivated tallies.
   \item[CH3Z0]
         z-co-ordinate of midpoint of plot-chamber in user co-ordinates, 3D geometry
         plot only
-  \item[ANGLE1, ANGLE2] ~ 
+  \item[ANGLE1, ANGLE2] ~
 
         First and second viewing angle for 3D geometry plot
 \end{description}
@@ -456,7 +456,7 @@ all (i.e NLIMI) additional surfaces.
         onto plot, characterizing this group of additional surfaces
   \item[IPLTA] number
         of different subgroups of additional surfaces comprising this group
-  \item[IPLAA, IPLEA] ~ 
+  \item[IPLAA, IPLEA] ~
 
         each \hfill subgroup \hfill consists \hfill of \hfill additional \hfill
         surfaces \hfill ranging \hfill from \hfill no.
@@ -480,7 +480,7 @@ interval of standard surface labeling indices ISURF, from the full range of all
         2D or 3D plot
   \item[I2TRC] Number of last particle history to be traced in
         printout and/or 2D or 3D plot
-  \item[ISYPLT(J), J = 1, 8] ~ 
+  \item[ISYPLT(J), J = 1, 8] ~
 
         Indices to plot symbols along the particle tracks for different events.
         Up to 8 different events can be picked in any order in the array ISYPLT.
@@ -528,7 +528,7 @@ interval of standard surface labeling indices ISURF, from the full range of all
         \end{description}
 \end{description}
 
-\textsl{* 11B3 Graphical output of volume averaged tallies} 
+\textsl{* 11B3 Graphical output of volume averaged tallies}
 
 \begin{description}
   \item[NVOLPL] Total number of pictures from volume averaged
@@ -585,7 +585,7 @@ radial (x-) grid does not exist for the curve to be plotted.
 No interpolation to a ``true" radial (x-) grid is involved, so the resulting
 curves may change shape on the plot depending on options chosen here.
 \begin{description}
-  \item[TALXMI $\neq$ TALXMA] ~ 
+  \item[TALXMI $\neq$ TALXMA] ~
 
         if TALXMI $<$ TALXMA, then a grid equidistant on a linear scale is used, TALXMI
         is then the minimum abscissa value for the plot, TALXMA is then the maximum

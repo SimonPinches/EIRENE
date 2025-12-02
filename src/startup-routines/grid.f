@@ -1,11 +1,6 @@
 C
 c sept 2014 : some indexing unified, comments added.
-c             ngitt (storage for spatial resolution on single surface) now evaluated in calling program input.f
 c
-!pb  3.12.06: allow INDGRD /= 6 for NLTET option
-!pb  3.12.06: specify NGITT in case of NLTET
-!pb           initialize XDIFF=0
-!pb 22.03.07: LEVGEO=6 --> LEVGEO=10
 !pb 28.06.10: consistency check for LEVGEO=3 or LEVGEO=4 introduced
 !             stop run if cell side is transparent but no neighbor cell
 !             is defined
@@ -66,7 +61,8 @@ C    IND=3:  3RD GRID, Z OR TOROIDAL COORDINATE
       EXTERNAL :: EIRENE_ARELLP, EIRENE_GRID_1, EIRENE_PROUSR,
      .            EIRENE_SNEIGH, EIRENE_SUCHE_NACHBARN,
      .            EIRENE_LEER, EIRENE_MASR2, EIRENE_MASR3,
-     .            EIRENE_MASRR1, EIRENE_MASRR4, EIRENE_EXIT_OWN
+     .            EIRENE_MASRR1, EIRENE_MASRR4, EIRENE_EXIT_OWN,
+     .            EIRENE_SORT_TRI_SURF
 !pb
       TYPE(TRI_ELEM), POINTER :: CUR
 
@@ -1100,6 +1096,7 @@ cdr       write (iunout,*) ' area for surface ',ists
               VISITED(NSEITE(IS,I),NCHBAR(IS,I)) = .TRUE.
             END IF
             IF (NLTRA) THEN
+cdr account for discretisation in toroidal direction
               XX1=XX1+RMTOR
               XX2=XX2+RMTOR
               COM=0.5*(XX1+XX2)

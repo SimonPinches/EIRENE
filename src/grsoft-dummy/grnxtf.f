@@ -1,4 +1,4 @@
 c------------------------------------------------------------------------
       SUBROUTINE GRNXTF
       RETURN
-      END
+      END SUBROUTINE GRNXTF

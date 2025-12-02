@@ -78,8 +78,7 @@ C
       INTEGER :: NFR, ISOR, NSRFSI, NRADD,
      .           NREACI,
      .           NSTSI, NLIMI, NVOLPL, NSP, ICO,
-     .           NPRNLI, NCHORI,
-     .           NCHENI, NSIGSI, ID, INDIM, NSIGVI,
+     .           NPRNLI, NCHORI, NCHENI, NSIGSI, ID, INDIM, NSIGVI,
      .           NR1ST, NRSEP,
      .           NP1, NP2, NRKNOT, NRPLG, NPPLG,
      .           NTPER, NTTRA, NCOOR, NTET, NBMLT,
@@ -177,7 +176,6 @@ c  skip further comments in header
 
 c start browsing block 1
       WRITE (iunout,*) '*** 1. DATA FOR OPERATING MODE'
-
 
       READ (ZEILE,6666) NPRLL,NMODE,NTCPU,NFILE,NDUMM1,NITER,
      .                  NDUMM2,NTIME
@@ -446,8 +444,6 @@ C
         READ (IUNIN,'(A72)') ZEILE
       END DO
       READ(ZEILE,6666) NSTSI
-!PB   IF NTIME >=1 NSTSI IS INCREASED in BLOCK 12
-!PB   IF (NTIME.GE.1) NSTSI = NSTSI + 1
       NSTS = MAX(NSTS,NSTSI)
 
 C  FIND START OF NEXT INPUT BLOCK: 3B
@@ -1156,9 +1152,10 @@ C
 
 c  optional input cards: 'DEFINE_LINES'
 
-c  read up to NUM_LINES transitions (volumetric line emissions),
-c  Each LINE may consist of NUM_CONTRIB
-c  for different parent (donor) state components.
+c  read up to NUM_LINES transitions (volumetric line emissions).
+c  For each transition specify NUM_COMPO different parent (donor) state components.
+c  Each COMPONENT may consist of NUM_CONTRIB isotopic contributions
+
 c  Identify the block of LINES and COMPONENTS available in this run
 C  by an extra input card containing 'DEFINE_LINES'
       ULINE=ZEILE
@@ -1198,7 +1195,7 @@ c
                                            ! JCOMP for line ILINE
 c           write (iunout,*) 'num_contrib', num_contrib
             IREAC_ADD = IREAC_ADD + NUM_CONTRIB
-cdr  specify all required contributions explicitly.
+cdr  Specify all required contributions explicitly.
 cdr  In the old default this was automatically detected
 cdr     from mass and charge states/numbers of hydrogenic particles.
 cdr     And only one set of emission data for all contributions was used,
@@ -1252,7 +1249,10 @@ cdr this next condition for old default: better also check for nchtal=2 ??
         NUM_COMPO = 6
         MOD_ADDV = 0
         NADV=NADV +7
-! USE MAXIMUM POSSIBLE NUMBER OF CONTRIBUTIONS, AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
+! USE MAXIMUM POSSIBLE NUMBER OF CONTRIBUTIONS.
+cdr MAY BE FAR TOO LARGE, AS NCHAR AND NCHRG ARE NOT YET AVAILABLE
+cdr tbd: check consequences for storage footprint
+cdr:  corrected in "emiss branch"
         NUM_CONTRIB = NATMI + NMOLI + 2*NMOLI + 2*NMOLI + 2*NMOLI +
      .                NPLSI
 
@@ -1427,7 +1427,7 @@ c  statistical variances, covariances
 
       CALL EIRENE_LEER(1)
       WRITE (IUNOUT,*) 'MAX. NO. OF ATOMIC/MOLECULAR "REACTIONS"'
-      WRITE (iunout,'(a14,i8)') 'NREAC       = ',NREAC
+      WRITE (IUNOUT,'(a14,i8)') 'NREAC       = ',NREAC
       WRITE (IUNOUT,*) 'NREC,NREI,NRCX,NREL,NRPI: DETERMINED LATER'
       WRITE (IUNOUT,*) 'NRPH,NRBG,NROT          : DETERMINED LATER'
 C     WRITE (iunout,'(a14,i8)') 'NREC        = ',NREC

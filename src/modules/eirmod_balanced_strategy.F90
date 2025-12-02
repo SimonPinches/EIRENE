@@ -33,7 +33,7 @@ module eirmod_balanced_strategy
 
   public allocate_balanced_strategy, deallocate_balanced_strategy
 
-  !> The timings soubroutines should be called from mcarlo
+  !> The timings subroutines should be called from mcarlo
   !> The workload distribution will be optimized based on the data
   !> collected by these subroutines
   public time_calstr, time_postproc, time_particles

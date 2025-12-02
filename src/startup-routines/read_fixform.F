@@ -60,7 +60,7 @@ C
 C   SET DIMENSIONS (PARAMETERS) FOR ALLOCATABLE ARRAYS (TALLIES, GRIDS, ETC..) AND SET SOME FURTHER DEFAULT VALUES
 C
 C   READ INPUT DATA AND SET DEFAULT VALUES
-c   IN CASE IITER.GT.1 OR ITIMV.GT.1 : SKIP READING NEW INPUT FROM IUNIN.
+c   IN CASE IITER.GT.1 OR ITIMV.GT.1 : SKIP READING NEW INPUT FROM STREAM IUNIN.
 C                                      ONLY INPUT DATA PROCESSING (STATEMENT 4000 FF)
 C
       USE EIRMOD_PRECISION
@@ -107,7 +107,6 @@ C
       USE EIRMOD_PRESSURELOOP
 
       IMPLICIT NONE
-
 C
       TYPE(TEMPERATURE), POINTER :: TEMPCUR
       TYPE(DENSITY), POINTER :: DENCUR
@@ -127,15 +126,17 @@ C
 
       TYPE(EIRENE_SPECTRUM), POINTER :: ESPEC, SSPEC
       TYPE(TCONTRIB) :: CNT
-cdr  optional arguments for FILNAM=CONST options
+
       INTERFACE
         SUBROUTINE EIRENE_SLREAC (IR, FILNAM, H123, REAC, CRC,
      .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
      .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
+! for ADAS type data tables
      .             ELNAME, IZ1, BUNDLING,
 ! for internal CR models, line emission etc..
      .             IROW_ESC, ICOL_ESC, POP_ESC,
-     .             IFTFL, NCOEF, COEF)  ! for filnam=const
+! optional arguments for FILNAM=CONST options
+     .             IFTFL, NCOEF, COEF)
         USE EIRMOD_PRECISION
         INTEGER,      INTENT(IN) :: IR, IZ1
         INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC,
@@ -203,7 +204,7 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       CHARACTER(kind=json_CK,len=420) :: zeileCk
 !cym/cpg end
       CHARACTER(500) :: FILE, FILE45
-      CHARACTER(8) :: FILNAM, varname, spcname
+      CHARACTER(8) :: FILNAM, VARNAME, SPCNAME
       CHARACTER(4) :: H123, CLAB
       CHARACTER(50) :: REAC
       CHARACTER(3) :: CRC
@@ -225,6 +226,11 @@ cdr  intermediate data for those already set in find_param.f
      .            EIRENE_EXIT_OWN
 
 C
+C  DO NOT READ ANY INPUT, IF THIS IS NOT THE VERY FIRST ITERATION
+C  STEP IN THIS RUN. IITER IS THE ACTUAL ITERATION NUMBER
+C  DO NOT READ ANY INPUT, IF THIS IS NOT THE VERY FIRST TIMESTEP
+C  IN THIS RUN. ITIMV IS THE ACTUAL TIMESTEP NUMBER
+C
 C  INITIALISE SOME DATA AND SET DEFAULTS
 C
       IREAD=1
@@ -235,7 +241,6 @@ C
 C  UNIT NUMBER FOR OUTPUT FILE: MUST BE DIFFERENT FROM: 5,8,10,11,12
 C  13,14, AND 15 AND IUNIN
 cdr IUNOUT has already been set in COMPRT and in subroutine EIRENE
-!pb   IUNOUT=6+ifoff
 C
 
       NULLIFY(SURFLIST)
@@ -669,11 +674,12 @@ C
 C INPUT SUB-BLOCK 2A
 C
 C  RADIAL MESH
-  210 READ (IUNIN,'(A72)') ZEILE
-      IF (ZEILE(1:1) .EQ. '*') THEN
-        GOTO 210
-      ENDIF
+      READ (IUNIN,'(A72)') ZEILE
+      DO WHILE (ZEILE(1:1) .EQ. '*')
+        READ (IUNIN,'(A72)') ZEILE
+      END DO
       READ (ZEILE,6665) NLRAD
+      IREAD=0
       IF (NLRAD) THEN
 C
 * For gfortran: it does not accept empty field for logicals
@@ -1059,13 +1065,12 @@ C  OVERWRITE DEFAULTS FOR IRPTA, IRPTE ARRAYS
         IF (ZEILE(1:1).EQ.'*') THEN
 C  NO LOCAL SURFACE INTERACTION MODEL FOUND, USE: DEFAULT
           GOTO 314
-!pb     ELSEIF (ILIIN(NLJ).LE.0) THEN
-!pb       GOTO 312
 C  ASSIGN ONE OF THE SURFACE MODELS (BLOCK 6) TO THIS SURFACE
         ELSEIF (ZEILE(1:8).EQ.'SURFMOD_') THEN
           ALLOCATE(SURFCUR)
           SURFCUR%MODNAME = TRIM(ADJUSTL(ZEILE(9:)))
           SURFCUR%NOSURF = NLJ
+cdr increase counter on surflist
           SURFCUR%NEXT => SURFLIST
           SURFLIST => SURFCUR
           IREAD=0
@@ -1190,7 +1195,6 @@ C   GENERAL SURFACE DATA
      .  (ZEILE(4:72),IGJUM1,0,NLIMPS,I,NLIMPB,NBITS)
           END IF
           GOTO 362
-
         ELSEIF (ZEILE(1:3).EQ.'CH2') THEN
 
 !  STORE CH2 LINES FOR OUTPUTING TO JSON FILE
@@ -1267,7 +1271,7 @@ C  READ BOUNDARY DATA
 !  ORIGINAL VALUES MIGHT BE CHANGED LATER ON
         CALL EIRENE_COPY_ADDSRF(I)
 C
-C READ LOCAL SURFACE INTERACTION MODEL FOR SURFACE NO. I
+C READ LOCAL SURFACE INTERACTION MODEL FOR ADDITIONAL SURFACE NO. I
 C
   367   READ (IUNIN,'(A72)') ZEILE
         IREAD=1
@@ -1281,6 +1285,7 @@ C  TRANSFORM BLOCK
 C  TRANSPARENT: SKIP READING SURFACE INTERACTION MODEL
           GOTO 367
         ELSEIF (ZEILE(1:8).EQ.'SURFMOD_') THEN
+C  ASSIGN LOCAL REFLECTION FROM A LIST READ BELOW
           ALLOCATE(SURFCUR)
           SURFCUR%MODNAME = TRIM(ADJUSTL(ZEILE(9:)))
           SURFCUR%NOSURF = I
@@ -1290,7 +1295,7 @@ C  TRANSPARENT: SKIP READING SURFACE INTERACTION MODEL
           SMOD_NAME(I)=SURFCUR%MODNAME
           GOTO 368
         ELSE
-C  READ LOCAL REFLECTION MODEL
+C  READ LOCAL REFLECTION MODEL, ADDITIONAL SURFACE
 CVK LCHSPNWL
           READ (ZEILE,6666) ILREF(I),ILSPT(I),ISRS(1,I),ISRC(1,I),
      .                      LCHSPNWL(1,I)
@@ -2135,6 +2140,7 @@ cdr  NRE components contributing to field particle species JPLS
                 WRITE (IUNOUT,*) ' CHECK IN THE EIRENE MANUAL '
                 CALL EIRENE_EXIT_OWN(1)
               END IF
+cdr  use "reaction" IRC (population coeff.) and density multiplier ISP,ITP,ISTR
               READ (ZEILE,6666)
      .             TDMPAR(JPLS)%TDM%ISP(IRE),
      .             TDMPAR(JPLS)%TDM%ITP(IRE),
@@ -2225,13 +2231,13 @@ cdr  default is: eV units for Ti
       NLKELV=INDPRO(2) < 0  ! Kelvin units instead of eV
       INDPRO(2)=IABS(INDPRO(2))
 
-cdr  default is: |indpro| < 10: nplsi Ti fields, one per background species
-cdr              |indpro| > 10: only one common Ti field is specified
+cdr  default is: |indpro(2)| < 10: nplsi Ti fields, one per background species
+cdr              |indpro(2)| > 10: only one common Ti field is specified
 
       NPLSTI = NPLSI
       LRDMLTI=.TRUE.
 
-cdr  only one common profile for all NPLS species?
+cdr  only one common Ti profile for all NPLSI species?
       IF (INDPRO(2) > 9) THEN
         NPLSTI = 1
         LRDMLTI=.FALSE.
@@ -2306,8 +2312,8 @@ cdr  default is: cm/s units for flow field(s)
                              ! rather than cm/s
       INDPRO(4)=IABS(INDPRO(4))
 
-cdr  default is: |indpro| < 10: nplsi flow fields, one per background species
-cdr              |indpro| > 10: only one common flow field
+cdr  default is: |indpro(4)| < 10: nplsi flow fields, one per background species
+cdr              |indpro(4)| > 10: only one common flow field
 
       NPLSV = NPLSI
       LRDMLV=.TRUE.
@@ -2550,7 +2556,7 @@ c  read them one by one in subr. RDTRIM
         NHD6 = NFR
       ELSE
 c  old default: all TRIM data in one single file.
-c  read this (single) file "TRIM.DAT" in subr. REFDAT
+c  Read this (single) file "TRIM.DAT" in subr. REFDAT
         NHD6 = 12
       END IF
 
@@ -2571,7 +2577,8 @@ c  read this (single) file "TRIM.DAT" in subr. REFDAT
 cdr AT THIS POINT: IFLR=NFR OR IFLR=0 ??
       IF (IFLR.NE.NFR.AND.IFLR.NE.0) GOTO 993
 
-c  next: read species index sampling distributions datm, dmol, dion, dpls, and in case nphot > 0, also dphot
+c  next: read species index sampling distributions datm, dmol, dion, dpls,
+c        and, in case nphot > 0, also read dphot
 
       IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
       READ (ZEILE,6664) (DATD(JATM),JATM=1,MIN(NATMI,6))
@@ -2605,9 +2612,11 @@ c  read surface models identified by character string 'SURFMOD_...'
         IF (IREAD.EQ.0) READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:3) .EQ. '***') THEN
           IREAD = 1
+cdr look for next input block: no. 7
           EXIT
         END IF
         IF (ZEILE(1:8) /= 'SURFMOD_') CYCLE
+
         ALLOCATE (REFCUR)
 cdr reflection/recycling parameters
         ALLOCATE (REFCUR%JSRS(nspz))
@@ -2638,7 +2647,7 @@ cdr sputtering parameters
         REFCUR%EXPPLR  = 0._DP
         REFCUR%EXPELR  = 0._DP
         REFCUR%EXPILR  = 0._DP
-cdr  parameters for sputter models
+cdr  default parameters for sputter models
         REFCUR%RCYCSR  = 0._DP
         REFCUR%RCYCCR  = 0._DP
         REFCUR%STPRMR  = 0._DP
@@ -2647,6 +2656,7 @@ cdr  parameters for sputter models
 
         REFCUR%REFNAME = TRIM(ADJUSTL(ZEILE(9:)))
         IREAD=0
+cdr read a full "surfmod_..." model
         READ (IUNIN,'(A72)') ZEILE
         call fix_integer_input(zeile,6)
         READ (ZEILE,6666) REFCUR%JLREF,REFCUR%JLSPT,
@@ -2661,6 +2671,7 @@ cdr  parameters for sputter models
 
 cdr This particular "surface model" SURFMOD_... is now copied NSPZ times,
 cdr i.e., made identically the same for all possible incident species ISPZ
+cdr At this point we do not know if it includes a sputter card or not.
         DO I=2,NSPZ
           REFCUR%JSRS(I) = REFCUR%JSRS(1)
           REFCUR%JSRC(I) = REFCUR%JSRC(1)
@@ -2685,8 +2696,11 @@ C
         IREAD=1
         ideflt_sput=-1
         ideflt_spez=-1
-C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
+C  EITHER READ ONE LINE FOR NON-DEFAULT SPUTTER MODEL
+C  AND/OR LINES FOR SPECIES DEPENDENT SURFACE MODEL
         do while (ZEILE(1:1).NE.'*'.AND.ZEILE(1:8).NE.'SURFMOD_')
+cdr There is one more line indeed.
+cdr Tentatively assume: species dep. surface model
           varname = zeile(1:8)
           call EIRENE_uppercase (varname)
           spcname = zeile(10:17)
@@ -2773,7 +2787,7 @@ C  READ ONE MORE LINE FOR NON-DEFAULT SPUTTER MODEL
      .          read (zeile(18:),'(E12.4)') REFCUR%ESPTCR(ispz)
 
           case default
-c  not a species card, hence: a sputter model card
+c  ZEILE is NOT a species card, hence assume: it is a sputter model card
             if (ispz < 0) then
               IF (REFCUR%JLCHSPNWL(1).EQ.0) THEN
 cxpb Assume 3.0.1 input format
@@ -3190,8 +3204,7 @@ C
  1020 CONTINUE
 
       READ (IUNIN,*)
-      CALL EIRENE_MASAGE
-     .     ('*** 10B. DATA FOR COLLISION ESTIMATORS')
+      CALL EIRENE_MASAGE('*** 10B. DATA FOR COLLISION ESTIMATORS')
       DO 1030 J=1,NCLVI
  1031   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1031
@@ -3210,8 +3223,7 @@ C
  1040 CONTINUE
 C
       READ (IUNIN,*)
-      CALL EIRENE_MASAGE
-     .  ('*** 10D. DATA FOR ADDITIONAL SURFACE TALLIES')
+      CALL EIRENE_MASAGE('*** 10D. DATA FOR ADDITIONAL SURFACE TALLIES')
       DO 1050 J=1,NADSI
  1051   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:1) .EQ. '*') GOTO 1051
@@ -3265,6 +3277,7 @@ c
             SPCVX = SPCVX / VNORM
             SPCVY = SPCVY / VNORM
             SPCVZ = SPCVZ / VNORM
+cdr  surface tallies: no directional spectral tally scoring yet implemented
             IF (ISRFCLL == 0) THEN
               WRITE (IUNOUT,*) ' SPECTRUM NUMBER ',J
               WRITE (IUNOUT,*) ' DEFINITION OF LINE OF SIGHT FOR',
@@ -3719,18 +3732,22 @@ C
       IREAD=1
       IF (ZEILE(1:1) .EQ. '*') GOTO 1210
 
-c June 18: new: more general option for definition of emission lines (in NCHTAL=2 option)
+c June 18: new: more general option for definition of emission profiles
+cdr        in ADDV tally. Can e.g. be used in line of sight NCHTAL=2 option,
+cdr        or for general additional output.
+cdr  Based on population coefficients, QSS ratios, etc already read in block 4.
 
 cdr  read further atomic/molecular data: population coefficients, QSS ratios, etc
 cdr       needed for setting up volumetric line emissivity profiles
 cdr       as further add. tally ADDV (additional to those already defined in block 10a)
 cdr       The ADDV tallies may then be used for line of sight integration, along
 cdr       the CHORDS defined further below.
-cdr  Distinct from the other addv tallies from block 10a these
-cdr  further addv tallies (beyond NADVI) are currently apparently neither
-cdr  scaled, averaged, integrated, nor do they have text (units, species) assigned.
+cdr  Distinct from the ADDV tallies from block 10a these
+cdr  further ADDV tallies (beyond NADVI) have their text
+cdr  (tally label, units, species) assigned in subr. emissivity.f.
 
-cdr  check if such emissivity tallies are defined: search for 'DEFINE LINES' in next card
+cdr  check if such emissivity tallies are defined:
+cdr  Search for 'DEFINE LINES' in next card
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
 cdr  careful: slightly different from find_param
@@ -3773,10 +3790,9 @@ C
 c  Deal with ADDV storage for sum over components.
 c  The storage on ADDV for individual components is done below (JCOMP loop).
 cdr       IADV = IADV + 1
-c  if mod_addv=0: reset storage needs for each line
+c  if mod_addv=0: reset storage needs for each emissivity profile
 c                 back to nadvi+1..nadvi+num_compo+1,
-c                 i.e. addv tallies are only saved for one line at a time.
-cdr       IF (MOD_ADDV == 0) IADV = NADVI + 1
+c                 i.e. the ADDV tallies are only saved for one emissivity at a time.
           IF (MOD_ADDV == 0) IADV = NADVI
 
           EMIS_LINES(ILINE)%IADV_TOTAL = IADV + NUM_COMPO+1
@@ -3785,9 +3801,9 @@ cdr       IF (MOD_ADDV == 0) IADV = NADVI + 1
             ALLOCATE (EMIS_LINES(ILINE)%COMPO(NUM_COMPO))
 
             DO JCOMP=1,NUM_COMPO
-
               READ (IUNIN,'(A72)')
      .              EMIS_LINES(ILINE)%COMPO(JCOMP)%COMPO_NAME
+
               READ (IUNIN,6666) NUM_CONTRIB, IRC
               EMIS_LINES(ILINE)%COMPO(JCOMP)%NUM_CONTRIB = NUM_CONTRIB
               EMIS_LINES(ILINE)%COMPO(JCOMP)%IRC = IRC
@@ -3797,8 +3813,9 @@ cdr  for each new component: store emission profile on addv(iadv)
               IADV = IADV + 1
               EMIS_LINES(ILINE)%COMPO(JCOMP)%IADV = IADV
 
-cdr  now we dwell on the contributions:
-cdr  e.g. different isotopes,... but same rates, same population factors in each component
+cdr  now we dwell on the contributions to JCOMP:
+cdr  e.g. different isotopes,... but same emission rates, same population factors
+cdr  within each component JCOMP
               DO KCONTR = 1, NUM_CONTRIB
                 CNT%ISP = -1
                 CNT%ITP = -1
@@ -3979,8 +3996,6 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
           WRITE (IUNOUT,*) 'TIME DEP. MODE TURNED OFF, BECAUSE NPRNLI=0'
           NTIME=0
         ENDIF
-cym - was removed, present in the julich git // crash without this goto
-!pb   time dep. mode is turned off - thus skip reading rest of the block
         GOTO 1350
       ENDIF
 
@@ -4146,7 +4161,7 @@ C  STANDALONE RUN, READ BLOCK *** 14 HERE
           CALL EIRENE_MASPRM('NCPV',4,NCPV,'NCPVI',5,NCPVI,IERROR)
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
-!pb     CALL EIRENE_ALLOC_CCOUPL(2)
+
         DO 3020 J=1,NAINI
  3021     READ (IUNIN,'(A72)') ZEILE
           IF (ZEILE(1:1) .EQ. '*') GOTO 3021

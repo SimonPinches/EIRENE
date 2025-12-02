@@ -6,4 +6,4 @@ c-------------------------------------------------------------------------
       real,intent(in) :: a,b,c
       integer,intent(in) :: i1,i2,i3
       RETURN
-      END
+      END SUBROUTINE GRDRLG

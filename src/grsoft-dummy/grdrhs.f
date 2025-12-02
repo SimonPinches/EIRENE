@@ -3,4 +3,4 @@ c-------------------------------------------------------------------------
       integer :: NPKNT
       real :: pa(*), x(*), y(*), pnkt(3,*)
       RETURN
-      END
+      END SUBROUTINE GRDRHS

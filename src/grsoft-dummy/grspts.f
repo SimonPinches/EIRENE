@@ -2,4 +2,4 @@ c------------------------------------------------------------------------
       SUBROUTINE GRSPTS(INT)
       integer :: int
       RETURN
-      END
+      END SUBROUTINE GRSPTS

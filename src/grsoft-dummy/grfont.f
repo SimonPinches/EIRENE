@@ -2,4 +2,4 @@ c------------------------------------------------------------------------
       SUBROUTINE GRFONT(I)
       integer :: i
       RETURN
-      END
+      END SUBROUTINE GRFONT
