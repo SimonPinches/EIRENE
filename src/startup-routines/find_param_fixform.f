@@ -97,7 +97,8 @@ C
      .           I2, I3, IH, IANF, IFILE,
      .           ILINE, JCOMP, KCONTR, IREAC_ADD, IDUM1, IDUM2
       REAL(DP) :: SORIND, SORLIM, DUMM1, ROA, ZAA, ZZA, ZGA, YAA, YYA,
-     .            ZIA, YP, XP, YIA, YGA, RDUM1, RDUM2
+     .            ZIA, YP, XP, YIA, YGA,
+     .            AMPTS, RDUM1, RDUM2
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, LINCL45, NLCASCAD, NLDFST,
      .           NLRANMAR, NLOCTREE, NEXVS, NLTRIMESH
@@ -884,7 +885,8 @@ cpb  We imply implicitly that the numbering of step functions is in ascending or
         END DO
       END IF
 
-      READ (IUNIN,*)
+      READ (IUNIN,6664) RDUM1, AMPTS
+      IF(AMPTS.EQ.0.0_DP) AMPTS=1.0_DP
       DO ISTRA=1,NSTRAI
         IF (INDSRC(ISTRA) == 6) CYCLE
 C * ZEILE...: STRATUM NAME
@@ -1281,7 +1283,14 @@ C
       READ (IUNIN,'(A72)') ZEILE
       call fix_integer_input(ZEILE,3)
       READ (ZEILE,'(12I6)') NPRNLI, NINITL_READ, NPRMUL
-      IF (NPRMUL > 1) NPRNLI = NPRNLI * NPRMUL
+      IF (NPRMUL > 1) THEN
+        NPRNLI = NPRNLI * NPRMUL
+cdr apply amplification factor for "large runs" also to census storage
+      ELSEIF (AMPTS.NE.1.0_DP) THEN
+        NPRNLI = INT(REAL(NPRNLI) * AMPTS)
+        WRITE (iunout,*)
+     .   ' CENSUS STORAGE NPRNLI ENHANCED BY FACTOR AMPTS ',AMPTS
+      ENDIF
       NPRNL = MAX(NPRNL,NPRNLI)
 
       IF (NPRNL.LE.0.OR.NTIME.EQ.0) THEN

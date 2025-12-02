@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin - SOLPS_coupling - 05118fe99396fe5551bd2dc988fd392e1261d7c4
+## X. Bonnin - SOLPS_coupling - 72b40d313154040c452b29696b76a0ce3c22a91d
 
 ### Based on SOLPS_bug_fixes - 765b12f7f7ab978e8340d215d330ec49c6c5417b
 
 ** Changes **
 
+- Bug fixes for time-dependent runs and ensuring we always have a filled-in background for coupled runs
 - Debugged hybrid OpenMP+MPI parallelization
 - Added passing of ZI to SAMSRF
 - Output prettifying

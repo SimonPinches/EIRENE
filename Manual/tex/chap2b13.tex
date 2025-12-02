@@ -87,7 +87,7 @@ arrays, e.g., in order to continue a stationary case in the time-dependent mode
         a default time-horizon is defined.
         See default values specified below.
 
-        If NPRNLI $=0$, no census arrays are scored.
+        If NPRNLI $=0$, no census arrays are scored and any existing census arrays are zeroed out.
 
         In case NLERG = TRUE  (see input block 1), a time horizon is absolutely
         necessary in order to prevent infinite histories.
@@ -118,7 +118,7 @@ arrays, e.g., in order to continue a stationary case in the time-dependent mode
         for the very first time-cycle (continuation of an earlier sequence of
         time-cycles).
 
-        If NPTST $=$ 0, then NPTST is reset to IPRNL.
+        If NPTST $=$ 0, then NPTST is reset to NPRNLI.
 
         If NPTST $<$ 0, then NPTST is reset to IPRNL, and the random sampling from the
         census array is now replaced by a one-to-one re-launch of all particles from
@@ -168,6 +168,9 @@ arrays, e.g., in order to continue a stationary case in the time-dependent mode
         Note that in order to obtain this stationary estimate from snapshot estimates
         an additional multiplicative factor DTIMV (\si{\second}) (see next) is applied
         to snapshot tallies in case NTMSTP $<$ 0.
+
+        Using NTMSTP $<$ 0 is only allowed if the time census array is not previously filled in (i.e. the fort.15 file is missing or found empty), to avoid adding to an existing background.
+        If the fort.15 file is missing or empty, then the code sets NTMSTP = -1 internally to build a background time census.
   \item[DTIMV] Length of each individual internal time-step (\si{\second})
 
         Default: DTIMV=1.0

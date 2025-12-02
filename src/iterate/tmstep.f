@@ -49,7 +49,7 @@ cdr  >                         IPSTT, RPSTT   !dr  targets for full set of parti
 cdr   Oct.21:  removed. The required state vector coordinates are now made explicit:
 cdr            NPANUS, ISTRAS, ISPZS, WEIGHTS
       USE EIRMOD_COMNNL, ONLY: FLXCEN, DTIMV, TIME0,
-     >                         IPRNL, IPRNLI,
+     >                         IPRNL, IPRNLI, NPRNLI,
      >                         NPTST, RPARTW,
      >                         IPART, RPART,   !dr  census from
                                                !    this present run.
@@ -119,7 +119,7 @@ C  A: set NPTS for time stratum NSTRAI IN NEXT TIME STEP
       IPRNL=IPRNLI
       IPRNLI=0
       IF (NPTST.EQ.0) THEN
-        NPTS(NSTRAI)=IPRNL
+        NPTS(NSTRAI)=NPRNLI
         IF (NLMOVIE) THEN
           WRITE (IUNOUT,*) 'NLMOVIE TURNED OFF, BECAUSE NPTST.EQ.0'
           NLMOVIE=.FALSE.

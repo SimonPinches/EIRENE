@@ -50,7 +50,7 @@ C
       USE EIRMOD_PARMMOD, ONLY: IFOFF, MPARTT, NPARTT, NPRNL
       USE EIRMOD_CTRCEI, ONLY: TRCFLE
       USE EIRMOD_COMNNL, ONLY: FLXCEN, DTIMV, IPRNL, DTIMVN,
-     ,                         IPARTC, RPARTC, RPARTW
+     ,                         IPARTC, RPARTC, RPARTW, NTMSTP
       USE EIRMOD_COMSOU, ONLY: FLUX
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CINIT, ONLY: FORT
@@ -101,6 +101,22 @@ cdr  make sure that iprnl in previous run was not larger than in present run.
       CLOSE (UNIT=15+ifoff)
 
       FLUX(ISTR)=FLXCEN
+      IF (IPRNL.GT.0) THEN
+        IF (NTMSTP.LT.0) THEN
+          NTMSTP=1
+          WRITE(IUNOUT,*)
+     .     FORT//'15 FILE ALREADY CONTAINS A CENSUS ARRAY'
+          WRITE(IUNOUT,*)
+     .     'RESETTING NTMSTP to 1'
+        END IF
+      ELSE IF (IPRNL.EQ.0) THEN
+        WRITE(IUNOUT,*)
+     .   FORT//'15 FILE CONTAINS A NULL CENSUS ARRAY'
+        IF (NTMSTP.GT.0) THEN
+          NTMSTP=-1
+          WRITE (IUNOUT,*) 'RESETTING NTMSTP TO -1 TO FILL IT'
+        END IF
+      END IF
 C
       RETURN
 C
