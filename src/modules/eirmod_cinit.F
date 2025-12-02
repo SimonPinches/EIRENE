@@ -11,6 +11,8 @@ cdr dec 18 : remove obsolete photon-reflection data files graphite_ext and mo_ex
 cdr aug 19 : add legal filename: AMMONX (ifile=12)
 cdr nov.20 : remove CHELP, after cleanup of reaction data for density models.
 cdr          Now only reaction number IRC read from block 4 is kept.
+cdr nov 20 : remove obsolete POLARI file (was for high pressure mercury gas discharge lamps)
+cdr dec 20 : remove unused PHTNEW file
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 
@@ -289,10 +291,10 @@ C
       DBHANDLE(4) = 'H2VIBR'
       DBHANDLE(5) = 'SPECTR'
       DBHANDLE(6) = 'PHOTON'
-      DBHANDLE(7) = 'PHTNEW'
+      DBHANDLE(7) = 'free'
       DBHANDLE(8) = 'SPUTER'
       DBHANDLE(9) = 'TRIM  '
-      DBHANDLE(10) = 'POLARI'
+      DBHANDLE(10) = 'free'
       DBHANDLE(11) = 'free'
       DBHANDLE(12) = 'AMMONX'
       DBHANDLE(13) = 'ADAS  '
@@ -308,9 +310,9 @@ C  DEFAULT FOR DATABASE NAMES, CAN BE OVERWRITTEN BY CFILE CARDS
       DBFNAME(2) = 'METHANE'
       DBFNAME(3) = 'HYDHEL'
       DBFNAME(4) = 'H2VIBR'
-      DBFNAME(5) = 'SPECTR'
+      DBFNAME(5) = 'SPECTR'  ! also out ?
       DBFNAME(6) = 'PHOTON'
-      DBFNAME(7) = 'PHTNEW'
+      DBFNAME(7) = 'free'
       DBFNAME(8) = 'SPUTER'
 #ifndef HPUX
       I = 5
@@ -325,7 +327,7 @@ cdr  FOR SOME COMPILERS THIS IS ILLEGAL.
       else
         write (DBFNAME(9)(I+1:I+2),'(I2)') 21+ifoff
       endif
-      DBFNAME(10) = 'POLARI'
+      DBFNAME(10) = 'free'
       DBFNAME(11) = 'free'
       DBFNAME(12) = 'AMMONX'
       DBFNAME(13) = 'ADAS'

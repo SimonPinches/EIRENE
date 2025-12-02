@@ -1,4 +1,9 @@
 cdr  re-activated: Jan 2018
+cdr  fix ph4:  cleanup: remove pressure broadening, polari,...
+cdr            rename pointer to type(line_data): phline%...  to line_ir%...
+cdr  Apr.22: The iprftype card is now already read in read_reaclines,
+cdr          as were all other cards. So this exception is removed now.
+cdr  (not ready here)
 
       subroutine EIRENE_read_photdbk (ir, reac, isw)
 c   read parameters relevant "reaction no IR" for line transport (photon gas transport)
@@ -22,21 +27,15 @@ c
       integer, intent(in) :: ir, isw
       CHARACTER(50), INTENT(IN) :: REAC
 
-      real(dp) :: wl, aik, ei, ej, c2, c3, c4, c6_theo, b12, b21,
-     .            c3_theo, c6_qs_mess, c6_ar_mess, c3_mess, c6
-      real(dp) :: c6a(12)
+      real(dp) :: wl, aik, ei, ej, b12, b21
       real(dp) :: rdata(9,1)
-      real(dp), save :: polari_fac(120)
+
       integer :: gi, gj, inep, knep
-      integer :: ianf, iend, iblnk, lr, ic, i, j, iplsc3, iprftype,
-     .           imess, ifremd, ii, i1, lel, nrjprt
-      integer :: ik6, ipc6(12)
-      integer, save :: ifrst=0, npolari
+      integer :: ianf, iend, iblnk, lr, ic, iprftype,
+     .           i1, lel
       character(1000) :: zeile
       character(20) :: elementname
       character(1) :: cha
-      character(2) :: kenn(12)
-      character(2), save :: polari_elnam(120)
       type(line_data), pointer :: phline
       external :: eirene_exit_own
 
@@ -47,11 +46,6 @@ c
           CALL EIRENE_EXIT_OWN(1)
       END IF
 
-      if (ifrst == 0) then
-         ifrst = 1
-         call EIRENE_read_polari(polari_elnam,polari_fac,npolari)
-      end if
-
       lr=len_trim(reac)
 
       read (29+ifoff,*)
@@ -61,13 +55,13 @@ c
       do
         read (29+ifoff,'(A1000)',end=990) zeile
         if (zeile(1:2) == '--') cycle
-        call EIRENE_subcomma(zeile)
+        call EIRENE_chr_subcomma(zeile)
 
 !  read element name
         ianf = 3
         iend = ianf + scan(zeile(ianf:),'|') - 1
 
-        call EIRENE_delete_blanks(zeile(ianf:iend))
+        call EIRENE_chr_delete_blanks(zeile(ianf:iend))
         iblnk = scan(zeile(ianf:iend),'|') - 1
         if (iblnk < 0) iblnk = iend-ianf+1
 
@@ -154,123 +148,13 @@ c
         end if
 
 
-cdr next: line broadening constants, e.g. for pressure broadening etc.
-!  read c2
-        ianf = iend + 2
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-        if (verify(zeile(ianf:iend-1),' ') == 0) then
-          c2 = 0._dp
-        else
-          read (zeile(ianf:iend-1),*) c2
-        end if
-
-!  read c3 (theo)
-        ianf = iend + 2
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-        if (verify(zeile(ianf:iend-1),' ') == 0) then
-          c3_theo = 0._dp
-        else
-          read (zeile(ianf:iend-1),*) c3_theo
-        end if
-
-!  read c4
-        ianf = iend + 2
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-        if (verify(zeile(ianf:iend-1),' ') == 0) then
-          c4 = 0._dp
-        else
-          read (zeile(ianf:iend-1),*) c4
-        end if
-
-!  read c6 (theo)
-        ianf = iend + 2
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-        if (verify(zeile(ianf:iend-1),' ') == 0) then
-          c6_theo = 0._dp
-        else
-          read (zeile(ianf:iend-1),*) c6_theo
-        end if
-
-!  read c6qs (mess)
-        ianf = iend + 2
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-        if (verify(zeile(ianf:iend-1),' ') == 0) then
-          c6_qs_mess = 0._dp
-        else
-          read (zeile(ianf:iend-1),*) c6_qs_mess
-        end if
-
-!  read c6 Ar (mess)
-        ianf = iend + 2
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-        if (verify(zeile(ianf:iend-1),' ') == 0) then
-          c6_ar_mess = 0._dp
-        else
-          read (zeile(ianf:iend-1),*) c6_ar_mess
-        end if
-
-!  read c3 (mess)
-        ianf = iend + 2
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-        if (verify(zeile(ianf:iend-1),' ') == 0) then
-          c3_mess = 0._dp
-        else
-          read (zeile(ianf:iend-1),*) c3_mess
-        end if
-
-cdr  done with pressure broadening constants
-
         if (.true.) exit
 
       end do
 
       close (unit=29+ifoff)
 
-      read (iunin,'(12i6)') iprftype, iplsc3, imess, ifremd, nrjprt
-
-      if (imess == 1) then
-         c3 = c3_mess
-         c6 = c6_ar_mess
-      else
-         c3 = c3_theo
-         c6 = c6_theo
-      end if
-
-      if (ifremd > 12) then
-         write (iunout,*)
-     .     ' too many foreign pressure broadenings specified'
-         write (iunout,*) ' calculation abandoned '
-      end if
-
-
-      ipc6 = 0
-      c6a = 0._dp
-      kenn = '  '
-      do i=1,ifremd
-        read (iunin,'(i6,1x,a2,3x,i6)') ii,kenn(i),ik6
-        call EIRENE_uppercase(kenn(i))
-        if (kenn(i) == 'QS') then
-          ipc6(i) = ik6
-          c6a(i) = c6_qs_mess
-        else
-          do j=1,npolari
-            if (kenn(i) == polari_elnam(j)) then
-              ipc6(i) = ik6
-              c6a(i) = c6*polari_fac(j)
-              exit
-             end if
-          end do
-          if (j>npolari) then
-            write (iunout,*) ' wrong code for foreign gas pressure',
-     .                  ' broadening specified '
-            write (iunout,*) ' code ',kenn,' not found in',
-     .                  ' polarisation database '
-            call EIRENE_exit_own(1)
-        end if
-        end if
-      end do
-
-      c2=0._dp
+      read (iunin,'(12i6)') iprftype
 
       allocate (phline)
 
@@ -285,10 +169,6 @@ cdr  done with pressure broadening constants
 !     Ej is in [1/cm] i.e. in 1.E-7 [1/nm]
 cdr convert to eV units
       phline%e1 = ej * clight*hplanck*erg_to_ev
-c  unused, pressure broadening constants
-      phline%c2 = c2
-      phline%c3 = c3
-      phline%c4 = c4
 
       select case (isw)
         case (1)    ! absorption
@@ -303,16 +183,8 @@ cdr  ??
            phline%ircart = 0
       end select
 
-      phline%c6 = c6a(1)
-      phline%c6a(1:12) = c6a(1:12)
-      phline%iplsc6(1:12) = ipc6(1:12)
-      phline%kenn(1:12) = kenn(1:12)
-      phline%ifremd = count(phline%iplsc6(1:12)>0)
-
-
-      phline%ignd = iplsc3
       phline%iprofiletype = iprftype
-      phline%imess = imess
+
 
 cdr  jan 18: try to reconnect photonic data to reacdat structure.
 cdr          not finished
@@ -336,7 +208,6 @@ cdr  fetch data for bound-bound transition line
       b12=b21*gi/gj
       phline%b21 = b21
       phline%b12 = b12
-      phline%nrjprt = nrjprt
 
       phline%reacname = reac(1:len_trim(reac))
 
@@ -374,7 +245,7 @@ c  Use REACDAT type "poly" also for photonic data
       contains
 
 
-      subroutine EIRENE_subcomma (str)
+      subroutine EIRENE_chr_subcomma (str)
 cdr  replace comma "," with point "." in character string STR
       implicit none
       character(len=*), intent(in out) :: str
@@ -386,10 +257,10 @@ cdr  replace comma "," with point "." in character string STR
         str(i:i)='.'
       end do
       return
-      end subroutine EIRENE_subcomma
+      end subroutine EIRENE_chr_subcomma
 
 
-      subroutine EIRENE_delete_blanks (str)
+      subroutine EIRENE_chr_delete_blanks (str)
 cdr  remove blanks from character string STR
       implicit none
       character(len=*), intent (in out) :: str
@@ -417,85 +288,7 @@ cdr  remove blanks from character string STR
       end do
 
       return
-      end subroutine EIRENE_delete_blanks
+      end subroutine EIRENE_chr_delete_blanks
 
-
-      subroutine EIRENE_read_polari (name, factor, n)
-      implicit none
-      character(*), intent(out) :: name(:)
-      real(dp), intent(out) :: factor(:)
-      integer, intent(out) :: n
-      character(200) :: zeile
-      integer :: nmax, ifile
-
-      nmax = min(size(name),size(factor))
-
-      DO IFILE=1, NDBNAMES
-        IF (INDEX(DBHANDLE(IFILE),'POLARI') /= 0) EXIT
-      END DO
-
-      IF (IFILE > NDBNAMES) THEN
-        WRITE (IUNOUT,*) ' NO DATABASE NAME FOR POLARI DEFINED '
-        WRITE (IUNOUT,*) ' CALCULATION ABANDONED '
-        CALL EIRENE_EXIT_OWN(1)
-      END IF
-
-      open (unit=28+ifoff,file=DBFNAME(IFILE),access='sequential',
-     .      form='formatted')
-
-      n=0
-      read (28+ifoff,*)
-      read (28+ifoff,*)
-
-      do
-        read (28+ifoff,'(A200)',end=990) zeile
-        if (zeile(1:2) == '--') cycle
-        call EIRENE_subcomma(zeile)
-
-        n = n + 1
-        if (n > nmax) then
-           write (iunout,*) ' too many lines in polarization file '
-           write (iunout,*) ' calculation stopped '
-           call EIRENE_exit_own(1)
-        end if
-
-        ianf = 3
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-
-!  read element name
-        ianf = iend + 2
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-        call EIRENE_delete_blanks(zeile(ianf:iend))
-        iblnk = scan(zeile(ianf:iend),'|') - 1
-        if (iblnk < 0) iblnk = iend-ianf+1
-        if (iblnk == 0) then
-           write (iunout,*) ' ERROR IN DATABASE POLARI'
-           write (iunout,*) ' NO ELEMENT NAME FOUND '
-           call eirene_exit_own(1)
-        end if
-
-        name(n) = repeat(' ',2)
-        name(n)(1:iblnk) = zeile(ianf:ianf+iblnk-1)
-        call EIRENE_uppercase(name(n))
-
-!  skip polarization
-        ianf = iend + 2
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-
-!  skip estimated error
-        ianf = iend + 2
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-
-!  read factor
-        ianf = iend + 2
-        iend = ianf + scan(zeile(ianf:),'|') - 1
-        read (zeile(ianf:iend-1),*) factor(n)
-
-      end do
-
-  990 continue
-
-      return
-      end subroutine EIRENE_read_polari
 
       end subroutine EIRENE_read_photdbk
