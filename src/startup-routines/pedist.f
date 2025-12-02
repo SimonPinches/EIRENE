@@ -18,6 +18,16 @@ C> See EIRENE manual, "stratified source sampling".
 C> when applying stratification is also available.
 C> Furthermore, a user-defined set-up (subroutine EIRENE_PEDIST_USR)
 C> can be used (NPRLL == -1).
+C> Three other strategies exist.
+C> NPRLL == 2 : All Processors Compute All Strata (APCAS) is
+C> similar to the embarassingly parallel scheme but splits the trajectories
+C> across processors instead of duplicating them.
+C> NPRLL == 3 : A balanced proportional allocation scheme that adjusts
+C> the workload as a function of the CPU cost of the strata from the
+C> previous EIRENE call.
+C> NPRLL == 4 : An improvement over the balanced scheme above, to minimize
+c> communication overheads and divide the number of trajectories between
+C> processors according to the CPU time used in previous steps.
 C>
 C> Within this subroutine three arrays are set that define the entire
 C> parallelisation of EIRENE.
@@ -57,7 +67,7 @@ C> - NPESTA(ISTRA): master process for stratum ISTRA
           CALL EIRENE_PEDIST_USR( XTIM, XX1 )
         CASE( 0 )
           CALL EIRENE_PEDIST_EMBPARALL
-        CASE( 1 )
+        CASE( 1:4 )
           CALL EIRENE_PEDIST_PROPALLOC( XTIM, XX1 )
       END SELECT
 

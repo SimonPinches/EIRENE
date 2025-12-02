@@ -73,6 +73,7 @@ cym will disappear when parallel zone will encompass the whole code
      .                         EIRENE_IF3COP_SUM
       USE EIRMOD_CALSTR_BUFFERED
       USE EIRMOD_BALANCED_STRATEGY
+      USE EIRMOD_IMPROVED_STRATEGY
       USE EIRMOD_PRESSURELOOP
 
       IMPLICIT NONE
@@ -180,6 +181,9 @@ cdr 4.11.20
 
       real(dp) :: timused
       integer :: itimstart, itimend, itimrate
+
+C     used only for IMPROVED strategy
+      integer :: mapping(nstrai), order(nstrai), istr1, istr2, priority
 C
       LOGICAL :: LOGHELP(NSTRA)
       LOGICAL :: LSTP
@@ -586,6 +590,31 @@ C
 CHJL Need to check this removal of over_acc
 !      OVER_ACC=0.D0
       NEW_ITER=0
+C
+C     ordering of the strata for IMPROVED strategy
+      if (work_distribution_strategy == STRATEGY_IMPROVED) then
+        do  istr1 = 1, nstrai
+          if (.not. calc_stratum(istr1)) then
+            order(istr1) = 1
+          elseif (nparts_loc(istr1) == npts(istr1)) then
+            order(istr1) = 2
+          elseif (.not. i_am_leader(istr1)) then
+            order(istr1) = 3
+          else
+            order(istr1) = 4
+          endif
+        enddo
+        istr2 = 1
+        do priority = 1, 4
+          do istr1 = 1, nstrai
+            if (order(istr1) == priority) then
+              mapping(istr2) = istr1
+              istr2 = istr2 + 1
+            endif
+          enddo
+        enddo
+      endif
+C
 #if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP END MASTER
 !$OMP BARRIER
@@ -605,8 +634,6 @@ CHJL Need to check this removal of over_acc
       DO ISTR=1,NSTRAI   ! main loop over strata
 
         timan=EIRENE_second_own()
-
-        ISTRA=ISTR
 
 C  SPECIAL TREATMENT FOR MOVIE OPTION, OR FOR ONE-BY ONE RELAUNCH FROM CENSUS ARRAY
 C  IN TIME DEP. MODE
@@ -636,6 +663,12 @@ C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
               WRITE(iunout,*) 'ISTRA, NPTS = ',IS,NPTS(IS)
             ENDDO
           ENDIF
+        ELSE
+          if (work_distribution_strategy == STRATEGY_IMPROVED) then
+            istra = mapping(istr)
+          else
+            istra = istr
+          endif
         ENDIF
 
 C  MOVIE OPTION (NLMOVIE): DONE,
@@ -1248,6 +1281,7 @@ C
 #endif
           XMCT(istra)=timused
           call time_particles(istra, timused, ipanu)
+          call time_particles_improved(istra, timused, ipanu)
 csw
           SECND=EIRENE_SECOND_OWN()
 C
@@ -1263,8 +1297,11 @@ c
             call system_clock(itimend, itimrate)
             call time_calstr(istra, real(itimend-itimstart,DP)
      &                     /REAL(itimrate,DP))
+            call time_calstr_improved(istra,
+     &           real(itimend-itimstart,DP) / REAL(itimrate,DP))
           else
             call time_calstr(istra, 0.0_dp)
+            call time_calstr_improved(istra, 0.0_dp)
           endif
 
           if (I_AM_LEADER(istra)) then
@@ -1585,6 +1622,8 @@ C
             call system_clock(itimend, itimrate)
             call time_postproc(istra, real(itimend-itimstart,DP)/
      &                         REAL(itimrate,DP))
+            call time_postproc_improved(istra,
+     &           real(itimend-itimstart,DP) / REAL(itimrate,DP))
           else
             IF (NMODE.GT.0) THEN
 !  This routine has to be called by all processors
@@ -1598,6 +1637,7 @@ C
         ELSE
          ! We update calstr timings even if we skipped the stratum
           call time_calstr(istra, 0.0_dp)
+          call time_calstr_improved(istra, 0.0_dp)
         END IF                  ! CALC_STRATUM(ISTRA)
 cdr  do another sub-stratum, for missing rare events stored on census
 cdr     If...

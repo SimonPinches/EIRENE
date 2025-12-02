@@ -2301,6 +2301,8 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
         strategy = 'APCAS'
       case (3)
         strategy = 'BALANCED'
+      case (4)
+        strategy = 'IMPROVED'
       case default
         strategy = 'AUTOMATIC'
       end select

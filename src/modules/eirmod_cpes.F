@@ -65,6 +65,11 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       !> Each PE calculates the same number of histories.
       integer, public, parameter :: STRATEGY_EMBARRASS = 3
 
+      !> Assign PEs to strata to minimize communication,
+      !> and divide the number of particles between PEs
+      !> evenly by using CPU time of previous steps.
+      integer, public, parameter :: STRATEGY_IMPROVED = 4
+
       !> STRATEGY_DEFAULT and NPRLL_DEFAULT are set in user_defaults
       integer, public, save :: STRATEGY_DEFAULT
       integer, public, save :: NPRLL_DEFAULT
@@ -311,6 +316,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         use eirmod_comsou
      ,   , only: nstrai, npts
         use eirmod_balanced_strategy
+        use eirmod_improved_strategy
         use eirmod_mpi
         real(dp), intent(inout) :: xtim(0:nstra)
         real(dp), intent(in) :: xx1
@@ -369,13 +375,26 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
             case (STRATEGY_APCAS)
               ipts(1:nstrai) = npts(1:nstrai)
               call init_apcas_strategy(nstrai, ipts)
-            case (STRATEGY_BALANCED)
+            case (STRATEGY_BALANCED, STRATEGY_IMPROVED)
               if (first_call) then
-                call init_balanced_strategy(ierr)
+                if (work_distribution_strategy == STRATEGY_BALANCED)
+     >           then
+                  call init_balanced_strategy(ierr)
+                else
+                  call init_improved_strategy(ierr)
+                endif
                 if (ierr.ne.0) then
                   if(my_pe==0) then
-                    write(iunout,*) 'Error in init_balanced_strategy. ',
-     &                              'Falling back to STRATEGY_APCAS.'
+                    if (work_distribution_strategy == STRATEGY_BALANCED)
+     >               then
+                      write(iunout,*)
+     &                 'Error in init_balanced_strategy. ',
+     &                 'Falling back to STRATEGY_APCAS.'
+                    else
+                      write(iunout,*)
+     &                 'Error in init_improved_strategy. ',
+     &                 'Falling back to STRATEGY_APCAS.'
+                    endif
                   endif
                   work_distribution_strategy = STRATEGY_APCAS
                 endif
@@ -383,8 +402,14 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
                 ipts(1:nstrai) = npts(1:nstrai)
                 call init_apcas_strategy(nstra,ipts)
               else
-                call opt_balanced_strategy(nparts_loc, npestr,
-     &                stratum_leader, procforstra)
+                if (work_distribution_strategy
+     &               == STRATEGY_BALANCED) then
+                  call opt_balanced_strategy(nparts_loc, npestr,
+     &                 stratum_leader, procforstra)
+                else
+                  call opt_improved_strategy(nparts_loc, npestr,
+     &                 stratum_leader, procforstra)
+                endif
                 npesta = stratum_leader
               endif
             case default
@@ -418,6 +443,8 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
      ,   , only: nstrai
         use eirmod_balanced_strategy
      ,   , only: throughput_pe_all, t_overhead
+        use eirmod_improved_strategy
+     ,   , only: throughput2, t_overhead2
         integer, dimension(nstrai*nprs) :: nparts_tmp
         integer, parameter :: ncol = 20
         character(len=9), dimension(nstrai+2) :: ch_tmp
@@ -504,7 +531,8 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
             write(long_line,hlp_fmt) ' sum | ', ch_tmp(isa:ise)
             write(iunout,'(a)') trim(long_line)
             call eirene_leer(1)
-            if(allocated(throughput_pe_all)) then
+            if(allocated(throughput_pe_all) .or.
+     &         allocated(throughput2)) then
               call eirene_leer(1)
               write(iunout,*)
      .         'Work distribution (estimated working time',
@@ -567,26 +595,48 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
                     leader_mark = ' '
                   endif
                   if (nparts_tmp(k*nstrai + j)>0) then
-                    write(ch_tmp(j), fmt='(F8.3,A1)')
-     &                 real(nparts_tmp(k*nstrai+j))/
-     &                 throughput_pe_all(k*nstrai+j),
-     &                 leader_mark
-                    tot = tot + real(nparts_tmp(k*nstrai+j))/
-     &                 throughput_pe_all(k*nstrai+j)
+                    if (allocated(throughput_pe_all)) then
+c                     BALANCED strategy
+                      write(ch_tmp(j), fmt='(F8.3,A1)')
+     &                     real(nparts_tmp(k*nstrai+j))/
+     &                     throughput_pe_all(k*nstrai+j),
+     &                     leader_mark
+                      tot = tot + real(nparts_tmp(k*nstrai+j))/
+     &                     throughput_pe_all(k*nstrai+j)
+                    else
+c                     IMPROVED strategy
+                      write(ch_tmp(j), fmt='(F8.3,A1)')
+     &                     nparts_tmp(k*nstrai + j) / throughput2(j),
+     &                     leader_mark
+                      tot = tot + nparts_tmp(k*nstrai+j)/throughput2(j)
+                    endif
                   else
                     write(ch_tmp(j), fmt='(A8,A1)') '        ',
      &                 leader_mark
                   end if
                 end do
                 if (it.eq.ie) then
-                  if (t_overhead(k).lt.1000.0_DP) then
-                    write(ch_tmp(ise+1),fmt='(A2,F7.3)') ' |',
-     &               t_overhead(k)
+                  if (allocated(throughput_pe_all)) then
+c                   BALANCED strategy
+                    if (t_overhead(k).lt.1000.0_DP) then
+                      write(ch_tmp(ise+1),fmt='(A2,F7.3)') ' |',
+     &                     t_overhead(k)
+                    else
+                      write(ch_tmp(ise+1),fmt='(A2,F7.2)') ' |',
+     &                     t_overhead(k)
+                    end if
+                    tot = tot + t_overhead(k)
                   else
-                    write(ch_tmp(ise+1),fmt='(A2,F7.2)') ' |',
-     &               t_overhead(k)
-                  end if
-                  tot = tot + t_overhead(k)
+c                   IMPROVED strategy
+                    if (t_overhead2(k).lt.1000.0_DP) then
+                      write(ch_tmp(ise+1),fmt='(A2,F7.3)') ' |',
+     &                     t_overhead2(k)
+                    else
+                      write(ch_tmp(ise+1),fmt='(A2,F7.2)') ' |',
+     &                     t_overhead2(k)
+                    end if
+                    tot = tot + t_overhead2(k)
+                  endif
                   if (tot.lt.1000.0_DP) then
                     write(ch_tmp(ise+2),fmt='(A2,F7.3)') ' |', tot
                   else
@@ -662,6 +712,8 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       SUBROUTINE EIRENE_ALLOC_CPES(ICAL)
       USE EIRMOD_BALANCED_STRATEGY
      , , ONLY: ALLOCATE_BALANCED_STRATEGY
+      USE EIRMOD_IMPROVED_STRATEGY
+     , , ONLY: ALLOCATE_IMPROVED_STRATEGY
 
       INTEGER ICAL
 
@@ -681,6 +733,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         STRATUM_COMM = MPI_COMM_NULL
 
         call allocate_balanced_strategy
+        call allocate_improved_strategy
         WRITE (IUNMEM,'(A,T25,I15)')
      .      ' CPES(1) ',(4*NSTRA+2*(NSTRA+1)+NPRS)*4 +
      .                  NSTRA*NPRS*4
@@ -704,6 +757,8 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       SUBROUTINE EIRENE_DEALLOC_CPES
       USE EIRMOD_BALANCED_STRATEGY
      , , ONLY: DEALLOCATE_BALANCED_STRATEGY
+      USE EIRMOD_IMPROVED_STRATEGY
+     , , ONLY: DEALLOCATE_IMPROVED_STRATEGY
 
       IF (.NOT.ALLOCATED(NPESTR)) RETURN
 
@@ -720,6 +775,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
       CALL FREE_COMMUNICATORS(NSTRA)
       DEALLOCATE(STRATUM_COMM)
       CALL DEALLOCATE_BALANCED_STRATEGY
+      CALL DEALLOCATE_IMPROVED_STRATEGY
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_CPES
 

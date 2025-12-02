@@ -5211,7 +5211,8 @@ C  also set NAINI, NCOPII, NCOPIE there
       USE EIRMOD_COMUSR, ONLY: NPRLL
       USE EIRMOD_CPES, ONLY: NPRS,
      >    STRATEGY_UNDEFINED, STRATEGY_EMBARRASS,
-     >    STRATEGY_ORIGINAL, STRATEGY_APCAS, STRATEGY_BALANCED,
+     >    STRATEGY_ORIGINAL, STRATEGY_APCAS,
+     >    STRATEGY_BALANCED, STRATEGY_IMPROVED,
      >    INPUT_DISTRIBUTION_STRATEGY
       use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
@@ -5252,6 +5253,11 @@ C  also set NAINI, NCOPII, NCOPIE there
         input_distribution_strategy = STRATEGY_BALANCED
         CALL EIRENE_MASAGE
      .           ('APPLYING "BALANCED" PARALLELIZATION STRATEGY')
+      case ('IMPROVED')
+        NPRLL = 4
+        input_distribution_strategy = STRATEGY_IMPROVED
+        CALL EIRENE_MASAGE
+     .           ('APPLYING "IMPROVED" PARALLELIZATION STRATEGY')
       case ('EMBARRASS')
         NPRLL = 0
         input_distribution_strategy = STRATEGY_EMBARRASS
