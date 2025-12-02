@@ -104,9 +104,6 @@ C Need to clarify what eirene_calstr_usr does with my_pe_gr.
           return
         end if
 
-        mxdim = max(nvoltl,nsrftl,nsd,nsdw,
-     .              nmoli+1,natmi+1,nioni+1,nphoti+1,nplsi+1)
-
 cdr missing: wtotph ??
 
         call mpi_reduce(WTOTM(0:nmoli,istra),helpm,nmoli+1,
@@ -210,21 +207,22 @@ c  energy balance tallies: from bulk (ipls) to species a,m,i,ph,pl
         if (my_pe_gr==0) EPPLI(0:nplsi,istra) = helpp(0:nplsi)
 
 c  all volume-averaged tallies: estimv
-        allocate (helpv(nrtal+1), dummyv(nrtal+1))
-        do ir=1,nvoltl
-          dummyv(1:nrtal) = estimv(ir,1:nrtal)
-          call mpi_reduce(dummyv,helpv,nrtal,
+        if (my_pe_gr==0) then
+          call mpi_reduce(MPI_IN_PLACE,estimv,nvoltl*nrtal,
      .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-          if (my_pe_gr==0) estimv(ir,1:nrtal) = helpv(1:nrtal)
-        end do
+        else
+          call mpi_reduce(estimv,estimv,nvoltl*nrtal,
+     .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
+        end if
 
 c  all surface-averaged tallies: estims
-        do ir=1,nsrftl
-          dummys(1:nlmpgs) = estims(ir,1:nlmpgs)
-          call mpi_reduce(dummys,helps,nlmpgs,
+        if (my_pe_gr==0) then
+          call mpi_reduce(MPI_IN_PLACE,estims,nsrftl*nlmpgs,
      .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
-          if (my_pe_gr==0) estims(ir,1:nlmpgs) = helps(1:nlmpgs)
-        end do
+        else
+          call mpi_reduce(estims,estims,nsrftl*nlmpgs,
+     .         mpi_double_precision,mpi_sum,0,calstr_comm,ier1)
+        end if
 
 c  all energy-resolved ("spectra") tallies: estiml%spc
 cdr  different treatment because tallies and their variances are mixed
@@ -258,6 +256,9 @@ c  standard deviation of energy-resolved "spectra": estiml%sdv,...?
 
           deallocate (helpest)
         end do   !nadspc
+
+        mxdim = max(nrtal+1, ncv)
+        allocate (helpv(mxdim), dummyv(mxdim))
 
 C  standard deviation of volume-averaged tallies. sdvi1: sigma, sgms
         if (nsd > 0) then

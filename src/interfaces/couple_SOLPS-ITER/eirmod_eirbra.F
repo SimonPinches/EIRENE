@@ -360,6 +360,8 @@ cdjm Jan2017
       call mpi_bcast (volsumei,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
 
+      call mpi_barrier(MPI_COMM_WORLD,ierr)
+
       return
       end subroutine eirene_broadcast_eirbra
 
