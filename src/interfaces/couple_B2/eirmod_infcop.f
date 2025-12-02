@@ -178,7 +178,7 @@ c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
      .           IR1, IR2,  imf,
      .           icp, icp2, icp3,
      .           istat_cop, ixm1, iym1, icp4, icp5,
-     .           js, iunin_save, iusrout
+     .           js, iunin_save
 
       INTEGER, ALLOCATABLE, SAVE :: IZDEN(:)
       REAL(DP), EXTERNAL :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1,

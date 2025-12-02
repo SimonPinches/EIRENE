@@ -1,0 +1,41 @@
+FC       = pgf90
+CC       = /usr/bin/gcc
+
+ifndef SOLPS_CPP
+DEFINES += -DPGF90
+FCOPTS  += -Mnorpath
+endif
+COMPILER_MAJOR_VERSION = $(shell ${FC} -V | grep "pgf90" | awk 'match($$0,/[0-9]+\.[0-9]+\-[0-9]+/){print substr($$0, RSTART, RLENGTH)}' | cut -d '.' -f 1 )
+DEFINES += -DCOMPILER_MAJOR_VERSION=${COMPILER_MAJOR_VERSION} -DNO_JSON
+OBJDEST  = -module ${OBJDIR} -o $@
+INCMOD   = -I
+
+ifdef SOLPS_DEBUG
+FCOPTS  += -g
+CFLAGS  += -g
+else
+CFLAGS  += -O2
+endif
+
+ifdef SOLPS_OPENMP
+FCOPTS  += -mp=nonuma
+LDOPTS  += -mp=nonuma
+endif
+ifdef SOLPS_MPI
+INCLUDE += -I${MPDIR}/include
+FCOPTS  += -Mmpi=mpich
+DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+
+COMPILE  = ${FC} -c ${FCOPTS}
+
+NAG      = ${LD_NAG}
+
+LDEXTRA  =
+
+MOD      = mod
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

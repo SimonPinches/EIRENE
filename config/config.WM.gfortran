@@ -1,0 +1,31 @@
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+CPP   = -/lib/cpp -traditional
+
+FCOPTS    = -fno-second-underscore
+ifdef SOLPS_DEBUG
+FCOPTS   += -ffpe-trap=denormal -fsignaling-nans
+CFLAGS    = -check
+endif
+
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS       = ${LD_GR} ${LD_GKS} -lX11 -lXt
+endif
+endif
+endif
+
+LDLIBS    = -L/usr/local/lib -L/usr/X11R6/lib
+
+INCMOD    = -B
+
+COMPILE   = ${FC} -c ${FCOPTS} ${INCMOD}${OBJDIR}
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

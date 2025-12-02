@@ -146,7 +146,6 @@ cdr   REAL(DP) :: timea
      .           JPLS, IRE, JSPZ, JTRJ, ISTRAI, NLJ, IENTRY,
      .           IO13
 
-      INTEGER, SAVE :: IUSROUT=0
 #ifdef USE_MPI
       INTEGER :: IER
 #endif
@@ -480,7 +479,7 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
           ELSE
             IF (IO == 0) THEN
               JL = JL + 1
-              IF (JL == 1) THEN
+              IF (JL == 1 .AND. IUSROUT == 0) THEN
                 IUSR = -9999
                 CALL EIRENE_OPENFILE(IUSR,FILE='user_data.input',
      .               FORM='FORMATTED',ACCESS='SEQUENTIAL')

@@ -101,9 +101,13 @@ C
       USE EIRMOD_CUPD
       USE EIRMOD_PHOTON
       USE EIRMOD_JSON
+#ifndef NO_JSON
       USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
       use json_module           !IGNORE
      .   , only  : json_ck
+#else
+      USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR_FIXED
+#endif
       USE EIRMOD_PRESSURELOOP
 
       IMPLICIT NONE
@@ -200,9 +204,11 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
      .           LRDMLTI, LRDMLV, NLSPCSCL_DUM, NLSPCSCL_ON_DUM
       LOGICAL, ALLOCATABLE :: LOGRDH(:)
       CHARACTER(420) :: ZEILE, ULINE
+#ifndef NO_JSON
 !cym/cpg avoid type mismatch
       CHARACTER(kind=json_CK,len=420) :: zeileCk
 !cym/cpg end
+#endif
       CHARACTER(500) :: FILE, FILE45
       CHARACTER(8) :: FILNAM, VARNAME, SPCNAME
       CHARACTER(4) :: H123, CLAB
@@ -267,12 +273,14 @@ C
       IF (ZEILE(1:1).EQ.'*') THEN
         IF (ZEILE(1:3).NE.'***') THEN
           WRITE (iunout,'(1X,A)') trim(ZEILE)
+#ifndef NO_JSON
 !  STORE COMMENT LINES FOR OUTPUTING TO JSON FILE
 !cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(cm_stack,trim(zeile))
           zeileCK=trim(zeile)
           call eirene_push_string_stack(cm_stack,trim(zeileCK))
 !cym/cpg end
+#endif
         END IF
         GOTO 109
       ELSE
@@ -1149,14 +1157,14 @@ C
         IREAD=1
         IF (ZEILE(1:3).EQ.'CH0') THEN
           IREAD=0
-
+#ifndef NO_JSON
 !  STORE CH0 LINES FOR OUTPUTING TO JSON FILE
 !cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(ch0_stack,zeile(1:72))
           zeileCK=zeile
           call eirene_push_string_stack(ch0_stack,zeileCK(1:72))
 !cym/cpg end
-
+#endif
           CALL EIRENE_DEKEY (ZEILE(4:72),IHELP,1,1,1,NLIMPS)
           GOTO 351
         ENDIF
@@ -1186,14 +1194,14 @@ C
 C   GENERAL SURFACE DATA
   362   READ (IUNIN,'(A72)') ZEILE
         IF (ZEILE(1:3).EQ.'CH1') THEN
-
+#ifndef NO_JSON
 !  STORE CH1 LINES FOR OUTPUTING TO JSON FILE
 !cym/cpg avoid type mismatch
 !           call eirene_push_string_stack(ch1_stack(i),zeile(1:72))
            zeileCK=zeile
            call eirene_push_string_stack(ch1_stack(i),zeileCK(1:72))
 !cym/cpg end
-
+#endif
           IF (NLIMPB >= NLIMPS) THEN
             CALL EIRENE_DEKEY (ZEILE(4:72),IGJUM1,0,NLIMPS,I,NLIMPS)
           ELSE
@@ -1202,13 +1210,14 @@ C   GENERAL SURFACE DATA
           END IF
           GOTO 362
         ELSEIF (ZEILE(1:3).EQ.'CH2') THEN
-
+#ifndef NO_JSON
 !  STORE CH2 LINES FOR OUTPUTING TO JSON FILE
 !cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(ch2_stack(i),zeile(1:72))
           zeileCK=zeile
           call eirene_push_string_stack(ch2_stack(i),zeileCK(1:72))
 !cym/cpg end
+#endif
           IF (NLIMPB >= NLIMPS) THEN
             CALL EIRENE_DEKEY (ZEILE(4:72),IGJUM2,0,NLIMPS,I,NLIMPS)
           ELSE
@@ -1492,14 +1501,14 @@ C  Normal start of reading database A&M processes
 C
   411 IF (IREAD == 0) READ (IUNIN,'(A420)') ZEILE
       IF (ZEILE(1:1).NE.'*') THEN
-
+#ifndef NO_JSON
 !  STORE REACTION LINES FOR OUTPUTING TO JSON FILE
 !cym/cpg avoid type mismatch
 !        call eirene_push_string_stack(crs_stack,trim(zeile))
          zeileCK=zeile
          call eirene_push_string_stack(crs_stack,trim(zeileCK))
 !cym/cpg end
-
+#endif
 C
 C  READ ONE REACTION FROM FILE "FILNAM" AT A TIME. Input card is on "ZEILE"
 C
@@ -2984,12 +2993,16 @@ C
       NULLIFY(VOLLIST)
       ALLOCATE (INI_ZONE(NZADD))
       ALLOCATE (INE_ZONE(NZADD))
+#ifndef NO_JSON
       ALLOCATE (CH3_STACK(NZADD))
+#endif
       INI_ZONE = 0
       INE_ZONE = 0
       DO 811 I=1,NZADD
+#ifndef NO_JSON
         NULLIFY(CH3_STACK(I)%HEAD)
         NULLIFY(CH3_STACK(I)%LAST)
+#endif
 CDR  skip reading optional comment lines
   814   READ (IUNIN,'(A72)') ZEILE
         IREAD=1
@@ -3019,12 +3032,13 @@ C  IGJUM3 FLAG
      .                    (ZEILE(4:72),IGJUM3,0,NOPTIM,II,NLIMPB,NBITS)
             END IF
   821     CONTINUE
-
+#ifndef NO_JSON
 !cym/cpg avoid type mismatch
 !          call eirene_push_string_stack(ch3_stack(i),zeile(1:72))
           zeileCK=zeile
           call eirene_push_string_stack(ch3_stack(i),zeileCK(1:72))
 !cym/cpg end
+#endif
           GOTO 812
 C  TEMPERATURE
         ELSEIF (ZEILE(1:1).EQ.'T') THEN
@@ -3613,7 +3627,11 @@ C  2D GEOMETRY PLOT
       READ (IUNIN,6666) NPLINR,NPLOTR,NPLDLR,NPLINP,NPLOTP,NPLDLP,
      .                  NPLINT,NPLOTT,NPLDLT
 
+#ifndef NO_JSON
       CALL EIRENE_READ_BLOCK_11_USR
+#else
+      CALL EIRENE_READ_BLOCK_11_USR_FIXED
+#endif
 !PB moved to subroutine EIRENE_READ_BLOCK_11_USR
 !pb  .                  NPLINT,NPLOTT,NPLDLT,nsrfcls !csw 22jul2011 added nsrfcls
 C  3D GEOMETRY PLOT

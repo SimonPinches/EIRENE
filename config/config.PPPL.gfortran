@@ -1,0 +1,37 @@
+# Test whether necessary variables are set
+GLI_HOME ?= /u/eemdee/linux_gfortran
+GR_ROOT  ?= /u/eemdee/linux_gfortran
+LD_GR    ?= -L${GR_ROOT} -lgr
+LD_GKS   ?= -L${GLI_HOME} -lgks
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8
+
+CPP       = -/lib/cpp -traditional
+
+MPI_FC   ?= mpif90
+ifdef SOLPS_MPI
+FC        = ${MPI_FC}
+else
+ifdef USE_IMPGYRO
+FC        = ${MPI_FC}
+endif
+endif
+
+ifdef SOLPS_DEBUG
+#FCOPTS   = -g -Mrecursive -C -tp=k8
+FCOPTS    = -g -frange-check -fbounds-check -Wcharacter-truncation -fcheck=all -fbacktrace -ffpe-trap=denormal -ffpe-trap=invalid -ffpe-trap=zero -ftrapv -fsignaling-nans \
+-Waliasing -Wampersand -Wconversion -Wsurprising -Wc-binding-type -Wintrinsics-std -Wintrinsic-shadow -Wline-truncation -Wtarget-lifetime -Winteger-division -Wreal-q-constant
+CFLAGS    = -g
+endif
+
+GKS       = ${LD_GR} ${LD_GKS} -lX11 -lXt
+
+LDLIBS    = -L/usr/local/lib -L/usr/X11R6/lib
+
+INCMOD    = -I
+
+COMPILE   = ${FC} -c ${FCOPTS} ${INCMOD}${OBJDIR}
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:

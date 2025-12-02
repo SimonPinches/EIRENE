@@ -14,6 +14,23 @@
 # Changelog of EIRENE repository:
 ---
 
+## X. Bonnin - SOLPS_coupling
+
+### Based on SOLPS_bug_fixes - 765b12f7f7ab978e8340d215d330ec49c6c5417b
+
+** Changes **
+
+- Modifed CMakeLists.txt to handle compilation within and for SOLPS-ITER coupling environment
+- Added configuration files for CMAKE-less compilation
+- Added NO_JSON pragma to allow for compilation without JSON library
+- Avoid duplicated write-up of user_data.input JSON file
+- Updated version file to include SOLPS-ITER commit information
+- Introduced DIMENSIONS_MODULE pragma to grab problem dimensions from SOLPS-ITER environment
+- Added NFLA to fort.44 output
+- Correction to post-couple test to better handle time census stratum
+
+---
+
 ## X. Bonnin and D. Reiter - SOLPS_bug_fixes - 8f586da88c5113442f53dc42c865d8e40daa8e6a
 
 ### Based on V1.2.0 (develop - b0027581a7c95e4fc92671f7a354b6c556eacb23)

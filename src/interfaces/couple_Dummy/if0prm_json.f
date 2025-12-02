@@ -1,6 +1,7 @@
 cdr called from find_param.f in initialization phase,
 cdr when eirene is in "coupled mode": i.e. IF(NMODE.NE.0)
 C
+#ifndef NO_JSON
       SUBROUTINE EIRENE_IF0PRM_JSON(json,p)
 
       use eirmod_parmmod, only: ncpv, nain, nptrgt
@@ -18,3 +19,8 @@ C
 
       RETURN
       END SUBROUTINE EIRENE_IF0PRM_JSON
+#else
+      SUBROUTINE EIRENE_IF0PRM_JSON
+      RETURN
+      END SUBROUTINE EIRENE_IF0PRM_JSON
+#endif

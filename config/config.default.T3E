@@ -1,0 +1,44 @@
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+# DEFINES += -DNAG_RENAME -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF
+
+ifdef SOLPS_MPI
+DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+DEFINES += -DNO_JSON
+
+CPP      = /opt/ctl/cf90/cf90/lib/ftpp -F
+FC       = f90
+
+FCOPTS   = -dp -e 0 -eA
+FCOPTS   = -dp -e 0
+ifdef SOLPS_DEBUG
+FCOPTS  += -g
+else
+FCOPTS  += -O3 -Ounroll2
+endif
+
+COMPILE  = ${FC} -c ${FCOPTS}
+
+NAG      = ${LD_NAG}
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS      = ${LD_GR} ${LD_GKS} -lX11 -lXt
+endif
+endif
+endif
+
+LDLIBS   = -L${SOLPSMASTER}/@sys/lib -L/usr/local/lib
+LDEXTRA  = -lapp
+LDEXTRA  =
+
+OBJDEST  = -o $@
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

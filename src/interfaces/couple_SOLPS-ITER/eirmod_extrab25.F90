@@ -28,7 +28,9 @@
       use eirmod_CGEOM
       use eirmod_solps
       use eirmod_wneutrals
-
+#ifdef DIMENSIONS_MODULE
+      use b2mod_dimensions  ! IGNORE
+#endif
       implicit none
       private
 
@@ -85,11 +87,16 @@
 ! flag indicating if subroutine iniusr is called from B2.5
       integer, public, save :: ini_iniusr=0
 
+      !format flags for output files
+      integer, public, save :: jvft44=20240627, jvft46=20170930
+
       !names for atoms
       character*8, save, public, allocatable :: texta(:)
 
 #ifdef B25_EIRENE
+#ifndef DIMENSIONS_MODULE
 #include <DIMENSIONS.F>
+#endif
       !The following should match the definitions found in KOPPLDIM.F
       !dimensions for B2.5 array allocation
       integer, public :: nxdd, nydd
@@ -124,7 +131,6 @@
       implicit none
       character*4, intent(in) :: edition
       !c*** label for fort.44 file
-      integer, parameter :: jvft44=20201006, jvft46=20170930
       character*32 :: get_Eir_hash
       external get_Eir_hash
       external eirene_neutr
@@ -144,7 +150,11 @@
       OPEN (UNIT=44,FILE=trim(FILENAME),ACCESS='SEQUENTIAL',FORM='FORMATTED') ! added 19980603 dpc
       rewind (44)
       WRITE(44,'(i4,2x,i4,2x,i8,2x,a32)') ndxa-nred,ndya,jvft44,get_Eir_hash()
-      write(44,'(i4,2x,i4,2x,i4)') natmi,nmoli,nioni
+      if (jvft44.ge.20240311) then
+        write(44,'(i4,2x,i4,2x,i4,2x,i4)') natmi,nmoli,nioni,nfla
+      else
+        write(44,'(i4,2x,i4,2x,i4)') natmi,nmoli,nioni
+      end if
       !cank
       do jatm=1,natmi
         write(44,*) texts(jatm+nsph)
@@ -1098,7 +1108,9 @@
       subroutine eirene_extrab25_braeir_init(chemical_sputter_yield)
       implicit none
 #ifdef B25_EIRENE
+#ifndef DIMENSIONS_MODULE
 #include <DIMENSIONS.F>
+#endif
       real(dp), intent(in) :: chemical_sputter_yield(0:DEF_NLIM+DEF_NSTS)
 #else
       real(dp), intent(in) :: chemical_sputter_yield(0:nlim+nsts)
@@ -2013,7 +2025,9 @@
       implicit none
       integer, intent(in) :: n_spcsrf
 #ifdef B25_EIRENE
+#ifndef DIMENSIONS_MODULE
 #include <DIMENSIONS.F>
+#endif
       integer, intent(in) :: l_spcsrf(DEF_NLIM+DEF_NSTS), &
             i_spcsrf(DEF_NSPCSRFG), j_spcsrf(DEF_NSPCSRFG), &
             sps_sgrp(DEF_NSPCSRFG)

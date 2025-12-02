@@ -6,12 +6,14 @@
       USE EIRMOD_JSON
       USE EIRMOD_COMXS
       USE EIRMOD_COMPRT
-
+#ifndef NO_JSON
       use json_module           !IGNORE
+#endif
 
       implicit none
       character(*) :: filename
 
+#ifndef NO_JSON
       type(json_core) :: json
       type(json_value),pointer :: pAMD
       type(json_value),pointer :: crs_lines
@@ -38,9 +40,10 @@
       endif
 
 !     call eirene_dealloc_json_arrays
-
+#endif
       return
 
+#ifndef NO_JSON
       contains
 
 !***************************************************************************************
@@ -531,5 +534,5 @@
 
 #endif
 !******************************************************************************
-
+#endif
       end subroutine eirene_write_json_amdata

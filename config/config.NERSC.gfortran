@@ -1,0 +1,33 @@
+# Test whether necessary variables are set
+GR_ROOT  ?= /global/project/projectdirs/atom/atom-install-cori/solps-libs/lib_gfortran
+GLI_HOME ?= /global/project/projectdirs/atom/atom-install-cori/solps-libs/lib_gfortran
+SOLPSLIB ?= ${SOLPSTOP}/lib/${HOST_NAME}.${COMPILER}
+LD_GR    ?= -L${GR_ROOT} -lgr
+LD_GKS   ?= -L${GLI_HOME} -lgks
+LD_NAG   ?= -L${SOLPSLIB} -lblas -llapack
+
+CPP       = cpp -traditional
+FC        = ftn
+CC        = cc
+
+ifdef SOLPS_DEBUG
+#FCOPTS   = -fbounds-check #-fno-second-underscore
+FCOPTS    = -frange-check -fbounds-check -Wcharacter-truncation -ffpe-trap=denormal -fsignaling-nans \
+-Waliasing -Wampersand -Wconversion -Wsurprising -Wc-binding-type -Wintrinsics-std -Wintrinsic-shadow -Wline-truncation -Wtarget-lifetime -Winteger-division -Wreal-q-constant #-Wall
+# -Wimplicit-interface -Wunused-parameter -Wunused -Wtabs
+else
+FCOPTS    = #-fno-second-underscore
+endif
+
+COMPILE   = ${FC} -c ${FCOPTS}
+
+GKS       = ${LD_GR} ${LD_GKS} -lX11 -lXt
+
+LDLIBS    =
+
+INCMOD    = -I
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

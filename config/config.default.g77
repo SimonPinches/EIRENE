@@ -1,0 +1,55 @@
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+# Build with JSON if present
+ifeq ($(shell `pkg-config --exists json-fortran`; echo $$?),0)
+  JSON_INC ?= `pkg-config json-fortran --cflags`
+  LD_JSON ?= `pkg-config json-fortran --libs`
+endif
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8
+ifndef SOLPS_CPP
+DEFINES  += -DGFORTRAN
+endif
+
+ifdef SOLPS_MPI
+DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+INCLUDE += ${JSON_INC}
+
+CPP      = -/lib/cpp -C
+FC       = g77
+
+GFORTRAN_MAJOR_VERSION = $(shell ${FC} --version | head -1 | awk '{printf "%s ",$$NF,"\n"}' | cut -d '.' -f 1 )
+GFORTRAN_MINOR_VERSION = $(shell ${FC} --version | head -1 | awk '{printf "%s ",$$NF,"\n"}' | cut -d '.' -f 2 )
+DEFINES += -DCOMPILER_MAJOR_VERSION=${GFORTRAN_MAJOR_VERSION} -DCOMPILER_MINOR_VERSION=${GFORTRAN_MINOR_VERSION}
+
+ifdef SOLPS_DEBUG
+FCOPTS   = -g
+else
+FCOPTS   = -O 
+endif
+
+COMPILE  = ${FC} -c ${FCOPTS}
+
+NAG      = ${LD_NAG}
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS      = ${LD_GR} ${LD_GKS} -L/usr/X11R6/lib
+endif
+endif
+endif
+
+LLDLIBS  = -L${SOLPSMASTER}/@sys/lib -L/usr/local/lib 
+LDEXTRA  = ${LD_JSON}
+
+OBJDEST  = -o $@
+
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

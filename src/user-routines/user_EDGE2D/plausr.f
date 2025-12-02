@@ -80,7 +80,7 @@ C+---------------------------------------------------------------+
       REAL(DP), ALLOCATABLE :: PSI_VALS(:), PSI_VALS_CORNER(:), copy(:)
 
       integer, parameter :: fp=31
-      integer :: ll,ier,j,iseg,ind, fp2
+      integer :: ll,ier,j,iseg,ind,fp2
 
       integer, save :: eirene_nbirth,eirene_njetto
       character(len=256), save :: eirene_fbirth,eirene_ftransfer,
@@ -110,8 +110,6 @@ c                     converged neutral fluxes.
      .                      eirene_wallFluxModel,
      .                      eirene_use_elstepdat_bug
 
-
-
       interface
         subroutine EIRENE_cell_to_corner (f, fcorner)
           use eirmod_precision
@@ -135,6 +133,7 @@ c                     converged neutral fluxes.
       ALLOCATE (INOSRC(NSTEP))
       ALLOCATE (IPLAN(NSTEP))
       ALLOCATE (IPLEN(NSTEP))
+
       KSTEP = 0
       INOSRC = 0
       IPLAN = 0
@@ -158,6 +157,7 @@ c     get namelist config
 
 c begin dmh added 21.06.2010
       ll=len_trim(casename)
+!
       filename=casename(1:ll) // '.zplasma'
       open (unit=fp+ifoff,file=filename,access='sequential',
      .     form='formatted')
@@ -678,7 +678,6 @@ c     FLXOUT is needed in #/(cm^2 s) (covert from A to #/(cm^2 s))
          enddo                  ! iside
       enddo                     ! itri
 
-
 c end added dmh 21.06.2010 for flux dependency of chemical sputtering
 
 c dmh begin added output of step function data
@@ -735,7 +734,6 @@ c     cleanup
       deallocate(EIRENE_wall_area)
 
       close(fp+ifoff)
-
 
       return
 !pb      return

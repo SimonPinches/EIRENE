@@ -1,0 +1,49 @@
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+# File compiler.macro for NAG compiler
+ifndef SOLPS_CPP
+DEFINES += -DNAGFOR
+endif
+
+ifdef SOLPS_MPI
+DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+DEFINES += -DNO_JSON
+
+FC       = nagfor
+
+FCOPTS   = -Nl99 -x77 -mismatch
+ifdef SOLPS_DEBUG
+FCOPTS  += -g90
+else
+FCOPTS  += -O
+endif
+ifdef SOLPS_OPENMP
+FCOPTS  += -openmp
+endif
+
+COMPILE  = ${FC} -c ${FCOPTS}
+CPP      = -/lib/cpp -C -DRECL_UNITS_PER_DOUBLE=8
+
+LDLIBS   = -L${SOLPSLIB} -L/usr/local/lib 
+LDEXTRA  =
+NAG      = ${LD_NAG}
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS      = ${LD_GR} ${LD_GKS} -L/usr/X11R6/lib
+endif
+endif
+endif
+
+INCMOD   = -I
+MOD      = mod
+OBJDEST  = -mdir ${OBJDIR} -o ${OBJDIR}/$*.o
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

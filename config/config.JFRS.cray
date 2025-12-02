@@ -1,0 +1,73 @@
+# Test whether necessary variables are set
+ifdef SOLPSLIB
+LD_GR    ?= -L/opt/intel/lib/intel64 -L${SOLPSLIB} -lifcore -limf -lsvml -lintlc -lgr -lifport
+GLI_HOME ?= ${SOLPSTOP}/lib
+endif
+ifdef SOLPS_OPENMP
+ifdef SOLPS_MPI
+LD_NAG    = `pkg-config sci_mpi_mp --libs`
+else
+LD_NAG    = `pkg-config sci_mp --libs`
+endif
+else
+ifdef SOLPS_MPI
+LD_NAG    = `pkg-config sci_mpi --libs`
+else
+LD_NAG    = `pkg-config sci --libs`
+endif
+endif
+
+ifndef SOLPS_CPP
+DEFINES  += -DCRAY
+endif
+DEFINES  += -DNO_JSON
+
+ifdef SOLPS_MPI
+DEFINES  += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+
+CPP       = /lib/cpp -traditional
+FC        = ftn
+CC        = cc
+
+COMPILER_MAJOR_VERSION = $(shell ${FC} -V 2>&1 | grep -o "Version [0-9]*" | cut -d ' ' -f 2 )
+
+FCOPTS    =  -e0 -ez
+ifdef SOLPS_OPENMP
+ifeq ($(shell test ${COMPILER_MAJOR_VERSION} -ge 9; echo $$?),0)
+FCOPTS   += -homp
+LDOPTS   += -homp
+endif
+else
+FCOPTS   += -hnoomp
+endif
+ifdef SOLPS_DEBUG
+FCOPTS   += -O0 -g -hfp0 -K trap=divz -K trap=fp -G0 -Rb
+CFLAGS    = -O0 -g
+else
+FCOPTS   += -O3 -hfp3
+CFLAGS    = -O3
+endif
+
+NAG       = ${LD_NAG}
+ifdef LD_GR
+ifdef LD_GKS
+GKS       = ${LD_GR} ${LD_GKS} -lX11 -lXt
+endif
+endif
+
+LDLIBS    =
+LDEXTRA   =
+
+# new
+
+INCMOD    = -p
+MOD       = mod
+OBJDEST   = -ef -em -J${OBJDIR} -o $@
+
+COMPILE   = ${FC} -c ${FCOPTS} ${INCMOD}${OBJDIR}
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

@@ -1,0 +1,95 @@
+ifeq (${FC},f77)
+FC = ifort
+endif
+ifeq (${CC},cc)
+ifneq (${FC},ftn)
+CC = /usr/bin/gcc
+endif
+endif
+# Use of ifx OpenMP is unsafe at the moment
+ifneq (,$(findstring ifx,${FC}))
+  ifdef SOLPS_OPENMP
+    FN = ifort
+    MPI_FC = mpiifort
+    ifdef SOLPS_MPI
+      FC = ${MPI_FC}
+    else
+      FC = ifort
+    endif
+  endif
+endif
+
+# Build with JSON if present
+ifeq ($(shell `pkg-config --exists json-fortran`; echo $$?),0)
+  JSON_INC ?= `pkg-config json-fortran --cflags`
+  LD_JSON ?= `pkg-config json-fortran --libs`
+else
+  ifndef SOLPS_CPP
+    DEFINES += -DNO_JSON
+  endif
+endif
+
+INCLUDE += ${JSON_INC}
+
+ifdef SOLPS_MPI
+DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+
+ifndef COMPILER_REDEF
+ OBJDEST  = -module ${OBJDIR} -o $@
+ INCMOD  ?= -I
+ COMPILER_MAJOR_VERSION = $(shell ${FC} -V 2>&1 | grep -o "Version [0-9]*" | cut -d ' ' -f 2 )
+ ifdef SOLPS_DEBUG
+  FCOPTS += -g -C -traceback -recursive -check all -debug all
+  CFLAGS += -g
+ endif
+ ifdef SOLPS_OPENMP
+  ifeq ($(shell test ${COMPILER_MAJOR_VERSION} -ge 15; echo $$?),0)
+   FCOPTS += -qopenmp
+   LDOPTS += -qopenmp
+  else
+   FCOPTS += -openmp
+   LDOPTS += -openmp
+  endif
+ endif
+ ifdef SOLPS_DEBUG
+  FCOPTS  += -diag-disable:10182,10440
+  ifeq ($(shell test ${COMPILER_MAJOR_VERSION} -ge 2023; echo $$?),0)
+   FCOPTS += -check nouninit
+   COPTS  += -Rno-debug-disables-optimization
+  endif
+ endif
+ ifeq ($(shell test ${COMPILER_MAJOR_VERSION} -ge 15; echo $$?),0)
+  FCOPTS += -fp-model=precise
+ endif
+ ifeq ($(shell test ${COMPILER_MAJOR_VERSION} -le 12; echo $$?),0)
+  FCOPTS += -vec_report0
+  LDOPTS += -i_dynamic
+ endif
+else
+ INCMOD   = -B
+ OBJDEST  = -J${OBJDIR} -o $@
+ GFORTRAN_MAJOR_VERSION = $(shell ${FC} --version | head -1 | awk '{printf "%s ",$$NF,"\n"}' | cut -d '.' -f 1 )
+ GFORTRAN_MINOR_VERSION = $(shell ${FC} --version | head -1 | awk '{printf "%s ",$$NF,"\n"}' | cut -d '.' -f 2 )
+ DEFINES += -DGFORTRAN -DCOMPILER_MAJOR_VERSION=${GFORTRAN_MAJOR_VERSION} -DCOMPILER_MINOR_VERSION=${GFORTRAN_MINOR_VERSION} -DNOQUAD -DNO_IEEE
+ ifdef SOLPS_OPENMP
+  FCOPTS += -fopenmp
+  LDOPTS += -fopenmp
+ endif
+ ifdef SOLPS_DEBUG
+  FCOPTS += -g -fbacktrace -frecursive -fcheck=all
+  CFLAGS += -g
+ else
+  FCOPTS += -O2
+  CFLAGS += -O2
+ endif
+endif
+
+LDEXTRA  = ${LD_JSON}
+
+MOD      = mod
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

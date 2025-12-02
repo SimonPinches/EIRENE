@@ -2,6 +2,7 @@
 set(git_date @git_date@)
 set(git_hash @git_hash@)
 set(git_branch @git_branch@)
+set(git_description @git_description@)
 
 # Maximum length of branch name allowed in Fortran's fixed-format
 set(max_length 59)
@@ -11,6 +12,16 @@ string(LENGTH @git_branch@ length)
 if(length GREATER max_length)
   string(SUBSTRING @git_branch@ 0 ${max_length} git_branch)
   set(git_branch "${git_branch}...)")
+endif()
+
+# Maximum length of description name
+set(desc_length 32)
+
+# Shorten description name to maximum declared length
+string(LENGTH @git_description@ dlength)
+if(dlength GREATER desc_length)
+  string(SUBSTRING @git_description@ 0 ${desc_length} git_description)
+  set(git_description "${git_description}...)")
 endif()
 
 set(git_ignore_command 

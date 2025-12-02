@@ -1,0 +1,51 @@
+# Test whether necessary variables are set
+GR_ROOT  ?= ${EBROOTGR}
+GLI_HOME ?= ${EBROOTGLI}
+LD_GR    ?= -L${GR_ROOT}/lib -lgr -lgfortran
+LD_GKS   ?= -L${GKSDIR} -lGKS -lXmu -lX11 -lXt
+LD_NAG   ?= `pkg-config openblas --libs`
+
+# File compiler.macro for NAG compiler
+ifndef SOLPS_CPP
+DEFINES += -DNAGFOR
+NO_MPI  ?= true
+endif
+
+ifdef SOLPS_MPI
+DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+DEFINES += -DNO_JSON
+
+FC       = nagfor
+
+FCOPTS   = -x77 -PIC -compatible
+ifdef SOLPS_DEBUG
+FCOPTS  += -g90
+else
+FCOPTS  += -O
+endif
+
+ifdef SOLPS_OPENMP
+FCOPTS  += -openmp
+LDOPTS  += -openmp
+endif
+
+COMPILE  = ${FC} -c ${FCOPTS}
+CPP      = -/lib/cpp -C -ffreestanding -DRECL_UNITS_PER_DOUBLE=8
+
+LDLIBS   = -L/usr/local/lib
+ifdef SOLPSLIB
+LDLIBS  += -L${SOLPSLIB}
+endif
+LDEXTRA  =
+NAG      = ${LD_NAG}
+GKS      = ${LD_GR} ${LD_GKS}
+
+INCMOD   = -I
+MOD      = mod
+OBJDEST  = -mdir ${OBJDIR} -o ${OBJDIR}/$*.o
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

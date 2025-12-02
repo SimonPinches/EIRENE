@@ -143,7 +143,7 @@ C  SOME FURTHER INTEGER VARIABLES USED ALONG PARTICLE TRAJECTORY
 
 c  unrelated to particle trajectories: IO streams
       INTEGER, PUBLIC, SAVE ::
-     I IUNIN,  IUNOUT, IVTKOUT
+     I IUNIN,  IUNOUT, IVTKOUT, IUSROUT
 cym
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(IUNOUT)
@@ -318,7 +318,7 @@ cdr  why is msurfg on state vector?
 
 c  io files
       IVTKOUT= 28
-
+      IUSROUT = 0
 
       RETURN
       END SUBROUTINE EIRENE_INIT_COMPRT

@@ -7,22 +7,29 @@
      .                          NSTRA
       USE EIRMOD_CINIT, ONLY: NDBNAMES
 !pb      USE EIRMOD_COMPRT, ONLY: IUNOUT
-
+#ifndef NO_JSON
       use json_module           !IGNORE
 !cym/cpg keep original names
 !     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 !cym, for reference : this would be equivalent to the initial code; works too for this file
 !      use json_kinds, only: lk, rk, ik, ck
+#endif
 
       IMPLICIT NONE
 
       PRIVATE
 
+#ifndef NO_JSON
       PUBLIC :: eirene_init_input_blocks, jval_array,
      .          eirene_alloc_json_arrays, eirene_dealloc_json_arrays,
      .          S_stack, STRING_STACK,
      .          eirene_push_string_stack, eirene_copy_addsrf,
      p          TRANSFORM, TRANSFORM_QUEUE
+#else
+      PUBLIC :: TRANSFORM,
+     .          eirene_alloc_json_arrays, eirene_dealloc_json_arrays,
+     .          eirene_copy_addsrf
+#endif
 
       integer, public, parameter :: nblks=15
       character(20), public, parameter :: blknam(0:nblks)=
@@ -48,6 +55,7 @@
      >       .false., .true.,  .false., .false., .true.,
      >       .false. /)
 
+#ifndef NO_JSON
       type jval_array
         type(json_value), pointer :: p
       end type jval_array
@@ -62,6 +70,7 @@
       integer, public, save :: njs=-1,
       ! number of the jtree containing the data of a block
      .                         itree_num(0:nblks)
+#endif
 
 
 !     variables stored for output to json file
@@ -120,6 +129,7 @@
         TYPE(TRANSFORM), POINTER :: HEAD, LAST
       END TYPE TRANSFORM_QUEUE
 
+#ifndef NO_JSON
       TYPE S_STACK
 #ifdef LEGACYCOMP
         CHARACTER, dimension(:), allocatable :: STRING
@@ -137,6 +147,7 @@
      >                                    CRS_STACK
       TYPE(STRING_STACK), PUBLIC, ALLOCATABLE, SAVE ::
      >  CH1_STACK(:), CH2_STACK(:), CH3_STACK(:)
+#endif
 
       TYPE(TRANSFORM_QUEUE), PUBLIC, ALLOCATABLE, SAVE :: TRNSFRM(:)
 
@@ -144,7 +155,7 @@
 
 
 !******************************************************************************
-
+#ifndef NO_JSON
       subroutine eirene_start_json(fname,iblk,iunout)
 
       implicit none
@@ -246,7 +257,7 @@
       return
 
       end subroutine eirene_init_input_blocks
-
+#endif
 
 !******************************************************************************
 
@@ -298,10 +309,10 @@
       ALLOCATE(DIOD_IN(NION))
       ALLOCATE(DPLD_IN(NPLS))
       ALLOCATE(DPHD_IN(NPHOT))
-
+#ifndef NO_JSON
       ALLOCATE (CH1_STACK(NLIM))
       ALLOCATE (CH2_STACK(NLIM))
-
+#endif
       ALLOCATE (TRNSFRM(NLIM))
 
       call eirene_init_json_arrays
@@ -312,7 +323,9 @@
 !******************************************************************************
 
       subroutine eirene_dealloc_json_arrays
+#ifndef NO_JSON
       INTEGER :: I
+#endif
 
       DEALLOCATE(SORCOS_IN)
       DEALLOCATE(SORMAX_IN)
@@ -360,7 +373,7 @@
       DEALLOCATE(DIOD_IN)
       DEALLOCATE(DPLD_IN)
       DEALLOCATE(DPHD_IN)
-
+#ifndef NO_JSON
       call eirene_resolve_string_stack(cm_stack)
       call eirene_resolve_string_stack(ch0_stack)
       call eirene_resolve_string_stack(crs_stack)
@@ -372,14 +385,14 @@
 
       DEALLOCATE (CH1_STACK)
       DEALLOCATE (CH2_STACK)
-
+#endif
       DEALLOCATE (TRNSFRM)
 
       return
       end subroutine eirene_dealloc_json_arrays
 
 !******************************************************************************
-
+#ifndef NO_JSON
       subroutine eirene_resolve_string_stack (stack)
 
       type(string_stack), intent(inout) :: stack
@@ -396,7 +409,7 @@
 
       return
       end subroutine eirene_resolve_string_stack
-
+#endif
 !******************************************************************************
 
       subroutine eirene_init_json_arrays
@@ -448,7 +461,7 @@
       DIOD_IN = 0._DP
       DPLD_IN = 0._DP
       DPHD_IN = 0._DP
-
+#ifndef NO_JSON
       NULLIFY (CM_STACK%HEAD)
 
       NULLIFY(CH0_STACK%HEAD)
@@ -460,6 +473,9 @@
         NULLIFY(CH1_STACK(I)%LAST)
         NULLIFY(CH2_STACK(I)%HEAD)
         NULLIFY(CH2_STACK(I)%LAST)
+      END DO
+#endif
+      DO I=1,NLIM
         NULLIFY(TRNSFRM(I)%HEAD)
         NULLIFY(TRNSFRM(I)%LAST)
       END DO
@@ -468,7 +484,7 @@
       end subroutine eirene_init_json_arrays
 
 !******************************************************************************
-
+#ifndef NO_JSON
       subroutine eirene_push_string_stack (stack, str)
 !cym/cpg
 !      character(*), intent(in) :: str
@@ -491,6 +507,7 @@
 
       return
       END subroutine eirene_push_string_stack
+#endif
 !******************************************************************************
 
       subroutine eirene_copy_addsrf(i)

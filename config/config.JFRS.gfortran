@@ -1,0 +1,46 @@
+# Test whether necessary variables are set
+ifdef SOLPSLIB
+GR_ROOT  ?= ${SOLPSLIB}
+LD_GR    ?= -L/opt/intel/lib/intel64 -L${GR_ROOT} -limf -lsvml -lintlc -liomp5 -lgr -lifport
+LD_GKS   ?= -L${GLI_HOME} -lifcore -lgks
+GLI_HOME ?= ${SOLPSTOP}/lib
+endif
+ifdef SOLPS_OPENMP
+ifdef SOLPS_MPI
+LD_NAG    = `pkg-config sci_mpi_mp --libs`
+else
+LD_NAG    = `pkg-config sci_mp --libs`
+endif
+else
+ifdef SOLPS_MPI
+LD_NAG    = `pkg-config sci_mpi --libs`
+else
+LD_NAG    = `pkg-config sci --libs`
+endif
+endif
+
+CPP       = /lib/cpp -traditional
+FC        = ftn
+CC        = cc
+
+FCOPTS    = -fno-second-underscore
+ifdef SOLPS_DEBUG
+FCOPTS   += -fbounds-check -ffpe-trap=denormal -fsignaling-nans
+endif
+
+ifdef LD_GR
+ifdef LD_GKS
+GKS       = ${LD_GR} ${LD_GKS} -lX11 -lXt -dynamic
+endif
+endif
+
+LDLIBS    = -L/usr/local/lib -L/usr/X11R6/lib
+
+INCMOD    = -B
+
+COMPILE   = ${FC} -c ${FCOPTS} ${INCMOD}${OBJDIR}
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

@@ -182,7 +182,7 @@ C
      .           IXI, IXE, IPLSTI, IPLSV, IPLV, ISP,
      .           imf, ixm1,iym1,
      .           MINSPEZ, MAXSPEZ,
-     .           js, iunin_save, iusrout
+     .           js, iunin_save
 
       REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1
       INTEGER, EXTERNAL :: EIRENE_IDEZ

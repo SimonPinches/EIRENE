@@ -1,0 +1,41 @@
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+MPDIR    ?= ${I_MPI_ROOT}
+LD_MPI   ?= -L${MPDIR}/lib64
+
+CPP       = /lib/cpp -traditional
+
+MPI_FC   ?= mpif90
+ifdef SOLPS_MPI
+FC        = ${MPI_FC}
+else
+ifdef USE_IMPGYRO
+FC        = ${MPI_FC}
+endif
+endif
+
+FCOPTS    = -fno-second-underscore
+ifdef SOLPS_DEBUG
+FCOPTS   += -ffpe-trap=denormal
+CFLAGS    = -fcheck=all
+endif
+
+GKS       = ${LD_GR} ${LD_GKS} -lX11 -lXt
+
+LDLIBS    = -L/usr/local/lib -L/usr/X11R6/lib
+
+ifdef SOLPS_MPI
+LDLIBS   += ${LD_MPI}
+endif
+
+INCMOD    = -B
+
+COMPILE   = ${FC} -c ${FCOPTS} ${INCMOD}${OBJDIR}
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

@@ -1,0 +1,82 @@
+# Test whether necessary variables are set
+NODENAME  ?= $(shell echo `hostname`)
+LD_GR     ?= -L${EBROOTGR}/lib -lgr
+LD_GKS    ?= -L${GKSDIR}/lib -lGKS -lgfortran -lX11 -lXt
+GLI_HOME  ?= ${EBROOTGLI}
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF -DNO_SAVE
+
+CPP        = /lib/cpp -traditional
+
+OS = $(shell grep -m1 NAME /etc/os-release | cut -d '"' -f 2 | cut -d ' ' -f 1 )
+# Avoid usage of ifx compiler until its many issues are fixed
+# ifeq (,$(findstring CentOS,$(OS)))
+# MPI_FC    ?= mpiifort -fc=mpiifx
+# else
+MPI_FC    ?= mpiifort
+# endif
+ifdef SOLPS_MPI
+FC         = ${MPI_FC}
+ifndef MPDIR
+MPDIR      = ${EBROOTIMPI}
+LD_MPI    += -Wl,-rpath,${MPDIR}/lib64
+endif
+else
+ifdef USE_IMPGYRO
+FC         = ${MPI_FC}
+ifndef MPDIR
+MPDIR      = ${EBROOTIMPI}
+LD_MPI    += -Wl,-rpath,${MPDIR}/lib64
+endif
+# else
+# ifeq (,$(findstring CentOS,$(OS)))
+# FC         = ifx
+# endif
+endif
+endif
+# ifeq (,$(findstring CentOS,$(OS)))
+# CC         = icx
+# endif
+
+FCOPTS     = -assume no2underscore -fPIC
+ifdef SOLPS_DEBUG
+ FCOPTS   += -warn interfaces
+ ifdef SOLPS_MPI
+  CFLAGS  += ${MPI_CPP}
+ else
+  ifdef USE_IMPGYRO
+   CFLAGS += ${MPI_CPP}
+  endif
+ endif
+else
+ ifdef SOLPS_MPI
+  FCOPTS  += -O2
+  CFLAGS   = -O2 ${MPI_CPP}
+ else
+  ifdef USE_IMPGYRO
+   FCOPTS += -O2
+   CFLAGS  = -O2 ${MPI_CPP}
+  else
+   FCOPTS += -O3
+   CFLAGS  = -O3
+  endif
+ endif
+endif
+
+GKS        = ${LD_GR} ${LD_GKS}
+
+ifdef SOLPS_MPI
+LDLIBS     = ${LD_MPI}
+else
+ifdef USE_IMPGYRO
+LDLIBS     = ${LD_MPI}
+else
+LDLIBS     =
+endif
+endif
+
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

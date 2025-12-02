@@ -42,8 +42,10 @@ cdr             routine COLLIDE.f
      P          EIRENE_ALLOC_CORNERS,
      P          EIRENE_ASSOCIATE_COMUSR,
      P          EIRENE_COMUSR_REINIT,
-     P          TEMPERATURE, DENSITY, VELOCITY, VOLUMEP,
-     P          AMDOutParsTYPE
+     P          TEMPERATURE, DENSITY, VELOCITY, VOLUMEP
+#ifndef NO_JSON
+     P         ,AMDOutParsTYPE
+#endif
 
       INTEGER, SAVE :: IFIRST=0
       INTEGER, SAVE ::
@@ -388,6 +390,7 @@ C
       INTEGER, PUBLIC, SAVE :: NZADD
       INTEGER, ALLOCATABLE, PUBLIC, SAVE :: INI_ZONE(:), INE_ZONE(:)
 
+#ifndef NO_JSON
 cDB   AMD output
       TYPE AMDOutParsTYPE
 #ifdef LEGACYCOMP
@@ -408,6 +411,7 @@ cDB   AMD output
 #endif
       ENDTYPE AMDOutParsTYPE
       TYPE (AMDOutParsTYPE), public, save :: AMDOutpars
+#endif
 
       CONTAINS
 

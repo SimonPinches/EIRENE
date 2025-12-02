@@ -1,3 +1,4 @@
+#ifndef NO_JSON
       subroutine eirene_wr0_json(json,this)
 
       USE EIRMOD_PRECISION
@@ -40,6 +41,7 @@
         call json%add(fld,'IFLB',iflb(i))
         call json%add(fld,'FCTE',fcte(i))
         call json%add(fld,'BMASS',bmass(i))
+        call json%add(fld,'LKINDP',lkindp(i))
         call json%add(flds,fld)
       end do
       call json%add(this,flds)
@@ -115,3 +117,8 @@
 
       return
       end subroutine eirene_wr0_json
+#else
+      subroutine eirene_wr0_json
+      return
+      end subroutine eirene_wr0_json
+#endif

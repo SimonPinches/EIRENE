@@ -36,12 +36,14 @@
       USE EIRMOD_PHOTON
       USE EIRMOD_JSON
       USE EIRMOD_PRESSURELOOP
+#ifndef NO_JSON
       USE EIRMOD_IOUSR, ONLY: eirene_write_block_11_usr
       use json_module           ! IGNORE
+#endif
 
       implicit none
       character(*) :: filename
-
+#ifndef NO_JSON
       type(json_core) :: json
       type(json_value),pointer :: p, block_1, block_2, block_3a,
      .                            block_3b, block_45, block_6, block_7,
@@ -133,9 +135,9 @@
       if (json%failed()) stop 1
 
       call eirene_dealloc_json_arrays
-
+#endif
       return
-
+#ifndef NO_JSON
       contains
 
 !***************************************************************************************
@@ -2307,7 +2309,7 @@ C       call json%add(src,'NRAYEN',nrayen(istra))
 
       return
       end subroutine eirene_write_block_15
-
+#endif
 !******************************************************************************
 
       end subroutine eirene_write_json_file

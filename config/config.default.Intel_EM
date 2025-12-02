@@ -1,0 +1,71 @@
+#  VERSION : 24.11.2006 15:23
+
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+# The version relying on Intel Fortran
+
+# Build with JSON if present
+ifeq ($(shell `pkg-config --exists json-fortran`; echo $$?),0)
+  JSON_INC ?= `pkg-config json-fortran --cflags`
+  LD_JSON ?= `pkg-config json-fortran --libs`
+endif
+
+#DEFINES += -DTRIANG -DRECL_UNITS_PER_DOUBLE=8 -DNO_FORT10 -DNO_SHORT_CYCLE -DNO_F01AAF
+DEFINES += -DINTEL_FORTRAN
+INCLUDE += ${JSON_INC}
+EQUIVS   =
+
+ifdef SOLPS_MPI
+  DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+
+CPP      = -/lib/cpp -C -traditional
+CPPOPTS  = -C -P -I${srcdir} ${EQUIVS}
+SED      =
+LINK_MOD =
+
+FC       = ifort
+
+#FCOPTS   = -Am -X9 -fw -O -Ad
+#FCOPTS   = -fast -fp -r8
+#FCOPTS   = -O -g -r8
+#FCOPTS   = -O0 -g -r8
+#FCOPTS   = -O0 -r8 -check -g -traceback -fpconstant -ftz
+#FCOPTS   = -O -r8 -g -traceback -fpconstant -ftz
+FCOPTS   = -traceback -fpconstant -ftz -vec_report0
+ifdef SOLPS_DEBUG
+  FCOPTS  += -C -g -check
+else
+  FCOPTS  += -O -xavx
+endif
+
+#COMPILE  = ${FC} -c ${FCOPTS}
+
+NAG      = ${LD_NAG}
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS      = ${LD_GR} ${LD_GKS} -L/usr/X11R6/lib64 -lX11 -lXt -lXmu
+endif
+endif
+endif
+
+#LDLIBS = -L${SOLPSLIB} -L/usr/local/lib -L/usr/X11R6/lib64 -lmscl
+LDLIBS   = -L/usr/local/lib -lmscl
+LDEXTRA  = ${LD_JSON}
+
+# new
+
+INCMOD   = -module
+MOD      = mod
+OBJDEST  = -o $@
+
+BLD      = ar rcv
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

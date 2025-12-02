@@ -271,7 +271,7 @@ C  TOROIDAL SURFACE
               N1=NT+1
               N2=1
               N3=1
-             
+
               IRA = 1
               IRE = N1
               IPA = 1
@@ -284,7 +284,7 @@ C  TOROIDAL SURFACE
               IF (NFLAGS(ISPR) > 10) THEN
                  HELP2(NTOTAL,K) = DUMMY
                  TOTAR(K) = DUMMY
-              END IF   
+              END IF
               IF (ABS(DUMMY) > EPS60) THEN
                 CALL EIRENE_PRTTLS(TXTTLW(K,ITALS),TXTSPW(K,ITALS),
      .                  TXTUNW(K,ITALS),
@@ -310,10 +310,10 @@ C  TOROIDAL SURFACE
                 OPEN(UNIT=NTLSFL(ISPR),POSITION='APPEND')
                 CALL EIRENE_PRINT_SURF_TRIAN (NTLSFL(ISPR))
                 CLOSE(UNIT=NTLSFL(ISPR))
-             END IF           
+             END IF
              DEALLOCATE(HELP2)
              DEALLOCATE(TOTAR)
-          END IF   
+          END IF
    11     CONTINUE
         ENDIF  ! non-def. standard surf. with spatial resolution: done
 
@@ -3112,9 +3112,8 @@ C   SURFACE AVERAGED SPECTRA, INTEGRALS, SURFACE I, ISP
       RETURN
  9999 FORMAT (1X,A32)
 
-
       CONTAINS
-      
+
       SUBROUTINE EIRENE_PRINT_SURF_TRIAN(IUN)
 
       INTEGER, INTENT(IN) :: IUN
@@ -3150,9 +3149,9 @@ C   SURFACE AVERAGED SPECTRA, INTEGRALS, SURFACE I, ISP
          WRITE (IUN,FORM)
      .      II, XTRIAN(I1), YTRIAN(I1), XTRIAN(i2), YTRIAN(I2),
      .      SURF_TRIAN_ORDERED(I)%BGLT(II+1),
-     .      (HELP2(II,KK),KK=NFTI,NFTE)    
+     .      (HELP2(II,KK),KK=NFTI,NFTE)
       END DO
-      
+
       WRITE (IUN,'(A)') 'TOTALS'
       FORM = '(63X,  ES12.4)'
       WRITE (FORM(6:7),'(I2)') NFTE-NFTI+1
@@ -3161,5 +3160,4 @@ C   SURFACE AVERAGED SPECTRA, INTEGRALS, SURFACE I, ISP
       RETURN
       END SUBROUTINE EIRENE_PRINT_SURF_TRIAN
 
-      
       END SUBROUTINE EIRENE_OUTFLX

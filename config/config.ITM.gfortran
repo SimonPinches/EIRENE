@@ -1,0 +1,41 @@
+# Test whether necessary variables are set
+GLI_HOME ?= /pfs/work/g2dpc/SOLPS-ITER/${COMPILER}/gks
+GR_ROOT  ?= /pfs/work/g2dpc/SOLPS-ITER/${COMPILER}/gr
+MPDIR    ?= ${OPENMPI_HOME}
+LD_GKS   ?= -L${GLI_HOME} -lgks -lgfortran
+LD_GR    ?= -L${GR_ROOT} -lgr
+LD_MPI   ?= -L${MPDIR}/lib64 -lmpi
+
+CPP       = /lib/cpp -traditional
+
+MPI_FC   ?= mpifort
+ifdef SOLPS_MPI
+FC        = ${MPI_FC}
+else
+ifdef USE_IMPGYRO
+FC        = ${MPI_FC}
+endif
+endif
+
+FCOPTS    = -fno-second-underscore
+ifdef SOLPS_DEBUG
+FCOPTS   += -ffpe-trap=denormal
+CFLAGS    = -fcheck=all
+endif
+
+GKS       = ${LD_GR} ${LD_GKS} -lX11 -lXt
+
+LDLIBS    = -L/usr/local/lib
+
+ifdef SOLPS_MPI
+LDLIBS   += ${LD_MPI}
+endif
+
+INCMOD    = -B
+
+COMPILE   = ${FC} -c ${FCOPTS} ${INCMOD}${OBJDIR}
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

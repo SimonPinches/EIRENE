@@ -1,0 +1,49 @@
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF -DNO_SAVE
+
+CPP     = -/lib/cpp -C -traditional
+
+MPI_FC ?= mpif90
+ifdef SOLPS_MPI
+ FC     = ${MPI_FC}
+ COMPILER_TYPE = $(shell ${FC} --version | head -1 | cut -d ' ' -f 1)
+ ifeq (${COMPILER_TYPE},GNU)
+  COMPILER_REDEF = yes
+ endif
+else
+ ifdef USE_IMPGYRO
+  FC    = ${MPI_FC}
+  COMPILER_TYPE = $(shell ${FC} --version | head -1 | cut -d ' ' -f 1)
+  ifeq (${COMPILER_TYPE},GNU)
+   COMPILER_REDEF = yes
+  endif
+ endif
+endif
+
+ifndef COMPILER_REDEF
+ ifndef SOLPS_DEBUG
+  FCOPTS += -O3
+  CFLAGS += -O3
+ endif
+endif
+
+INCMOD  = -I${OBJDIR}
+
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS     = ${LD_GR} ${LD_GKS} -lX11 -lXt
+endif
+endif
+endif
+
+LDLIBS  = -L/usr/local/lib -L/usr/X11R6/lib64
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

@@ -1,3 +1,4 @@
+#ifndef NO_JSON
       subroutine eirene_wr0_json(json,me)
 
       use eirmod_precision
@@ -9,3 +10,8 @@
       type(json_value),pointer, intent(inout) :: me
 
       end subroutine eirene_wr0_json
+#else
+      subroutine eirene_wr0_json
+      return
+      end subroutine eirene_wr0_json
+#endif

@@ -1,0 +1,72 @@
+include ${SRCEIR}/config/config.${HOST_NAME}.${COMPILER}
+ifeq ($(shell [ -e ${SRCEIR}/config/config.common.${COMPILER} ] && echo yes || echo no ),yes)
+include ${SRCEIR}/config/config.common.${COMPILER}
+MAKES+= ${SRCEIR}/config/config.common.${COMPILER}
+endif
+
+${OBJDIR}/%.o : %.f
+	-${CPP} ${DEFINES} ${EQUIVS} -P ${INCLUDE} $< ${OBJDIR}/$*.f
+	${FC} ${FCOPTS} ${FFLAGSEXTRA} -c ${INCLUDE} ${INCMOD}${OBJDIR} ${OBJDEST} ${OBJDIR}/$*.f
+ifneq ($(COMPILER),nag_f90)
+	@if [ -f ${OBJDIR}/$*.${MOD} ] ; then touch ${OBJDIR}/$*.${MOD} ; fi
+endif
+
+${OBJDIR}/%.o : ${SRCDIR}/grsoft-dummy/%.f
+	-${CPP} ${DEFINES} ${EQUIVS} -P ${INCLUDE} $< ${OBJDIR}/$*.f
+	${FC} ${FCOPTS} ${FFLAGSEXTRA} -c ${INCLUDE} ${INCMOD}${OBJDIR} ${OBJDEST} ${OBJDIR}/$*.f
+
+${OBJDIR}/%.o : %.F
+	-${CPP} ${DEFINES} ${EQUIVS} -P ${INCLUDE} $< ${OBJDIR}/$*.f
+	${FC} ${FCOPTS} ${FFLAGSEXTRA} -c ${INCLUDE} ${INCMOD}${OBJDIR} ${OBJDEST} ${OBJDIR}/$*.f
+ifneq ($(COMPILER),nag_f90)
+	@if [ -f ${OBJDIR}/$*.${MOD} ] ; then touch ${OBJDIR}/$*.${MOD} ; fi
+endif
+
+${OBJDIR}/%.o : %.f90
+	-${CPP} ${DEFINES} ${EQUIVS} -P ${INCLUDE} $< ${OBJDIR}/$*.f90
+	${FC} ${FCOPTS} ${FFLAGSEXTRA} -c ${INCLUDE} ${INCMOD}${OBJDIR} ${OBJDEST} ${OBJDIR}/$*.f90
+ifneq ($(COMPILER),nag_f90)
+	@if [ -f ${OBJDIR}/$*.${MOD} ] ; then touch ${OBJDIR}/$*.${MOD} ; fi
+endif
+
+${OBJDIR}/%.o : %.F90
+	-${CPP} ${DEFINES} ${EQUIVS} -P ${INCLUDE} $< ${OBJDIR}/$*.f90
+	${FC} ${FCOPTS} ${FFLAGSEXTRA} -c ${INCLUDE} ${INCMOD}${OBJDIR} ${OBJDEST} ${OBJDIR}/$*.f90
+ifneq ($(COMPILER),nag_f90)
+	@if [ -f ${OBJDIR}/$*.${MOD} ] ; then touch ${OBJDIR}/$*.${MOD} ; fi
+endif
+
+ifneq ($(MOD),o)
+${OBJDIR}/%.{MOD} : %.f
+	-${CPP} ${DEFINES} ${EQUIVS} -P ${INCLUDE} $< ${OBJDIR}/$*.f
+	${FC} ${FCOPTS} ${FFLAGSEXTRA} -c ${INCLUDE} ${INCMOD}${OBJDIR} ${OBJDEST} ${OBJDIR}/$*.f
+
+${OBJDIR}/%.{MOD} : %.f90
+	-${CPP} ${DEFINES} ${EQUIVS} -P ${INCLUDE} $< ${OBJDIR}/$*.f90
+	${FC} ${FCOPTS} ${FFLAGSEXTRA} -c ${INCLUDE} ${INCMOD}${OBJDIR} ${OBJDEST} ${OBJDIR}/$*.f90
+
+${OBJDIR}/%.{MOD} : %.F90
+	-${CPP} ${DEFINES} ${EQUIVS} -P ${INCLUDE} $< ${OBJDIR}/$*.f90
+	${FC} ${FCOPTS} ${FFLAGSEXTRA} -c ${INCLUDE} ${INCMOD}${OBJDIR} ${OBJDEST} ${OBJDIR}/$*.f90
+endif
+
+$(OBJDIR)/%.o: %.c
+	$(CC) $(CFLAGS) $(COPTS) -c -o $@ $<
+
+# $(OBJDIR)/%.o: %.f
+#	$(FC) $(FCOPTS) $(FFLAGSEXTRA) $(INCLUDE) $(OPTS) -module $(OBJDIR) -c -o $@ $<
+
+# $(OBJDIR)/%.o: %.F
+#	$(FC) $(FCOPTS) $(FFLAGSEXTRA) $(INCLUDE) $(OPTS) -module $(OBJDIR) -c -o $@ $<
+
+# $(OBJDIR)/%.o: %.f90
+#	$(FC) $(FCOPTS) $(FFLAGSEXTRA) $(INCLUDE) $(OPTS) -module $(OBJDIR) -c -o $@ $<
+
+# $(OBJDIR)/%.F90.o: %.F90
+#	$(FC) $(FCOPTS) $(FFLAGSEXTRA) $(INCLUDE) $(OPTS) -module $(OBJDIR) -c -o $@ $<
+
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

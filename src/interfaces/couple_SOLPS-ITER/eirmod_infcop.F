@@ -169,11 +169,12 @@ C  NEUTRAL SOURCE TERMS: SNI,SMO,SEE,SEI (EIRENE ---> BRAAMS)
       USE EIRMOD_CPES
       USE EIRMOD_SHEATH
       USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
+#ifndef NO_JSON
       USE EIRMOD_JSON
 
       use json_module           !IGNORE
      .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
-
+#endif
       IMPLICIT NONE
 
       PRIVATE
@@ -278,8 +279,10 @@ C
      I           IT, IN, IP, IP1, IR, IR1, IPRT, NTGPRI,
      I           ICOADD, ICOSCR, ICOG, ICOU, IDUMMY, IERROR,
      I           ITRI, NBAR, NUMSI, NBARSI,
-     I           IUNIN_SAVE, IUSROUT
+     I           IUNIN_SAVE
+#ifndef NO_JSON
       INTEGER :: JS
+#endif
       REAL(DP) :: PX, PY, TX, TY, VS, VT,
      R            VSX, VSY, VTX, VTY, VPRO, XMUE, TEST,
      R            ALE, ALW, ALN, ALS, ALX, AL
@@ -293,6 +296,9 @@ C
      .            EIRENE_GEOMD, EIRENE_GEOUSR,
      .            EIRENE_INDMAP, EIRENE_PLASM, EIRENE_SNEIGH,
      .            EIRENE_MASJ1, EIRENE_MASJ2, EIRENE_MASJ5
+#ifdef NO_JSON
+      EXTERNAL :: EIRENE_MASAGE
+#endif
 C
       IERROR=0
       IUSROUT = 0
@@ -337,8 +343,14 @@ C
         IF (LFIXED) THEN
           CALL EIRENE_READ14_FIXED
         ELSE
+#ifndef NO_JSON
           js = itree_num(14)
           CALL EIRENE_READ14_JSON(jtrees(js),blks(14)%p)
+#else
+          CALL EIRENE_MASAGE
+     .     ('JSON FORMAT NOT SUPPORTED IF COMPILED WITH NO_JSON OPTION')
+          CALL EIRENE_EXIT_OWN(1)
+#endif
         ENDIF
       ENDIF
 C
@@ -1400,7 +1412,6 @@ csw
        USE EIRMOD_CTEXT
        IMPLICIT NONE
        INTEGER :: J, IAIN, IAOT, IPL, IPRT, IT
-       INTEGER :: JL
        LOGICAL :: LDUMMY
        EXTERNAL :: EIRENE_MASPRM, EIRENE_MASR4,
      .             EIRENE_EXIT_OWN, EIRENE_SKIP_READ_COMMENT,
@@ -1609,34 +1620,10 @@ C  HERE: EIRENE SURFACE TALLIES
 C
 C READING BLOCK 14 FROM FORMATTED INPUT FILE (IUNIN) FINISHED
 C
-
-C  COPY USER SPECIFIC DATA TO FILE user_data.input
-       JL = 0
-       IO = 0
-       IUNIN_SAVE = IUNIN
-       DO WHILE (IO == 0)
-         READ (IUNIN,'(A72)',IOSTAT=IO) ZEILE
-         IF (IO == 0) THEN
-           JL = JL + 1
-           IF (JL == 1) THEN
-             IUSROUT = -9999
-             CALL EIRENE_OPENFILE(IUSROUT,FILE='user_data.input',
-     .                            FORM='FORMATTED',ACCESS='SEQUENTIAL')
-           END IF
-           WRITE (IUSROUT,'(A)') TRIM(ZEILE)
-         END IF
-       END DO
-       IF (JL > 0) THEN
-         REWIND IUSROUT
-         IUNIN = IUSROUT
-       ELSE
-         IUSROUT = 0
-       END IF
-
        RETURN
        END SUBROUTINE EIRENE_READ14_FIXED
 
-
+#ifndef NO_JSON
        SUBROUTINE EIRENE_READ14_JSON(json,me)
        USE EIRMOD_JSON
        use json_module           !IGNORE
@@ -1955,7 +1942,7 @@ C
 
        RETURN
        END SUBROUTINE EIRENE_READ14_JSON
-
+#endif
 
       END SUBROUTINE EIRENE_IF0COP
 C

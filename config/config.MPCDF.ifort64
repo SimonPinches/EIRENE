@@ -1,0 +1,42 @@
+# Test whether necessary variables are set
+IPPSOLPSLIBS ?= /u/azito/SOLPS-ITER
+GR_ROOT   ?= ${IPPSOLPSLIBS}/gr
+GLI_HOME  ?= ${IPPSOLPSLIBS}/gks
+NAGDIR    ?= ${IPPSOLPSLIBS}/nag
+LD_GR     ?= -L${GR_ROOT} -lgr
+LD_GKS    ?= -L${GLI_HOME} -lgks # -lgfortran
+LD_NAG    ?= -L${NAGDIR} -lnag
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF -DNO_SAVE
+
+CPP     = -/lib/cpp -C -traditional -ffreestanding
+
+MPI_FC ?= mpiifort
+ifdef SOLPS_MPI
+FC      = ${MPI_FC}
+else
+ifdef USE_IMPGYRO
+FC      = ${MPI_FC}
+endif
+endif
+
+ifndef SOLPS_DEBUG
+CLUSTER_NAME := $(shell hostname)
+ifeq ($(findstring raven,$(CLUSTER_NAME)),raven)
+FCOPTS  = -O3
+endif
+ifeq ($(findstring viper,$(CLUSTER_NAME)),viper)
+FCOPTS  = -O3 -diag-disable=10448
+endif
+CFLAGS  = -O3
+endif
+
+GKS     = ${LD_GR} ${LD_GKS} -lX11 -lXt
+
+LDLIBS  = -L/usr/local/lib -L/usr/lib64
+
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

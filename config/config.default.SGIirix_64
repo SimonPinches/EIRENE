@@ -1,0 +1,42 @@
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=2 -DNO_F01AAF
+
+ifdef SOLPS_MPI
+DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+DEFINES += -DNO_JSON
+
+CPP      = /lib/cpp
+FC       = f77
+
+FCOPTS   = -64 -static -nocpp
+ifdef SOLPS_DEBUG
+FCOPTS  += -g
+else
+FCOPTS  += -O2 -OPT:Olimit=0
+endif
+
+COMPILE  = ${FC} -c ${FCOPTS}
+
+NAG      = ${LD_NAG}
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS      = ${LD_GR} ${LD_GKS} -lX11 -lXt
+endif
+endif
+endif
+
+LDLIBS   =
+LDEXTRA  =
+
+OBJDEST  = -o $@
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

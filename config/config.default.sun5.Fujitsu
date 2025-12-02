@@ -1,0 +1,46 @@
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF -DNO_SAVE
+
+ifdef SOLPS_MPI
+DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+DEFINES += -DNO_JSON
+
+CPP      = /usr/ccs/lib/cpp
+FC       = /afs/ipp/@sys/soft/fuji_f90/FSUNf90/bin/f90
+
+FCOPTS   = -Am -X9
+ifdef SOLPS_DEBUG
+FCOPTS  += -g -Hasu
+else
+FCOPTS  += -O3 -Kfast,gs,V8PLUS,GREG,eval -x-
+endif
+
+COMPILE  = ${FC} -c ${FCOPTS}
+
+NAG      = ${LD_NAG}
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS      = ${LD_GR} ${LD_GKS} -lX11 -lXt -lsocket -lnsl
+endif
+endif
+endif
+
+LDLIBS   = -L/usr/local/lib
+LDEXTRA  =
+
+# new
+
+INCMOD   = -I
+MOD      = mod
+OBJDEST  = -o $@
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

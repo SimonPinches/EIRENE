@@ -1,0 +1,54 @@
+# Test whether necessary variables are set
+
+ifndef SOLPS_CPP
+DEFINES  += -DCRAY
+endif
+DEFINES  += -DNO_JSON
+
+CPP       = /lib/cpp -traditional
+FC        = ftn
+CC        = cc
+
+FCOPTS    =  -e0 -ez
+ifdef SOLPS_OPENMP
+FCOPTS   += -homp
+endif
+ifdef SOLPS_DEBUG
+FCOPTS   += -O0 -g -hfp0 -K trap=divz -K trap=fp -G0 -Rb
+ifdef SOLPS_OPENMP
+FCOPTS   += -M 3410
+endif
+CFLAGS    = -O0 -g
+else
+FCOPTS   += -O3 -hfp3
+CFLAGS    = -O3
+endif
+
+ifdef SOLPS_MPI
+DEFINES  += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+
+NAG       = ${LD_NAG}
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS       = ${LD_GR} ${LD_GKS} -lX11 -lXt
+endif
+endif
+endif
+
+LDLIBS    =
+LDEXTRA   =
+
+# new
+
+INCMOD    = -p
+MOD       = mod
+OBJDEST   = -ef -em -J${OBJDIR} -o $@
+
+COMPILE   = ${FC} -c ${FCOPTS} ${INCMOD}${OBJDIR}
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

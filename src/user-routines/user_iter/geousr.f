@@ -12,11 +12,13 @@ C
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMPRT
+      USE EIRMOD_OPENFILE, ONLY: EIRENE_OPENFILE
 
       IMPLICIT NONE
 
       CHARACTER(80) :: ZEILE
       integer, save :: ifirst=0
+      INTEGER :: JL, IO, IUSR
       EXTERNAL :: EIRENE_UPPERCASE, EIRENE_GEOUSR_BIASED,
      .            EIRENE_GEOUSR_BIASED_GARCHING, EIRENE_GEOUSR_GENERAL
 
@@ -26,8 +28,22 @@ cdr Then avoid second (default) call from input.f
       if (ifirst /= 0) return
       ifirst=1
 
-      READ (IUNIN,'(A80)') ZEILE    !*** 15
+C  COPY USER SPECIFIC DATA TO FILE user_data.input AS IT IS BEING READ
+      JL = 0
+      IO = 0
+      READ (IUNIN,'(A80)',IOSTAT=IO) ZEILE    !*** 15
+      IF (IO == 0) THEN
+        JL = JL + 1
+        IF (JL == 1) THEN
+          IUSR = -9999
+          CALL EIRENE_OPENFILE(IUSR,FILE='user_data.input',
+     .     FORM='FORMATTED',ACCESS='SEQUENTIAL')
+          IUSROUT = IUSR
+        END IF
+        WRITE(IUSROUT,'(A)') TRIM(ZEILE)
+      END IF
       READ (IUNIN,'(A80)') ZEILE    !  geometry comment
+      WRITE(IUSROUT,'(A)') TRIM(ZEILE)
 
       CALL EIRENE_UPPERCASE(ZEILE)
 
@@ -66,7 +82,7 @@ C
       USE EIRMOD_CPOLYG
       USE EIRMOD_CVARUSR
       IMPLICIT NONE
-!      CHARACTER(80) :: ZEILE
+      CHARACTER(80) :: ZEILE
       REAL(DP) :: XCOOR, YCOOR, ZCOOR
       INTEGER :: NRS, IPUNKT, I, NSSIR, NSSIP,
      .           IDIR, IR, IP, NAS
@@ -74,11 +90,14 @@ C
 C MODIFY GEOMETRY
 C
 C
-!      READ (IUNIN,'(A80)') ZEILE
-      READ (IUNIN,'(3I6)') NADMOD,NASMOD,NORMOD
+      READ (IUNIN,'(A80)') ZEILE
+      READ (ZEILE,'(3I6)') NADMOD,NASMOD,NORMOD
+      WRITE(IUSROUT,'(A)') TRIM(ZEILE)
 
       DO I=1,NADMOD
-        READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+        READ (IUNIN,'(A80)') ZEILE
+        READ (ZEILE,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+        WRITE(IUSROUT,'(A)') TRIM(ZEILE)
 
         SELECT CASE(IPUNKT)
 
@@ -122,7 +141,9 @@ C
       ENDDO
 
       DO I=1,NASMOD
-        READ (IUNIN,'(4I6)') NAS,IPUNKT,NSSIR,NSSIP
+        READ (IUNIN,'(A80)') ZEILE
+        READ (ZEILE,'(4I6)') NAS,IPUNKT,NSSIR,NSSIP
+        WRITE(IUSROUT,'(A)') TRIM(ZEILE)
         IF (IPUNKT.EQ.1) THEN
           P1(1,NAS)=XPOL(NSSIR,NSSIP)
           P1(2,NAS)=YPOL(NSSIR,NSSIP)
@@ -138,7 +159,9 @@ C
       ENDDO
 
       DO I = 1, NORMOD
-        READ (IUNIN,'(3I6)') IDIR,IR,IP
+        READ (IUNIN,'(A80)') ZEILE
+        READ (ZEILE,'(3I6)') IDIR,IR,IP
+        WRITE(IUSROUT,'(A)') TRIM(ZEILE)
         IF (IDIR == 1) THEN
           PLNX(IR,IP) = -PLNX(IR,IP)
           PLNY(IR,IP) = -PLNY(IR,IP)
@@ -288,7 +311,9 @@ C BOTTOM OUTER (RIGHT) TARGET
 csw 03sep2013
 
         DO I=1,NADMOD
-          READ (IUNIN,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+          READ (IUNIN,'(A80)') ZEILE
+          READ (ZEILE,'(2I6,3E12.4)') NRS,IPUNKT,XCOOR,YCOOR,ZCOOR
+          WRITE(IUSROUT,'(A)') TRIM(ZEILE)
 
           SELECT CASE (IPUNKT)
           CASE (1)
@@ -341,6 +366,7 @@ cdr or     read limpos, onetwo
 
 csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
           read(iunin,'(a80)') zeile
+          WRITE(IUSROUT,'(A)') TRIM(ZEILE)
           call fix_integer_input(zeile,3)
           read(zeile,*,err=91) limpos(i),onetwo(i),icoor(i)
           goto 92
@@ -349,7 +375,11 @@ csw 03sep2013 AARRRGH!!!!          read(iunin,*) onetwo(i),limpos(i)
           if(onetwo(i).lt.0) then
             normalcase=.false.
             onetwo(i)=-onetwo(i)
-            if (nlplg) read(iunin,*) xpolpos(i),ypolpos(i)
+            if (nlplg) then
+              read (iunin,'(a80)') zeile
+              read (zeile,*) xpolpos(i),ypolpos(i)
+              WRITE(IUSROUT,'(A)') TRIM(ZEILE)
+            end if
           end if
         end do
         first=.false.
@@ -682,6 +712,7 @@ c======================================================================
       logical :: first, normalcase, hlp_found
       integer :: onetwo(8),limpos(8),xpolpos(8),ypolpos(8)
 !      character(80) :: geometry_comment
+      CHARACTER(80) :: ZEILE
       REAL(DP), PARAMETER :: hlp_tol=0.001_DP
       INTEGER :: I, J, K, NBITS, M, N, L
       REAL(DP) :: HLP_P1, HLP_P2
@@ -735,11 +766,15 @@ C BOTTOM OUTER (RIGHT) TARGET
 
           normalcase=.true.
           do i=1,max(npplg/3,1)*4
-            read(iunin,*) onetwo(i),limpos(i)
+            READ (IUNIN,'(A80)') ZEILE
+            read (ZEILE,*) onetwo(i),limpos(i)
+            WRITE(IUSROUT,'(A)') TRIM(ZEILE)
             if(onetwo(i).lt.0) then
               normalcase=.false.
               onetwo(i)=-onetwo(i)
-              read(iunin,*) xpolpos(i),ypolpos(i)
+              READ (IUNIN,'(A80)') ZEILE
+              read (zeile,*) xpolpos(i),ypolpos(i)
+              WRITE(IUSROUT,'(A)') TRIM(ZEILE)
             end if
           end do
           first=.false.

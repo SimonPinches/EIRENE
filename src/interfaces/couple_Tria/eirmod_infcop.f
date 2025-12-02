@@ -282,7 +282,7 @@ C
      .           istat_cop, IXM1, IYM1,
      .           nr1tal_save,np2tal_save,nt3tal_save,nsbox_tal_save,
      .           nsurf_tal_save,nradd_tal_save,
-     .           js, iunin_save, iusrout
+     .           js, iunin_save
 
       REAL(DP) :: EIRENE_STEP, EIRENE_FTABRC1, EIRENE_FEELRC1,
      .            EIRENE_EMAXW

@@ -1,0 +1,51 @@
+# File compiler.macro for IBM xlf
+
+#  VERSION : 10.04.2003 22:42
+
+# Control parameters which can be defined:
+#   NO_SHORT_CYCLE
+#   NO_FORT10
+#   NO_B2_CHEM_SPUT
+#   NO_F01AAF
+#   WANT_FORT32
+#   NAG_RENAME
+
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+# DEFINES  =
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8
+DEFINES += -DNO_JSON
+
+ifdef SOLPS_MPI
+DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+
+FC       = xlf
+FCOPTS   = -O -qMAXMEM=-1 -qST_SIZE=5000 -qTKQ_SIZE=30000 -qAUX_SIZE=50000 -qextchk -qfloat=rsqrt:hssngl:fltint # -Q -qipa -qattr=full -qhot
+COMPILE  = ${FC} -c ${FCOPTS}
+CPP      = /lib/cpp -DRECL_UNITS_PER_DOUBLE=8
+
+LDLIBS   = -L/usr/local/lib -L${SOLPSMASTER}/@sys/lib -lmscl
+LDEXTRA  = -bmap:map.ibm -bloadmap:loadmap.ibm -bmaxdata:0x80000000
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS      = ${LD_GR} ${LD_GKS} -lX11 -lXt
+endif
+endif
+endif
+NAG      = ${LD_NAG}
+
+# new
+
+INCMOD   = -I
+MOD      = mod
+OBJDEST  = -o $@
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

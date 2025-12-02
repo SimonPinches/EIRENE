@@ -1,0 +1,58 @@
+#  VERSION : 19.08.2004 00:54
+
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+# The version relying on Fujitsu Fortran installed on AFS
+
+#DEFINES += -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF
+#DEFINES += -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF -DNO_SAVE
+DEFINES  += -DNO_JSON
+EQUIVS    =
+
+ifdef SOLPS_MPI
+DEFINES  += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+
+CPP       = -/lib/cpp -C -traditional
+CPPOPTS   = -C -P -I${srcdir} ${EQUIVS}
+SED       =
+LINK_MOD  =
+
+FC        = f95f
+
+FCOPTS    = -A2 -Am -X9
+ifdef SOLPS_DEBUG
+FCOPTS   += -g -Hasu --trace # -Ad
+else
+FCOPTS   += -fw -O # -Ad
+endif
+
+#COMPILE  = ${FC} -c ${FCOPTS}
+
+NAG       = ${LD_NAG}
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS       = ${LD_GR} ${LD_GKS} -lX11 -lXt -lXmu
+endif
+endif
+endif
+
+LDLIBS    = -L/usr/local/lib -L/usr/X11R6/lib -lmscl
+LDEXTRA   =
+
+# new
+
+INCMOD    = -I
+MOD       = mod
+OBJDEST   = -o $@
+
+BLD       = ar rcv
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

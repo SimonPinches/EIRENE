@@ -4,6 +4,17 @@ build*
 doc*
 lib*
 
+# Ignore specific links for SOLPS-ITER coupling
+Database/AMJUEL
+Database/AMMONX
+Database/H2VIBR
+Database/HYDHEL
+Database/METHAN*
+src/interfaces/couple_SOLPS-ITER/b2mod_dimensions.F
+
+# files ignored in git repository
+git_version.h
+git_version_*.h
 
 # backup files
 *.bak
@@ -25,7 +36,20 @@ local/
 *.error
 
 # files produced by the Makefile
+LISTOBJ
 TAGS
+linux.*/
+g77*/
+IBMaix*/
+SGIirix*/
+sun*/
+T3E*/
+unicos*/
+
+# files produced by scripts
+grep.lis
+__pycache__/
+_build/
 
 # Ignore eclipse files
 .cproject

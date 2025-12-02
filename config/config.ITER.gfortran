@@ -1,0 +1,40 @@
+# Test whether necessary variables are set
+GLI_HOME ?= ${EBROOTGLI}
+LD_GR    ?= -L${EBROOTGR}/lib -lgr
+LD_GKS   ?= -L${GKSDIR}/lib -lGKS -lgfortran -lX11 -lXt
+
+CPP       = /lib/cpp -traditional
+
+MPI_FC   ?= mpif90
+ifdef SOLPS_MPI
+FC        = ${MPI_FC}
+else
+ifdef USE_IMPGYRO
+FC        = ${MPI_FC}
+endif
+endif
+
+FCOPTS    = -fno-second-underscore
+
+ifdef SOLPS_OPENMP
+ifndef USE_B25
+FCOPTS   += -fPIC
+endif
+endif
+
+ifdef SOLPS_DEBUG
+FCOPTS   += -ffpe-trap=denormal -fsignaling-nans
+endif
+
+GKS       = ${LD_GR} ${LD_GKS}
+
+LDLIBS    = -L/usr/local/lib
+
+INCMOD    = -B
+
+COMPILE   = ${FC} -c ${FCOPTS} ${INCMOD}${OBJDIR}
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

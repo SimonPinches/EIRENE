@@ -52,6 +52,7 @@ cdr            tbd: call eirene_skip_read_comments: not yet implemented here.
 cdr  Aug. 20 : remove PART_NAME, BULK_NAME,... fix NSTRA, NSRFS,..
 C
       SUBROUTINE EIRENE_FIND_PARAM_JSON
+#ifndef NO_JSON
 C
 C   SET DIMENSIONS (PARAMETERS) FOR ALLOCATABLE ARRAYS (TALLIES, GRIDS, ETC..) AND SET SOME FURTHER DEFAULT VALUES
 C
@@ -1489,6 +1490,15 @@ cdr  some parameters may have gotten changed in IF0PRM, case-specific
 
 
 !******************************************************************************
+#else
+      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      IMPLICIT NONE
+      EXTERNAL :: EIRENE_EXIT_OWN
 
+      WRITE(IUNOUT,*) 'ATTEMPTING TO READ JSON FORMAT INPUT'
+      WRITE(IUNOUT,*) 'BUT CODE IS NOT LINKED TO THE JSON LIBRARY!'
+      CALL EIRENE_EXIT_OWN(1)
+      RETURN
+#endif
 
       END SUBROUTINE EIRENE_FIND_PARAM_JSON

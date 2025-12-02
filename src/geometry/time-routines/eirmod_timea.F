@@ -820,7 +820,7 @@ c
 c    It returns NOTOCSURFS(1:NSURFNOT), a list of additional surfaces not
 c       covered by the octree-procedure
 c
-c    unit number for the tracing debug ouput
+c    unit number for the tracing debug output
       if (pladd) then
         TRCNUM = 27
 !trc    OPEN(unit=TRCNUM,file='timea-trace.out')

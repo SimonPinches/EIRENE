@@ -43,6 +43,7 @@ C
       USE EIRMOD_JSON
       USE EIRMOD_PRESSURELOOP
 
+#ifndef NO_JSON
       USE EIRMOD_CPES, ONLY: NPRS, NLIDENT
       USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA0
       USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN
@@ -51,10 +52,12 @@ C
       use json_module           !IGNORE
 ! this does not work  found no matching specific binding for json%get
 !     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
+#endif
 
       IMPLICIT NONE
 
 C
+#ifndef NO_JSON
       TYPE(TEMPERATURE),POINTER :: TEMPCUR
       TYPE(DENSITY),POINTER :: DENCUR
       TYPE(VELOCITY),POINTER :: VELCUR
@@ -92,21 +95,24 @@ cdr  optional arguments for FILNAM=CONST options
      .                              RC2MIN, RC2MAX, FP2(6)
         END SUBROUTINE EIRENE_SLREAC
       END INTERFACE
+#endif
 
       INTEGER, INTENT(IN) :: NL
       REAL(DP), INTENT(INOUT) :: SAREA_SAVE(NL)
 
 C
+#ifndef NO_JSON
       REAL(DP) :: AFF(3,3), AFFI(3,3)
       REAL(DP) :: ALR, ROTNRM, RPSDL, XSH, YSH, ZSH, REFNRM,
      .          DPP, SPCMN, SPCMX,SPC_SHIFT,
      .          SPCPLT_X,SPCPLT_Y,SPCPLT_SAME, SPCVX, SPCVY, SPCVZ,
      .          VNORM
+#endif
 
       INTEGER :: IERROR, IREAD
-      INTEGER, SAVE :: IUSROUT=0
 c
 C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
+#ifndef NO_JSON
       REAL(DP) :: AMPTS
 
       INTEGER :: II, NTLVF, NSRF, NSP, NTL, ICHORI,
@@ -121,6 +127,9 @@ C  MULTIPLIER FOR BOTH CPU TIME NTCPU AND MAX NUMBER OF MC HISTORIES NPTS, ....
       INTEGER, SAVE :: NITER0
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       LOGICAL :: LRDMLTI, LRDMLV
+#else
+      EXTERNAL :: EIRENE_MASAGE
+#endif
       LOGICAL :: LHYDDEF, LMULPL
       EXTERNAL :: EIRENE_EXIT_OWN
 
@@ -156,7 +165,7 @@ C
 
 
       LMULPL = .FALSE.
-
+#ifndef NO_JSON
       js = itree_num(0)
       CALL EIRENE_READ_BLOCK_0(jtrees(js),blks(0)%p)
 
@@ -199,6 +208,12 @@ C
 
       js = itree_num(13)
       CALL EIRENE_READ_BLOCK_13(jtrees(js),blks(13)%p)
+#else
+      CALL EIRENE_MASAGE
+     . ('JSON FORMAT NOT SUPPORTED WHEN COMPILED WITH NO_JSON OPTION')
+      CALL EIRENE_EXIT_OWN(1)
+      LHYDDEF = .FALSE.
+#endif
 
 C  TRY TO GENERATE INPUT FOR EIRENE CORRESPONDING TO A HYDKIN RUN.
 C  NOT READY
@@ -212,6 +227,7 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
 
       RETURN
 
+#ifndef NO_JSON
       CONTAINS
 
 !*****************************************************************
@@ -5070,7 +5086,7 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
 
       end subroutine eirene_read_block_13
 
-
+#endif
       END SUBROUTINE EIRENE_READ_JSON
 
 
@@ -5082,15 +5098,17 @@ C  TURN OFF TIME DEP MODE IF EITHER NTIME=0 OR NPRNLI=0
       USE EIRMOD_COMUSR
       USE EIRMOD_CTEXT
       USE EIRMOD_JSON
+#ifndef NO_JSON
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF0COP
       use json_module           !IGNORE
 !cym/cpg
 !     .    , lk => json_lk, rk => json_rk, ik => json_ik, ck => json_ck
 !cym/cpg end
-
+#endif
       IMPLICIT NONE
 
       integer, intent(inout) :: ierror
+#ifndef NO_JSON
       type(json_core) :: json
       type(json_value), pointer :: p
       type(json_value), pointer :: padds, padd
@@ -5181,7 +5199,7 @@ C  also set NAINI, NCOPII, NCOPIE there
         write (iunout,*) 'NAINI, NCOPIE, NCPVI ',
      .                    NAINI, NCOPIE, NCPVI
       END IF
-
+#endif
       RETURN
       END SUBROUTINE EIRENE_READ_BLK14_JSON
 
@@ -5189,6 +5207,7 @@ C  also set NAINI, NCOPII, NCOPIE there
 
       subroutine eirene_read_mpi_strategy_json
       USE EIRMOD_JSON
+#ifndef NO_JSON
       USE EIRMOD_COMUSR, ONLY: NPRLL
       USE EIRMOD_CPES, ONLY: NPRS,
      >    STRATEGY_UNDEFINED, STRATEGY_EMBARRASS,
@@ -5271,6 +5290,6 @@ C  also set NAINI, NCOPII, NCOPIE there
           CALL EIRENE_LEER(1)
         END IF
       end select
-
+#endif
       return
       end subroutine eirene_read_mpi_strategy_json

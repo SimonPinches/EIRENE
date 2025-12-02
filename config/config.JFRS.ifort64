@@ -1,0 +1,36 @@
+# Test whether necessary variables are set
+ifdef GR_ROOT
+LD_GR    ?= -L${GR_ROOT} -lgr
+endif
+ifdef SOLPSTOP
+GLI_HOME ?= ${SOLPSTOP}/lib
+endif
+LD_NAG   ?= -mkl
+MPI_CPP  ?= -I${MPDIR}/include
+LD_MPI   ?= -L${MPDIR}/lib -lmpich
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF -DNO_SAVE
+
+CPP     = -/lib/cpp -traditional -ffreestanding
+FC      = ftn
+CC      = cc
+
+ifdef SOLPS_DEBUG
+FCOPTS  = -O0 -fpe0
+else
+FCOPTS  = -O3
+CFLAGS  = -O3
+endif
+
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS     = ${LD_GR} ${LD_GKS} -lX11 -lXt -dynamic
+endif
+endif
+endif
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

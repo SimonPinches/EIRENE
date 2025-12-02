@@ -1,0 +1,51 @@
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF -DNO_SAVE
+
+# Build with JSON if present
+ifeq ($(shell `pkg-config --exists json-fortran`; echo $$?),0)
+  JSON_INC ?= `pkg-config json-fortran --cflags`
+  LD_JSON ?= `pkg-config json-fortran --libs`
+endif
+
+ifdef SOLPS_MPI
+DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+INCLUDE += ${JSON_INC}
+
+CPP      = -/lib/cpp -C -traditional
+FC       = f95i -v 9.1
+
+ifdef SOLPS_DEBUG
+FCOPTS   = -g -O -C -d10
+else
+FCOPTS   = -O3 -tpp7
+endif
+
+NAG      = ${LD_NAG}
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS      = ${LD_GR} ${LD_GKS} -lX11 -lXt
+endif
+endif
+endif
+
+LDLIBS   = -L/usr/local/lib -L/usr/X11R6/lib64
+LDEXTRA  = ${LD_JSON}
+
+# new
+
+INCMOD   = -M
+MOD      = mod
+OBJDEST  = -o $@
+
+COMPILE  = ${FC} -c ${FCOPTS} ${INCMOD}${OBJDIR}
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

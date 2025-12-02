@@ -1,0 +1,33 @@
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+ifdef SOLPS_MPI
+ifndef MPDIR
+  $(error MPDIR not defined)
+endif
+endif
+
+CPP       = -/lib/cpp -traditional
+
+FCOPTS    = -tp=amd64
+ifdef SOLPS_DEBUG
+FCOPTS   += -Mrecursive -C
+else
+FCOPTS   += -O1
+endif
+
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS      = ${LD_GR} ${LD_GKS} -lX11 -lXt
+endif
+endif
+endif
+
+LDLIBS   = -L/usr/local/lib -L/usr/X11R6/lib
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

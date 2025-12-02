@@ -10,6 +10,7 @@ C  User specific read routines
 
       private
 
+#ifndef NO_JSON
       public :: eirene_read_block_11_usr, eirene_write_block_11_usr
 
       interface eirene_read_block_11_usr
@@ -20,6 +21,10 @@ C  User specific read routines
       interface eirene_write_block_11_usr
         procedure :: eirene_write_block_11_usr_json
       end interface eirene_write_block_11_usr
+#else
+      public :: eirene_read_block_11_usr_fixed,
+     .          eirene_write_block_11_usr
+#endif
 
       contains
 
@@ -54,7 +59,7 @@ csw
       return
       end subroutine eirene_read_block_11_usr_fixed
 
-
+#ifndef NO_JSON
       subroutine eirene_read_block_11_usr_json(json, me)
 
       use eirmod_comprt
@@ -137,5 +142,10 @@ csw
 
       return
       end subroutine eirene_write_block_11_usr_json
+#else
+      subroutine eirene_write_block_11_usr
+      return
+      end subroutine eirene_write_block_11_usr
+#endif
 
       end module eirmod_iousr

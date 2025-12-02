@@ -1,4 +1,4 @@
-      subroutine post_couple(nx_b2,ny_b2,ns_b2,nstrat_b2)
+      subroutine post_couple(nx_b2,ny_b2,ns_b2,nstrai_b2)
       use eirmod_PARMMOD
       use eirmod_CGRID
       use eirmod_CPOLYG
@@ -9,7 +9,7 @@
       use eirmod_COMPRT
       use eirmod_wneutrals
       implicit none
-      integer nx_b2,ny_b2,ns_b2,nstrat_b2
+      integer nx_b2,ny_b2,ns_b2,nstrai_b2
       logical error
       external eirene_exit_own
 
@@ -39,9 +39,18 @@
         write(iunout,*) 'NS(B2) <> NS(EIRENE) ',ns_b2,natma+nflb
         error=.true.
       endif
-      if(nstrat_b2.ne.nstrai) then
-        write(iunout,*) 'NSTRA(B2) <> NSTRA(EIRENE) ',nstrat_b2,nstrai
-        error=.true.
+      if(ntime.gt.0) then
+        if(nstrai_b2+1.ne.nstrai) then
+          write(iunout,*) 'NSTRA(B2) <> NSTRA(EIRENE) ',nstrai_b2+1,nstrai
+          write(iunout,*) 'INCLUDING CENSUS STRATUM'
+          error=.true.
+        endif
+      else
+        if(nstrai_b2.ne.nstrai) then
+          write(iunout,*) 'NSTRA(B2) <> NSTRA(EIRENE) ',nstrai_b2,nstrai
+          write(iunout,*) 'NO CENSUS STRATUM DETECTED'
+          error=.true.
+        endif
       endif
       if(error) then
         write(iunout,*) 'ERROR IN POST-COUPLING PARAMETERS'

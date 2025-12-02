@@ -1,0 +1,38 @@
+# Test whether necessary variables are set
+GR_ROOT   ?= /tokp/work/dpc/SOLPS-ITER/gr
+GLI_HOME  ?= /tokp/work/dpc/SOLPS-ITER/gks
+NAGDIR    ?= /tokp/work/dpc/SOLPS-ITER/nag
+LD_GR     ?= -L${GR_ROOT} -lgr
+LD_GKS    ?= -L${GLI_HOME} -lgks # -lgfortran
+LD_NAG    ?= -L${NAGDIR} -lnag
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF -DNO_SAVE
+
+CPP     = -/lib/cpp -C -traditional -ffreestanding
+
+MPI_FC ?= mpiifort
+ifdef SOLPS_MPI
+ FC     = ${MPI_FC}
+else
+ ifdef USE_IMPGYRO
+  FC    = ${MPI_FC}
+ endif
+endif
+
+ifndef COMPILER_REDEF
+ ifndef SOLPS_DEBUG
+  FCOPTS += -O3
+  CFLAGS += -O3
+ endif
+endif
+
+GKS     = ${LD_GR} ${LD_GKS} -lX11 -lXt
+
+LDLIBS  = -L/usr/local/lib -L/usr/lib64
+
+MAKETAGS = etags -o
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

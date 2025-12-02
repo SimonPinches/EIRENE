@@ -1,0 +1,36 @@
+# Test whether necessary variables are set
+ifndef LD_NAG
+  $(error LD_NAG not defined)
+endif
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8
+
+ifdef SOLPS_MPI
+DEFINES += -DMPI_VERSION=${MPI_VERSION} -DMPI_MOD=${MPI_MOD}
+endif
+DEFINES += -DNO_JSON
+
+CPP      = /usr/lib/gpp -F
+FC       = cf77
+
+FCOPTS   = -dp -G -Zv
+ifdef SOLPS_DEBUG
+FCOPTS  += -g
+else
+FCOPTS  +=
+endif
+
+COMPILE  = ${FC} -c ${FCOPTS}
+
+NAG      = ${LD_NAG}
+GKS      =
+
+LDLIBS   = -L${SOLPSMASTER}/@sys/lib -L/usr/local/lib
+LDEXTRA  =
+
+OBJDEST  = -o $@
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+
