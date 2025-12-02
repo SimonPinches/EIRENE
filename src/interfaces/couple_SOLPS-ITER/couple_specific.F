@@ -1550,8 +1550,14 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               CPMUL%ICM = IN
               CPMUL%VALUEM = PAPL(IPLS,IN)*FLXI
               IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAPL2(1:NPLS,0:NATM) => PAPL(:,IN)
                 CPMUL%VALUAM(1:NATMI) = PAPL2(IPLS,1:NATMI)*FLXI
+#else
+                DO IATM = 1, NATMI
+                  CPMUL%VALUAM(IATM) = PAPL(IPLS+IATM*NPLS,IN)*FLXI
+                END DO
+#endif
               END IF
               CPMUL%NXTMUL => PAPLS(ISTRAI)%PMUL
               PAPLS(ISTRAI)%PMUL => CPMUL
@@ -1564,8 +1570,14 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               CPMUL%ICM = IN
               CPMUL%VALUEM = PMPL(IPLS,IN)*FLXI
               IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMPL2(1:NPLS,0:NMOL) => PMPL(:,IN)
                 CPMUL%VALUMM(1:NMOL) = PMPL2(IPLS,1:NMOL)*FLXI
+#else
+                DO IMOL = 1, NMOL
+                  CPMUL%VALUMM(IMOL) = PMPL(IPLS+IMOL*NPLS,IN)*FLXI
+                END DO
+#endif
               END IF
               CPMUL%NXTMUL => PMPLS(ISTRAI)%PMUL
               PMPLS(ISTRAI)%PMUL => CPMUL
@@ -1578,8 +1590,14 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
               CPMUL%ICM = IN
               CPMUL%VALUEM = PIPL(IPLS,IN)*FLXI
               IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIPL2(1:NPLS,0:NION) => PIPL(:,IN)
                 CPMUL%VALUIM(1:NION) = PIPL2(IPLS,1:NION)*FLXI
+#else
+                DO IION = 1, NION
+                  CPMUL%VALUIM(IION) = PIPL(IPLS+IION*NPLS,IN)*FLXI
+                END DO
+#endif
               END IF
               CPMUL%NXTMUL => PIPLS(ISTRAI)%PMUL
               PIPLS(ISTRAI)%PMUL => CPMUL

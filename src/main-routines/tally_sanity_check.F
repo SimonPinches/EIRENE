@@ -137,8 +137,19 @@
       real(dp), pointer :: p2(:,:)
       real(dp) :: error, sm, rel_err
       integer :: i
+#if ( defined(G95) || defined(LEGACYCOMP) )
+      integer :: j
+#endif
 
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
       p2(0:n1d,0:n2) => ar
+#else
+      do j = 1, n2+1
+        do i = 1, n1d+1
+          p2(i-1,j-1) = ar(i+(j-1)*(n1d+1))
+        end do
+      end do
+#endif
       do i = 1, n1
         sm = sum(p2(i,1:n2))
         error = p2(i,0) - sm

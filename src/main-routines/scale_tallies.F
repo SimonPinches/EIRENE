@@ -32,6 +32,9 @@ C
       REAL(DP) :: FADD
       INTEGER :: IATM, IMOL, IION, IPLS, IPHOT, IADV, ICLV, IBGV, ICPV,
      .           JATM, J, ISPC
+#if ( defined(G95) || defined(LEGACYCOMP) )
+     .          ,JMOL, JION, JPHOT
+#endif
       CHARACTER*24 HLP_FRM
       EXTERNAL :: EIRENE_GETSCL4, EIRENE_GETSCLS,
      .            EIRENE_TALLY_SANITY_CHECK,
@@ -98,37 +101,85 @@ c  volumetric atomic tallies
             IF (LEDENA) EDENA(IATM,J)=EDENA(IATM,J)*FATM(IATM)
             IF (LPAAT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAAT2(1:NATM,LB_ATM:NATM) => PAAT(:,J)
                 PAAT2(IATM,1:NATMI) = PAAT2(IATM,1:NATMI)*FATM(1:NATMI)
                 PAAT(IATM,J) = SUM(PAAT2(IATM,1:NATMI))
+#else
+                DO JATM = 1, NATMI
+                  PAAT(IATM+(JATM-LB_ATM)*NATM,J) =
+     .             PAAT(IATM+(JATM-LB_ATM)*NATM,J)*FATM(JATM)
+                END DO
+                IF (LB_ATM.EQ.0) PAAT(IATM,J) = 0.0_DP
+                DO JATM = 1, NATMI
+                  PAAT(IATM,J) = PAAT(IATM,J) +
+     .             PAAT(IATM+(JATM-LB_ATM)*NATM,J)
+                END DO
+#endif
               ELSE
                 PAAT(IATM,J)=PAAT(IATM,J)*FATM(0)
               END IF
             END IF
             IF (LPMAT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMAT2(1:NATM,LB_MOL:NMOL) => PMAT(:,J)
                 PMAT2(IATM,1:NMOLI) = PMAT2(IATM,1:NMOLI)*FMOL(1:NMOLI)
                 PMAT(IATM,J) = SUM(PMAT2(IATM,1:NMOLI))
+#else
+                DO JMOL = 1, NMOLI
+                  PMAT(IATM+(JMOL-LB_MOL)*NATM,J) =
+     .             PMAT(IATM+(JMOL-LB_MOL)*NATM,J)*FMOL(JMOL)
+                END DO
+                IF (LB_MOL.EQ.0) PMAT(IATM,J) = 0.0_DP
+                DO JMOL = 1, NMOLI
+                  PMAT(IATM,J) = PMAT(IATM,J) +
+     .             PMAT(IATM+(JMOL-LB_MOL)*NATM,J)
+                END DO
+#endif
               ELSE
                 PMAT(IATM,J)=PMAT(IATM,J)*FMOL(0)
               END IF
             END IF
             IF (LPIAT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIAT2(1:NATM,LB_ION:NION) => PIAT(:,J)
                 PIAT2(IATM,1:NIONI) = PIAT2(IATM,1:NIONI)*FION(1:NIONI)
                 PIAT(IATM,J) = SUM(PIAT2(IATM,1:NIONI))
+#else
+                DO JION = 1, NIONI
+                  PIAT(IATM+(JION-LB_ION)*NATM,J) =
+     .             PIAT(IATM+(JION-LB_ION)*NATM,J)*FION(JION)
+                END DO
+                IF (LB_ION.EQ.0) PIAT(IATM,J) = 0.0_DP
+                DO JION = 1, NIONI
+                  PIAT(IATM,J) = PIAT(IATM,J) +
+     .             PIAT(IATM+(JION-LB_ION)*NATM,J)
+                END DO
+#endif
               ELSE
                 PIAT(IATM,J)=PIAT(IATM,J)*FION(0)
               END IF
             END IF
             IF (LPPHAT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHAT2(1:NATM,LB_PHOT:NPHOT) => PPHAT(:,J)
                 PPHAT2(IATM,1:NPHOTI) = PPHAT2(IATM,1:NPHOTI)*
      .                                  FPHOT(1:NPHOTI)
                 PPHAT(IATM,J) = SUM(PPHAT2(IATM,1:NPHOTI))
+#else
+                DO JPHOT = 1, NPHOTI
+                  PPHAT(IATM+(JPHOT-LB_PHOT)*NATM,J) =
+     .             PPHAT(IATM+(JPHOT-LB_PHOT)*NATM,J)*FPHOT(JPHOT)
+                END DO
+                IF (LB_PHOT.EQ.0) PPHAT(IATM,J) = 0.0_DP
+                DO JPHOT = 1, NPHOTI
+                  PPHAT(IATM,J) = PPHAT(IATM,J) +
+     .             PPHAT(IATM+(JPHOT-LB_PHOT)*NATM,J)
+                END DO
+#endif
               ELSE
                 PPHAT(IATM,J)=PPHAT(IATM,J)*FPHOT(0)
               END IF
@@ -146,40 +197,88 @@ c  atomic surface tallies, outgoing species: iatm
             IF (LPOTAT) POTAT(IATM,J)=POTAT(IATM,J)*FATM(IATM)
             IF (LPRFAAT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFAAT2(1:NATM,LB_ATM:NATM) => PRFAAT(:,J)
                 PRFAAT2(IATM,1:NATMI) = PRFAAT2(IATM,1:NATMI)*
      .                                  FATM(1:NATMI)
                 PRFAAT(IATM,J) = SUM(PRFAAT2(IATM,1:NATMI))
+#else
+                DO JATM = 1, NATMI
+                  PRFAAT(IATM+(JATM-LB_ATM)*NATM,J) =
+     .             PRFAAT(IATM+(JATM-LB_ATM)*NATM,J)*FATM(JATM)
+                END DO
+                IF (LB_ATM.EQ.0) PRFAAT(IATM,J) = 0.0_DP
+                DO JATM = 1, NATMI
+                  PRFAAT(IATM,J) = PRFAAT(IATM,J) +
+     .             PRFAAT(IATM+(JATM-LB_ATM)*NATM,J)
+                END DO
+#endif
               ELSE
                 PRFAAT(IATM,J)=PRFAAT(IATM,J)*FATM(0)
               END IF
             END IF
             IF (LPRFMAT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFMAT2(1:NATM,LB_MOL:NMOL) => PRFMAT(:,J)
                 PRFMAT2(IATM,1:NMOLI) = PRFMAT2(IATM,1:NMOLI)*
      .                                  FMOL(1:NMOLI)
                 PRFMAT(IATM,J) = SUM(PRFMAT2(IATM,1:NMOLI))
+#else
+                DO JMOL = 1, NMOLI
+                  PRFMAT(IATM+(JMOL-LB_MOL)*NATM,J) =
+     .             PRFMAT(IATM+(JMOL-LB_MOL)*NATM,J)*FMOL(JMOL)
+                END DO
+               IF (LB_MOL.EQ.0) PRFMAT(IATM,J) = 0.0_DP
+                DO JMOL = 1, NMOLI
+                  PRFMAT(IATM,J) = PRFMAT(IATM,J) +
+     .             PRFMAT(IATM+(JMOL-LB_MOL)*NATM,J)
+                END DO
+#endif
               ELSE
                 PRFMAT(IATM,J)=PRFMAT(IATM,J)*FMOL(0)
               END IF
             END IF
             IF (LPRFIAT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFIAT2(1:NATM,LB_ION:NION) => PRFIAT(:,J)
                 PRFIAT2(IATM,1:NIONI) = PRFIAT2(IATM,1:NIONI)*
      .                                  FION(1:NIONI)
                 PRFIAT(IATM,J) = SUM(PRFIAT2(IATM,1:NIONI))
+#else
+                DO JION = 1, NIONI
+                  PRFIAT(IATM+(JION-LB_ION)*NATM,J) =
+     .             PRFIAT(IATM+(JION-LB_ION)*NATM,J)*FION(JION)
+                END DO
+                IF (LB_ION.EQ.0) PRFIAT(IATM,J) = 0.0_DP
+                DO JION = 1, NIONI
+                  PRFIAT(IATM,J) = PRFIAT(IATM,J) +
+     .             PRFIAT(IATM+(JION-LB_ION)*NATM,J)
+                END DO
+#endif
               ELSE
                 PRFIAT(IATM,J)=PRFIAT(IATM,J)*FION(0)
               END IF
             END IF
             IF (LPRFPHAT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFPHAT2(1:NATM,LB_PHOT:NPHOT) => PRFPHAT(:,J)
                 PRFPHAT2(IATM,1:NPHOTI) = PRFPHAT2(IATM,1:NPHOTI)*
      .                                    FPHOT(1:NPHOTI)
                 PRFPHAT(IATM,J) = SUM(PRFPHAT2(IATM,1:NPHOTI))
+#else
+                DO JPHOT = 1, NPHOTI
+                  PRFPHAT(IATM+(JPHOT-LB_PHOT)*NATM,J) =
+     .             PRFPHAT(IATM+(JPHOT-LB_PHOT)*NATM,J)*FPHOT(JPHOT)
+                END DO
+                IF (LB_PHOT.EQ.0) PRFPHAT(IATM,J) = 0.0_DP
+                DO JPHOT = 1, NPHOTI
+                  PRFPHAT(IATM,J) = PRFPHAT(IATM,J) +
+     .             PRFPHAT(IATM+(JPHOT-LB_PHOT)*NATM,J)
+                END DO
+#endif
               ELSE
                 PRFPHAT(IATM,J)=PRFPHAT(IATM,J)*FPHOT(0)
               END IF
@@ -232,42 +331,94 @@ cdr  ?? scaling with bulk flux ??
           RAELI(IATM,ISTRA)=RAELI(IATM,ISTRA)*FATM(IATM)
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAATI2(0:NATM,LB_ATM:NATM) => PAATI(:,ISTRA)
             PAATI2(IATM,1:NATMI) = PAATI2(IATM,1:NATMI)*FATM(1:NATMI)
             PAATI(IATM,ISTRA) = SUM(PAATI2(IATM,1:NATMI))
             PRFAAI2(0:NATM,0:NATM) => PRFAAI(:,ISTRA)
             PRFAAI2(IATM,1:NATMI) = PRFAAI2(IATM,1:NATMI)*FATM(1:NATMI)
             PRFAAI(IATM,ISTRA) = SUM(PRFAAI2(IATM,1:NATMI))
+#else
+            DO JATM = 1, NATMI
+              PAATI(IATM+(JATM-LB_ATM)*(NATM+1),ISTRA) =
+     .         PAATI(IATM+(JATM-LB_ATM)*(NATM+1),ISTRA)*FATM(JATM)
+              PRFAAI(IATM+(JATM-LB_ATM)*(NATM+1),ISTRA) =
+     .         PRFAAI(IATM+(JATM-LB_ATM)*(NATM+1),ISTRA)*FATM(JATM)
+            END DO
+            IF (LB_ATM.EQ.0) PAATI(IATM,ISTRA) = 0.0_DP
+            IF (LB_ATM.EQ.0) PRFAAI(IATM,ISTRA) = 0.0_DP
+            DO JATM = 1, NATMI
+              PAATI(IATM,ISTRA) = PAATI(IATM,ISTRA) +
+     .         PAATI(IATM+(JATM-LB_ATM)*(NATM+1),ISTRA)
+              PRFAAI(IATM,ISTRA) = PRFAAI(IATM,ISTRA) +
+     .         PRFAAI(IATM+(JATM-LB_ATM)*(NATM+1),ISTRA)
+            END DO
+#endif
           ELSE
             PAATI(IATM,ISTRA)=PAATI(IATM,ISTRA)*FATM(0)
             PRFAAI(IATM,ISTRA)=PRFAAI(IATM,ISTRA)*FATM(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMATI2(0:NATM,LB_MOL:NMOL) => PMATI(:,ISTRA)
             PMATI2(IATM,1:NMOLI) = PMATI2(IATM,1:NMOLI)*FMOL(1:NMOLI)
             PMATI(IATM,ISTRA) = SUM(PMATI2(IATM,1:NMOLI))
             PRFMAI2(0:NATM,LB_MOL:NMOL) => PRFMAI(:,ISTRA)
             PRFMAI2(IATM,1:NMOLI) = PRFMAI2(IATM,1:NMOLI)*FMOL(1:NMOLI)
             PRFMAI(IATM,ISTRA) = SUM(PRFMAI2(IATM,1:NMOLI))
+#else
+            DO JMOL = 1, NMOLI
+              PMATI(IATM+(JMOL-LB_MOL)*(NATM+1),ISTRA) =
+     .         PMATI(IATM+(JMOL-LB_MOL)*(NATM+1),ISTRA)*FMOL(JMOL)
+              PRFMAI(IATM+(JMOL-LB_MOL)*(NATM+1),ISTRA) =
+     .         PRFMAI(IATM+(JMOL-LB_MOL)*(NATM+1),ISTRA)*FMOL(JMOL)
+            END DO
+            IF (LB_MOL.EQ.0) PMATI(IATM,ISTRA) = 0.0_DP
+            IF (LB_MOL.EQ.0) PRFMAI(IATM,ISTRA) = 0.0_DP
+            DO JMOL = 1, NMOLI
+              PMATI(IATM,ISTRA) = PMATI(IATM,ISTRA) +
+     .         PMATI(IATM+(JMOL-LB_MOL)*(NATM+1),ISTRA)
+              PRFMAI(IATM,ISTRA) = PRFMAI(IATM,ISTRA) +
+     .         PRFMAI(IATM+(JMOL-LB_MOL)*(NATM+1),ISTRA)
+            END DO
+#endif
           ELSE
             PMATI(IATM,ISTRA)=PMATI(IATM,ISTRA)*FMOL(0)
             PRFMAI(IATM,ISTRA)=PRFMAI(IATM,ISTRA)*FMOL(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIATI2(0:NATM,LB_ION:NION) => PIATI(:,ISTRA)
             PIATI2(IATM,1:NIONI) = PIATI2(IATM,1:NIONI)*FION(1:NIONI)
             PIATI(IATM,ISTRA) = SUM(PIATI2(IATM,1:NIONI))
             PRFIAI2(0:NATM,LB_ION:NION) => PRFIAI(:,ISTRA)
             PRFIAI2(IATM,1:NIONI) = PRFIAI2(IATM,1:NIONI)*FION(1:NIONI)
             PRFIAI(IATM,ISTRA) = SUM(PRFIAI2(IATM,1:NIONI))
+#else
+            DO JION = 1, NIONI
+              PIATI(IATM+(JION-LB_ION)*(NATM+1),ISTRA) =
+     .         PIATI(IATM+(JION-LB_ION)*(NATM+1),ISTRA)*FION(JION)
+              PRFIAI(IATM+(JION-LB_ION)*(NATM+1),ISTRA) =
+     .         PRFIAI(IATM+(JION-LB_ION)*(NATM+1),ISTRA)*FION(JION)
+            END DO
+            IF (LB_ION.EQ.0) PIATI(IATM,ISTRA) = 0.0_DP
+            IF (LB_ION.EQ.0) PRFIAI(IATM,ISTRA) = 0.0_DP
+            DO JION = 1, NIONI
+              PIATI(IATM,ISTRA) = PIATI(IATM,ISTRA) +
+     .         PIATI(IATM+(JION-LB_ION)*(NATM+1),ISTRA)
+              PRFIAI(IATM,ISTRA) = PRFIAI(IATM,ISTRA) +
+     .         PRFIAI(IATM+(JION-LB_ION)*(NATM+1),ISTRA)
+            END DO
+#endif
           ELSE
             PIATI(IATM,ISTRA)=PIATI(IATM,ISTRA)*FION(0)
             PRFIAI(IATM,ISTRA)=PRFIAI(IATM,ISTRA)*FION(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHATI2(0:NATM,LB_PHOT:NPHOT) => PPHATI(:,ISTRA)
             PPHATI2(IATM,1:NPHOT) = PPHATI2(IATM,1:NPHOT)*
      .                              FPHOT(1:NPHOTI)
@@ -276,6 +427,22 @@ cdr  ?? scaling with bulk flux ??
             PRFPHAI2(IATM,1:NPHOTI) = PRFPHAI2(IATM,1:NPHOTI)*
      .                                FPHOT(1:NPHOTI)
             PRFPHAI(IATM,ISTRA) = SUM(PRFPHAI2(IATM,1:NPHOTI))
+#else
+            DO JPHOT = 1, NPHOTI
+              PPHATI(IATM+(JPHOT-LB_PHOT)*(NATM+1),ISTRA) =
+     .         PPHATI(IATM+(JPHOT-LB_PHOT)*(NATM+1),ISTRA)*FPHOT(JPHOT)
+              PRFPHAI(IATM+(JPHOT-LB_PHOT)*(NATM+1),ISTRA) =
+     .         PRFPHAI(IATM+(JPHOT-LB_PHOT)*(NATM+1),ISTRA)*FPHOT(JPHOT)
+            END DO
+            IF (LB_PHOT.EQ.0) PPHATI(IATM,ISTRA) = 0.0_DP
+            IF (LB_PHOT.EQ.0) PRFPHAI(IATM,ISTRA) = 0.0_DP
+            DO JPHOT = 1, NPHOTI
+              PPHATI(IATM,ISTRA) = PPHATI(IATM,ISTRA) +
+     .         PPHATI(IATM+(JPHOT-LB_PHOT)*(NATM+1),ISTRA)
+              PRFPHAI(IATM,ISTRA) = PRFPHAI(IATM,ISTRA) +
+     .         PRFPHAI(IATM+(JPHOT-LB_PHOT)*(NATM+1),ISTRA)
+            END DO
+#endif
           ELSE
             PPHATI(IATM,ISTRA)=PPHATI(IATM,ISTRA)*FPHOT(0)
             PRFPHAI(IATM,ISTRA)=PRFPHAI(IATM,ISTRA)*FPHOT(0)
@@ -309,48 +476,84 @@ cdr  ?? scaling with bulk flux ??
           RAELI(0,ISTRA)=SUM(RAELI(1:NATMI,ISTRA))
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAATI2(0:NATM,LB_ATM:NATM) => PAATI(:,ISTRA)
             PRFAAI2(0:NATM,LB_ATM:NATM) => PRFAAI(:,ISTRA)
             DO JATM = LB_ATM,NATMI
               PAATI2(0,JATM) = SUM(PAATI2(1:NATMI,JATM))
               PRFAAI2(0,JATM) = SUM(PRFAAI2(1:NATMI,JATM))
             END DO
+#else
+            DO JATM = LB_ATM,NATMI
+              PAATI(JATM*(NATM+1),ISTRA) =
+     .         SUM(PAATI(1+JATM*(NATM+1):NATMI+JATM*(NATM+1),ISTRA))
+              PRFAAI(JATM*(NATM+1),ISTRA) =
+     .         SUM(PRFAAI(1+JATM*(NATM+1):NATMI+JATM*(NATM+1),ISTRA))
+            END DO
+#endif
           ELSE
             PAATI(0,ISTRA)=SUM(PAATI(1:NATMI,ISTRA))
             PRFAAI(0,ISTRA)=SUM(PRFAAI(1:NATMI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMATI2(0:NATM,LB_MOL:NMOL) => PMATI(:,ISTRA)
             PRFMAI2(0:NATM,LB_MOL:NMOL) => PRFMAI(:,ISTRA)
             DO IMOL=LB_MOL,NMOLI
               PMATI2(0,IMOL) = SUM(PMATI2(1:NATMI,IMOL))
               PRFMAI2(0,IMOL) = SUM(PRFMAI2(1:NATMI,IMOL))
             END DO
+#else
+            DO IMOL = LB_MOL, NMOLI
+              PMATI(IMOL*(NATM+1),ISTRA) =
+     .         SUM(PMATI(1+IMOL*(NATM+1):NATMI+IMOL*(NATM+1),ISTRA))
+              PRFMAI(IMOL*(NATM+1),ISTRA) =
+     .         SUM(PRFMAI(1+IMOL*(NATM+1):NATMI+IMOL*(NATM+1),ISTRA))
+            END DO
+#endif
           ELSE
             PMATI(0,ISTRA)=SUM(PMATI(1:NATMI,ISTRA))
             PRFMAI(0,ISTRA)=SUM(PRFMAI(1:NATMI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIATI2(0:NATM,LB_ION:NION) => PIATI(:,ISTRA)
             PRFIAI2(0:NATM,LB_ION:NION) => PRFIAI(:,ISTRA)
             DO IION=LB_ION,NIONI
               PIATI2(0,IION) = SUM(PIATI2(1:NATMI,IION))
               PRFIAI2(0,IION) = SUM(PRFIAI2(1:NATMI,IION))
             END DO
+#else
+            DO IION = LB_ION, NIONI
+              PIATI(IION*(NATM+1),ISTRA) =
+     .         SUM(PIATI(1+IION*(NATM+1):NATMI+IION*(NATM+1),ISTRA))
+              PRFIAI(IION*(NATM+1),ISTRA) =
+     .         SUM(PRFIAI(1+IION*(NATM+1):NATMI+IION*(NATM+1),ISTRA))
+            END DO
+#endif
           ELSE
             PIATI(0,ISTRA)=SUM(PIATI(1:NATMI,ISTRA))
             PRFIAI(0,ISTRA)=SUM(PRFIAI(1:NATMI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHATI2(0:NATM,LB_PHOT:NPHOT) => PPHATI(:,ISTRA)
             PRFPHAI2(0:NATM,LB_PHOT:NPHOT) => PRFPHAI(:,ISTRA)
             DO IPHOT=LB_PHOT,NPHOTI
               PPHATI2(0,IPHOT) = SUM(PPHATI2(1:NATMI,IPHOT))
               PRFPHAI2(0,IPHOT) = SUM(PRFPHAI2(1:NATMI,IPHOT))
             END DO
+#else
+            DO IPHOT = LB_PHOT, NPHOTI
+              PPHATI(IPHOT*(NATM+1),ISTRA) =
+     .         SUM(PPHATI(1+IPHOT*(NATM+1):NATMI+IPHOT*(NATM+1),ISTRA))
+              PRFPHAI(IPHOT*(NATM+1),ISTRA) =
+     .         SUM(PRFPHAI(1+IPHOT*(NATM+1):NATMI+IPHOT*(NATM+1),ISTRA))
+            END DO
+#endif
           ELSE
             PPHATI(0,ISTRA)=SUM(PPHATI(1:NATMI,ISTRA))
             PRFPHAI(0,ISTRA)=SUM(PRFPHAI(1:NATMI,ISTRA))
@@ -380,37 +583,85 @@ C
             IF (LEDENM) EDENM(IMOL,J)=EDENM(IMOL,J)*FMOL(IMOL)
             IF (LPAML) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAML2(1:NMOL,LB_ATM:NATM) => PAML(:,J)
                 PAML2(IMOL,1:NATMI) = PAML2(IMOL,1:NATMI)*FATM(1:NATMI)
                 PAML(IMOL,J) = SUM(PAML2(IMOL,1:NATMI))
+#else
+                DO JATM = 1, NATMI
+                  PAML(IMOL+(JATM-LB_ATM)*NMOL,J) =
+     .             PAML(IMOL+(JATM-LB_ATM)*NMOL,J)*FATM(JATM)
+                END DO
+                IF (LB_ATM.EQ.0) PAML(IMOL,J) = 0.0_DP
+                DO JATM = 1, NATMI
+                  PAML(IMOL,J) = PAML(IMOL,J) +
+     .             PAML(IMOL+(JATM-LB_ATM)*NMOL,J)
+                END DO
+#endif
               ELSE
                 PAML(IMOL,J)=PAML(IMOL,J)*FATM(0)
               END IF
             END IF
             IF (LPMML) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMML2(1:NMOL,LB_MOL:NMOL) => PMML(:,J)
                 PMML2(IMOL,1:NMOLI) = PMML2(IMOL,1:NMOLI)*FMOL(1:NMOLI)
                 PMML(IMOL,J) = SUM(PMML2(IMOL,1:NMOLI))
+#else
+                DO JMOL = 1, NMOLI
+                  PMML(IMOL+(JMOL-LB_MOL)*NMOL,J) =
+     .             PMML(IMOL+(JMOL-LB_MOL)*NMOL,J)*FMOL(JMOL)
+                END DO
+                IF (LB_MOL.EQ.0) PMML(IMOL,J) = 0.0_DP
+                DO JMOL = 1, NMOLI
+                  PMML(IMOL,J) = PMML(IMOL,J) +
+     .             PMML(IMOL+(JMOL-LB_MOL)*NMOL,J)
+                END DO
+#endif
               ELSE
                 PMML(IMOL,J)=PMML(IMOL,J)*FMOL(0)
               END IF
             END IF
             IF (LPIML) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIML2(1:NMOL,LB_ION:NION) => PIML(:,J)
                 PIML2(IMOL,1:NIONI) = PIML2(IMOL,1:NIONI)*FION(1:NIONI)
                 PIML(IMOL,J) = SUM(PIML2(IMOL,1:NIONI))
+#else
+                DO JION = 1, NIONI
+                  PIML(IMOL+(JION-LB_ION)*NMOL,J) =
+     .             PIML(IMOL+(JION-LB_ION)*NMOL,J)*FION(JION)
+                END DO
+                IF (LB_ION.EQ.0) PIML(IMOL,J) = 0.0_DP
+                DO JION = 1, NIONI
+                  PIML(IMOL,J) = PIML(IMOL,J) +
+     .             PIML(IMOL+(JION-LB_ION)*NMOL,J)
+                END DO
+#endif
               ELSE
                 PIML(IMOL,J)=PIML(IMOL,J)*FION(0)
               END IF
             END IF
             IF (LPPHML) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHML2(1:NMOL,LB_PHOT:NPHOT) => PPHML(:,J)
                 PPHML2(IMOL,1:NPHOTI) = PPHML2(IMOL,1:NPHOTI)*
      .                                  FPHOT(1:NPHOTI)
                 PPHML(IMOL,J) = SUM(PPHML2(IMOL,1:NPHOTI))
+#else
+                DO JPHOT = 1, NPHOTI
+                  PPHML(IMOL+(JPHOT-LB_PHOT)*NMOL,J) =
+     .             PPHML(IMOL+(JPHOT-LB_PHOT)*NMOL,J)*FPHOT(JPHOT)
+                END DO
+                IF (LB_PHOT.EQ.0) PPHML(IMOL,J) = 0.0_DP
+                DO JPHOT = 1, NPHOTI
+                  PPHML(IMOL,J) = PPHML(IMOL,J) +
+     .             PPHML(IMOL+(JPHOT-LB_PHOT)*NMOL,J)
+                END DO
+#endif
               ELSE
                 PPHML(IMOL,J)=PPHML(IMOL,J)*FPHOT(0)
               END IF
@@ -427,40 +678,88 @@ C
             IF (LPOTML) POTML(IMOL,J)=POTML(IMOL,J)*FMOL(IMOL)
             IF (LPRFAML) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFAML2(1:NMOL,LB_ATM:NATM) => PRFAML(:,J)
                 PRFAML2(IMOL,1:NATMI) = PRFAML2(IMOL,1:NATMI)*
      .                                  FATM(1:NATMI)
                 PRFAML(IMOL,J) = SUM(PRFAML2(IMOL,1:NATMI))
+#else
+                DO JATM = 1, NATMI
+                  PRFAML(IMOL+(JATM-LB_ATM)*NMOL,J) =
+     .             PRFAML(IMOL+(JATM-LB_ATM)*NMOL,J)*FATM(JATM)
+                END DO
+                IF (LB_ATM.EQ.0) PRFAML(IMOL,J) = 0.0_DP
+                DO JATM = 1, NATMI
+                  PRFAML(IMOL,J) = PRFAML(IMOL,J) +
+     .             PRFAML(IMOL+(JATM-LB_ATM)*NMOL,J)
+                END DO
+#endif
               ELSE
                 PRFAML(IMOL,J)=PRFAML(IMOL,J)*FATM(0)
               END IF
             END IF
             IF (LPRFMML) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFMML2(1:NMOL,LB_MOL:NMOL) => PRFMML(:,J)
                 PRFMML2(IMOL,1:NMOLI) = PRFMML2(IMOL,1:NMOLI)*
      .                                  FMOL(1:NMOLI)
                 PRFMML(IMOL,J) = SUM(PRFMML2(IMOL,1:NMOLI))
+#else
+                DO JMOL = 1, NMOLI
+                  PRFMML(IMOL+(JMOL-LB_MOL)*NMOL,J) =
+     .             PRFMML(IMOL+(JMOL-LB_MOL)*NMOL,J)*FMOL(JMOL)
+                END DO
+                IF (LB_MOL.EQ.0) PRFMML(IMOL,J) = 0.0_DP
+                DO JMOL = 1, NMOLI
+                  PRFMML(IMOL,J) = PRFMML(IMOL,J) +
+     .             PRFMML(IMOL+(JMOL-LB_MOL)*NMOL,J)
+                END DO
+#endif
               ELSE
                 PRFMML(IMOL,J)=PRFMML(IMOL,J)*FMOL(0)
               END IF
             END IF
             IF (LPRFIML) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFIML2(1:NMOL,LB_ION:NION) => PRFIML(:,J)
                 PRFIML2(IMOL,1:NIONI) = PRFIML2(IMOL,1:NIONI)*
      .                                  FION(1:NIONI)
                 PRFIML(IMOL,J) = SUM(PRFIML2(IMOL,1:NIONI))
+#else
+                DO JION = 1, NIONI
+                  PRFIML(IMOL+(JION-LB_ION)*NMOL,J) =
+     .             PRFIML(IMOL+(JION-LB_ION)*NMOL,J)*FION(JION)
+                END DO
+                IF (LB_ION.EQ.0) PRFIML(IMOL,J) = 0.0_DP
+                DO JION = 1, NIONI
+                  PRFIML(IMOL,J) = PRFIML(IMOL,J) +
+     .             PRFIML(IMOL+(JION-LB_ION)*NMOL,J)
+                END DO
+#endif
               ELSE
                 PRFIML(IMOL,J)=PRFIML(IMOL,J)*FION(0)
               END IF
             END IF
             IF (LPRFPHML) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFPHML2(1:NMOL,LB_PHOT:NPHOT) => PRFPHML(:,J)
                 PRFPHML2(IMOL,1:NPHOTI) = PRFPHML2(IMOL,1:NPHOTI)*
      .                                    FPHOT(1:NPHOTI)
                 PRFPHML(IMOL,J) = SUM(PRFPHML2(IMOL,1:NPHOTI))
+#else
+                DO JPHOT = 1, NPHOTI
+                  PRFPHML(IMOL+(JPHOT-LB_PHOT)*NMOL,J) =
+     .             PRFPHML(IMOL+(JPHOT-LB_PHOT)*NMOL,J)*FPHOT(JPHOT)
+                END DO
+                IF (LB_PHOT.EQ.0) PRFPHML(IMOL,J) = 0.0_DP
+                DO JPHOT = 1, NPHOTI
+                  PRFPHML(IMOL,J) = PRFPHML(IMOL,J) +
+     .             PRFPHML(IMOL+(JPHOT-LB_PHOT)*NMOL,J)
+                END DO
+#endif
               ELSE
                 PRFPHML(IMOL,J)=PRFPHML(IMOL,J)*FPHOT(0)
               END IF
@@ -511,42 +810,94 @@ cdr  ?? scaling with bulk flux ??
           RMELI(IMOL,ISTRA)=RMELI(IMOL,ISTRA)*FMOL(IMOL)
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAMLI2(0:NMOL,LB_ATM:NATM) => PAMLI(:,ISTRA)
             PAMLI2(IMOL,1:NATMI) = PAMLI2(IMOL,1:NATMI)*FATM(1:NATMI)
             PAMLI(IMOL,ISTRA) = SUM(PAMLI2(IMOL,1:NATMI))
             PRFAMI2(0:NMOL,LB_ATM:NATM) => PRFAMI(:,ISTRA)
             PRFAMI2(IMOL,1:NATMI) = PRFAMI2(IMOL,1:NATMI)*FATM(1:NATMI)
             PRFAMI(IMOL,ISTRA) = SUM(PRFAMI2(IMOL,1:NATMI))
+#else
+            DO JATM = 1, NATMI
+              PAMLI(IMOL+(JATM-LB_ATM)*(NMOL+1),ISTRA) =
+     .         PAMLI(IMOL+(JATM-LB_ATM)*(NMOL+1),ISTRA)*FATM(JATM)
+              PRFAMI(IMOL+(JATM-LB_ATM)*(NMOL+1),ISTRA) =
+     .         PRFAMI(IMOL+(JATM-LB_ATM)*(NMOL+1),ISTRA)*FATM(JATM)
+            END DO
+            IF (LB_ATM.EQ.0) PAMLI(IMOL,ISTRA) = 0.0_DP
+            IF (LB_ATM.EQ.0) PRFAMI(IMOL,ISTRA) = 0.0_DP
+            DO JATM = 1, NATMI
+              PAMLI(IMOL,ISTRA) = PAMLI(IMOL,ISTRA) +
+     .         PAMLI(IMOL+(JATM-LB_ATM)*(NMOL+1),ISTRA)
+              PRFAMI(IMOL,ISTRA) = PRFAMI(IMOL,ISTRA) +
+     .         PRFAMI(IMOL+(JATM-LB_ATM)*(NMOL+1),ISTRA)
+            END DO
+#endif
           ELSE
             PAMLI(IMOL,ISTRA)=PAMLI(IMOL,ISTRA)*FATM(0)
             PRFAMI(IMOL,ISTRA)=PRFAMI(IMOL,ISTRA)*FATM(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMMLI2(0:NMOL,LB_MOL:NMOL) => PMMLI(:,ISTRA)
             PMMLI2(IMOL,1:NMOLI) = PMMLI2(IMOL,1:NMOLI)*FMOL(1:NMOLI)
             PMMLI(IMOL,ISTRA) = SUM(PMMLI2(IMOL,1:NMOLI))
             PRFMMI2(0:NMOL,LB_MOL:NMOL) => PRFMMI(:,ISTRA)
             PRFMMI2(IMOL,1:NMOLI) = PRFMMI2(IMOL,1:NMOLI)*FMOL(1:NMOLI)
             PRFMMI(IMOL,ISTRA) = SUM(PRFMMI2(IMOL,1:NMOLI))
+#else
+            DO JMOL = 1, NMOLI
+              PMMLI(IMOL+(JMOL-LB_MOL)*(NMOL+1),ISTRA) =
+     .         PMMLI(IMOL+(JMOL-LB_MOL)*(NMOL+1),ISTRA)*FMOL(JMOL)
+              PRFMMI(IMOL+(JMOL-LB_MOL)*(NMOL+1),ISTRA) =
+     .         PRFMMI(IMOL+(JMOL-LB_MOL)*(NMOL+1),ISTRA)*FMOL(JMOL)
+            END DO
+            IF (LB_MOL.EQ.0) PMMLI(IMOL,ISTRA) = 0.0_DP
+            IF (LB_MOL.EQ.0) PRFMMI(IMOL,ISTRA) = 0.0_DP
+            DO JMOL = 1, NMOLI
+              PMMLI(IMOL,ISTRA) = PMMLI(IMOL,ISTRA) +
+     .         PMMLI(IMOL+(JMOL-LB_MOL)*(NMOL+1),ISTRA)
+              PRFMMI(IMOL,ISTRA) = PRFMMI(IMOL,ISTRA) +
+     .         PRFMMI(IMOL+(JMOL-LB_MOL)*(NMOL+1),ISTRA)
+            END DO
+#endif
           ELSE
             PMMLI(IMOL,ISTRA)=PMMLI(IMOL,ISTRA)*FMOL(0)
             PRFMMI(IMOL,ISTRA)=PRFMMI(IMOL,ISTRA)*FMOL(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIMLI2(0:NMOL,LB_ION:NION) => PIMLI(:,ISTRA)
             PIMLI2(IMOL,1:NIONI) = PIMLI2(IMOL,1:NIONI)*FION(1:NIONI)
             PIMLI(IMOL,ISTRA) = SUM(PIMLI2(IMOL,1:NIONI))
             PRFIMI2(0:NMOL,LB_ION:NION) => PRFIMI(:,ISTRA)
             PRFIMI2(IMOL,1:NIONI) = PRFIMI2(IMOL,1:NIONI)*FION(1:NIONI)
             PRFIMI(IMOL,ISTRA) = SUM(PRFIMI2(IMOL,1:NIONI))
+#else
+            DO JION = 1, NIONI
+              PIMLI(IMOL+(JION-LB_ION)*(NMOL+1),ISTRA) =
+     .         PIMLI(IMOL+(JION-LB_ION)*(NMOL+1),ISTRA)*FION(JION)
+              PRFIMI(IMOL+(JION-LB_ION)*(NMOL+1),ISTRA) =
+     .         PRFIMI(IMOL+(JION-LB_ION)*(NMOL+1),ISTRA)*FION(JION)
+            END DO
+            IF (LB_ION.EQ.0) PIMLI(IMOL,ISTRA) = 0.0_DP
+            IF (LB_ION.EQ.0) PRFIMI(IMOL,ISTRA) = 0.0_DP
+            DO JION = 1, NIONI
+              PIMLI(IMOL,ISTRA) = PIMLI(IMOL,ISTRA) +
+     .         PIMLI(IMOL+(JION-LB_ION)*(NMOL+1),ISTRA)
+              PRFIMI(IMOL,ISTRA) = PRFIMI(IMOL,ISTRA) +
+     .         PRFIMI(IMOL+(JION-LB_ION)*(NMOL+1),ISTRA)
+            END DO
+#endif
           ELSE
             PIMLI(IMOL,ISTRA)=PIMLI(IMOL,ISTRA)*FION(0)
             PRFIMI(IMOL,ISTRA)=PRFIMI(IMOL,ISTRA)*FION(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHMLI2(0:NMOL,LB_PHOT:NPHOT) => PPHMLI(:,ISTRA)
             PPHMLI2(IMOL,1:NPHOTI) = PPHMLI2(IMOL,1:NPHOTI)*
      .                               FPHOT(1:NPHOTI)
@@ -555,6 +906,22 @@ cdr  ?? scaling with bulk flux ??
             PRFPHMI2(IMOL,1:NPHOTI) = PRFPHMI2(IMOL,1:NPHOTI)*
      .                                FPHOT(1:NPHOTI)
             PRFPHMI(IMOL,ISTRA) = SUM(PRFPHMI2(IMOL,1:NPHOTI))
+#else
+            DO JPHOT = 1, NPHOTI
+              PPHMLI(IMOL+(JPHOT-LB_PHOT)*(NMOL+1),ISTRA) =
+     .         PPHMLI(IMOL+(JPHOT-LB_PHOT)*(NMOL+1),ISTRA)*FPHOT(JPHOT)
+              PRFPHMI(IMOL+(JPHOT-LB_PHOT)*(NMOL+1),ISTRA) =
+     .         PRFPHMI(IMOL+(JPHOT-LB_PHOT)*(NMOL+1),ISTRA)*FPHOT(JPHOT)
+            END DO
+            IF (LB_PHOT.EQ.0) PPHMLI(IMOL,ISTRA) = 0.0_DP
+            IF (LB_PHOT.EQ.0) PRFPHMI(IMOL,ISTRA) = 0.0_DP
+            DO JPHOT = 1, NPHOTI
+              PPHMLI(IMOL,ISTRA) = PPHMLI(IMOL,ISTRA) +
+     .         PPHMLI(IMOL+(JPHOT-LB_PHOT)*(NMOL+1),ISTRA)
+              PRFPHMI(IMOL,ISTRA) = PRFPHMI(IMOL,ISTRA) +
+     .         PRFPHMI(IMOL+(JPHOT-LB_PHOT)*(NMOL+1),ISTRA)
+            END DO
+#endif
           ELSE
             PPHMLI(IMOL,ISTRA)=PPHMLI(IMOL,ISTRA)*FPHOT(0)
             PRFPHMI(IMOL,ISTRA)=PRFPHMI(IMOL,ISTRA)*FPHOT(0)
@@ -588,48 +955,84 @@ cdr  ?? scaling with bulk flux ??
           RMELI(0,ISTRA)=SUM(RMELI(1:NMOLI,ISTRA))
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAMLI2(0:NMOL,LB_ATM:NATM) => PAMLI(:,ISTRA)
             PRFAMI2(0:NMOL,LB_ATM:NATM) => PRFAMI(:,ISTRA)
             DO IATM = LB_ATM,NATMI
               PAMLI2(0,IATM) = SUM(PAMLI2(1:NMOLI,IATM))
               PRFAMI2(0,IATM) = SUM(PRFAMI2(1:NMOLI,IATM))
             END DO
+#else
+            DO IATM = LB_ATM,NATMI
+              PAMLI(IATM*(NMOL+1),ISTRA) =
+     .         SUM(PAMLI(1+IATM*(NMOL+1):NMOLI+IATM*(NMOL+1),ISTRA))
+              PRFAMI(IATM*(NMOL+1),ISTRA) =
+     .         SUM(PRFAMI(1+IATM*(NMOL+1):NMOLI+IATM*(NMOL+1),ISTRA))
+            END DO
+#endif
           ELSE
             PAMLI(0,ISTRA)=SUM(PAMLI(1:NMOLI,ISTRA))
             PRFAMI(0,ISTRA)=SUM(PRFAMI(1:NMOLI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMMLI2(0:NMOL,LB_MOL:NMOL) => PMMLI(:,ISTRA)
             PRFMMI2(0:NMOL,LB_MOL:NMOL) => PRFMMI(:,ISTRA)
             DO IMOL = LB_MOL,NMOLI
               PMMLI2(0,IMOL) = SUM(PMMLI2(1:NMOLI,IMOL))
               PRFMMI2(0,IMOL) = SUM(PRFMMI2(1:NMOLI,IMOL))
             END DO
+#else
+            DO IMOL = LB_MOL, NMOLI
+              PMMLI(IMOL*(NMOL+1),ISTRA) =
+     .         SUM(PMMLI(1+IMOL*(NMOL+1):NMOLI+IMOL*(NMOL+1),ISTRA))
+              PRFMMI(IMOL*(NMOL+1),ISTRA) =
+     .         SUM(PRFMMI(1+IMOL*(NMOL+1):NMOLI+IMOL*(NMOL+1),ISTRA))
+            END DO
+#endif
           ELSE
             PMMLI(0,ISTRA)=SUM(PMMLI(1:NMOLI,ISTRA))
             PRFMMI(0,ISTRA)=SUM(PRFMMI(1:NMOLI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIMLI2(0:NMOL,LB_ION:NION) => PIMLI(:,ISTRA)
             PRFIMI2(0:NMOL,LB_ION:NION) => PRFIMI(:,ISTRA)
             DO IION = LB_ION,NIONI
               PIMLI2(0,IION) = SUM(PIMLI2(1:NMOLI,IION))
               PRFIMI2(0,IION) = SUM(PRFIMI2(1:NMOLI,IION))
             END DO
+#else
+            DO IION = LB_ION, NIONI
+              PIMLI(IION*(NMOL+1),ISTRA) =
+     .         SUM(PIMLI(1+IION*(NMOL+1):NMOLI+IION*(NMOL+1),ISTRA))
+              PRFIMI(IION*(NMOL+1),ISTRA) =
+     .         SUM(PRFIMI(1+IION*(NMOL+1):NMOLI+IION*(NMOL+1),ISTRA))
+            END DO
+#endif
           ELSE
             PIMLI(0,ISTRA)=SUM(PIMLI(1:NMOLI,ISTRA))
             PRFIMI(0,ISTRA)=SUM(PRFIMI(1:NMOLI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHMLI2(0:NMOL,LB_PHOT:NPHOT) => PPHMLI(:,ISTRA)
             PRFPHMI2(0:NMOL,LB_PHOT:NPHOT) => PRFPHMI(:,ISTRA)
             DO IPHOT = LB_PHOT,NPHOTI
               PPHMLI2(0,IPHOT) = SUM(PPHMLI2(1:NMOLI,IPHOT))
               PRFPHMI2(0,IPHOT) = SUM(PRFPHMI2(1:NMOLI,IPHOT))
             END DO
+#else
+            DO IPHOT = LB_PHOT, NPHOTI
+              PPHMLI(IPHOT*(NMOL+1),ISTRA) =
+     .         SUM(PPHMLI(1+IPHOT*(NMOL+1):NMOLI+IPHOT*(NMOL+1),ISTRA))
+              PRFPHMI(IPHOT*(NMOL+1),ISTRA) =
+     .         SUM(PRFPHMI(1+IPHOT*(NMOL+1):NMOLI+IPHOT*(NMOL+1),ISTRA))
+            END DO
+#endif
           ELSE
             PPHMLI(0,ISTRA)=SUM(PPHMLI(1:NMOLI,ISTRA))
             PRFPHMI(0,ISTRA)=SUM(PRFPHMI(1:NMOLI,ISTRA))
@@ -659,37 +1062,85 @@ C
             IF (LEDENI) EDENI(IION,J)=EDENI(IION,J)*FION(IION)
             IF (LPAIO) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAIO2(1:NION,LB_ATM:NATM) => PAIO(:,J)
                 PAIO2(IION,1:NATMI) = PAIO2(IION,1:NATMI)*FATM(1:NATMI)
                 PAIO(IION,J) = SUM(PAIO2(IION,1:NATMI))
+#else
+                DO JATM = 1, NATMI
+                  PAIO(IION+(JATM-LB_ATM)*NION,J) =
+     .             PAIO(IION+(JATM-LB_ATM)*NION,J)*FATM(JATM)
+                END DO
+                IF (LB_ATM.EQ.0) PAIO(IION,J) = 0.0_DP
+                DO JATM = 1, NATMI
+                  PAIO(IION,J) = PAIO(IION,J) +
+     .             PAIO(IION+(JATM-LB_ATM)*NION,J)
+                END DO
+#endif
               ELSE
                 PAIO(IION,J)=PAIO(IION,J)*FATM(0)
               END IF
             END IF
             IF (LPMIO) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMIO2(1:NION,LB_MOL:NMOL) => PMIO(:,J)
                 PMIO2(IION,1:NMOLI) = PMIO2(IION,1:NMOLI)*FMOL(1:NMOLI)
                 PMIO(IION,J) = SUM(PMIO2(IION,1:NMOLI))
+#else
+                DO JMOL = 1, NMOLI
+                  PMIO(IION+(JMOL-LB_MOL)*NION,J) =
+     .             PMIO(IION+(JMOL-LB_MOL)*NION,J)*FMOL(JMOL)
+                END DO
+                IF (LB_MOL.EQ.0) PMIO(IION,J) = 0.0_DP
+                DO JMOL = 1, NMOLI
+                  PMIO(IION,J) = PMIO(IION,J) +
+     .             PMIO(IION+(JMOL-LB_MOL)*NION,J)
+                END DO
+#endif
               ELSE
                 PMIO(IION,J)=PMIO(IION,J)*FMOL(0)
               END IF
             END IF
             IF (LPIIO) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIIO2(1:NION,LB_ION:NION) => PIIO(:,J)
                 PIIO2(IION,1:NIONI) = PIIO2(IION,1:NIONI)*FION(1:NIONI)
                 PIIO(IION,J) = SUM(PIIO2(IION,1:NIONI))
+#else
+                DO JION = 1, NIONI
+                  PIIO(IION+(JION-LB_ION)*NION,J) =
+     .             PIIO(IION+(JION-LB_ION)*NION,J)*FION(JION)
+                END DO
+                IF (LB_ION.EQ.0) PIIO(IION,J) = 0.0_DP
+                DO JION = 1, NIONI
+                  PIIO(IION,J) = PIIO(IION,J) +
+     .             PIIO(IION+(JION-LB_ION)*NION,J)
+                END DO
+#endif
               ELSE
                 PIIO(IION,J)=PIIO(IION,J)*FION(0)
               END IF
             END IF
             IF (LPPHIO) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHIO2(1:NION,LB_PHOT:NPHOT) => PPHIO(:,J)
                 PPHIO2(IION,1:NPHOTI) = PPHIO2(IION,1:NPHOTI)*
      .                                  FPHOT(1:NPHOTI)
                 PPHIO(IION,J) = SUM(PPHIO2(IION,1:NPHOTI))
+#else
+                DO JPHOT = 1, NPHOTI
+                  PPHIO(IION+(JPHOT-LB_PHOT)*NION,J) =
+     .             PPHIO(IION+(JPHOT-LB_PHOT)*NION,J)*FPHOT(JPHOT)
+                END DO
+                IF (LB_PHOT.EQ.0) PPHIO(IION,J) = 0.0_DP
+                DO JPHOT = 1, NPHOTI
+                  PPHIO(IION,J) = PPHIO(IION,J) +
+     .             PPHIO(IION+(JPHOT-LB_PHOT)*NION,J)
+                END DO
+#endif
               ELSE
                 PPHIO(IION,J)=PPHIO(IION,J)*FPHOT(0)
               END IF
@@ -706,40 +1157,88 @@ C
             IF (LPOTIO) POTIO(IION,J)=POTIO(IION,J)*FION(IION)
             IF (LPRFAIO) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFAIO2(1:NION,LB_ATM:NATM) => PRFAIO(:,J)
                 PRFAIO2(IION,1:NATMI) = PRFAIO2(IION,1:NATMI)*
      .                                  FATM(1:NATMI)
                 PRFAIO(IION,J) = SUM(PRFAIO2(IION,1:NATMI))
+#else
+                DO JATM = 1, NATMI
+                  PRFAIO(IION+(JATM-LB_ATM)*NION,J) =
+     .             PRFAIO(IION+(JATM-LB_ATM)*NION,J)*FATM(JATM)
+                END DO
+                IF (LB_ATM.EQ.0) PRFAIO(IION,J) = 0.0_DP
+                DO JATM = 1, NATMI
+                  PRFAIO(IION,J) = PRFAIO(IION,J) +
+     .             PRFAIO(IION+(JATM-LB_ATM)*NION,J)
+                END DO
+#endif
               ELSE
                 PRFAIO(IION,J)=PRFAIO(IION,J)*FATM(0)
               END IF
             END IF
             IF (LPRFMIO) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFMIO2(1:NION,LB_MOL:NMOL) => PRFMIO(:,J)
                 PRFMIO2(IION,1:NMOLI) = PRFMIO2(IION,1:NMOLI)*
      .                                  FMOL(1:NMOLI)
                 PRFMIO(IION,J) = SUM(PRFMIO2(IION,1:NMOLI))
+#else
+                DO JMOL = 1, NMOLI
+                  PRFMIO(IION+(JMOL-LB_MOL)*NION,J) =
+     .             PRFMIO(IION+(JMOL-LB_MOL)*NION,J)*FMOL(JMOL)
+                END DO
+                IF (LB_MOL.EQ.0) PRFMIO(IION,J) = 0.0_DP
+                DO JMOL = 1, NMOLI
+                  PRFMIO(IION,J) = PRFMIO(IION,J) +
+     .             PRFMIO(IION+(JMOL-LB_MOL)*NION,J)
+                END DO
+#endif
               ELSE
                 PRFMIO(IION,J)=PRFMIO(IION,J)*FMOL(0)
               END IF
             END IF
             IF (LPRFIIO) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFIIO2(1:NION,LB_ION:NION) => PRFIIO(:,J)
                 PRFIIO2(IION,1:NIONI) = PRFIIO2(IION,1:NIONI)*
      .                                  FION(1:NIONI)
                 PRFIIO(IION,J) = SUM(PRFIIO2(IION,1:NIONI))
+#else
+                DO JION = 1, NIONI
+                  PRFIIO(IION+(JION-LB_ION)*NION,J) =
+     .             PRFIIO(IION+(JION-LB_ION)*NION,J)*FION(JION)
+                END DO
+                IF (LB_ION.EQ.0) PRFIIO(IION,J) = 0.0_DP
+                DO JION = 1, NIONI
+                  PRFIIO(IION,J) = PRFIIO(IION,J) +
+     .             PRFIIO(IION+(JION-LB_ION)*NION,J)
+                END DO
+#endif
               ELSE
                 PRFIIO(IION,J)=PRFIIO(IION,J)*FION(0)
               END IF
             END IF
             IF (LPRFPHIO) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFPHIO2(1:NION,LB_PHOT:NPHOT) => PRFPHIO(:,J)
                 PRFPHIO2(IION,1:NPHOTI) = PRFPHIO2(IION,1:NPHOTI)*
      .                                    FPHOT(1:NPHOTI)
                 PRFPHIO(IION,J) = SUM(PRFPHIO2(IION,1:NPHOTI))
+#else
+                DO JPHOT = 1, NPHOTI
+                  PRFPHIO(IION+(JPHOT-LB_PHOT)*NION,J) =
+     .             PRFPHIO(IION+(JPHOT-LB_PHOT)*NION,J)*FPHOT(JPHOT)
+                END DO
+                IF (LB_PHOT.EQ.0) PRFPHIO(IION,J) = 0.0_DP
+                DO JPHOT = 1, NPHOTI
+                  PRFPHIO(IION,J) = PRFPHIO(IION,J) +
+     .             PRFPHIO(IION+(JPHOT-LB_PHOT)*NION,J)
+                END DO
+#endif
               ELSE
                 PRFPHIO(IION,J)=PRFPHIO(IION,J)*FPHOT(0)
               END IF
@@ -789,42 +1288,94 @@ cdr  ?? scaling with bulk flux ??
           RIELI(IION,ISTRA)=RIELI(IION,ISTRA)*FION(IION)
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAIOI2(0:NION,LB_ATM:NATM) => PAIOI(:,ISTRA)
             PAIOI2(IION,1:NATMI) = PAIOI2(IION,1:NATMI)*FATM(1:NATMI)
             PAIOI(IION,ISTRA) = SUM(PAIOI2(IION,1:NATMI))
             PRFAII2(0:NION,LB_ATM:NATM) => PRFAII(:,ISTRA)
             PRFAII2(IION,1:NATMI) = PRFAII2(IION,1:NATMI)*FATM(1:NATMI)
             PRFAII(IION,ISTRA) = SUM(PRFAII2(IION,1:NATMI))
+#else
+            DO JATM = 1, NATMI
+              PAIOI(IION+(JATM-LB_ATM)*(NION+1),ISTRA) =
+     .         PAIOI(IION+(JATM-LB_ATM)*(NION+1),ISTRA)*FATM(JATM)
+              PRFAII(IION+(JATM-LB_ATM)*(NION+1),ISTRA) =
+     .         PRFAII(IION+(JATM-LB_ATM)*(NION+1),ISTRA)*FATM(JATM)
+            END DO
+            IF (LB_ATM.EQ.0) PAIOI(IION,ISTRA) = 0.0_DP
+            IF (LB_ATM.EQ.0) PRFAII(IION,ISTRA) = 0.0_DP
+            DO JATM = 1, NATMI
+              PAIOI(IION,ISTRA) = PAIOI(IION,ISTRA) +
+     .         PAIOI(IION+(JATM-LB_ATM)*(NION+1),ISTRA)
+              PRFAII(IION,ISTRA) = PRFAII(IION,ISTRA) +
+     .         PRFAII(IION+(JATM-LB_ATM)*(NION+1),ISTRA)
+            END DO
+#endif
           ELSE
             PAIOI(IION,ISTRA)=PAIOI(IION,ISTRA)*FATM(0)
             PRFAII(IION,ISTRA)=PRFAII(IION,ISTRA)*FATM(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMIOI2(0:NION,LB_MOL:NMOL) => PMIOI(:,ISTRA)
             PMIOI2(IION,1:NMOLI) = PMIOI2(IION,1:NMOLI)*FMOL(1:NMOLI)
             PMIOI(IION,ISTRA) = SUM(PMIOI2(IION,1:NMOLI))
             PRFMII2(0:NION,LB_MOL:NMOL) => PRFMII(:,ISTRA)
             PRFMII2(IION,1:NMOLI) = PRFMII2(IION,1:NMOLI)*FMOL(1:NMOLI)
             PRFMII(IION,ISTRA) = SUM(PRFMII2(IION,1:NMOLI))
+#else
+            DO JMOL = 1, NMOLI
+              PMIOI(IION+(JMOL-LB_MOL)*(NION+1),ISTRA) =
+     .         PMIOI(IION+(JMOL-LB_MOL)*(NION+1),ISTRA)*FMOL(JMOL)
+              PRFMII(IION+(JMOL-LB_MOL)*(NION+1),ISTRA) =
+     .         PRFMII(IION+(JMOL-LB_MOL)*(NION+1),ISTRA)*FMOL(JMOL)
+            END DO
+            IF (LB_MOL.EQ.0) PMIOI(IION,ISTRA) = 0.0_DP
+            IF (LB_MOL.EQ.0) PRFMII(IION,ISTRA) = 0.0_DP
+            DO JMOL = 1, NMOLI
+              PMIOI(IION,ISTRA) = PMIOI(IION,ISTRA) +
+     .         PMIOI(IION+(JMOL-LB_MOL)*(NION+1),ISTRA)
+              PRFMII(IION,ISTRA) = PRFMII(IION,ISTRA) +
+     .         PRFMII(IION+(JMOL-LB_MOL)*(NION+1),ISTRA)
+            END DO
+#endif
           ELSE
             PMIOI(IION,ISTRA)=PMIOI(IION,ISTRA)*FMOL(0)
             PRFMII(IION,ISTRA)=PRFMII(IION,ISTRA)*FMOL(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIIOI2(0:NION,LB_ION:NION) => PIIOI(:,ISTRA)
             PIIOI2(IION,1:NIONI) = PIIOI2(IION,1:NIONI)*FION(1:NIONI)
             PIIOI(IION,ISTRA) = SUM(PIIOI2(IION,1:NIONI))
             PRFIII2(0:NION,LB_ION:NION) => PRFIII(:,ISTRA)
             PRFIII2(IION,1:NIONI) = PRFIII2(IION,1:NIONI)*FION(1:NIONI)
             PRFIII(IION,ISTRA) = SUM(PRFIII2(IION,1:NIONI))
+#else
+            DO JION = 1, NIONI
+              PIIOI(IION+(JION-LB_ION)*(NION+1),ISTRA) =
+     .         PIIOI(IION+(JION-LB_ION)*(NION+1),ISTRA)*FION(JION)
+              PRFIII(IION+(JION-LB_ION)*(NION+1),ISTRA) =
+     .         PRFIII(IION+(JION-LB_ION)*(NION+1),ISTRA)*FION(JION)
+            END DO
+            IF (LB_ION.EQ.0) PIIOI(IION,ISTRA) = 0.0_DP
+            IF (LB_ION.EQ.0) PRFIII(IION,ISTRA) = 0.0_DP
+            DO JION = 1, NIONI
+              PIIOI(IION,ISTRA) = PIIOI(IION,ISTRA) +
+     .         PIIOI(IION+(JION-LB_ION)*(NION+1),ISTRA)
+              PRFIII(IION,ISTRA) = PRFIII(IION,ISTRA) +
+     .         PRFIII(IION+(JION-LB_ION)*(NION+1),ISTRA)
+            END DO
+#endif
           ELSE
             PIIOI(IION,ISTRA)=PIIOI(IION,ISTRA)*FION(0)
             PRFIII(IION,ISTRA)=PRFIII(IION,ISTRA)*FION(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHIOI2(0:NION,LB_PHOT:NPHOT) => PPHIOI(:,ISTRA)
             PPHIOI2(IION,1:NPHOTI) = PPHIOI2(IION,1:NPHOTI)*
      .                               FPHOT(1:NPHOTI)
@@ -833,6 +1384,22 @@ cdr  ?? scaling with bulk flux ??
             PRFPHII2(IION,1:NPHOTI) = PRFPHII2(IION,1:NPHOTI)*
      .                                FPHOT(1:NPHOTI)
             PRFPHII(IION,ISTRA) = SUM(PRFPHII2(IION,1:NPHOTI))
+#else
+            DO JPHOT = 1, NPHOTI
+              PPHIOI(IION+(JPHOT-LB_PHOT)*(NION+1),ISTRA) =
+     .         PPHIOI(IION+(JPHOT-LB_PHOT)*(NION+1),ISTRA)*FPHOT(JPHOT)
+              PRFPHII(IION+(JPHOT-LB_PHOT)*(NION+1),ISTRA) =
+     .         PRFPHII(IION+(JPHOT-LB_PHOT)*(NION+1),ISTRA)*FPHOT(JPHOT)
+            END DO
+            IF (LB_PHOT.EQ.0) PPHIOI(IION,ISTRA) = 0.0_DP
+            IF (LB_PHOT.EQ.0) PRFPHII(IION,ISTRA) = 0.0_DP
+            DO JPHOT = 1, NPHOTI
+              PPHIOI(IION,ISTRA) = PPHIOI(IION,ISTRA) +
+     .         PPHIOI(IION+(JPHOT-LB_PHOT)*(NION+1),ISTRA)
+              PRFPHII(IION,ISTRA) = PRFPHII(IION,ISTRA) +
+     .         PRFPHII(IION+(JPHOT-LB_PHOT)*(NION+1),ISTRA)
+            END DO
+#endif
           ELSE
             PPHIOI(IION,ISTRA)=PPHIOI(IION,ISTRA)*FPHOT(0)
             PRFPHII(IION,ISTRA)=PRFPHII(IION,ISTRA)*FPHOT(0)
@@ -865,48 +1432,84 @@ cdr  ?? scaling with bulk flux ??
           RIELI(0,ISTRA)=SUM(RIELI(1:NIONI,ISTRA))
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAIOI2(0:NION,LB_ATM:NATM) => PAIOI(:,ISTRA)
             PRFAII2(0:NION,LB_ATM:NATM) => PRFAII(:,ISTRA)
             DO IATM = LB_ATM,NATMI
               PAIOI2(0,IATM) = SUM(PAIOI2(1:NIONI,IATM))
               PRFAII2(0,IATM) = SUM(PRFAII2(1:NIONI,IATM))
             END DO
+#else
+            DO IATM = LB_ATM,NATMI
+              PAIOI(IATM*(NION+1),ISTRA) =
+     .         SUM(PAIOI(1+IATM*(NION+1):NIONI+IATM*(NION+1),ISTRA))
+              PRFAII(IATM*(NION+1),ISTRA) =
+     .         SUM(PRFAII(1+IATM*(NION+1):NIONI+IATM*(NION+1),ISTRA))
+            END DO
+#endif
           ELSE
             PAIOI(0,ISTRA)=SUM(PAIOI(1:NIONI,ISTRA))
             PRFAII(0,ISTRA)=SUM(PRFAII(1:NIONI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMIOI2(0:NION,LB_MOL:NMOL) => PMIOI(:,ISTRA)
             PRFMII2(0:NION,LB_MOL:NMOL) => PRFMII(:,ISTRA)
             DO IMOL = LB_MOL,NMOLI
               PMIOI2(0,IMOL) = SUM(PMIOI2(1:NIONI,IMOL))
               PRFMII2(0,IMOL) = SUM(PRFMII2(1:NIONI,IMOL))
             END DO
+#else
+            DO IMOL = LB_MOL, NMOLI
+              PMIOI(IMOL*(NION+1),ISTRA) =
+     .         SUM(PMIOI(1+IMOL*(NION+1):NIONI+IMOL*(NION+1),ISTRA))
+              PRFMII(IMOL*(NION+1),ISTRA) =
+     .         SUM(PRFMII(1+IMOL*(NION+1):NIONI+IMOL*(NION+1),ISTRA))
+            END DO
+#endif
           ELSE
             PMIOI(0,ISTRA)=SUM(PMIOI(1:NIONI,ISTRA))
             PRFMII(0,ISTRA)=SUM(PRFMII(1:NIONI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIIOI2(0:NION,LB_ION:NION) => PIIOI(:,ISTRA)
             PRFIII2(0:NION,LB_ION:NION) => PRFIII(:,ISTRA)
             DO IION = LB_ION,NIONI
               PIIOI2(0,IION) = SUM(PIIOI2(1:NIONI,IION))
               PRFIII2(0,IION) = SUM(PRFIII2(1:NIONI,IION))
             END DO
+#else
+            DO IION = LB_ION, NIONI
+              PIIOI(IION*(NION+1),ISTRA) =
+     .         SUM(PIIOI(1+IION*(NION+1):NIONI+IION*(NION+1),ISTRA))
+              PRFIII(IION*(NION+1),ISTRA) =
+     .         SUM(PRFIII(1+IION*(NION+1):NIONI+IION*(NION+1),ISTRA))
+            END DO
+#endif
           ELSE
             PIIOI(0,ISTRA)=SUM(PIIOI(1:NIONI,ISTRA))
             PRFIII(0,ISTRA)=SUM(PRFIII(1:NIONI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHIOI2(0:NION,LB_PHOT:NPHOT) => PPHIOI(:,ISTRA)
             PRFPHII2(0:NION,LB_PHOT:NPHOT) => PRFPHII(:,ISTRA)
             DO IPHOT = LB_PHOT,NPHOTI
               PPHIOI2(0,IPHOT) = SUM(PPHIOI2(1:NIONI,IPHOT))
               PRFPHII2(0,IPHOT) = SUM(PRFPHII2(1:NIONI,IPHOT))
             END DO
+#else
+            DO IPHOT = LB_PHOT, NPHOTI
+              PPHIOI(IPHOT*(NION+1),ISTRA) =
+     .         SUM(PPHIOI(1+IPHOT*(NION+1):NIONI+IPHOT*(NION+1),ISTRA))
+              PRFPHII(IPHOT*(NION+1),ISTRA) =
+     .         SUM(PRFPHII(1+IPHOT*(NION+1):NIONI+IPHOT*(NION+1),ISTRA))
+            END DO
+#endif
           ELSE
             PPHIOI(0,ISTRA)=SUM(PPHIOI(1:NIONI,ISTRA))
             PRFPHII(0,ISTRA)=SUM(PRFPHII(1:NIONI,ISTRA))
@@ -936,40 +1539,88 @@ C
             IF (LEDENPH) EDENPH(IPHOT,J)=EDENPH(IPHOT,J)*FPHOT(IPHOT)
             IF (LPAPHT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAPHT2(1:NPHOT,LB_ATM:NATM) => PAPHT(:,J)
                 PAPHT2(IPHOT,1:NATMI) = PAPHT2(IPHOT,1:NATMI)*
      .                                  FATM(1:NATMI)
                 PAPHT(IPHOT,J) = SUM(PAPHT2(IPHOT,1:NATMI))
+#else
+                DO JATM = 1, NATMI
+                  PAPHT(IPHOT+(JATM-LB_ATM)*NPHOT,J) =
+     .             PAPHT(IPHOT+(JATM-LB_ATM)*NPHOT,J)*FATM(JATM)
+                END DO
+                IF (LB_ATM.EQ.0) PAPHT(IPHOT,J) = 0.0_DP
+                DO JATM = 1, NATMI
+                  PAPHT(IPHOT,J) = PAPHT(IPHOT,J) +
+     .             PAPHT(IPHOT+(JATM-LB_ATM)*NPHOT,J)
+                END DO
+#endif
               ELSE
                 PAPHT(IPHOT,J)=PAPHT(IPHOT,J)*FATM(0)
               END IF
             END IF
             IF (LPMPHT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMPHT2(1:NPHOT,LB_MOL:NMOL) => PMPHT(:,J)
                 PMPHT2(IPHOT,1:NMOLI) = PMPHT2(IPHOT,1:NMOLI)*
      .                                  FMOL(1:NMOLI)
                 PMPHT(IPHOT,J) = SUM(PMPHT2(IPHOT,1:NMOLI))
+#else
+                DO JMOL = 1, NMOLI
+                  PMPHT(IPHOT+(JMOL-LB_MOL)*NPHOT,J) =
+     .             PMPHT(IPHOT+(JMOL-LB_MOL)*NPHOT,J)*FMOL(JMOL)
+                END DO
+                IF (LB_MOL.EQ.0) PMPHT(IPHOT,J) = 0.0_DP
+                DO JMOL = 1, NMOLI
+                  PMPHT(IPHOT,J) = PMPHT(IPHOT,J) +
+     .             PMPHT(IPHOT+(JMOL-LB_MOL)*NPHOT,J)
+                END DO
+#endif
               ELSE
                 PMPHT(IPHOT,J)=PMPHT(IPHOT,J)*FMOL(0)
               END IF
             END IF
             IF (LPIPHT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIPHT2(1:NPHOT,LB_ION:NION) => PIPHT(:,J)
                 PIPHT2(IPHOT,1:NIONI) = PIPHT2(IPHOT,1:NIONI)*
      .                                  FION(1:NIONI)
                 PIPHT(IPHOT,J) = SUM(PIPHT2(IPHOT,1:NIONI))
+#else
+                DO JION = 1, NIONI
+                  PIPHT(IPHOT+(JION-LB_ION)*NPHOT,J) =
+     .             PIPHT(IPHOT+(JION-LB_ION)*NPHOT,J)*FION(JION)
+                END DO
+                IF (LB_ION.EQ.0) PIPHT(IPHOT,J) = 0.0_DP
+                DO JION = 1, NIONI
+                  PIPHT(IPHOT,J) = PIPHT(IPHOT,J) +
+     .             PIPHT(IPHOT+(JION-LB_ION)*NPHOT,J)
+                END DO
+#endif
               ELSE
                 PIPHT(IPHOT,J)=PIPHT(IPHOT,J)*FION(0)
               END IF
             END IF
             IF (LPPHPHT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHPHT2(1:NPHOT,LB_PHOT:NPHOT) => PPHPHT(:,J)
                 PPHPHT2(IPHOT,1:NPHOTI) = PPHPHT2(IPHOT,1:NPHOTI)*
      .                                    FPHOT(1:NPHOTI)
                 PPHPHT(IPHOT,J) = SUM(PPHPHT2(IPHOT,1:NPHOTI))
+#else
+                DO JPHOT = 1, NPHOTI
+                  PPHPHT(IPHOT+(JPHOT-LB_PHOT)*NPHOT,J) =
+     .             PPHPHT(IPHOT+(JPHOT-LB_PHOT)*NPHOT,J)*FPHOT(JPHOT)
+                END DO
+                IF (LB_PHOT.EQ.0) PPHPHT(IPHOT,J) = 0.0_DP
+                DO JPHOT = 1, NPHOTI
+                  PPHPHT(IPHOT,J) = PPHPHT(IPHOT,J) +
+     .             PPHPHT(IPHOT+(JPHOT-LB_PHOT)*NPHOT,J)
+                END DO
+#endif
               ELSE
                 PPHPHT(IPHOT,J)=PPHPHT(IPHOT,J)*FPHOT(0)
               END IF
@@ -986,39 +1637,87 @@ C  SURFACE-AVERAGED TALLIES
             IF (LPOTPHT)  POTPHT (IPHOT,J)=POTPHT (IPHOT,J)*FPHOT(IPHOT)
             IF (LPRFAPHT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFAPHT2(1:NPHOT,LB_ATM:NATM) => PRFAPHT(:,J)
                 PRFAPHT2(IPHOT,1:NATMI) = PRFAPHT2(IPHOT,1:NATMI)*
      .                                    FATM(1:NATMI)
                 PRFAPHT(IPHOT,J) = SUM(PRFAPHT2(IPHOT,1:NATMI))
+#else
+                DO JATM = 1, NATMI
+                  PRFAPHT(IPHOT+(JATM-LB_ATM)*NPHOT,J) =
+     .             PRFAPHT(IPHOT+(JATM-LB_ATM)*NPHOT,J)*FATM(JATM)
+                END DO
+                IF (LB_ATM.EQ.0) PRFAPHT(IPHOT,J) = 0.0_DP
+                DO JATM = 1, NATMI
+                  PRFAPHT(IPHOT,J) = PRFAPHT(IPHOT,J) +
+     .             PRFAPHT(IPHOT+(JATM-LB_ATM)*NPHOT,J)
+                END DO
+#endif
               ELSE
                 PRFAPHT(IPHOT,J)=PRFAPHT(IPHOT,J)*FATM(0)
               END IF
             END IF
             IF (LPRFMPHT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFMPHT2(1:NPHOT,LB_MOL:NMOL) => PRFMPHT(:,J)
                 PRFMPHT2(IPHOT,1:NMOLI) = PRFMPHT2(IPHOT,1:NMOLI)*
      .                                    FMOL(1:NMOLI)
                 PRFMPHT(IPHOT,J) = SUM(PRFMPHT2(IPHOT,1:NMOLI))
+#else
+                DO JMOL = 1, NMOLI
+                  PRFMPHT(IPHOT+(JMOL-LB_MOL)*NPHOT,J) =
+     .             PRFMPHT(IPHOT+(JMOL-LB_MOL)*NPHOT,J)*FMOL(JMOL)
+                END DO
+                IF (LB_MOL.EQ.0) PRFMPHT(IPHOT,J) = 0.0_DP
+                DO JMOL = 1, NMOLI
+                  PRFMPHT(IPHOT,J) = PRFMPHT(IPHOT,J) +
+     .             PRFMPHT(IPHOT+(JMOL-LB_MOL)*NPHOT,J)
+                END DO
+#endif
                ELSE
                 PRFMPHT(IPHOT,J)=PRFMPHT(IPHOT,J)*FMOL(0)
               END IF
             END IF
             IF (LPRFIPHT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFIPHT2(1:NPHOT,LB_ION:NION) => PRFIPHT(:,J)
                 PRFIPHT2(IPHOT,1:NIONI) = PRFIPHT2(IPHOT,1:NIONI)*
      .                                    FION(1:NIONI)
                 PRFIPHT(IPHOT,J) = SUM(PRFIPHT2(IPHOT,1:NIONI))
+#else
+                DO JION = 1, NIONI
+                  PRFIPHT(IPHOT+(JION-LB_ION)*NPHOT,J) =
+     .             PRFIPHT(IPHOT+(JION-LB_ION)*NPHOT,J)*FION(JION)
+                END DO
+                IF (LB_ION.EQ.0) PRFIPHT(IPHOT,J) = 0.0_DP
+                DO JION = 1, NIONI
+                  PRFIPHT(IPHOT,J) = PRFIPHT(IPHOT,J) +
+     .             PRFIPHT(IPHOT+(JION-LB_ION)*NPHOT,J)
+                END DO
+#endif
                ELSE
                 PRFIPHT(IPHOT,J)=PRFIPHT(IPHOT,J)*FION(0)
               END IF
             END IF
             IF (LPRFPHPHT) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFPHPHT2(1:NPHOT,LB_PHOT:NPHOT) => PRFPHPHT(:,J)
                 PRFPHPHT2(IPHOT,1:NPHOTI) = FPHOT(1:NPHOTI)
                 PRFPHPHT(IPHOT,J) = SUM(PRFPHPHT2(IPHOT,1:NPHOTI))
+#else
+                DO JPHOT = 1, NPHOTI
+                  PRFPHPHT(IPHOT+(JPHOT-LB_PHOT)*NPHOT,J) =
+     .             PRFPHPHT(IPHOT+(JPHOT-LB_PHOT)*NPHOT,J)*FPHOT(JPHOT)
+                END DO
+                IF (LB_PHOT.EQ.0) PRFPHPHT(IPHOT,J) = 0.0_DP
+                DO JPHOT = 1, NPHOTI
+                  PRFPHPHT(IPHOT,J) = PRFPHPHT(IPHOT,J) +
+     .             PRFPHPHT(IPHOT+(JPHOT-LB_PHOT)*NPHOT,J)
+                END DO
+#endif
                ELSE
                 PRFPHPHT(IPHOT,J)=PRFPHPHT(IPHOT,J)*FPHOT(0)
               END IF
@@ -1074,6 +1773,7 @@ cdr  ?? scaling with bulk flux ??
           SPUMPI(IPHOT,ISTRA)=SPUMPI(IPHOT,ISTRA)*FPHOT(IPHOT)
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAPHTI2(0:NPHOT,LB_ATM:NATM) => PAPHTI(:,ISTRA)
             PAPHTI2(IPHOT,1:NATMI) = PAPHTI2(IPHOT,1:NATMI)*
      .                               FATM(1:NATMI)
@@ -1082,12 +1782,29 @@ cdr  ?? scaling with bulk flux ??
             PRFAPHTI2(IPHOT,1:NATMI) = PRFAPHTI2(IPHOT,1:NATMI)*
      .                                 FATM(1:NATMI)
             PRFAPHTI(IPHOT,ISTRA) = SUM(PRFAPHTI2(IPHOT,1:NATMI))
+#else
+            DO JATM = 1, NATMI
+              PAPHTI(IPHOT+(JATM-LB_ATM)*(NPHOT+1),ISTRA) =
+     .         PAPHTI(IPHOT+(JATM-LB_ATM)*(NPHOT+1),ISTRA)*FATM(JATM)
+              PRFAPHTI(IPHOT+(JATM-LB_ATM)*(NPHOT+1),ISTRA) =
+     .         PRFAPHTI(IPHOT+(JATM-LB_ATM)*(NPHOT+1),ISTRA)*FATM(JATM)
+            END DO
+            IF (LB_ATM.EQ.0) PAPHTI(IPHOT,ISTRA) = 0.0_DP
+            IF (LB_ATM.EQ.0) PRFAPHTI(IPHOT,ISTRA) = 0.0_DP
+            DO JATM = 1, NATMI
+              PAPHTI(IPHOT,ISTRA) = PAPHTI(IPHOT,ISTRA) +
+     .         PAPHTI(IPHOT+(JATM-LB_ATM)*(NPHOT+1),ISTRA)
+              PRFAPHTI(IPHOT,ISTRA) = PRFAPHTI(IPHOT,ISTRA) +
+     .         PRFAPHTI(IPHOT+(JATM-LB_ATM)*(NPHOT+1),ISTRA)
+            END DO
+#endif
           ELSE
             PAPHTI (IPHOT,ISTRA)=PAPHTI (IPHOT,ISTRA)*FATM(0)
             PRFAPHTI(IPHOT,ISTRA)=PRFAPHTI(IPHOT,ISTRA)*FATM(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMPHTI2(0:NPHOT,LB_MOL:NMOL) => PMPHTI(:,ISTRA)
             PMPHTI2(IPHOT,1:NMOLI) = PMPHTI2(IPHOT,1:NMOLI)*
      .                               FMOL(1:NMOLI)
@@ -1096,12 +1813,29 @@ cdr  ?? scaling with bulk flux ??
             PRFMPHTI2(IPHOT,1:NMOLI) = PRFMPHTI2(IPHOT,1:NMOLI)*
      .                                 FMOL(1:NMOLI)
             PRFMPHTI(IPHOT,ISTRA) = SUM(PRFMPHTI2(IPHOT,1:NMOLI))
+#else
+            DO JMOL = 1, NMOLI
+              PMPHTI(IPHOT+(JMOL-LB_MOL)*(NPHOT+1),ISTRA) =
+     .         PMPHTI(IPHOT+(JMOL-LB_MOL)*(NPHOT+1),ISTRA)*FMOL(JMOL)
+              PRFMPHTI(IPHOT+(JMOL-LB_MOL)*(NPHOT+1),ISTRA) =
+     .         PRFMPHTI(IPHOT+(JMOL-LB_MOL)*(NPHOT+1),ISTRA)*FMOL(JMOL)
+            END DO
+            IF (LB_MOL.EQ.0) PMPHTI(IPHOT,ISTRA) = 0.0_DP
+            IF (LB_MOL.EQ.0) PRFMPHTI(IPHOT,ISTRA) = 0.0_DP
+            DO JMOL = 1, NMOLI
+              PMPHTI(IPHOT,ISTRA) = PMPHTI(IPHOT,ISTRA) +
+     .         PMPHTI(IPHOT+(JMOL-LB_MOL)*(NPHOT+1),ISTRA)
+              PRFMPHTI(IPHOT,ISTRA) = PRFMPHTI(IPHOT,ISTRA) +
+     .         PRFMPHTI(IPHOT+(JMOL-LB_MOL)*(NPHOT+1),ISTRA)
+            END DO
+#endif
           ELSE
             PMPHTI (IPHOT,ISTRA)=PMPHTI (IPHOT,ISTRA)*FMOL(0)
             PRFMPHTI(IPHOT,ISTRA)=PRFMPHTI(IPHOT,ISTRA)*FMOL(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIPHTI2(0:NPHOT,LB_ION:NION) => PIPHTI(:,ISTRA)
             PIPHTI2(IPHOT,1:NIONI) = PIPHTI2(IPHOT,1:NIONI)*
      .                               FION(1:NIONI)
@@ -1110,12 +1844,29 @@ cdr  ?? scaling with bulk flux ??
             PRFIPHTI2(IPHOT,1:NIONI) = PRFIPHTI2(IPHOT,1:NIONI)*
      .                                 FION(1:NIONI)
             PRFIPHTI(IPHOT,ISTRA) = SUM(PRFIPHTI2(IPHOT,1:NIONI))
+#else
+            DO JION = 1, NIONI
+              PIPHTI(IPHOT+(JION-LB_ION)*(NPHOT+1),ISTRA) =
+     .         PIPHTI(IPHOT+(JION-LB_ION)*(NPHOT+1),ISTRA)*FION(JION)
+              PRFIPHTI(IPHOT+(JION-LB_ION)*(NPHOT+1),ISTRA) =
+     .         PRFIPHTI(IPHOT+(JION-LB_ION)*(NPHOT+1),ISTRA)*FION(JION)
+            END DO
+            IF (LB_ION.EQ.0) PIPHTI(IPHOT,ISTRA) = 0.0_DP
+            IF (LB_ION.EQ.0) PRFIPHTI(IPHOT,ISTRA) = 0.0_DP
+            DO JION = 1, NIONI
+              PIPHTI(IPHOT,ISTRA) = PIPHTI(IPHOT,ISTRA) +
+     .         PIPHTI(IPHOT+(JION-LB_ION)*(NPHOT+1),ISTRA)
+              PRFIPHTI(IPHOT,ISTRA) = PRFIPHTI(IPHOT,ISTRA) +
+     .         PRFIPHTI(IPHOT+(JION-LB_ION)*(NPHOT+1),ISTRA)
+            END DO
+#endif
           ELSE
             PIPHTI (IPHOT,ISTRA)=PIPHTI (IPHOT,ISTRA)*FION(0)
             PRFIPHTI(IPHOT,ISTRA)=PRFIPHTI(IPHOT,ISTRA)*FION(0)
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHPHTI2(0:NPHOT,LB_PHOT:NPHOT) => PPHPHTI(:,ISTRA)
             PPHPHTI2(IPHOT,1:NPHOTI) = PPHPHTI2(IPHOT,1:NPHOTI)*
      .                                 FPHOT(1:NPHOTI)
@@ -1124,6 +1875,24 @@ cdr  ?? scaling with bulk flux ??
             PRFPHPHTI2(IPHOT,1:NPHOTI) = PRFPHPHTI2(IPHOT,1:NPHOTI)*
      .                                   FPHOT(1:NPHOTI)
             PRFPHPHTI(IPHOT,ISTRA) = SUM(PRFPHPHTI2(IPHOT,1:NPHOTI))
+#else
+            DO JPHOT = 1, NPHOTI
+              PPHPHTI(IPHOT+(JPHOT-LB_PHOT)*(NPHOT+1),ISTRA) =
+     .         PPHPHTI(IPHOT+(JPHOT-LB_PHOT)*(NPHOT+1),ISTRA)*
+     .         FPHOT(JPHOT)
+              PRFPHPHTI(IPHOT+(JPHOT-LB_PHOT)*(NPHOT+1),ISTRA) =
+     .         PRFPHPHTI(IPHOT+(JPHOT-LB_PHOT)*(NPHOT+1),ISTRA)*
+     .         FPHOT(JPHOT)
+            END DO
+            IF (LB_PHOT.EQ.0) PPHPHTI(IPHOT,ISTRA) = 0.0_DP
+            IF (LB_PHOT.EQ.0) PRFPHPHTI(IPHOT,ISTRA) = 0.0_DP
+            DO JPHOT = 1, NPHOTI
+              PPHPHTI(IPHOT,ISTRA) = PPHPHTI(IPHOT,ISTRA) +
+     .         PPHPHTI(IPHOT+(JPHOT-LB_PHOT)*(NPHOT+1),ISTRA)
+              PRFPHPHTI(IPHOT,ISTRA) = PRFPHPHTI(IPHOT,ISTRA) +
+     .         PRFPHPHTI(IPHOT+(JPHOT-LB_PHOT)*(NPHOT+1),ISTRA)
+            END DO
+#endif
           ELSE
             PPHPHTI(IPHOT,ISTRA)=PPHPHTI(IPHOT,ISTRA)*FPHOT(0)
             PRFPHPHTI(IPHOT,ISTRA)=PRFPHPHTI(IPHOT,ISTRA)*FPHOT(0)
@@ -1155,48 +1924,89 @@ cdr  ?? scaling with bulk flux ??
           SPTPPHTI(0,ISTRA)=SUM(SPTPPHTI(1:NPHOTI,ISTRA))
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAPHTI2(0:NPHOT,LB_ATM:NATM) => PAPHTI(:,ISTRA)
             PRFAPHTI2(0:NPHOT,LB_ATM:NATM) => PRFAPHTI(:,ISTRA)
             DO IATM = LB_ATM,NATMI
               PAPHTI2(0,IATM) = SUM(PAPHTI2(1:NPHOTI,IATM))
               PRFAPHTI2(0,IATM) = SUM(PRFAPHTI2(1:NPHOTI,IATM))
             END DO
+#else
+            DO IATM = LB_ATM,NATMI
+              PAPHTI(IATM*(NPHOT+1),ISTRA) =
+     .         SUM(PAPHTI(1+IATM*(NPHOT+1):NPHOTI+IATM*(NPHOT+1),ISTRA))
+              PRFAPHTI(IATM*(NION+1),ISTRA) =
+     .         SUM(PRFAPHTI(1+IATM*(NPHOT+1):
+     .                 NPHOTI+IATM*(NPHOT+1),ISTRA))
+            END DO
+#endif
           ELSE
             PAPHTI(0,ISTRA)=SUM(PAPHTI(1:NPHOTI,ISTRA))
             PRFAPHTI(0,ISTRA)=SUM(PRFAPHTI(1:NPHOTI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMPHTI2(0:NPHOT,LB_MOL:NMOL) => PMPHTI(:,ISTRA)
             PRFMPHTI2(0:NPHOT,LB_MOL:NMOL) => PRFMPHTI(:,ISTRA)
             DO IMOL = LB_MOL,NMOLI
               PMPHTI2(0,IMOL) = SUM(PMPHTI2(1:NPHOTI,IMOL))
               PRFMPHTI2(0,IMOL) = SUM(PRFMPHTI2(1:NPHOTI,IMOL))
             END DO
+#else
+            DO IMOL = LB_MOL, NMOLI
+              PMPHTI(IMOL*(NPHOT+1),ISTRA) =
+     .         SUM(PMPHTI(1+IMOL*(NPHOT+1):NPHOTI+IMOL*(NPHOT+1),ISTRA))
+              PRFMPHTI(IMOL*(NPHOT+1),ISTRA) =
+     .         SUM(PRFMPHTI(1+IMOL*(NPHOT+1):
+     .                 NPHOTI+IMOL*(NPHOT+1),ISTRA))
+            END DO
+#endif
           ELSE
             PMPHTI(0,ISTRA)=SUM(PMPHTI(1:NPHOTI,ISTRA))
             PRFMPHTI(0,ISTRA)=SUM(PRFMPHTI(1:NPHOTI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIPHTI2(0:NPHOT,LB_ION:NION) => PIPHTI(:,ISTRA)
             PRFIPHTI2(0:NPHOT,LB_ION:NION) => PRFIPHTI(:,ISTRA)
             DO IION = LB_ION,NIONI
               PIPHTI2(0,IION) = SUM(PIPHTI2(1:NPHOTI,IION))
               PRFIPHTI2(0,IION) = SUM(PRFIPHTI2(1:NPHOTI,IION))
             END DO
+#else
+            DO IION = LB_ION, NIONI
+              PIPHTI(IION*(NPHOT+1),ISTRA) =
+     .         SUM(PIPHTI(1+IION*(NPHOT+1):NPHOTI+IION*(NPHOT+1),ISTRA))
+              PRFIPHTI(IION*(NPHOT+1),ISTRA) =
+     .         SUM(PRFIPHTI(1+IION*(NPHOT+1):
+     .                 NPHOTI+IION*(NPHOT+1),ISTRA))
+            END DO
+#endif
           ELSE
             PIPHTI(0,ISTRA)=SUM(PIPHTI(1:NPHOTI,ISTRA))
             PRFIPHTI(0,ISTRA)=SUM(PRFIPHTI(1:NPHOTI,ISTRA))
           END IF
 
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHPHTI2(0:NPHOT,LB_PHOT:NPHOT) => PPHPHTI(:,ISTRA)
             PRFPHPHTI2(0:NPHOT,LB_PHOT:NPHOT) => PRFPHPHTI(:,ISTRA)
             DO IPHOT = LB_PHOT,NPHOTI
               PPHPHTI2(0,IPHOT) = SUM(PPHPHTI2(1:NPHOTI,IPHOT))
               PRFPHPHTI2(0,IPHOT) = SUM(PRFPHPHTI2(1:NPHOTI,IPHOT))
             END DO
+#else
+            DO IPHOT = LB_PHOT, NPHOTI
+              PPHPHTI(IPHOT*(NPHOT+1),ISTRA) =
+     .         SUM(PPHPHTI(1+IPHOT*(NPHOT+1):
+     .                NPHOTI+IPHOT*(NPHOT+1),ISTRA))
+              PRFPHPHTI(IPHOT*(NPHOT+1),ISTRA) =
+     .         SUM(PRFPHPHTI(1+IPHOT*(NPHOT+1):
+     .                  NPHOTI+IPHOT*(NPHOT+1),ISTRA))
+            END DO
+#endif
           ELSE
             PPHPHTI(0,ISTRA)=SUM(PPHPHTI(1:NPHOTI,ISTRA))
             PRFPHPHTI(0,ISTRA)=SUM(PRFPHPHTI(1:NPHOTI,ISTRA))
@@ -1318,37 +2128,85 @@ C
           DO J=1,NSBOX_TAL
             IF (LPAPL) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAPL2(1:NPLS,LB_ATM:NATM) => PAPL(:,J)
                 PAPL2(IPLS,1:NATMI) = PAPL2(IPLS,1:NATMI)*FATM(1:NATMI)
                 PAPL(IPLS,J) = SUM(PAPL2(IPLS,1:NATMI))
+#else
+                DO JATM = 1, NATMI
+                  PAPL(IPLS+(JATM-LB_ATM)*NPLS,J) =
+     .             PAPL(IPLS+(JATM-LB_ATM)*NPLS,J)*FATM(JATM)
+                END DO
+                IF (LB_ATM.EQ.0) PAPL(IPLS,J) = 0.0_DP
+                DO JATM = 1, NATMI
+                  PAPL(IPLS,J) = PAPL(IPLS,J) +
+     .             PAPL(IPLS+(JATM-LB_ATM)*NPLS,J)
+                END DO
+#endif
               ELSE
                 PAPL(IPLS,J)=PAPL(IPLS,J)*FATM(0)
               END IF
             END IF
             IF (LPMPL) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMPL2(1:NPLS,LB_MOL:NMOL) => PMPL(:,J)
                 PMPL2(IPLS,1:NMOLI) = PMPL2(IPLS,1:NMOLI)*FMOL(1:NMOLI)
                 PMPL(IPLS,J) = SUM(PMPL2(IPLS,1:NMOLI))
+#else
+                DO JMOL = 1, NMOLI
+                  PMPL(IPLS+(JMOL-LB_MOL)*NPLS,J) =
+     .             PMPL(IPLS+(JMOL-LB_MOL)*NPLS,J)*FMOL(JMOL)
+                END DO
+                IF (LB_MOL.EQ.0) PMPL(IPLS,J) = 0.0_DP
+                DO JMOL = 1, NMOLI
+                  PMPL(IPLS,J) = PMPL(IPLS,J) +
+     .             PMPL(IPLS+(JMOL-LB_MOL)*NPLS,J)
+                END DO
+#endif
               ELSE
                 PMPL(IPLS,J)=PMPL(IPLS,J)*FMOL(0)
               END IF
             END IF
             IF (LPIPL) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIPL2(1:NPLS,LB_ION:NION) => PIPL(:,J)
                 PIPL2(IPLS,1:NIONI) = PIPL2(IPLS,1:NIONI)*FION(1:NIONI)
                 PIPL(IPLS,J) = SUM(PIPL2(IPLS,1:NIONI))
+#else
+                DO JION = 1, NIONI
+                  PIPL(IPLS+(JION-LB_ION)*NPLS,J) =
+     .             PIPL(IPLS+(JION-LB_ION)*NPLS,J)*FION(JION)
+                END DO
+                IF (LB_ION.EQ.0) PIPL(IPLS,J) = 0.0_DP
+                DO JION = 1, NIONI
+                  PIPL(IPLS,J) = PIPL(IPLS,J) +
+     .             PIPL(IPLS+(JION-LB_ION)*NPLS,J)
+                END DO
+#endif
               ELSE
                 PIPL(IPLS,J)=PIPL(IPLS,J)*FION(0)
               END IF
             END IF
             IF (LPPHPL) THEN
               IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHPL2(1:NPLS,LB_PHOT:NPHOT) => PPHPL(:,J)
                 PPHPL2(IPLS,1:NPHOTI) = PPHPL2(IPLS,1:NPHOTI)*
      .                                  FPHOT(1:NPHOTI)
                 PPHPL(IPLS,J) = SUM(PPHPL2(IPLS,1:NPHOTI))
+#else
+                DO JPHOT = 1, NPHOTI
+                  PPHPL(IPLS+(JPHOT-LB_PHOT)*NPLS,J) =
+     .             PPHPL(IPLS+(JPHOT-LB_PHOT)*NPLS,J)*FPHOT(JPHOT)
+                END DO
+                IF (LB_PHOT.EQ.0) PPHPL(IPLS,J) = 0.0_DP
+                DO JPHOT = 1, NPHOTI
+                  PPHPL(IPLS,J) = PPHPL(IPLS,J) +
+     .             PPHPL(IPLS+(JPHOT-LB_PHOT)*NPLS,J)
+                END DO
+#endif
               ELSE
                 PPHPL(IPLS,J)=PPHPL(IPLS,J)*FPHOT(0)
               END IF
@@ -1367,31 +2225,79 @@ C
 cdr  sum over species IPLS
         DO IPLS=1,NPLSI
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAPLI2(0:NPLS,LB_ATM:NATM) => PAPLI(:,ISTRA)
             PAPLI2(IPLS,1:NATMI) = PAPLI2(IPLS,1:NATMI)*FATM(1:NATMI)
             PAPLI(IPLS,ISTRA) = SUM(PAPLI2(IPLS,1:NATMI))
+#else
+            DO JATM = 1, NATMI
+              PAPLI(IPLS+(JATM-LB_ATM)*(NPLS+1),ISTRA) =
+     .         PAPLI(IPLS+(JATM-LB_ATM)*(NPLS+1),ISTRA)*FATM(JATM)
+            END DO
+            IF (LB_ATM.EQ.0) PAPLI(IPLS,ISTRA) = 0.0_DP
+            DO JATM = 1, NATMI
+              PAPLI(IPLS,ISTRA) = PAPLI(IPLS,ISTRA) +
+     .         PAPLI(IPLS+(JATM-LB_ATM)*(NPLS+1),ISTRA)
+            END DO
+#endif
           ELSE
             PAPLI(IPLS,ISTRA)=PAPLI(IPLS,ISTRA)*FATM(0)
           END IF
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMPLI2(0:NPLS,LB_MOL:NMOL) => PMPLI(:,ISTRA)
             PMPLI2(IPLS,1:NMOLI) = PMPLI2(IPLS,1:NMOLI)*FMOL(1:NMOLI)
             PMPLI(IPLS,ISTRA) = SUM(PMPLI2(IPLS,1:NMOLI))
+#else
+            DO JMOL = 1, NMOLI
+              PMPLI(IPLS+(JMOL-LB_MOL)*(NPLS+1),ISTRA) =
+     .         PMPLI(IPLS+(JMOL-LB_MOL)*(NPLS+1),ISTRA)*FMOL(JMOL)
+            END DO
+            IF (LB_MOL.EQ.0) PMPLI(IPLS,ISTRA) = 0.0_DP
+            DO JMOL = 1, NMOLI
+              PMPLI(IPLS,ISTRA) = PMPLI(IPLS,ISTRA) +
+     .         PMPLI(IPLS+(JMOL-LB_MOL)*(NPLS+1),ISTRA)
+            END DO
+#endif
           ELSE
             PMPLI(IPLS,ISTRA)=PMPLI(IPLS,ISTRA)*FMOL(0)
           END IF
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIPLI2(0:NPLS,LB_ION:NION) => PIPLI(:,ISTRA)
             PIPLI2(IPLS,1:NIONI) = PIPLI2(IPLS,1:NIONI)*FION(1:NIONI)
             PIPLI(IPLS,ISTRA) = SUM(PIPLI2(IPLS,1:NIONI))
+#else
+            DO JION = 1, NIONI
+              PIPLI(IPLS+(JION-LB_ION)*(NPLS+1),ISTRA) =
+     .         PIPLI(IPLS+(JION-LB_ION)*(NPLS+1),ISTRA)*FION(JION)
+            END DO
+            IF (LB_ION.EQ.0) PIPLI(IPLS,ISTRA) = 0.0_DP
+            DO JION = 1, NIONI
+              PIPLI(IPLS,ISTRA) = PIPLI(IPLS,ISTRA) +
+     .         PIPLI(IPLS+(JION-LB_ION)*(NPLS+1),ISTRA)
+            END DO
+#endif
           ELSE
             PIPLI(IPLS,ISTRA)=PIPLI(IPLS,ISTRA)*FION(0)
           END IF
           IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHPLI2(0:NPLS,LB_PHOT:NPHOT) => PPHPLI(:,ISTRA)
             PPHPLI2(IPLS,1:NPHOTI) = PPHPLI2(IPLS,1:NPHOTI)*
      .                               FPHOT(1:NPHOTI)
             PPHPLI(IPLS,ISTRA) = SUM(PPHPLI2(IPLS,1:NPHOTI))
+#else
+            DO JPHOT = 1, NPHOTI
+              PPHPLI(IPLS+(JPHOT-LB_PHOT)*(NPLS+1),ISTRA) =
+     .         PPHPLI(IPLS+(JPHOT-LB_PHOT)*(NPLS+1),ISTRA)*FPHOT(JPHOT)
+            END DO
+            IF (LB_PHOT.EQ.0) PPHPLI(IPLS,ISTRA) = 0.0_DP
+            DO JPHOT = 1, NPHOTI
+              PPHPLI(IPLS,ISTRA) = PPHPLI(IPLS,ISTRA) +
+     .         PPHPLI(IPLS+(JPHOT-LB_PHOT)*(NPLS+1),ISTRA)
+            END DO
+#endif
           ELSE
             PPHPLI(IPLS,ISTRA)=PPHPLI(IPLS,ISTRA)*FPHOT(0)
           END IF
@@ -1406,37 +2312,65 @@ cdr  sum over species IPLS
         END DO
 
         IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PAPLI2(0:NPLS,LB_ATM:NATM) => PAPLI(:,ISTRA)
           DO IATM = LB_ATM,NATMI
             PAPLI2(0,IATM) = SUM(PAPLI2(1:NPLSI,IATM))
           END DO
+#else
+          DO IATM = LB_ATM,NATMI
+            PAPLI(IATM*(NPLS+1),ISTRA) =
+     .       SUM(PAPLI(1+IATM*(NPLS+1):NPLSI+IATM*(NPLS+1),ISTRA))
+          END DO
+#endif
         ELSE
           PAPLI(0,ISTRA)=SUM(PAPLI(1:NPLSI,ISTRA))
         END IF
 
         IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PMPLI2(0:NPLS,LB_MOL:NMOL) => PMPLI(:,ISTRA)
           DO IMOL = LB_MOL,NMOLI
             PMPLI2(0,IMOL) = SUM(PMPLI2(1:NPLSI,IMOL))
           END DO
+#else
+          DO IMOL = LB_MOL,NMOLI
+            PMPLI(IMOL*(NPLS+1),ISTRA) =
+     .       SUM(PMPLI(1+IMOL*(NPLS+1):NPLSI+IMOL*(NPLS+1),ISTRA))
+          END DO
+#endif
         ELSE
           PMPLI(0,ISTRA)=SUM(PMPLI(1:NPLSI,ISTRA))
         END IF
 
         IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PIPLI2(0:NPLS,LB_ION:NION) => PIPLI(:,ISTRA)
           DO IION = LB_ION,NIONI
             PIPLI2(0,IION) = SUM(PIPLI2(1:NPLSI,IION))
           END DO
+#else
+          DO IION = LB_ION,NIONI
+            PIPLI(IION*(NPLS+1),ISTRA) =
+     .       SUM(PIPLI(1+IION*(NPLS+1):NPLSI+IION*(NPLS+1),ISTRA))
+          END DO
+#endif
         ELSE
           PIPLI(0,ISTRA)=SUM(PIPLI(1:NPLSI,ISTRA))
         END IF
 
         IF (NLSPCSCL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PPHPLI2(0:NPLS,LB_PHOT:NPHOT) => PPHPLI(:,ISTRA)
           DO IPHOT = LB_PHOT,NPHOTI
             PPHPLI2(0,IPHOT) = SUM(PPHPLI2(1:NPLSI,IPHOT))
           END DO
+#else
+          DO IPHOT = LB_PHOT,NPHOTI
+            PPHPLI(IPHOT*(NPLS+1),ISTRA) =
+     .       SUM(PPHPLI(1+IPHOT*(NPLS+1):NPLSI+IPHOT*(NPLS+1),ISTRA))
+          END DO
+#endif
         ELSE
           PPHPLI(0,ISTRA)=SUM(PPHPLI(1:NPLSI,ISTRA))
         END IF

@@ -716,6 +716,7 @@ C  pre-collision estimator, iold, nold, iplso
                 PXX(IOLD,NCELL) =PXX(IOLD,NCELL)-WGHTO
                 LMETSP(NOLD)=.TRUE.
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXX2(1:NDXX,0:NDXX) => PXX(:,NCELL)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -724,6 +725,15 @@ C  pre-collision estimator, iold, nold, iplso
                   LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                   LMETSP2(IOLD,0) = .TRUE.
                   LMETSP2(IOLD,IOLD) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXX(IOLD+IOLD*NDXX,NCELL)=
+     .             PXX(IOLD+IOLD*NDXX,NCELL)-WGHTO
+                  LMETSP(NDXXA-1+IOLD) = .TRUE.
+                  LMETSP(NDXXA-1+IOLD+IOLD*NDXX) = .TRUE.
+#endif
                 END IF
               END IF
               IF (LPXPL) THEN
@@ -733,6 +743,7 @@ C  pre-collision estimator, iold, nold, iplso
                 PXPL(IPLSO,NCELL) =PXPL(IPLSO,NCELL)-WEIGHT
                 LMETSP(NSPAMI+IPLSO)=.TRUE.
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXPL2(1:NPLS,0:NDXX) => PXPL(:,NCELL)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -741,6 +752,15 @@ C  pre-collision estimator, iold, nold, iplso
                   LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                   LMETSP2(IPLSO,0) = .TRUE.
                   LMETSP2(IPLSO,IOLD) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXPL(IPLSO+IOLD*NPLS,NCELL)=
+     .             PXPL(IPLSO+IOLD*NPLS,NCELL)-WEIGHT
+                  LMETSP(NTS_PXPLA-1+IPLSO) = .TRUE.
+                  LMETSP(NTS_PXPLA-1+IPLSO+IOLD*NPLS) = .TRUE.
+#endif
                 END IF
               END IF
               IF (LPXEL) THEN
@@ -759,6 +779,7 @@ C  IATMN: ATOM SPECIES AFTER CX
                 PXAT(IATMN,NCELL)=PXAT(IATMN,NCELL)+WEIGHT
                 LMETSP(NSPH+IATMN)=.TRUE.
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXAT2(1:NATM,0:NDXX) => PXAT(:,NCELL)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -767,6 +788,15 @@ C  IATMN: ATOM SPECIES AFTER CX
                   LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
                   LMETSP2(IATMN,0) = .TRUE.
                   LMETSP2(IATMN,IOLD) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXAT(IATMN+IOLD*NATM,NCELL)=
+     .             PXAT(IATMN+IOLD*NATM,NCELL)+WEIGHT
+                  LMETSP(NTS_PXATA-1+IATMN) = .TRUE.
+                  LMETSP(NTS_PXATA-1+IATMN+IOLD*NATM) = .TRUE.
+#endif
                 END IF
               END IF
 
@@ -780,6 +810,7 @@ C  IPLSN: ION SPECIES AFTER CX
                   PXPL(IPLSN,NCELL)=PXPL(IPLSN,NCELL)+WGHTO
                   LMETSP(NSPAMI+IPLSN)=.TRUE.
                   IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                     PXPL2(1:NPLS,0:NDXX) => PXPL(:,NCELL)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -789,6 +820,15 @@ C  IPLSN: ION SPECIES AFTER CX
      .                      LMETSP(NTS_PXPLA:NTS_PXPLE)
                     LMETSP2(IPLSN,0) = .TRUE.
                     LMETSP2(IPLSN,IOLD) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                    PXPL(IPLSN+IOLD*NPLS,NCELL)=
+     .               PXPL(IPLSN+IOLD*NPLS,NCELL)+WGHTO
+                    LMETSP(NTS_PXPLA-1+IPLSN) = .TRUE.
+                    LMETSP(NTS_PXPLA-1+IPLSN+IOLD*NPLS) = .TRUE.
+#endif
                   END IF
                 END IF
                 IF (LPXEL) THEN
@@ -1149,6 +1189,7 @@ c  IOLD=INEW for EL processes
 c  NOLD=NNEW for EL processes
             LMETSP(NNEW)=.TRUE.
             IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PXX2(1:NDXX,0:NDXX) => PXX(:,NCELL)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -1163,6 +1204,22 @@ c  NOLD=NNEW for EL processes
               LMETSP2(INEW,0) = .TRUE.
               LMETSP2(IOLD,IOLD) = .TRUE.
               LMETSP2(INEW,IOLD) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              PXX(IOLD+IOLD*NDXX,NCELL)=
+     .         PXX(IOLD+IOLD*NDXX,NCELL)-WGHTO
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              PXX(INEW+IOLD*NDXX,NCELL)=
+     .         PXX(INEW+IOLD*NDXX,NCELL)+WEIGHT
+              LMETSP(NDXXA-1+IOLD) = .TRUE.
+              LMETSP(NDXXA-1+INEW) = .TRUE.
+              LMETSP(NDXXA-1+IOLD+IOLD*NDXX) = .TRUE.
+              LMETSP(NDXXA-1+INEW+IOLD*NDXX) = .TRUE.
+#endif
             END IF
           END IF
         ENDIF

@@ -17,6 +17,9 @@ C
 
       INTEGER, INTENT(IN) :: ISTRA
       INTEGER :: IMOL, IATM, IION, IPHOT, IPLS
+#if ( defined(G95) || defined(LEGACYCOMP) )
+      INTEGER :: JMOL, JATM, JION, JPHOT
+#endif
       INTEGER :: IADV, ICLV, ISNV, ICPV, IBGV
       REAL(DP), POINTER, SAVE ::
      R  PAATIS(:,:),  PMATIS(:,:),  PIATIS(:,:),  PPHATIS(:,:),
@@ -48,6 +51,7 @@ C
 C
 C  UPDATE TALLIES FOR "SUM OVER STRATA", CONTRIBUTION FROM ISTRA
 C
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
       IF (NLSPCSCL_ATM) THEN
         PAMLIS(0:NMOL,0:NATM) => PAMLI(:,0)
         PAMLI2(0:NMOL,0:NATM) => PAMLI(:,ISTRA)
@@ -72,57 +76,122 @@ C
         PRFPHMIS(0:NMOL,0:NPHOT) => PRFPHMI(:,0)
         PRFPHMI2(0:NMOL,0:NPHOT) => PRFPHMI(:,ISTRA)
       END IF
+#endif
       DO 1101 IMOL=0,NMOLI
         PPMLI (IMOL,0)=PPMLI (IMOL,0)+PPMLI (IMOL,ISTRA)
         WTOTM (IMOL,0)=WTOTM (IMOL,0)+WTOTM (IMOL,ISTRA)
         PDENMI(IMOL,0)=PDENMI(IMOL,0)+PDENMI(IMOL,ISTRA)
         EDENMI(IMOL,0)=EDENMI(IMOL,0)+EDENMI(IMOL,ISTRA)
         IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PAMLIS(IMOL,0:NATMI) = PAMLIS(IMOL,0:NATMI) +
      .                           PAMLI2(IMOL,0:NATMI)
+#else
+          DO JATM = 0, NATMI
+            PAMLI(IMOL+JATM*(NMOL+1),0) =
+     .       PAMLI(IMOL+JATM*(NMOL+1),0) +
+     .       PAMLI(IMOL+JATM*(NMOL+1),ISTRA)
+          END DO
+#endif
         ELSE
           PAMLI (IMOL,0)=PAMLI (IMOL,0)+PAMLI (IMOL,ISTRA)
         END IF
         IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PMMLIS(IMOL,0:NMOLI) = PMMLIS(IMOL,0:NMOLI) +
      .                           PMMLI2(IMOL,0:NMOLI)
+#else
+          DO JMOL = 0, NMOLI
+            PMMLI(IMOL+JMOL*(NMOL+1),0) =
+     .       PMMLI(IMOL+JMOL*(NMOL+1),0) +
+     .       PMMLI(IMOL+JMOL*(NMOL+1),ISTRA)
+          END DO
+#endif
         ELSE
           PMMLI (IMOL,0)=PMMLI (IMOL,0)+PMMLI (IMOL,ISTRA)
         END IF
         IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PIMLIS(IMOL,0:NIONI) = PIMLIS(IMOL,0:NIONI) +
      .                           PIMLI2(IMOL,0:NIONI)
+#else
+          DO JION = 0, NIONI
+            PIMLI(IMOL+JION*(NMOL+1),0) =
+     .       PIMLI(IMOL+JION*(NMOL+1),0) +
+     .       PIMLI(IMOL+JION*(NMOL+1),ISTRA)
+          END DO
+#endif
         ELSE
           PIMLI (IMOL,0)=PIMLI (IMOL,0)+PIMLI (IMOL,ISTRA)
         END IF
         IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PPHMLIS(IMOL,0:NPHOTI) = PPHMLIS(IMOL,0:NPHOTI) +
      .                             PPHMLI2(IMOL,0:NPHOTI)
+#else
+          DO JPHOT = 0, NIONI
+            PPHMLI(IMOL+JPHOT*(NMOL+1),0) =
+     .       PPHMLI(IMOL+JPHOT*(NMOL+1),0) +
+     .       PPHMLI(IMOL+JPHOT*(NMOL+1),ISTRA)
+          END DO
+#endif
         ELSE
           PPHMLI(IMOL,0)=PPHMLI(IMOL,0)+PPHMLI(IMOL,ISTRA)
         END IF
         POTMLI(IMOL,0)=POTMLI(IMOL,0)+POTMLI(IMOL,ISTRA)
         IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFAMIS(IMOL,0:NATMI) = PRFAMIS(IMOL,0:NATMI) +
      .                            PRFAMI2(IMOL,0:NATMI)
+#else
+          DO JATM = 0, NATMI
+            PRFAMI(IMOL+JATM*(NMOL+1),0) =
+     .       PRFAMI(IMOL+JATM*(NMOL+1),0) +
+     .       PRFAMI(IMOL+JATM*(NMOL+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFAMI(IMOL,0)=PRFAMI(IMOL,0)+PRFAMI(IMOL,ISTRA)
         END IF
         IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFMMIS(IMOL,0:NMOLI) = PRFMMIS(IMOL,0:NMOLI) +
      .                            PRFMMI2(IMOL,0:NMOLI)
+#else
+          DO JMOL = 0, NMOLI
+            PRFMMI(IMOL+JMOL*(NMOL+1),0) =
+     .       PRFMMI(IMOL+JMOL*(NMOL+1),0) +
+     .       PRFMMI(IMOL+JMOL*(NMOL+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFMMI(IMOL,0)=PRFMMI(IMOL,0)+PRFMMI(IMOL,ISTRA)
         END IF
         IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFIMIS(IMOL,0:NIONI) = PRFIMIS(IMOL,0:NIONI) +
      .                            PRFIMI2(IMOL,0:NIONI)
+#else
+          DO JION = 0, NIONI
+            PRFIMI(IMOL+JION*(NMOL+1),0) =
+     .       PRFIMI(IMOL+JION*(NMOL+1),0) +
+     .       PRFIMI(IMOL+JION*(NMOL+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFIMI(IMOL,0)=PRFIMI(IMOL,0)+PRFIMI(IMOL,ISTRA)
         END IF
         IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFPHMIS(IMOL,0:NPHOTI) = PRFPHMIS(IMOL,0:NPHOTI) +
      .                              PRFPHMI2(IMOL,0:NPHOTI)
+#else
+          DO JPHOT = 0, NPHOTI
+            PRFPHMI(IMOL+JPHOT*(NMOL+1),0) =
+     .       PRFPHMI(IMOL+JPHOT*(NMOL+1),0) +
+     .       PRFPHMI(IMOL+JPHOT*(NMOL+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFPHMI(IMOL,0)=PRFPHMI(IMOL,0)+PRFPHMI(IMOL,ISTRA)
         END IF
@@ -146,7 +215,7 @@ C
         VZDENMI(IMOL,0)=VZDENMI(IMOL,0)+VZDENMI(IMOL,ISTRA)
         RMELI(IMOL,0)=RMELI(IMOL,0)+RMELI(IMOL,ISTRA)
  1101 CONTINUE
-
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
       IF (NLSPCSCL_ATM) THEN
         PAATIS(0:NATM,0:NATM) => PAATI(:,0)
         PAATI2(0:NATM,0:NATM) => PAATI(:,ISTRA)
@@ -171,57 +240,122 @@ C
         PRFPHAIS(0:NATM,0:NPHOT) => PRFPHAI(:,0)
         PRFPHAI2(0:NATM,0:NPHOT) => PRFPHAI(:,ISTRA)
       END IF
+#endif
       DO 1102 IATM=0,NATMI
         PPATI (IATM,0)=PPATI (IATM,0)+PPATI (IATM,ISTRA)
         WTOTA (IATM,0)=WTOTA (IATM,0)+WTOTA (IATM,ISTRA)
         PDENAI(IATM,0)=PDENAI(IATM,0)+PDENAI(IATM,ISTRA)
         EDENAI(IATM,0)=EDENAI(IATM,0)+EDENAI(IATM,ISTRA)
         IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PAATIS(IATM,0:NATMI) = PAATIS(IATM,0:NATMI) +
      .                           PAATI2(IATM,0:NATMI)
+#else
+          DO JATM = 0, NATMI
+            PAATI(IATM+JATM*(NATM+1),0) =
+     .       PAATI(IATM+JATM*(NATM+1),0) +
+     .       PAATI(IATM+JATM*(NATM+1),ISTRA)
+          END DO
+#endif
         ELSE
           PAATI (IATM,0)=PAATI (IATM,0)+PAATI (IATM,ISTRA)
         END IF
         IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PMATIS(IATM,0:NMOLI) = PMATIS(IATM,0:NMOLI) +
      .                           PMATI2(IATM,0:NMOLI)
+#else
+          DO JMOL = 0, NMOLI
+            PMATI(IATM+JMOL*(NATM+1),0) =
+     .       PMATI(IATM+JMOL*(NATM+1),0) +
+     .       PMATI(IATM+JMOL*(NATM+1),ISTRA)
+          END DO
+#endif
         ELSE
           PMATI (IATM,0)=PMATI (IATM,0)+PMATI (IATM,ISTRA)
         END IF
         IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PIATIS(IATM,0:NIONI) = PIATIS(IATM,0:NIONI) +
      .                           PIATI2(IATM,0:NIONI)
+#else
+          DO JION = 0, NIONI
+            PIATI(IATM+JION*(NATM+1),0) =
+     .       PIATI(IATM+JION*(NATM+1),0) +
+     .       PIATI(IATM+JION*(NATM+1),ISTRA)
+          END DO
+#endif
         ELSE
           PIATI (IATM,0)=PIATI (IATM,0)+PIATI (IATM,ISTRA)
         END IF
         IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PPHATIS(IATM,0:NPHOTI) = PPHATIS(IATM,0:NPHOTI) +
      .                             PPHATI2(IATM,0:NPHOTI)
+#else
+          DO JPHOT = 0, NPHOTI
+            PPHATI(IATM+JPHOT*(NATM+1),0) =
+     .       PPHATI(IATM+JPHOT*(NATM+1),0) +
+     .       PPHATI(IATM+JPHOT*(NATM+1),ISTRA)
+          END DO
+#endif
         ELSE
           PPHATI(IATM,0)=PPHATI(IATM,0)+PPHATI(IATM,ISTRA)
         END IF
         POTATI(IATM,0)=POTATI(IATM,0)+POTATI(IATM,ISTRA)
         IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFAAIS(IATM,0:NATMI) = PRFAAIS(IATM,0:NATMI) +
      .                            PRFAAI2(IATM,0:NATMI)
+#else
+          DO JATM = 0, NATMI
+            PRFAAI(IATM+JATM*(NATM+1),0) =
+     .       PRFAAI(IATM+JATM*(NATM+1),0) +
+     .       PRFAAI(IATM+JATM*(NATM+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFAAI(IATM,0)=PRFAAI(IATM,0)+PRFAAI(IATM,ISTRA)
         END IF
         IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFMAIS(IATM,0:NMOLI) = PRFMAIS(IATM,0:NMOLI) +
      .                            PRFMAI2(IATM,0:NMOLI)
+#else
+          DO JMOL = 0, NMOLI
+            PRFMAI(IATM+JMOL*(NATM+1),0) =
+     .       PRFMAI(IATM+JMOL*(NATM+1),0) +
+     .       PRFMAI(IATM+JMOL*(NATM+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFMAI(IATM,0)=PRFMAI(IATM,0)+PRFMAI(IATM,ISTRA)
         END IF
         IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFIAIS(IATM,0:NIONI) = PRFIAIS(IATM,0:NIONI) +
      .                            PRFIAI2(IATM,0:NIONI)
+#else
+          DO JION = 0, NIONI
+            PRFIAI(IATM+JION*(NATM+1),0) =
+     .       PRFIAI(IATM+JION*(NATM+1),0) +
+     .       PRFIAI(IATM+JION*(NATM+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFIAI(IATM,0)=PRFIAI(IATM,0)+PRFIAI(IATM,ISTRA)
         END IF
         IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFPHAIS(IATM,0:NPHOTI) = PRFPHAIS(IATM,0:NPHOTI) +
      .                              PRFPHAI2(IATM,0:NPHOTI)
+#else
+          DO JPHOT = 0, NIONI
+            PRFPHAI(IATM+JPHOT*(NATM+1),0) =
+     .       PRFPHAI(IATM+JPHOT*(NATM+1),0) +
+     .       PRFPHAI(IATM+JPHOT*(NATM+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFPHAI(IATM,0)=PRFPHAI(IATM,0)+PRFPHAI(IATM,ISTRA)
         END IF
@@ -245,7 +379,7 @@ C
         VZDENAI(IATM,0)=VZDENAI(IATM,0)+VZDENAI(IATM,ISTRA)
         RAELI(IATM,0)=RAELI(IATM,0)+RAELI(IATM,ISTRA)
  1102 CONTINUE
-
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
       IF (NLSPCSCL_ATM) THEN
         PAIOIS(0:NION,0:NATM) => PAIOI(:,0)
         PAIOI2(0:NION,0:NATM) => PAIOI(:,ISTRA)
@@ -270,6 +404,7 @@ C
         PRFPHIIS(0:NION,0:NPHOT) => PRFPHII(:,0)
         PRFPHII2(0:NION,0:NPHOT) => PRFPHII(:,ISTRA)
       END IF
+#endif
       DO 1103 IION=0,NIONI
         PPIOI (IION,0)=PPIOI (IION,0)+PPIOI (IION,ISTRA)
         EELFI (IION,0)=EELFI (IION,0)+EELFI (IION,ISTRA)
@@ -277,51 +412,115 @@ C
         PDENII(IION,0)=PDENII(IION,0)+PDENII(IION,ISTRA)
         EDENII(IION,0)=EDENII(IION,0)+EDENII(IION,ISTRA)
         IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PAIOIS(IION,0:NATMI) = PAIOIS(IION,0:NATMI) +
      .                           PAIOI2(IION,0:NATMI)
+#else
+          DO JATM = 0, NATMI
+            PAIOI(IION+JATM*(NION+1),0) =
+     .       PAIOI(IION+JATM*(NION+1),0) +
+     .       PAIOI(IION+JATM*(NION+1),ISTRA)
+          END DO
+#endif
         ELSE
           PAIOI (IION,0)=PAIOI (IION,0)+PAIOI (IION,ISTRA)
         END IF
         IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PMIOIS(IION,0:NMOLI) = PMIOIS(IION,0:NMOLI) +
      .                           PMIOI2(IION,0:NMOLI)
+#else
+          DO JMOL = 0, NMOLI
+            PMIOI(IION+JMOL*(NION+1),0) =
+     .       PMIOI(IION+JMOL*(NION+1),0) +
+     .       PMIOI(IION+JMOL*(NION+1),ISTRA)
+          END DO
+#endif
         ELSE
           PMIOI (IION,0)=PMIOI (IION,0)+PMIOI (IION,ISTRA)
         END IF
         IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PIIOIS(IION,0:NIONI) = PIIOIS(IION,0:NIONI) +
      .                           PIIOI2(IION,0:NIONI)
+#else
+          DO JION = 0, NIONI
+            PIIOI(IION+JION*(NION+1),0) =
+     .       PIIOI(IION+JION*(NION+1),0) +
+     .       PIIOI(IION+JION*(NION+1),ISTRA)
+          END DO
+#endif
         ELSE
           PIIOI (IION,0)=PIIOI (IION,0)+PIIOI (IION,ISTRA)
         END IF
         IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PPHIOIS(IION,0:NPHOTI) = PPHIOIS(IION,0:NPHOTI) +
      .                             PPHIOI2(IION,0:NPHOTI)
+#else
+          DO JPHOT = 0, NPHOTI
+            PPHIOI(IION+JPHOT*(NION+1),0) =
+     .       PPHIOI(IION+JPHOT*(NION+1),0) +
+     .       PPHIOI(IION+JPHOT*(NION+1),ISTRA)
+          END DO
+#endif
         ELSE
           PPHIOI(IION,0)=PPHIOI(IION,0)+PPHIOI(IION,ISTRA)
         END IF
         POTIOI(IION,0)=POTIOI(IION,0)+POTIOI(IION,ISTRA)
         IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFAIIS(IION,0:NATMI) = PRFAIIS(IION,0:NATMI) +
      .                            PRFAII2(IION,0:NATMI)
+#else
+          DO JATM = 0, NATMI
+            PRFAII(IION+JATM*(NION+1),0) =
+     .       PRFAII(IION+JATM*(NION+1),0) +
+     .       PRFAII(IION+JATM*(NION+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFAII(IION,0)=PRFAII(IION,0)+PRFAII(IION,ISTRA)
         END IF
         IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFMIIS(IION,0:NMOLI) = PRFMIIS(IION,0:NMOLI) +
      .                            PRFMII2(IION,0:NMOLI)
+#else
+          DO JMOL = 0, NMOLI
+            PRFMII(IION+JMOL*(NION+1),0) =
+     .       PRFMII(IION+JMOL*(NION+1),0) +
+     .       PRFMII(IION+JMOL*(NION+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFMII(IION,0)=PRFMII(IION,0)+PRFMII(IION,ISTRA)
         END IF
         IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFIIIS(IION,0:NIONI) = PRFIIIS(IION,0:NIONI) +
      .                            PRFIII2(IION,0:NIONI)
+#else
+          DO JION = 0, NIONI
+            PRFIII(IION+JION*(NION+1),0) =
+     .       PRFIII(IION+JION*(NION+1),0) +
+     .       PRFIII(IION+JION*(NION+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFIII(IION,0)=PRFIII(IION,0)+PRFIII(IION,ISTRA)
         END IF
         IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFPHIIS(IION,0:NPHOTI) = PRFPHIIS(IION,0:NPHOTI) +
      .                              PRFPHII2(IION,0:NPHOTI)
+#else
+          DO JPHOT = 0, NPHOTI
+            PRFPHII(IION+JPHOT*(NION+1),0) =
+     .       PRFPHII(IION+JPHOT*(NION+1),0) +
+     .       PRFPHII(IION+JPHOT*(NION+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFPHII(IION,0)=PRFPHII(IION,0)+PRFPHII(IION,ISTRA)
         END IF
@@ -345,7 +544,7 @@ C
         VZDENII(IION,0)=VZDENII(IION,0)+VZDENII(IION,ISTRA)
         RIELI(IION,0)=RIELI(IION,0)+RIELI(IION,ISTRA)
  1103 CONTINUE
-
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
       IF (NLSPCSCL_ATM) THEN
         PAPHTIS(0:NPHOT,0:NATM) => PAPHTI(:,0)
         PAPHTI2(0:NPHOT,0:NATM) => PAPHTI(:,ISTRA)
@@ -370,57 +569,122 @@ C
         PRFPHPHTIS(0:NPHOT,0:NPHOT) => PRFPHPHTI(:,0)
         PRFPHPHTI2(0:NPHOT,0:NPHOT) => PRFPHPHTI(:,ISTRA)
       END IF
+#endif
       DO IPHOT=0,NPHOTI
         PPPHTI  (IPHOT,0)=PPPHTI  (IPHOT,0)+PPPHTI  (IPHOT,ISTRA)
         WTOTPH  (IPHOT,0)=WTOTPH  (IPHOT,0)+WTOTPH  (IPHOT,ISTRA)
         PDENPHI (IPHOT,0)=PDENPHI (IPHOT,0)+PDENPHI (IPHOT,ISTRA)
         EDENPHI (IPHOT,0)=EDENPHI (IPHOT,0)+EDENPHI (IPHOT,ISTRA)
         IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PAPHTIS(IPHOT,0:NATMI) = PAPHTIS(IPHOT,0:NATMI) +
      .                             PAPHTI2(IPHOT,0:NATMI)
+#else
+          DO JATM = 0, NATMI
+            PAPHTI(IPHOT+JATM*(NPHOT+1),0) =
+     .       PAPHTI(IPHOT+JATM*(NPHOT+1),0) +
+     .       PAPHTI(IPHOT+JATM*(NPHOT+1),ISTRA)
+          END DO
+#endif
         ELSE
           PAPHTI (IPHOT,0)=PAPHTI (IPHOT,0)+PAPHTI (IPHOT,ISTRA)
         END IF
         IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PMPHTIS(IPHOT,0:NMOLI) = PMPHTIS(IPHOT,0:NMOLI) +
      .                             PMPHTI2(IPHOT,0:NMOLI)
+#else
+          DO JMOL = 0, NMOLI
+            PMPHTI(IPHOT+JMOL*(NPHOT+1),0) =
+     .       PMPHTI(IPHOT+JMOL*(NPHOT+1),0) +
+     .       PMPHTI(IPHOT+JMOL*(NPHOT+1),ISTRA)
+          END DO
+#endif
         ELSE
           PMPHTI  (IPHOT,0)=PMPHTI  (IPHOT,0)+PMPHTI  (IPHOT,ISTRA)
         END IF
         IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PIPHTIS(IPHOT,0:NIONI) = PIPHTIS(IPHOT,0:NIONI) +
      .                             PIPHTI2(IPHOT,0:NIONI)
+#else
+          DO JION = 0, NIONI
+            PIPHTI(IPHOT+JION*(NPHOT+1),0) =
+     .       PIPHTI(IPHOT+JION*(NPHOT+1),0) +
+     .       PIPHTI(IPHOT+JION*(NPHOT+1),ISTRA)
+          END DO
+#endif
         ELSE
           PIPHTI  (IPHOT,0)=PIPHTI  (IPHOT,0)+PIPHTI  (IPHOT,ISTRA)
         END IF
         IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PPHPHTIS(IPHOT,0:NPHOTI) = PPHPHTIS(IPHOT,0:NPHOTI) +
      .                               PPHPHTI2(IPHOT,0:NPHOTI)
+#else
+          DO JPHOT = 0, NPHOTI
+            PPHPHTI(IPHOT+JPHOT*(NPHOT+1),0) =
+     .       PPHPHTI(IPHOT+JPHOT*(NPHOT+1),0) +
+     .       PPHPHTI(IPHOT+JPHOT*(NPHOT+1),ISTRA)
+          END DO
+#endif
         ELSE
           PPHPHTI (IPHOT,0)=PPHPHTI (IPHOT,0)+PPHPHTI (IPHOT,ISTRA)
         END IF
         POTPHTI (IPHOT,0)=POTPHTI (IPHOT,0)+POTPHTI (IPHOT,ISTRA)
         IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFAPHTIS(IPHOT,0:NATMI) = PRFAPHTIS(IPHOT,0:NATMI) +
      .                               PRFAPHTI2(IPHOT,0:NATMI)
+#else
+          DO JATM = 0, NATMI
+            PRFAPHTI(IPHOT+JATM*(NPHOT+1),0) =
+     .       PRFAPHTI(IPHOT+JATM*(NPHOT+1),0) +
+     .       PRFAPHTI(IPHOT+JATM*(NPHOT+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFAPHTI(IPHOT,0)=PRFAPHTI(IPHOT,0)+PRFAPHTI(IPHOT,ISTRA)
         END IF
         IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFMPHTIS(IPHOT,0:NMOLI) = PRFMPHTIS(IPHOT,0:NMOLI) +
      .                               PRFMPHTI2(IPHOT,0:NMOLI)
+#else
+          DO JMOL = 0, NMOLI
+            PRFMPHTI(IPHOT+JMOL*(NPHOT+1),0) =
+     .       PRFMPHTI(IPHOT+JMOL*(NPHOT+1),0) +
+     .       PRFMPHTI(IPHOT+JMOL*(NPHOT+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFMPHTI(IPHOT,0)=PRFMPHTI(IPHOT,0)+PRFMPHTI(IPHOT,ISTRA)
         END IF
         IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFIPHTIS(IPHOT,0:NIONI) = PRFIPHTIS(IPHOT,0:NIONI) +
      .                               PRFIPHTI2(IPHOT,0:NIONI)
+#else
+          DO JION = 0, NIONI
+            PRFIPHTI(IPHOT+JION*(NPHOT+1),0) =
+     .       PRFIPHTI(IPHOT+JION*(NPHOT+1),0) +
+     .       PRFIPHTI(IPHOT+JION*(NPHOT+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFIPHTI(IPHOT,0)=PRFIPHTI(IPHOT,0)+PRFIPHTI(IPHOT,ISTRA)
         END IF
         IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PRFPHPHTIS(IPHOT,0:NPHOTI) = PRFPHPHTIS(IPHOT,0:NPHOTI) +
      .                                 PRFPHPHTI2(IPHOT,0:NPHOTI)
+#else
+          DO JPHOT = 0, NPHOTI
+            PRFPHPHTI(IPHOT+JPHOT*(NPHOT+1),0) =
+     .       PRFPHPHTI(IPHOT+JPHOT*(NPHOT+1),0) +
+     .       PRFPHPHTI(IPHOT+JPHOT*(NPHOT+1),ISTRA)
+          END DO
+#endif
         ELSE
           PRFPHPHTI(IPHOT,0)=PRFPHPHTI(IPHOT,0)+PRFPHPHTI(IPHOT,ISTRA)
         END IF
@@ -443,7 +707,7 @@ C
         VYDENPHI (IPHOT,0)=VYDENPHI (IPHOT,0)+VYDENPHI (IPHOT,ISTRA)
         VZDENPHI (IPHOT,0)=VZDENPHI (IPHOT,0)+VZDENPHI (IPHOT,ISTRA)
       END DO
-
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
       IF (NLSPCSCL_ATM) THEN
         PAPLIS(0:NPLS,0:NATM) => PAPLI(:,0)
         PAPLI2(0:NPLS,0:NATM) => PAPLI(:,ISTRA)
@@ -460,31 +724,64 @@ C
         PPHPLIS(0:NPLS,0:NPHOT) => PPHPLI(:,0)
         PPHPLI2(0:NPLS,0:NPHOT) => PPHPLI(:,ISTRA)
       END IF
+#endif
       DO 1104 IPLS=0,NPLSI
         WTOTP (IPLS,0)=WTOTP (IPLS,0)+WTOTP (IPLS,ISTRA)
 
         PPPLI (IPLS,0)=PPPLI (IPLS,0)+PPPLI (IPLS,ISTRA)
         IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PAPLIS(IPLS,0:NATMI) = PAPLIS(IPLS,0:NATMI) +
      .                           PAPLI2(IPLS,0:NATMI)
+#else
+          DO JATM = 0, NATMI
+            PAPLI(IPLS+JATM*(NPLS+1),0) =
+     .       PAPLI(IPLS+JATM*(NPLS+1),0) +
+     .       PAPLI(IPLS+JATM*(NPLS+1),ISTRA)
+          END DO
+#endif
         ELSE
           PAPLI (IPLS,0)=PAPLI (IPLS,0)+PAPLI (IPLS,ISTRA)
         END IF
         IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PMPLIS(IPLS,0:NMOLI) = PMPLIS(IPLS,0:NMOLI) +
      .                           PMPLI2(IPLS,0:NMOLI)
+#else
+          DO JMOL = 0, NMOLI
+            PMPLI(IPLS+JMOL*(NPLS+1),0) =
+     .       PMPLI(IPLS+JMOL*(NPLS+1),0) +
+     .       PMPLI(IPLS+JMOL*(NPLS+1),ISTRA)
+          END DO
+#endif
         ELSE
           PMPLI (IPLS,0)=PMPLI (IPLS,0)+PMPLI (IPLS,ISTRA)
         END IF
         IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PIPLIS(IPLS,0:NIONI) = PIPLIS(IPLS,0:NIONI) +
      .                           PIPLI2(IPLS,0:NIONI)
+#else
+          DO JION = 0, NIONI
+            PIPLI(IPLS+JION*(NPLS+1),0) =
+     .       PIPLI(IPLS+JION*(NPLS+1),0) +
+     .       PIPLI(IPLS+JION*(NPLS+1),ISTRA)
+          END DO
+#endif
         ELSE
           PIPLI (IPLS,0)=PIPLI (IPLS,0)+PIPLI (IPLS,ISTRA)
         END IF
         IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
           PPHPLIS(IPLS,0:NPHOTI) = PPHPLIS(IPLS,0:NPHOTI) +
      .                             PPHPLI2(IPLS,0:NPHOTI)
+#else
+          DO JPHOT = 0, NPHOTI
+            PPHPLI(IPLS+JPHOT*(NPLS+1),0) =
+     .       PPHPLI(IPLS+JPHOT*(NPLS+1),0) +
+     .       PPHPLI(IPLS+JPHOT*(NPLS+1),ISTRA)
+          END DO
+#endif
         ELSE
           PPHPLI(IPLS,0)=PPHPLI(IPLS,0)+PPHPLI(IPLS,ISTRA)
         END IF

@@ -43,6 +43,9 @@ c                or  also: cumulated (flight times/reaction time) [1] to source 
       REAL(DP) :: DEL, DELI, ELEFT, ERIGHT
       INTEGER :: IATM, I, J, IMOL, IION, IPHOT, IPLS, IADV, ICLV,
      .           ISNV, ICPV, IBGV, ISPC, ICL
+#if ( defined(G95) || defined(LEGACYCOMP) )
+      INTEGER :: JATM, JMOL, JION, JPHOT
+#endif
 C
 C
 C*****VOLUME-AVERAGED TALLIES  220 - 239
@@ -56,32 +59,60 @@ C
             IF (LEDENA) EDENA(IATM,J)=EDENA(IATM,J)*ZVOLIN(J)
             IF (LPAAT) THEN
               IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAAT2(1:NATM,0:NATM) => PAAT(:,J)
                 PAAT2(IATM,:) = PAAT2(IATM,:) *ZVOLIW(J)
+#else
+                DO JATM = 0, NATM
+                  PAAT(IATM+JATM*NATM,J) =
+     .             PAAT(IATM+JATM*NATM,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PAAT(IATM,J) = PAAT(IATM,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPMAT) THEN
               IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMAT2(1:NATM,0:NMOL) => PMAT(:,J)
                 PMAT2(IATM,:) = PMAT2(IATM,:) *ZVOLIW(J)
+#else
+                DO JMOL = 0, NMOL
+                  PMAT(IATM+JMOL*NATM,J) =
+     .             PMAT(IATM+JMOL*NATM,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PMAT(IATM,J) = PMAT(IATM,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPIAT) THEN
               IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIAT2(1:NATM,0:NION) => PIAT(:,J)
                 PIAT2(IATM,:) = PIAT2(IATM,:) *ZVOLIW(J)
+#else
+                DO JION = 0, NION
+                  PIAT(IATM+JION*NATM,J) =
+     .             PIAT(IATM+JION*NATM,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PIAT(IATM,J) = PIAT(IATM,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPPHAT) THEN
               IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHAT2(1:NATM,0:NPHOT) => PPHAT(:,J)
                 PPHAT2(IATM,:) = PPHAT2(IATM,:) *ZVOLIW(J)
+#else
+                DO JPHOT = 0, NPHOT
+                  PPHAT(IATM+JPHOT*NATM,J) =
+     .             PPHAT(IATM+JPHOT*NATM,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                PPHAT(IATM,J) = PPHAT(IATM,J)*ZVOLIW(J)
               END IF
@@ -121,32 +152,60 @@ C
             IF (LEDENM) EDENM(IMOL,J)=EDENM(IMOL,J)*ZVOLIN(J)
             IF (LPAML) THEN
               IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAML2(1:NMOL,0:NATM) => PAML(:,J)
                 PAML2(IMOL,:) = PAML2(IMOL,:) *ZVOLIW(J)
+#else
+                DO JATM = 0, NATM
+                  PAML(IMOL+JATM*NMOL,J) =
+     .             PAML(IMOL+JATM*NMOL,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PAML(IMOL,J) = PAML(IMOL,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPMML) THEN
               IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMML2(1:NMOL,0:NMOL) => PMML(:,J)
                 PMML2(IMOL,:) = PMML2(IMOL,:) *ZVOLIW(J)
+#else
+                DO JMOL = 0, NMOL
+                  PMML(IMOL+JMOL*NMOL,J) =
+     .             PMML(IMOL+JMOL*NMOL,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PMML(IMOL,J) = PMML(IMOL,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPIML) THEN
               IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIML2(1:NMOL,0:NION) => PIML(:,J)
                 PIML2(IMOL,:) = PIML2(IMOL,:) *ZVOLIW(J)
+#else
+                DO JION = 0, NION
+                  PIML(IMOL+JION*NMOL,J) =
+     .             PIML(IMOL+JION*NMOL,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PIML(IMOL,J) = PIML(IMOL,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPPHML) THEN
               IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHML2(1:NMOL,0:NPHOT) => PPHML(:,J)
                 PPHML2(IMOL,:) = PPHML2(IMOL,:) *ZVOLIW(J)
+#else
+                DO JPHOT = 0, NPHOT
+                  PPHML(IMOL+JPHOT*NMOL,J) =
+     .             PPHML(IMOL+JPHOT*NMOL,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PPHML(IMOL,J)= PPHML(IMOL,J)*ZVOLIW(J)
               END IF
@@ -186,32 +245,60 @@ C
             IF (LEDENI) EDENI(IION,J)=EDENI(IION,J)*ZVOLIN(J)
             IF (LPAIO) THEN
               IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAIO2(1:NION,0:NATM) => PAIO(:,J)
                 PAIO2(IION,:) = PAIO2(IION,:) *ZVOLIW(J)
+#else
+                DO JATM = 0, NATM
+                  PAIO(IION+JATM*NION,J) =
+     .             PAIO(IION+JATM*NION,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PAIO(IION,J) = PAIO(IION,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPMIO) THEN
               IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMIO2(1:NION,0:NMOL) => PMIO(:,J)
                 PMIO2(IION,:) = PMIO2(IION,:) *ZVOLIW(J)
+#else
+                DO JMOL = 0, NMOL
+                  PMIO(IION+JMOL*NION,J) =
+     .             PMIO(IION+JMOL*NION,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PMIO(IION,J) = PMIO(IION,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPIIO) THEN
               IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIIO2(1:NION,0:NION) => PIIO(:,J)
                 PIIO2(IION,:) = PIIO2(IION,:) *ZVOLIW(J)
+#else
+                DO JION = 0, NION
+                  PIIO(IION+JION*NION,J) =
+     .             PIIO(IION+JION*NION,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PIIO(IION,J) =PIIO(IION,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPPHIO) THEN
               IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHIO2(1:NION,0:NPHOT) => PPHIO(:,J)
                 PPHIO2(IION,:) = PPHIO2(IION,:) *ZVOLIW(J)
+#else
+                DO JPHOT = 0, NPHOT
+                  PPHIO(IION+JPHOT*NION,J) =
+     .             PPHIO(IION+JPHOT*NION,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PPHIO(IION,J)=PPHIO(IION,J)*ZVOLIW(J)
               END IF
@@ -251,32 +338,60 @@ C
             IF (LEDENPH) EDENPH(IPHOT,J)=EDENPH(IPHOT,J)*ZVOLIN(J)
             IF (LPAPHT) THEN
               IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAPHT2(1:NPHOT,0:NATM) => PAPHT(:,J)
                 PAPHT2(IPHOT,:) = PAPHT2(IPHOT,:) *ZVOLIW(J)
+#else
+                DO JATM = 0, NATM
+                  PAPHT(IPHOT+JATM*NPHOT,J) =
+     .             PAPHT(IPHOT+JATM*NPHOT,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PAPHT(IPHOT,J) = PAPHT(IPHOT,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPMPHT) THEN
               IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMPHT2(1:NPHOT,0:NMOL) => PMPHT(:,J)
                 PMPHT2(IPHOT,:) = PMPHT2(IPHOT,:) *ZVOLIW(J)
+#else
+                DO JMOL = 0, NMOL
+                  PMPHT(IPHOT+JMOL*NPHOT,J) =
+     .             PMPHT(IPHOT+JMOL*NPHOT,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PMPHT(IPHOT,J) = PMPHT(IPHOT,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPIPHT) THEN
               IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIPHT2(1:NPHOT,0:NION) => PIPHT(:,J)
                 PIPHT2(IPHOT,:) = PIPHT2(IPHOT,:) *ZVOLIW(J)
+#else
+                DO JION = 0, NION
+                  PIPHT(IPHOT+JION*NPHOT,J) =
+     .             PIPHT(IPHOT+JION*NPHOT,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PIPHT(IPHOT,J) = PIPHT(IPHOT,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPPHPHT) THEN
               IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,J)
                 PPHPHT2(IPHOT,:) = PPHPHT2(IPHOT,:) *ZVOLIW(J)
+#else
+                DO JPHOT = 0, NPHOT
+                  PPHPHT(IPHOT+JPHOT*NPHOT,J) =
+     .             PPHPHT(IPHOT+JPHOT*NPHOT,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PPHPHT(IPHOT,J) = PPHPHT(IPHOT,J)*ZVOLIW(J)
               END IF
@@ -313,32 +428,60 @@ C
           DO 228 J=1,NSBOX_TAL
             IF (LPAPL) THEN
               IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAPL2(1:NPLS,0:NATM) => PAPL(:,J)
                 PAPL2(IPLS,:) = PAPL2(IPLS,:) *ZVOLIW(J)
+#else
+                DO JATM = 0, NATM
+                  PAPL(IPLS+JATM*NPLS,J) =
+     .             PAPL(IPLS+JATM*NPLS,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PAPL(IPLS,J) = PAPL(IPLS,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPMPL) THEN
               IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMPL2(1:NPLS,0:NMOL) => PMPL(:,J)
                 PMPL2(IPLS,:) = PMPL2(IPLS,:) *ZVOLIW(J)
+#else
+                DO JMOL = 0, NMOL
+                  PMPL(IPLS+JMOL*NPLS,J) =
+     .             PMPL(IPLS+JMOL*NPLS,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PMPL(IPLS,J) = PMPL(IPLS,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPIPL) THEN
               IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIPL2(1:NPLS,0:NION) => PIPL(:,J)
                 PIPL2(IPLS,:) = PIPL2(IPLS,:) *ZVOLIW(J)
+#else
+                DO JION = 0, NION
+                  PIPL(IPLS+JION*NPLS,J) =
+     .             PIPL(IPLS+JION*NPLS,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PIPL(IPLS,J) = PIPL(IPLS,J) *ZVOLIW(J)
               END IF
             END IF
             IF (LPPHPL) THEN
               IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,J)
                 PPHPL2(IPLS,:) = PPHPL2(IPLS,:) *ZVOLIW(J)
+#else
+                DO JPHOT = 0, NPHOT
+                  PPHPL(IPLS+JPHOT*NPLS,J) =
+     .             PPHPL(IPLS+JPHOT*NPLS,J)*ZVOLIW(J)
+                END DO
+#endif
               ELSE
                 PPHPL(IPLS,J)= PPHPL(IPLS,J)*ZVOLIW(J)
               END IF

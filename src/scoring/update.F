@@ -238,6 +238,7 @@ C
 #endif
           PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)-WTRSIG
           IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -246,6 +247,14 @@ C
             LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
             LMETSP2(IXSPZ,0) = .TRUE.
             LMETSP2(IXSPZ,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+            PXX(IXSPZ+IXSPZ*NDXX,IRD)=PXX(IXSPZ+IXSPZ*NDXX,IRD)-WTRSIG
+            LMETSP(NDXXA+IXSPZ) = .TRUE.
+            LMETSP(NDXXA+IXSPZ+IXSPZ*NDXX) = .TRUE.
+#endif
           END IF
         ENDIF
 
@@ -282,6 +291,7 @@ C
 #endif
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -290,6 +300,15 @@ C
                 LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                 LMETSP2(IXSPZ,0) = .TRUE.
                 LMETSP2(IXSPZ,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PXX(IXSPZ+IXSPZ*NDXX,IRD)=
+     .           PXX(IXSPZ+IXSPZ*NDXX,IRD)+WTRSIG
+                LMETSP(NDXXA+IXSPZ) = .TRUE.
+                LMETSP(NDXXA+IXSPZ+IXSPZ*NDXX) = .TRUE.
+#endif
               END IF
             ENDIF
           ELSE
@@ -302,6 +321,7 @@ C
 #endif
               PXPL(IPLS,IRD)=PXPL(IPLS,IRD)-WTRSIG
               IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -310,6 +330,15 @@ C
                 LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                 LMETSP2(IPLS,0) = .TRUE.
                 LMETSP2(IPLS,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PXPL(IPLS+IXSPZ*NPLS,IRD)=
+     .           PXPL(IPLS+IXSPZ*NPLS,IRD)-WTRSIG
+                LMETSP(NTS_PXPLA+IPLS) = .TRUE.
+                LMETSP(NTS_PXPLA+IPLS+IXSPZ*NPLS) = .TRUE.
+#endif
               END IF
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
@@ -325,6 +354,7 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
 #endif
                 PXAT(IAT1,IRD)= PXAT(IAT1,IRD)+WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -333,6 +363,15 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                   LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
                   LMETSP2(IAT1,IXSPZ) = .TRUE.
                   LMETSP2(IAT1,0) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXAT(IAT1+IXSPZ*NATM,IRD)=
+     .             PXAT(IAT1+IXSPZ*NATM,IRD)+WTRSIG
+                  LMETSP(NTS_PXATA+IAT1) = .TRUE.
+                  LMETSP(NTS_PXATA+IAT1+IXSPZ*NATM) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPH+IAT1)=.TRUE.
               END IF
@@ -345,6 +384,7 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
 #endif
                 PXML(IML1,IRD)= PXML(IML1,IRD)+WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -353,6 +393,15 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                   LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
                   LMETSP2(IML1,0) = .TRUE.
                   LMETSP2(IML1,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXML(IML1+IXSPZ*NMOL,IRD)=
+     .             PXML(IML1+IXSPZ*NMOL,IRD)+WTRSIG
+                  LMETSP(NTS_PXMLA+IML1) = .TRUE.
+                  LMETSP(NTS_PXMLA+IML1+IXSPZ*NMOL) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPA+IML1)=.TRUE.
               END IF
@@ -365,6 +414,7 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
 #endif
                 PXIO(IIO1,IRD)= PXIO(IIO1,IRD)+WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -373,6 +423,15 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                   LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
                   LMETSP2(IIO1,0) = .TRUE.
                   LMETSP2(IIO1,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXIO(IIO1+IXSPZ*NION,IRD)=
+     .             PXIO(IIO1+IXSPZ*NION,IRD)+WTRSIG
+                  LMETSP(NTS_PXIOA+IIO1) = .TRUE.
+                  LMETSP(NTS_PXIOA+IIO1+IXSPZ*NION) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPAM+IIO1)=.TRUE.
               END IF
@@ -385,6 +444,7 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
 #endif
                 PXPL(IPL1,IRD)= PXPL(IPL1,IRD)+WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -393,6 +453,15 @@ C  FIRST SECONDARY: PREVIOUS BULK ION IPL
                   LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                   LMETSP2(IPL1,0) = .TRUE.
                   LMETSP2(IPL1,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXPL(IPL1+IXSPZ*NPLS,IRD)=
+     .             PXPL(IPL1+IXSPZ*NPLS,IRD)+WTRSIG
+                  LMETSP(NTS_PXPLA+IPL1) = .TRUE.
+                  LMETSP(NTS_PXPLA+IPL1+IXSPZ*NPLS) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPAMI+IPL1)=.TRUE.
               END IF
@@ -407,6 +476,7 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
 #endif
                 PXAT(IAT2,IRD)= PXAT(IAT2,IRD)+WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -415,6 +485,15 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
                   LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
                   LMETSP2(IAT2,0) = .TRUE.
                   LMETSP2(IAT2,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXAT(IAT2+IXSPZ*NATM,IRD)=
+     .             PXAT(IAT2+IXSPZ*NATM,IRD)+WTRSIG
+                  LMETSP(NTS_PXATA+IAT2) = .TRUE.
+                  LMETSP(NTS_PXATA+IAT2+IXSPZ*NATM) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPH+IAT2)=.TRUE.
               END IF
@@ -427,6 +506,7 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
 #endif
                 PXML(IML2,IRD)= PXML(IML2,IRD)+WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -435,6 +515,15 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
                   LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
                   LMETSP2(IML2,0) = .TRUE.
                   LMETSP2(IML2,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXML(IML2+IXSPZ*NMOL,IRD)=
+     .             PXML(IML2+IXSPZ*NMOL,IRD)+WTRSIG
+                  LMETSP(NTS_PXMLA+IML2) = .TRUE.
+                  LMETSP(NTS_PXMLA+IML2+IXSPZ*NMOL) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPA+IML2)=.TRUE.
               END IF
@@ -447,6 +536,7 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
 #endif
                 PXIO(IIO2,IRD)= PXIO(IIO2,IRD)+WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -455,6 +545,15 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
                   LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
                   LMETSP2(IIO2,0) = .TRUE.
                   LMETSP2(IIO2,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXIO(IIO2+IXSPZ*NION,IRD)=
+     .             PXIO(IIO2+IXSPZ*NION,IRD)+WTRSIG
+                  LMETSP(NTS_PXIOA+IIO2) = .TRUE.
+                  LMETSP(NTS_PXIOA+IIO2+IXSPZ*NION) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPAM+IIO2)=.TRUE.
               END IF
@@ -467,6 +566,7 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
 #endif
                 PXPL(IPL2,IRD)= PXPL(IPL2,IRD)+WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -475,6 +575,15 @@ C  SECOND SECONDARY: PREVIOUS TEST PARTICLE IXSPZ
                   LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                   LMETSP2(IPL2,0) = .TRUE.
                   LMETSP2(IPL2,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXPL(IPL2+IXSPZ*NPLS,IRD)=
+     .             PXPL(IPL2+IXSPZ*NPLS,IRD)+WTRSIG
+                  LMETSP(NTS_PXPLA+IPL2) = .TRUE.
+                  LMETSP(NTS_PXPLA+IPL2+IXSPZ*NPLS) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPAMI+IPL2)=.TRUE.
               END IF
@@ -620,6 +729,7 @@ C
 #endif
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -628,6 +738,15 @@ C
                 LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                 LMETSP2(IXSPZ,0) = .TRUE.
                 LMETSP2(IXSPZ,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PXX(IXSPZ+IXSPZ*NDXX,IRD)=
+     .           PXX(IXSPZ+IXSPZ*NDXX,IRD)+WTRSIG
+                LMETSP(NDXXA+IXSPZ) = .TRUE.
+                LMETSP(NDXXA+IXSPZ+IXSPZ*NDXX) = .TRUE.
+#endif
               END IF
             ENDIF
           ELSE
@@ -648,6 +767,7 @@ C           END IF
 #endif
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -656,6 +776,15 @@ C           END IF
                 LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                 LMETSP2(IXSPZ,0) = .TRUE.
                 LMETSP2(IXSPZ,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PXX(IXSPZ+IXSPZ*NDXX,IRD)=
+     .           PXX(IXSPZ+IXSPZ*NDXX,IRD)+WTRSIG
+                LMETSP(NDXXA+IXSPZ) = .TRUE.
+                LMETSP(NDXXA+IXSPZ+IXSPZ*NDXX) = .TRUE.
+#endif
               END IF
               LMETSP(NMETOFF+IXSPZ)=.TRUE.
             END IF
@@ -738,6 +867,7 @@ C
 #endif
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -746,6 +876,15 @@ C
                 LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                 LMETSP2(IXSPZ,0) = .TRUE.
                 LMETSP2(IXSPZ,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PXX(IXSPZ+IXSPZ*NDXX,IRD)=
+     .           PXX(IXSPZ+IXSPZ*NDXX,IRD)+WTRSIG
+                LMETSP(NDXXA+IXSPZ) = .TRUE.
+                LMETSP(NDXXA+IXSPZ+IXSPZ*NDXX) = .TRUE.
+#endif
               END IF
             ENDIF
 cdr  Now: pxx, pxat,pxml,pxio and pxpl to be done in subr. COLLIDE
@@ -773,6 +912,7 @@ C  POST-COLLISION CONTRIBUTIONS
 #endif
                 PXAT(IAT,IRD)=PXAT(IAT,IRD)+PATEI(IREI,IAT)*WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -782,6 +922,15 @@ C  POST-COLLISION CONTRIBUTIONS
                   LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
                   LMETSP2(IAT,0) = .TRUE.
                   LMETSP2(IAT,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXAT(IAT+IXSPZ*NATM,IRD)=
+     .             PXAT(IAT+IXSPZ*NATM,IRD)+PATEI(IREI,IAT)*WTRSIG
+                  LMETSP(NTS_PXATA+IAT) = .TRUE.
+                  LMETSP(NTS_PXATA+IAT+IXSPZ*NATM) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
@@ -796,6 +945,7 @@ C  POST-COLLISION CONTRIBUTIONS
 #endif
                 PXML(IML,IRD)=PXML(IML,IRD)+PMLEI(IREI,IML)*WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -805,6 +955,15 @@ C  POST-COLLISION CONTRIBUTIONS
                   LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
                   LMETSP2(IML,0) = .TRUE.
                   LMETSP2(IML,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXML(IML+IXSPZ*NMOL,IRD)=
+     .             PXML(IML+IXSPZ*NMOL,IRD)+PMLEI(IREI,IML)*WTRSIG
+                  LMETSP(NTS_PXMLA+IML) = .TRUE.
+                  LMETSP(NTS_PXMLA+IML+IXSPZ*NMOL) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
@@ -819,6 +978,7 @@ C  POST-COLLISION CONTRIBUTIONS
 #endif
                 PXIO(IIO,IRD)=PXIO(IIO,IRD)+PIOEI(IREI,IIO)*WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -828,6 +988,15 @@ C  POST-COLLISION CONTRIBUTIONS
                   LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
                   LMETSP2(IIO,0) = .TRUE.
                   LMETSP2(IIO,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXIO(IIO+IXSPZ*NION,IRD)=
+     .             PXIO(IIO+IXSPZ*NION,IRD)+PIOEI(IREI,IIO)*WTRSIG
+                  LMETSP(NTS_PXIOA+IIO) = .TRUE.
+                  LMETSP(NTS_PXIOA+IIO+IXSPZ*NION) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
@@ -842,6 +1011,7 @@ C  POST-COLLISION CONTRIBUTIONS
 #endif
                 PXPL(IPL,IRD)=PXPL(IPL,IRD)+PPLEI(IREI,IPL)*WTRSIG
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -851,6 +1021,15 @@ C  POST-COLLISION CONTRIBUTIONS
                   LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                   LMETSP2(IPL,0) = .TRUE.
                   LMETSP2(IPL,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXPL(IPL+IXSPZ*NPLS,IRD)=
+     .             PXPL(IPL+IXSPZ*NPLS,IRD)+PPLEI(IREI,IPL)*WTRSIG
+                  LMETSP(NTS_PXPLA+IPL) = .TRUE.
+                  LMETSP(NTS_PXPLA+IPL+IXSPZ*NPLS) = .TRUE.
+#endif
                 END IF
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF
@@ -983,6 +1162,7 @@ C
 #endif
               PXX(IXSPZ,IRD)=PXX(IXSPZ,IRD)+WTRSIG
               IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PXX2(1:NDXX,0:NDXX) => PXX(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -991,6 +1171,15 @@ C
                 LMETSP2(1:NDXX,0:NDXX) => LMETSP(NDXXA:NDXXE)
                 LMETSP2(IXSPZ,0) = .TRUE.
                 LMETSP2(IXSPZ,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PXX(IXSPZ+IXSPZ*NDXX,IRD)=
+     .           PXX(IXSPZ+IXSPZ*NDXX,IRD)+WTRSIG
+                LMETSP(NDXXA+IXSPZ) = .TRUE.
+                LMETSP(NDXXA+IXSPZ+IXSPZ*NDXX) = .TRUE.
+#endif
               ENDIF
             ENDIF
           ELSE
@@ -1006,6 +1195,7 @@ C
 #endif
               PXPL(IPLS,IRD)=PXPL(IPLS,IRD)-WTRSIG
               IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -1014,6 +1204,15 @@ C
                 LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                 LMETSP2(IPLS,0) = .TRUE.
                 LMETSP2(IPLS,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PXPL(IPLS+IXSPZ*NPLS,IRD)=
+     .           PXPL(IPLS+IXSPZ*NPLS,IRD)-WTRSIG
+                LMETSP(NTS_PXPLA+IPLS) = .TRUE.
+                LMETSP(NTS_PXPLA+IPLS+IXSPZ*NPLS) = .TRUE.
+#endif
               ENDIF
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
@@ -1036,6 +1235,7 @@ C
 #endif
                 PXAT(IAT,IRD)= PXAT(IAT,IRD)+WTRSIG*PATPI(IRPI,IAT)
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXAT2(1:NATM,0:NDXX) => PXAT(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -1045,6 +1245,15 @@ C
                   LMETSP2(1:NATM,0:NDXX) => LMETSP(NTS_PXATA:NTS_PXATE)
                   LMETSP2(IAT,0) = .TRUE.
                   LMETSP2(IAT,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXAT(IAT+IXSPZ*NATM,IRD)=
+     .             PXAT(IAT+IXSPZ*NATM,IRD)+WTRSIG*PATPI(IRPI,IAT)
+                  LMETSP(NTS_PXATA+IAT) = .TRUE.
+                  LMETSP(NTS_PXATA+IAT+IXSPZ*NATM) = .TRUE.
+#endif
                 ENDIF
                 LMETSP(NSPH+IAT)=.TRUE.
               END IF
@@ -1059,6 +1268,7 @@ C
 #endif
                 PXML(IML,IRD)= PXML(IML,IRD)+WTRSIG*PMLPI(IRPI,IML)
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXML2(1:NMOL,0:NDXX) => PXML(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -1068,6 +1278,15 @@ C
                   LMETSP2(1:NMOL,0:NDXX) => LMETSP(NTS_PXMLA:NTS_PXMLE)
                   LMETSP2(IML,0) = .TRUE.
                   LMETSP2(IML,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXML(IML+IXSPZ*NMOL,IRD)=
+     .             PXML(IML+IXSPZ*NMOL,IRD)+WTRSIG*PMLPI(IRPI,IML)
+                  LMETSP(NTS_PXMLA+IML) = .TRUE.
+                  LMETSP(NTS_PXMLA+IML+IXSPZ*NMOL) = .TRUE.
+#endif
                 ENDIF
                 LMETSP(NSPA+IML)=.TRUE.
               END IF
@@ -1082,6 +1301,7 @@ C
 #endif
                 PXIO(IIO,IRD)= PXIO(IIO,IRD)+WTRSIG*PIOPI(IRPI,IIO)
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXIO2(1:NION,0:NDXX) => PXIO(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -1091,6 +1311,15 @@ C
                   LMETSP2(1:NION,0:NDXX) => LMETSP(NTS_PXIOA:NTS_PXIOE)
                   LMETSP2(IIO,0) = .TRUE.
                   LMETSP2(IIO,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXIO(IIO+IXSPZ*NION,IRD)=
+     .             PXIO(IIO+IXSPZ*NION,IRD)+WTRSIG*PIOPI(IRPI,IIO)
+                  LMETSP(NTS_PXIOA+IIO) = .TRUE.
+                  LMETSP(NTS_PXIOA+IIO+IXSPZ*NION) = .TRUE.
+#endif
                 ENDIF
                 LMETSP(NSPAM+IIO)=.TRUE.
               END IF
@@ -1105,6 +1334,7 @@ C
 #endif
                 PXPL(IPL,IRD)= PXPL(IPL,IRD)+WTRSIG*PPLPI(IRPI,IPL)
                 IF (LSCX) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                   PXPL2(1:NPLS,0:NDXX) => PXPL(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -1114,6 +1344,15 @@ C
                   LMETSP2(1:NPLS,0:NDXX) => LMETSP(NTS_PXPLA:NTS_PXPLE)
                   LMETSP2(IPL,0) = .TRUE.
                   LMETSP2(IPL,IXSPZ) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                  PXPL(IPL+IXSPZ*NPLS,IRD)=
+     .             PXPL(IPL+IXSPZ*NPLS,IRD)+WTRSIG*PPLPI(IRPI,IPL)
+                  LMETSP(NTS_PXPLA+IPL) = .TRUE.
+                  LMETSP(NTS_PXPLA+IPL+IXSPZ*NPLS) = .TRUE.
+#endif
                 ENDIF
                 LMETSP(NSPAMI+IPL)=.TRUE.
               END IF

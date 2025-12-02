@@ -626,7 +626,7 @@ C
         ALLOCATE(PP(NNP,NNP),B(NNP))
         PP = 0._DP
         B = 0._DP
-
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
         PAATI2(0:NATM,LB_ATM:NATM) => PAATI(:,ISTRA)
         PAMLI2(0:NMOL,LB_ATM:NATM) => PAMLI(:,ISTRA)
         PAIOI2(0:NION,LB_ATM:NATM) => PAIOI(:,ISTRA)
@@ -756,100 +756,192 @@ C
      .           iion,(prfiii2(iion,i),i=lb_ion,nioni)
           end do
         END IF
-
+#endif
         DO JSP = 1, NATMI+NMOLI+NIONI+NPHOTI
           IF(JSP.LE.NATMI) THEN
             DO IATM = 1, NATMI
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(IATM,JSP) = PAATI2(IATM,JSP)+
      .                      PRFAAI2(IATM,JSP)
+#else
+              PP(IATM,JSP) = PAATI(IATM+(JSP-LB_ATM)*(NATM+1),ISTRA)+
+     .                      PRFAAI(IATM+(JSP-LB_ATM)*(NATM+1),ISTRA)
+#endif
             END DO
             PP(JSP,JSP) = PP(JSP,JSP)+
      .                    POTATI(JSP,ISTRA)+PGENAI(JSP,ISTRA)
             DO IMOL = 1, NMOLI
               JMOL = NATMI+IMOL
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JMOL,JSP) = PAMLI2(IMOL,JSP)+
      .                      PRFAMI2(IMOL,JSP)
+#else
+              PP(JMOL,JSP) = PAMLI(IMOL+(JSP-LB_ATM)*(NMOL+1),ISTRA)+
+     .                      PRFAMI(IMOL+(JSP-LB_ATM)*(NMOL+1),ISTRA)
+#endif
             END DO
             DO IION = 1, NIONI
               JION = NATMI+NMOLI+IION
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JION,JSP) = PAIOI2(IION,JSP)+
      .                      PRFAII2(IION,JSP)
+#else
+              PP(JION,JSP) = PAIOI(IION+(JSP-LB_ATM)*(NION+1),ISTRA)+
+     .                      PRFAII(IION+(JSP-LB_ATM)*(NION+1),ISTRA)
+#endif
             END DO
             DO IPHOT = 1, NPHOTI
               JPHOT = NATMI+NMOLI+NIONI+IPHOT
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JPHOT,JSP) = PAPHTI2(IPHOT,JSP)+
      .                      PRFAPHTI2(IPHOT,JSP)
+#else
+              PP(JPHOT,JSP) =
+     .            PAPHTI(IPHOT+(JSP-LB_ATM)*(NPHOT+1),ISTRA)+
+     .          PRFAPHTI(IPHOT+(JSP-LB_ATM)*(NPHOT+1),ISTRA)
+#endif
             END DO
           ELSE IF (JSP.GT.NATMI.AND.JSP.LE.NATMI+NMOLI) THEN
             JMOL = JSP-NATMI
             DO IATM = 1, NATMI
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(IATM,JSP) = PMATI2(IATM,JMOL)+
      .                      PRFMAI2(IATM,JMOL)
+#else
+              PP(IATM,JSP) = PMATI(IATM+(JMOL-LB_MOL)*(NATM+1),ISTRA)+
+     .                      PRFMAI(IATM+(JMOL-LB_MOL)*(NATM+1),ISTRA)
+#endif
             END DO
             DO IMOL = 1, NMOLI
               JMOL = NATMI+IMOL
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JMOL,JSP) = PMMLI2(IMOL,JSP-NATMI)+
      .                      PRFMMI2(IMOL,JSP-NATMI)
+#else
+              PP(JMOL,JSP) =
+     .          PMMLI(IMOL+(JSP-NATMI-LB_MOL)*(NMOL+1),ISTRA)+
+     .         PRFMMI(IMOL+(JSP-NATMI-LB_MOL)*(NMOL+1),ISTRA)
+#endif
             END DO
             JMOL = JSP-NATMI
             PP(JSP,JSP) = PP(JSP,JSP)+
      .                    POTMLI(JMOL,ISTRA)+PGENMI(JMOL,ISTRA)
             DO IION = 1, NIONI
               JION = NATMI+NMOLI+IION
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JION,JSP) = PMIOI2(IION,JMOL)+
      .                      PRFMII2(IION,JMOL)
+#else
+              PP(JION,JSP) =
+     .          PMIOI(IION+(JMOL-LB_MOL)*(NION+1),ISTRA)+
+     .         PRFMII(IION+(JMOL-LB_MOL)*(NION+1),ISTRA)
+#endif
             END DO
             DO IPHOT = 1, NPHOTI
               JPHOT = NATMI+NMOLI+NIONI+IPHOT
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JPHOT,JSP) = PMPHTI2(IPHOT,JMOL)+
      .                      PRFMPHTI2(IPHOT,JMOL)
+#else
+              PP(JPHOT,JSP) =
+     .           PMPHTI(IPHOT+(JMOL-LB_MOL)*(NPHOT+1),ISTRA)+
+     .         PRFMPHTI(IPHOT+(JMOL-LB_MOL)*(NPHOT+1),ISTRA)
+#endif
             END DO
           ELSE IF (JSP.GT.NATMI+NMOLI.AND.JSP.LE.NATMI+NMOLI+NIONI) THEN
             JION = JSP-NATMI-NMOLI
             DO IATM = 1, NATMI
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(IATM,JSP) = PIATI2(IATM,JION)+
      .                      PRFIAI2(IATM,JION)
+#else
+              PP(IATM,JSP) =
+     .          PIATI(IATM+(JION-LB_ION)*(NATM+1),ISTRA)+
+     .         PRFIAI(IATM+(JION-LB_ION)*(NATM+1),ISTRA)
+#endif
             END DO
             DO IMOL = 1, NMOLI
               JMOL = NATMI+IMOL
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JMOL,JSP) = PIMLI2(IMOL,JION)+
      .                      PRFIMI2(IMOL,JION)
+#else
+              PP(JMOL,JSP) =
+     .          PIMLI(IMOL+(JION-LB_ION)*(NMOL+1),ISTRA)+
+     .         PRFIMI(IMOL+(JION-LB_ION)*(NMOL+1),ISTRA)
+#endif
             END DO
             DO IION = 1, NIONI
               JION = NATMI+NMOLI+IION
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JION,JSP) = PIIOI2(IION,JSP-NATMI-NMOLI)+
      .                      PRFIII2(IION,JSP-NATMI-NMOLI)
+#else
+              PP(JION,JSP) =
+     .          PIIOI(IION+(JSP-NATMI-NMOLI-LB_ION)*(NION+1),ISTRA)+
+     .         PRFIII(IION+(JSP-NATMI-NMOLI-LB_ION)*(NION+1),ISTRA)
+#endif
             END DO
             JION = JSP-NATMI-NMOLI
             PP(JSP,JSP) = PP(JSP,JSP)+
      .                    POTIOI(JION,ISTRA)+PGENII(JION,ISTRA)
             DO IPHOT = 1, NPHOTI
               JPHOT = NATMI+NMOLI+NIONI+IPHOT
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JPHOT,JSP) = PIPHTI2(IPHOT,JION)+
      .                      PRFIPHTI2(IPHOT,JION)
+#else
+              PP(JPHOT,JSP) =
+     .           PIPHTI(IPHOT+(JION-LB_ION)*(NPHOT+1),ISTRA)+
+     .         PRFIPHTI(IPHOT+(JION-LB_ION)*(NPHOT+1),ISTRA)
+#endif
             END DO
           ELSE IF (JSP.GT.NATMI+NMOLI+NIONI.AND.
      .             JSP.LE.NATMI+NMOLI+NIONI+NPHOTI) THEN
             JPHOT = JSP-NATMI-NMOLI-NIONI
             DO IATM = 1, NATMI
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(IATM,JSP) = PPHATI2(IATM,JPHOT)+
      .                      PRFPHAI2(IATM,JPHOT)
+#else
+              PP(IATM,JSP) =
+     .          PPHATI(IATM+(JPHOT-LB_PHOT)*(NATM+1),ISTRA)+
+     .         PRFPHAI(IATM+(JPHOT-LB_PHOT)*(NATM+1),ISTRA)
+#endif
             END DO
             DO IMOL = 1, NMOLI
               JMOL = NATMI+IMOL
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JMOL,JSP) = PPHMLI2(IMOL,JPHOT)+
      .                      PRFPHMI2(IMOL,JPHOT)
+#else
+              PP(JMOL,JSP) =
+     .          PPHMLI(IMOL+(JPHOT-LB_PHOT)*(NMOL+1),ISTRA)+
+     .         PRFPHMI(IMOL+(JPHOT-LB_PHOT)*(NMOL+1),ISTRA)
+#endif
             END DO
             DO IION = 1, NIONI
               JION = NATMI+NMOLI+IION
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JION,JSP) = PPHIOI2(IION,JPHOT)+
      .                      PRFPHII2(IION,JPHOT)
+#else
+              PP(JION,JSP) =
+     .          PPHIOI(IION+(JPHOT-LB_PHOT)*(NION+1),ISTRA)+
+     .         PRFPHII(IION+(JPHOT-LB_PHOT)*(NION+1),ISTRA)
+#endif
             END DO
             DO IPHOT = 1, NPHOTI
               JPHOT = NATMI+NMOLI+NIONI+IPHOT
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PP(JPHOT,JSP) =
      .            PPHPHTI2(IPHOT,JSP-NATMI-NMOLI-NIONI)+
      .          PRFPHPHTI2(IPHOT,JSP-NATMI-NMOLI-NIONI)
+#else
+              PP(JPHOT,JSP) =
+     .   PPHPHTI(IPHOT+(JSP-NATMI-NMOLI-NIONI-LB_PHOT)*(NPHOT+1),ISTRA)+
+     . PRFPHPHTI(IPHOT+(JSP-NATMI-NMOLI-NIONI-LB_PHOT)*(NPHOT+1),ISTRA)
+#endif
             END DO
             JPHOT = JSP-NATMI-NMOLI-NIONI
             PP(JSP,JSP) = PP(JSP,JSP)+

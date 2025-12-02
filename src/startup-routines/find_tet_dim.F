@@ -10,12 +10,17 @@
       character(*), intent(in) :: casename
       integer :: ll, ncoor, i, id, nb1, ns1, inm1, nb2, ns2, inm2,
      .           nb3, ns3, inm3, nb4, ns4, inm4
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
       character(:), allocatable :: filename
+#else
+      character(80) :: filename
+#endif
       character(80) :: zeile
 
       LL=LEN_TRIM(CASENAME)
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
       allocate (character(ll+10) :: filename)
-
+#endif
       NTET=NR1ST
       NTETRA=MAX(NTETRA,NR1ST)
 
@@ -67,8 +72,8 @@
       END DO
 
       CLOSE (UNIT=30+ifoff)
-
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
       deallocate (filename)
-
+#endif
       return
       end subroutine eirene_find_tet_dim

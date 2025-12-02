@@ -582,6 +582,7 @@ C
 #endif
             PRFAAT(IATM,MSURF)=PRFAAT(IATM,MSURF)+WPR
             IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFAAT2(1:NATM,0:NATM) => PRFAAT(:,MSURF)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -590,6 +591,15 @@ C
               LMETSPW2(1:NATM,0:NATM) => LMETSPW(NSPZTOTWS+1:NTWS_AA)
               LMETSPW2(IATM,0) = .TRUE.
               LMETSPW2(IATM,IATM) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              PRFAAT(IATM+IATM*NATM,MSURF)=
+     .         PRFAAT(IATM+IATM*NATM,MSURF)+WPR
+              LMETSPW(NSPZTOTWS+IATM) = .TRUE.
+              LMETSPW(NSPZTOTWS+IATM+IATM*NATM) = .TRUE.
+#endif
             END IF
           ENDIF
           IF (LERFAAT .OR. LPRFAAT) LMETSPW(NSPH+IATM) =.TRUE.
@@ -606,6 +616,7 @@ C
 #endif
             PRFMML(IMOL,MSURF)=PRFMML(IMOL,MSURF)+WPR
             IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFMML2(1:NMOL,0:NMOL) => PRFMML(:,MSURF)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -614,6 +625,15 @@ C
               LMETSPW2(1:NMOL,0:NMOL) => LMETSPW(NTWS_MA+1:NTWS_MM)
               LMETSPW2(IMOL,0) = .TRUE.
               LMETSPW2(IMOL,IMOL) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              PRFMML(IMOL+IMOL*NMOL,MSURF)=
+     .         PRFMML(IMOL+IMOL*NMOL,MSURF)+WPR
+              LMETSPW(NTWS_MA+IMOL) = .TRUE.
+              LMETSPW(NTWS_MA+IMOL+IMOL*NMOL) = .TRUE.
+#endif
             END IF
           ENDIF
           IF (LERFMML .OR. LPRFMML) LMETSPW(NSPA+IMOL) =.TRUE.
@@ -630,6 +650,7 @@ C
 #endif
             PRFIIO(IION,MSURF)=PRFIIO(IION,MSURF)+WPR
             IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFIIO2(1:NION,0:NION) => PRFIIO(:,MSURF)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -638,6 +659,15 @@ C
               LMETSPW2(1:NION,0:NION) => LMETSPW(NTWS_IM+1:NTWS_II)
               LMETSPW2(IION,0) = .TRUE.
               LMETSPW2(IION,IION) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              PRFIIO(IION+IION*NION,MSURF)=
+     .         PRFIIO(IION+IION*NION,MSURF)+WPR
+              LMETSPW(NTWS_IM+IION) = .TRUE.
+              LMETSPW(NTWS_IM+IION+IION*NION) = .TRUE.
+#endif
             END IF
           ENDIF
           IF (LERFIIO .OR. LPRFIIO) LMETSPW(NSPAM+IION) =.TRUE.
@@ -654,6 +684,7 @@ C
 #endif
             PRFPHPHT(IPHOT,MSURF)=PRFPHPHT(IPHOT,MSURF)+WPR
             IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFPHPHT2(1:NPHOT,0:NPHOT) => PRFPHPHT(:,MSURF)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -662,6 +693,15 @@ C
               LMETSPW2(1:NPHOT,0:NPHOT) => LMETSPW(NTWS_PHM+1:NTWS_PHPH)
               LMETSPW2(IPHOT,0) = .TRUE.
               LMETSPW2(IPHOT,IPHOT) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              PRFPHPHT(IPHOT+IPHOT*NPHOT,MSURF)=
+     .         PRFPHPHT(IPHOT+IPHOT*NPHOT,MSURF)+WPR
+              LMETSPW(NTWS_PHM+IPHOT) = .TRUE.
+              LMETSPW(NTWS_PHM+IPHOT+IPHOT*NPHOT) = .TRUE.
+#endif
             END IF
           ENDIF
           IF (LERFPHPHT .OR. LPRFPHPHT) LMETSPW(IPHOT) =.TRUE.
@@ -680,6 +720,7 @@ C
 #endif
               PRFAAT(IATM,MSURFG)=PRFAAT(IATM,MSURFG)+WPR
               IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFAAT2(1:NATM,0:NATM) => PRFAAT(:,MSURFG)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -688,6 +729,15 @@ C
                 LMETSPW2(1:NATM,0:NATM) => LMETSPW(NSPZTOTWS+1:NTWS_AA)
                 LMETSPW2(IATM,0) = .TRUE.
                 LMETSPW2(IATM,IATM) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PRFAAT(IATM+IATM*NATM,MSURFG)=
+     .           PRFAAT(IATM+IATM*NATM,MSURFG)+WPR
+                LMETSPW(NSPZTOTWS+IATM) = .TRUE.
+                LMETSPW(NSPZTOTWS+IATM+IATM*NATM) = .TRUE.
+#endif
               END IF
             ENDIF
             IF (LERFAAT .OR. LPRFAAT) LMETSPW(NSPH+IATM) =.TRUE.
@@ -704,6 +754,7 @@ C
 #endif
               PRFMML(IMOL,MSURFG)=PRFMML(IMOL,MSURFG)+WPR
               IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFMML2(1:NMOL,0:NMOL) => PRFMML(:,MSURFG)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -712,6 +763,15 @@ C
                 LMETSPW2(1:NMOL,0:NMOL) => LMETSPW(NTWS_MA+1:NTWS_MM)
                 LMETSPW2(IMOL,0) = .TRUE.
                 LMETSPW2(IMOL,IMOL) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PRFMML(IMOL+IMOL*NMOL,MSURFG)=
+     .           PRFMML(IMOL+IMOL*NMOL,MSURFG)+WPR
+                LMETSPW(NTWS_MA+IMOL) = .TRUE.
+                LMETSPW(NTWS_MA+IMOL+IMOL*NMOL) = .TRUE.
+#endif
               END IF
             ENDIF
             IF (LERFMML .OR. LPRFMML) LMETSPW(NSPA+IMOL) =.TRUE.
@@ -728,6 +788,7 @@ C
 #endif
               PRFIIO(IION,MSURFG)=PRFIIO(IION,MSURFG)+WPR
               IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFIIO2(1:NION,0:NION) => PRFIIO(:,MSURFG)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -736,6 +797,15 @@ C
                 LMETSPW2(1:NION,0:NION) => LMETSPW(NTWS_IM+1:NTWS_II)
                 LMETSPW2(IION,0) = .TRUE.
                 LMETSPW2(IION,IION) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PRFIIO(IION+IION*NION,MSURFG)=
+     .           PRFIIO(IION+IION*NION,MSURFG)+WPR
+                LMETSPW(NTWS_IM+IION) = .TRUE.
+                LMETSPW(NTWS_IM+IION+IION*NION) = .TRUE.
+#endif
               END IF
             ENDIF
             IF (LERFIIO .OR. LPRFIIO) LMETSPW(NSPAM+IION) =.TRUE.
@@ -752,6 +822,7 @@ C
 #endif
               PRFPHPHT(IPHOT,MSURFG)=PRFPHPHT(IPHOT,MSURFG)+WPR
               IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFPHPHT2(1:NPHOT,0:NPHOT) => PRFPHPHT(:,MSURFG)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -760,6 +831,15 @@ C
                 LMETSPW2(1:NPHOT,0:NPHOT)=>LMETSPW(NTWS_PHM+1:NTWS_PHPH)
                 LMETSPW2(IPHOT,0) = .TRUE.
                 LMETSPW2(IPHOT,IPHOT) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PRFPHPHT(IPHOT+IPHOT*NPHOT,MSURFG)=
+     .           PRFPHPHT(IPHOT+IPHOT*NPHOT,MSURFG)+WPR
+                LMETSPW(NTWS_PHM+IPHOT) = .TRUE.
+                LMETSPW(NTWS_PHM+IPHOT+IPHOT*NPHOT) = .TRUE.
+#endif
               END IF
             ENDIF
             IF (LERFPHPHT .OR. LPRFPHPHT) LMETSPW(IPHOT) =.TRUE.
@@ -838,6 +918,7 @@ C
 #endif
             PRFAAT(IATM,MSURF)=PRFAAT(IATM,MSURF)+WPR
             IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFAAT2(1:NATM,0:NATM) => PRFAAT(:,MSURF)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -846,6 +927,15 @@ C
               LMETSPW2(1:NATM,0:NATM)=>LMETSPW(NSPZTOTWS+1:NTWS_AA)
               LMETSPW2(IATM,0) = .TRUE.
               LMETSPW2(IATM,IATM) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              PRFAAT(IATM+IATM*NATM,MSURF)=
+     .         PRFAAT(IATM+IATM*NATM,MSURF)+WPR
+              LMETSPW(NSPZTOTWS+IATM) = .TRUE.
+              LMETSPW(NSPZTOTWS+IATM+IATM*NATM) = .TRUE.
+#endif
             END IF
           ENDIF
           IF (LERFAAT .OR. LPRFAAT) LMETSPW(NSPH+IATM) =.TRUE.
@@ -862,6 +952,7 @@ C
 #endif
             PRFMML(IMOL,MSURF)=PRFMML(IMOL,MSURF)+WPR
             IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFMML2(1:NMOL,0:NMOL) => PRFMML(:,MSURF)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -870,6 +961,15 @@ C
               LMETSPW2(1:NMOL,0:NMOL)=>LMETSPW(NTWS_MA+1:NTWS_MM)
               LMETSPW2(IMOL,0) = .TRUE.
               LMETSPW2(IMOL,IMOL) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              PRFMML(IMOL+IMOL*NMOL,MSURF)=
+     .         PRFMML(IMOL+IMOL*NMOL,MSURF)+WPR
+              LMETSPW(NTWS_MA+IMOL) = .TRUE.
+              LMETSPW(NTWS_MA+IMOL+IMOL*NMOL) = .TRUE.
+#endif
             END IF
           ENDIF
           IF (LERFMML .OR. LPRFMML) LMETSPW(NSPA+IMOL) =.TRUE.
@@ -886,6 +986,7 @@ C
 #endif
             PRFIIO(IION,MSURF)=PRFIIO(IION,MSURF)+WPR
             IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFIIO2(1:NION,0:NION) => PRFIIO(:,MSURF)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -894,6 +995,15 @@ C
               LMETSPW2(1:NION,0:NION)=>LMETSPW(NTWS_IM+1:NTWS_II)
               LMETSPW2(IION,0) = .TRUE.
               LMETSPW2(IION,IION) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              PRFIIO(IION+IION*NION,MSURF)=
+     .         PRFIIO(IION+IION*NION,MSURF)+WPR
+              LMETSPW(NTWS_IM+IION) = .TRUE.
+              LMETSPW(NTWS_IM+IION+IION*NION) = .TRUE.
+#endif
             END IF
           ENDIF
           IF (LERFIIO .OR. LPRFIIO) LMETSPW(NSPAM+IION) =.TRUE.
@@ -910,6 +1020,7 @@ C
 #endif
             PRFPHPHT(IPHOT,MSURF)=PRFPHPHT(IPHOT,MSURF)+WPR
             IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFPHPHT2(1:NPHOT,0:NPHOT) => PRFPHPHT(:,MSURF)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -918,6 +1029,15 @@ C
               LMETSPW2(1:NPHOT,0:NPHOT)=>LMETSPW(NTWS_PHI+1:NTWS_PHPH)
               LMETSPW2(IPHOT,0) = .TRUE.
               LMETSPW2(IPHOT,IPHOT) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              PRFPHPHT(IPHOT+IPHOT*NPHOT,MSURF)=
+     .         PRFPHPHT(IPHOT+IPHOT*NPHOT,MSURF)+WPR
+              LMETSPW(NTWS_PHM+IPHOT) = .TRUE.
+              LMETSPW(NTWS_PHM+IPHOT+IPHOT*NPHOT) = .TRUE.
+#endif
             END IF
           ENDIF
           IF (LERFPHPHT .OR. LPRFPHPHT) LMETSPW(IPHOT) =.TRUE.
@@ -936,6 +1056,7 @@ C
 #endif
               PRFAAT(IATM,MSURFG)=PRFAAT(IATM,MSURFG)+WPR
               IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFAAT2(1:NATM,0:NATM) => PRFAAT(:,MSURFG)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -944,6 +1065,15 @@ C
                 LMETSPW2(1:NATM,0:NATM)=>LMETSPW(NSPZTOTWS+1:NTWS_AA)
                 LMETSPW2(IATM,0) = .TRUE.
                 LMETSPW2(IATM,IATM) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PRFAAT(IATM+IATM*NATM,MSURFG)=
+     .           PRFAAT(IATM+IATM*NATM,MSURFG)+WPR
+                LMETSPW(NSPZTOTWS+IATM) = .TRUE.
+                LMETSPW(NSPZTOTWS+IATM+IATM*NATM) = .TRUE.
+#endif
               END IF
             ENDIF
             IF (LERFAAT .OR. LPRFAAT) LMETSPW(NSPH+IATM) =.TRUE.
@@ -960,6 +1090,7 @@ C
 #endif
               PRFMML(IMOL,MSURFG)=PRFMML(IMOL,MSURFG)+WPR
               IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFMML2(1:NMOL,0:NMOL) => PRFMML(:,MSURFG)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -968,6 +1099,15 @@ C
                 LMETSPW2(1:NMOL,0:NMOL)=>LMETSPW(NTWS_MA+1:NTWS_MM)
                 LMETSPW2(IMOL,0) = .TRUE.
                 LMETSPW2(IMOL,IMOL) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PRFMML(IMOL+IMOL*NMOL,MSURFG)=
+     .           PRFMML(IMOL+IMOL*NMOL,MSURFG)+WPR
+                LMETSPW(NTWS_MA+IMOL) = .TRUE.
+                LMETSPW(NTWS_MA+IMOL+IMOL*NMOL) = .TRUE.
+#endif
               END IF
             ENDIF
             IF (LERFMML .OR. LPRFMML) LMETSPW(NSPA+IMOL) =.TRUE.
@@ -984,6 +1124,7 @@ C
 #endif
               PRFIIO(IION,MSURFG)=PRFIIO(IION,MSURFG)+WPR
               IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFIIO2(1:NION,0:NION) => PRFIIO(:,MSURFG)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -992,6 +1133,15 @@ C
                 LMETSPW2(1:NION,0:NION)=>LMETSPW(NTWS_IM+1:NTWS_II)
                 LMETSPW2(IION,0) = .TRUE.
                 LMETSPW2(IION,IION) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PRFIIO(IION+IION*NION,MSURFG)=
+     .           PRFIIO(IION+IION*NION,MSURFG)+WPR
+                LMETSPW(NTWS_IM+IION) = .TRUE.
+                LMETSPW(NTWS_IM+IION+IION*NION) = .TRUE.
+#endif
               END IF
             ENDIF
             IF (LERFIIO .OR. LPRFIIO) LMETSPW(NSPAM+IION) =.TRUE.
@@ -1008,6 +1158,7 @@ C
 #endif
               PRFPHPHT(IPHOT,MSURFG)=PRFPHPHT(IPHOT,MSURFG)+WPR
               IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PRFPHPHT2(1:NPHOT,0:NPHOT) => PRFPHPHT(:,MSURFG)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -1016,6 +1167,15 @@ C
                 LMETSPW2(1:NPHOT,0:NPHOT)=>LMETSPW(NTWS_PHI+1:NTWS_PHPH)
                 LMETSPW2(IPHOT,0) = .TRUE.
                 LMETSPW2(IPHOT,IPHOT) = .TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PRFPHPHT(IPHOT+IPHOT*NPHOT,MSURFG)=
+     .           PRFPHPHT(IPHOT+IPHOT*NPHOT,MSURFG)+WPR
+                LMETSPW(NTWS_PHM+IPHOT) = .TRUE.
+                LMETSPW(NTWS_PHM+IPHOT+IPHOT*NPHOT) = .TRUE.
+#endif
               END IF
             ENDIF
             IF (LERFPHPHT .OR. LPRFPHPHT) LMETSPW(IPHOT) =.TRUE.

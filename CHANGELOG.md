@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin - SOLPS_coupling - da55a7904870a46555587c81677292bdb8575c5c
+## X. Bonnin - SOLPS_coupling - d2a9a06a9e7ef04239ea35a8ec605e56deea89dd
 
 ### Based on SOLPS_bug_fixes - 765b12f7f7ab978e8340d215d330ec49c6c5417b
 
 ** Changes **
 
+- Added support for legacy compilers (-DLEGACYCOMP) and G95
 - Bug fix for data mapping in snowflake geometries
 - New IMPROVED MPI parallelization strategy
 - Bug fixes for time-dependent runs and ensuring we always have a filled-in background for coupled runs

@@ -19,6 +19,9 @@ C
       INTEGER, INTENT(IN) :: ISTRA
       INTEGER :: J, IATM, IMOL, IION, IPLS, IPHOT, ISPZ, IADV, ICLV,
      .           ISNV, ICPV, IBGV
+#if ( defined(G95) || defined(LEGACYCOMP) )
+      INTEGER :: JATM, JMOL, JION, JPLS, JPHOT
+#endif
 C
 C   SUM OVER SURFACE INDEX
 C   IN THE SURFACE-AVERAGED ESTIMATORS
@@ -29,36 +32,68 @@ C
           IF (ILIIN(J).LE.0) CYCLE
           IF (LPRFAML) THEN
             IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFAML2(1:NMOL,0:NATM) => PRFAML(:,J)
               PRFAMI2(0:NMOL,0:NATM) => PRFAMI(:,ISTRA)
               PRFAMI2(IMOL,:) = PRFAMI2(IMOL,:)+PRFAML2(IMOL,:)
+#else
+              DO JATM = 0, NATM
+                PRFAMI(IMOL+JATM*(NMOL+1),ISTRA) =
+     .           PRFAMI(IMOL+JATM*(NMOL+1),ISTRA) +
+     .           PRFAML(IMOL+JATM*NMOL,J)
+              END DO
+#endif
             ELSE
               PRFAMI(IMOL,ISTRA)=PRFAMI(IMOL,ISTRA)+PRFAML(IMOL,J)
             END IF
           END IF
           IF (LPRFMML) THEN
             IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFMML2(1:NMOL,0:NMOL) => PRFMML(:,J)
               PRFMMI2(0:NMOL,0:NMOL) => PRFMMI(:,ISTRA)
               PRFMMI2(IMOL,:) = PRFMMI2(IMOL,:)+PRFMML2(IMOL,:)
+#else
+              DO JMOL = 0, NMOL
+                PRFMMI(IMOL+JMOL*(NMOL+1),ISTRA) =
+     .           PRFMMI(IMOL+JMOL*(NMOL+1),ISTRA) +
+     .           PRFMML(IMOL+JMOL*NMOL,J)
+              END DO
+#endif
             ELSE
               PRFMMI(IMOL,ISTRA)=PRFMMI(IMOL,ISTRA)+PRFMML(IMOL,J)
             END IF
           END IF
           IF (LPRFIML) THEN
             IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFIML2(1:NMOL,0:NION) => PRFIML(:,J)
               PRFIMI2(0:NMOL,0:NION) => PRFIMI(:,ISTRA)
               PRFIMI2(IMOL,:) = PRFIMI2(IMOL,:)+PRFIML2(IMOL,:)
+#else
+              DO JION = 0, NION
+                PRFIMI(IMOL+JION*(NMOL+1),ISTRA) =
+     .           PRFIMI(IMOL+JION*(NMOL+1),ISTRA) +
+     .           PRFIML(IMOL+JION*NMOL,J)
+              END DO
+#endif
             ELSE
               PRFIMI(IMOL,ISTRA)=PRFIMI(IMOL,ISTRA)+PRFIML(IMOL,J)
             END IF
           END IF
           IF (LPRFPHML) THEN
             IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFPHML2(1:NMOL,0:NPHOT) => PRFPHML(:,J)
               PRFPHMI2(0:NMOL,0:NPHOT) => PRFPMI(:,ISTRA)
               PRFPHMI2(IMOL,:) = PRFPHMI2(IMOL,:)+PRFPHML2(IMOL,:)
+#else
+              DO JPHOT = 0, NPHOT
+                PRFPHMI(IMOL+JPHOT*(NMOL+1),ISTRA) =
+     .           PRFPHMI(IMOL+JPHOT*(NMOL+1),ISTRA) +
+     .           PRFPHML(IMOL+JPHOT*NMOL,J)
+              END DO
+#endif
             ELSE
               PRFPHMI(IMOL,ISTRA)=PRFPHMI(IMOL,ISTRA)+PRFPHML(IMOL,J)
             END IF
@@ -98,36 +133,68 @@ C
           IF (ILIIN(J).LE.0) CYCLE
           IF (LPRFAAT) THEN
             IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFAAT2(1:NATM,0:NATM) => PRFAAT(:,J)
               PRFAAI2(0:NATM,0:NATM) => PRFAAI(:,ISTRA)
               PRFAAI2(IATM,:) = PRFAAI2(IATM,:)+PRFAAT2(IATM,:)
+#else
+              DO JATM = 0, NATM
+                PRFAAI(IATM+JATM*(NATM+1),ISTRA) =
+     .           PRFAAI(IATM+JATM*(NATM+1),ISTRA) +
+     .           PRFAAT(IATM+JATM*NATM,J)
+              END DO
+#endif
             ELSE
               PRFAAI(IATM,ISTRA)=PRFAAI(IATM,ISTRA)+PRFAAT(IATM,J)
             END IF
           END IF
           IF (LPRFMAT) THEN
             IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFMAT2(1:NATM,0:NMOL) => PRFMAT(:,J)
               PRFMAI2(0:NATM,0:NMOL) => PRFMAI(:,ISTRA)
               PRFMAI2(IATM,:) = PRFMAI2(IATM,:)+PRFMAT2(IATM,:)
+#else
+              DO JMOL = 0, NMOL
+                PRFMAI(IATM+JMOL*(NATM+1),ISTRA) =
+     .           PRFMAI(IATM+JMOL*(NATM+1),ISTRA) +
+     .           PRFMAT(IATM+JMOL*NATM,J)
+              END DO
+#endif
             ELSE
               PRFMAI(IATM,ISTRA)=PRFMAI(IATM,ISTRA)+PRFMAT(IATM,J)
             END IF
           END IF
           IF (LPRFIAT) THEN
             IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFIAT2(1:NATM,0:NION) => PRFIAT(:,J)
               PRFIAI2(0:NATM,0:NION) => PRFIAI(:,ISTRA)
               PRFIAI2(IATM,:) = PRFIAI2(IATM,:)+PRFIAT2(IATM,:)
+#else
+              DO JION = 0, NION
+                PRFIAI(IATM+JION*(NATM+1),ISTRA) =
+     .           PRFIAI(IATM+JION*(NATM+1),ISTRA) +
+     .           PRFIAT(IATM+JION*NATM,J)
+              END DO
+#endif
             ELSE
               PRFIAI(IATM,ISTRA)=PRFIAI(IATM,ISTRA)+PRFIAT(IATM,J)
             END IF
           END IF
           IF (LPRFPHAT) THEN
             IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFPHAT2(1:NATM,0:NPHOT) => PRFPHAT(:,J)
               PRFPHAI2(0:NATM,0:NPHOT) => PRFPHAI(:,ISTRA)
               PRFPHAI2(IATM,:) = PRFPHAI2(IATM,:)+PRFPHAT2(IATM,:)
+#else
+              DO JPHOT = 0, NPHOT
+                PRFPHAI(IATM+JPHOT*(NATM+1),ISTRA) =
+     .           PRFPHAI(IATM+JPHOT*(NATM+1),ISTRA) +
+     .           PRFPHAT(IATM+JPHOT*NATM,J)
+              END DO
+#endif
             ELSE
               PRFPHAI(IATM,ISTRA)=PRFPHAI(IATM,ISTRA)+PRFPHAT(IATM,J)
             END IF
@@ -167,36 +234,68 @@ C
           IF (ILIIN(J).LE.0) CYCLE
           IF (LPRFAIO) THEN
             IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFAIO2(1:NION,0:NATM) => PRFAIO(:,J)
               PRFAII2(0:NION,0:NATM) => PRFAII(:,ISTRA)
               PRFAII2(IION,:) = PRFAII2(IION,:)+PRFAIO2(IION,:)
+#else
+              DO JATM = 0, NATM
+                PRFAII(IION+JATM*(NION+1),ISTRA) =
+     .           PRFAII(IION+JATM*(NION+1),ISTRA) +
+     .           PRFAIO(IION+JATM*NION,J)
+              END DO
+#endif
             ELSE
               PRFAII(IION,ISTRA)=PRFAII(IION,ISTRA)+PRFAIO(IION,J)
             END IF
           END IF
           IF (LPRFMIO) THEN
             IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFMIO2(1:NION,0:NMOL) => PRFMIO(:,J)
               PRFMII2(0:NION,0:NMOL) => PRFMII(:,ISTRA)
               PRFMII2(IION,:) = PRFMII2(IION,:)+PRFMIO2(IION,:)
+#else
+              DO JMOL = 0, NMOL
+                PRFMII(IION+JMOL*(NION+1),ISTRA) =
+     .           PRFMII(IION+JMOL*(NION+1),ISTRA) +
+     .           PRFMIO(IION+JMOL*NION,J)
+              END DO
+#endif
             ELSE
               PRFMII(IION,ISTRA)=PRFMII(IION,ISTRA)+PRFMIO(IION,J)
             END IF
           END IF
           IF (LPRFIIO) THEN
             IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFIIO2(1:NION,0:NION) => PRFIIO(:,J)
               PRFIII2(0:NION,0:NION) => PRFIII(:,ISTRA)
               PRFIII2(IION,:) = PRFIII2(IION,:)+PRFIIO2(IION,:)
+#else
+              DO JION = 0, NION
+                PRFIII(IION+JION*(NION+1),ISTRA) =
+     .           PRFIII(IION+JION*(NION+1),ISTRA) +
+     .           PRFIIO(IION+JION*NION,J)
+              END DO
+#endif
             ELSE
               PRFIII(IION,ISTRA)=PRFIII(IION,ISTRA)+PRFIIO(IION,J)
             END IF
           END IF
           IF (LPRFPHIO) THEN
             IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFPHIO2(1:NION,0:NPHOT) => PRFPHIO(:,J)
               PRFPHII2(0:NION,0:NPHOT) => PRFPHII(:,ISTRA)
               PRFPHII2(IION,:) = PRFPHII2(IION,:)+PRFPHIO2(IION,:)
+#else
+              DO JPHOT = 0, NPHOT
+                PRFPHII(IION+JPHOT*(NION+1),ISTRA) =
+     .           PRFPHII(IION+JPHOT*(NION+1),ISTRA) +
+     .           PRFPHIO(IION+JPHOT*NION,J)
+              END DO
+#endif
             ELSE
               PRFPHII(IION,ISTRA)=PRFPHII(IION,ISTRA)+PRFPHIO(IION,J)
             END IF
@@ -236,9 +335,17 @@ C
           IF (ILIIN(J).LE.0) CYCLE
           IF (LPRFAPHT) THEN
             IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFAPHT2(1:NPHOT,0:NATM) => PRFAPHT(:,J)
               PRFAPHTI2(0:NPHOT,0:NATM) => PRFAPHTI(:,ISTRA)
               PRFAPHTI2(IPHOT,:) = PRFAPHTI2(IPHOT,:)+PRFAPHT2(IPHOT,:)
+#else
+              DO JATM = 0, NATM
+                PRFAPHTI(IPHOT+JATM*(NPHOT+1),ISTRA) =
+     .           PRFAPHTI(IPHOT+JATM*(NPHOT+1),ISTRA) +
+     .           PRFAPHT(IPHOT+JATM*NPHOT,J)
+              END DO
+#endif
             ELSE
               PRFAPHTI(IPHOT,ISTRA)=PRFAPHTI(IPHOT,ISTRA)+
      .                              PRFAPHT(IPHOT,J)
@@ -246,9 +353,17 @@ C
           END IF
           IF (LPRFMPHT) THEN
             IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFMPHT2(1:NPHOT,0:NMOL) => PRFMPHT(:,J)
               PRFMPHTI2(0:NPHOT,0:NMOL) => PRFMPHTI(:,ISTRA)
               PRFMPHTI2(IPHOT,:) = PRFMPHTI2(IPHOT,:)+PRFMPHT2(IPHOT,:)
+#else
+              DO JMOL = 0, NMOL
+                PRFMPHTI(IPHOT+JMOL*(NPHOT+1),ISTRA) =
+     .           PRFMPHTI(IPHOT+JMOL*(NPHOT+1),ISTRA) +
+     .           PRFMPHT(IPHOT+JMOL*NPHOT,J)
+              END DO
+#endif
             ELSE
               PRFMPHTI(IPHOT,ISTRA)=PRFMPHTI(IPHOT,ISTRA)+
      .                              PRFMPHT(IPHOT,J)
@@ -256,9 +371,17 @@ C
           END IF
           IF (LPRFIPHT) THEN
             IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFIPHT2(1:NPHOT,0:NION) => PRFIPHT(:,J)
               PRFIPHTI2(0:NPHOT,0:NION) => PRFIPHTI(:,ISTRA)
               PRFIPHTI2(IPHOT,:) = PRFIPHTI2(IPHOT,:)+PRFIPHT2(IPHOT,:)
+#else
+              DO JION = 0, NION
+                PRFIPHTI(IPHOT+JION*(NPHOT+1),ISTRA) =
+     .           PRFIPHTI(IPHOT+JION*(NPHOT+1),ISTRA) +
+     .           PRFIPHT(IPHOT+JION*NPHOT,J)
+              END DO
+#endif
             ELSE
               PRFIPHTI(IPHOT,ISTRA)=PRFIPHTI(IPHOT,ISTRA)+
      .                              PRFIPHT(IPHOT,J)
@@ -266,10 +389,18 @@ C
           END IF
           IF (LPRFPHPHT) THEN
             IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PRFPHPHT2(1:NPHOT,0:NPHOT) => PRFPHPHT(:,J)
               PRFPHPHTI2(0:NPHOT,0:NPHOT) => PRFPHPHTI(:,ISTRA)
               PRFPHPHTI2(IPHOT,:) = PRFPHPHTI2(IPHOT,:)+
      .                              PRFPHPHT2(IPHOT,:)
+#else
+              DO JPHOT = 0, NPHOT
+                PRFPHPHTI(IPHOT+JPHOT*(NPHOT+1),ISTRA) =
+     .           PRFPHPHTI(IPHOT+JPHOT*(NPHOT+1),ISTRA) +
+     .           PRFPHPHT(IPHOT+JPHOT*NPHOT,J)
+              END DO
+#endif
             ELSE
               PRFPHPHTI(IPHOT,ISTRA)=PRFPHPHTI(IPHOT,ISTRA)+
      .                               PRFPHPHT(IPHOT,J)

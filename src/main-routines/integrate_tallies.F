@@ -259,6 +259,7 @@ cdr atom particle tallies
      .       WRITE (IUNOUT,*) ' PAATI ',IATM, PAATI(IATM,ISTRA)
           END IF
           IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAATI2(0:NATM,0:NATM) => PAATI(:,ISTRA)
             DO JATM=1,NATMI
               IAD=EIRENE_INDIRECT_ADDRESS(IATM,JATM,NATM)
@@ -273,6 +274,19 @@ cdr atom particle tallies
             IF (TRCSCL)
      .       WRITE (IUNOUT,*) 'SUM(1:NATMI) ',IATM,
      .                         SUM(PAATI2(IATM,1:NATMI))
+#else
+            DO JATM=1,NATMI
+              IAD=EIRENE_INDIRECT_ADDRESS(IATM,JATM,NATM)
+              DUMMY(1:NSBOX_TAL) = PAAT(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PAATI(IATM+JATM*(NATM+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PAAT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              IF (TRCSCL)
+     .         WRITE (IUNOUT,*) ' PAATI ',JATM,
+     .                            PAATI(IATM+JATM*(NATM+1),ISTRA)
+            END DO
+#endif
           END IF
         END IF
 
@@ -288,6 +302,7 @@ cdr atom particle tallies
      .       WRITE (IUNOUT,*) ' PMATI ',IATM, PMATI(IATM,ISTRA)
           END IF
           IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMATI2(0:NATM,0:NMOL) => PMATI(:,ISTRA)
             DO JMOL=1,NMOLI
               IAD=EIRENE_INDIRECT_ADDRESS(IATM,JMOL,NATM)
@@ -302,6 +317,19 @@ cdr atom particle tallies
             IF (TRCSCL)
      .       WRITE (IUNOUT,*) 'SUM(1:NMOLI) ',IATM,
      .                         SUM(PMATI2(IATM,1:NMOLI))
+#else
+            DO JMOL=1,NMOLI
+              IAD=EIRENE_INDIRECT_ADDRESS(IATM,JMOL,NATM)
+              DUMMY(1:NSBOX_TAL) = PMAT(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PMATI(IATM+JMOL*(NATM+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PMAT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+              IF (TRCSCL)
+     .         WRITE (IUNOUT,*) ' PMATI ',JMOL,
+     .                            PMATI(IATM+JMOL*(NATM+1),ISTRA)
+            END DO
+#endif
           END IF
         END IF
 
@@ -312,6 +340,7 @@ cdr atom particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PIAT(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIATI2(0:NATM,0:NION) => PIATI(:,ISTRA)
             DO JION=1,NIONI
               IAD=EIRENE_INDIRECT_ADDRESS(IATM,JION,NATM)
@@ -321,6 +350,16 @@ cdr atom particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PIAT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JION=1,NIONI
+              IAD=EIRENE_INDIRECT_ADDRESS(IATM,JION,NATM)
+              DUMMY(1:NSBOX_TAL) = PIAT(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PIATI(IATM+JION*(NATM+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PIAT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -331,6 +370,7 @@ cdr atom particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PPHAT(IATM,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHATI2(0:NATM,0:NPHOT) => PPHATI(:,ISTRA)
             DO JPHOT=1,NPHOTI
               IAD=EIRENE_INDIRECT_ADDRESS(IATM,JPHOT,NATM)
@@ -340,6 +380,16 @@ cdr atom particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PPHAT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JPHOT=1,NPHOTI
+              IAD=EIRENE_INDIRECT_ADDRESS(IATM,JPHOT,NATM)
+              DUMMY(1:NSBOX_TAL) = PPHAT(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PPHATI(IATM+JPHOT*(NATM+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PPHAT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -435,6 +485,7 @@ cdr molecule particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PAML(IMOL,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAMLI2(0:NMOL,0:NATM) => PAMLI(:,ISTRA)
             DO JATM=1,NATMI
               IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JATM,NMOL)
@@ -444,6 +495,16 @@ cdr molecule particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PAML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JATM=1,NATMI
+              IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JATM,NMOL)
+              DUMMY(1:NSBOX_TAL) = PAML(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PAMLI(IMOL+JATM*(NMOL+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PAML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -454,6 +515,7 @@ cdr molecule particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PMML(IMOL,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMMLI2(0:NMOL,0:NMOL) => PMMLI(:,ISTRA)
             DO JMOL=1,NMOLI
               IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JMOL,NMOL)
@@ -463,6 +525,16 @@ cdr molecule particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PMML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JMOL=1,NMOLI
+              IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JMOL,NMOL)
+              DUMMY(1:NSBOX_TAL) = PMML(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PMMLI(IMOL+JMOL*(NMOL+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PMML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -473,6 +545,7 @@ cdr molecule particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PIML(IMOL,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIMLI2(0:NMOL,0:NION) => PIMLI(:,ISTRA)
             DO JION=1,NIONI
               IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JION,NMOL)
@@ -482,6 +555,16 @@ cdr molecule particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PIML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JION=1,NIONI
+              IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JION,NMOL)
+              DUMMY(1:NSBOX_TAL) = PIML(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PIMLI(IMOL+JION*(NMOL+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PIML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -492,6 +575,7 @@ cdr molecule particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PPHML(IMOL,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHMLI2(0:NMOL,0:NPHOT) => PPHMLI(:,ISTRA)
             DO JPHOT=1,NPHOTI
               IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JPHOT,NMOL)
@@ -501,6 +585,16 @@ cdr molecule particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PPHML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JPHOT=1,NPHOTI
+              IAD=EIRENE_INDIRECT_ADDRESS(IMOL,JPHOT,NMOL)
+              DUMMY(1:NSBOX_TAL) = PPHML(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PPHMLI(IMOL+JPHOT*(NMOL+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PPHML(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -596,6 +690,7 @@ cdr test ion particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PAIO(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAIOI2(0:NION,0:NATM) => PAIOI(:,ISTRA)
             DO JATM=1,NATMI
               IAD=EIRENE_INDIRECT_ADDRESS(IION,JATM,NION)
@@ -605,6 +700,16 @@ cdr test ion particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PAIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JATM=1,NATMI
+              IAD=EIRENE_INDIRECT_ADDRESS(IION,JATM,NION)
+              DUMMY(1:NSBOX_TAL) = PAIO(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PAIOI(IION+JATM*(NION+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PAIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -615,6 +720,7 @@ cdr test ion particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PMIO(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMIOI2(0:NION,0:NMOL) => PMIOI(:,ISTRA)
             DO JMOL=1,NMOLI
               IAD=EIRENE_INDIRECT_ADDRESS(IION,JMOL,NION)
@@ -624,6 +730,16 @@ cdr test ion particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PMIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JMOL=1,NMOLI
+              IAD=EIRENE_INDIRECT_ADDRESS(IION,JMOL,NION)
+              DUMMY(1:NSBOX_TAL) = PMIO(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PMIOI(IION+JMOL*(NION+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PMIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -634,6 +750,7 @@ cdr test ion particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PIIO(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIIOI2(0:NION,0:NION) => PIIOI(:,ISTRA)
             DO JION=1,NIONI
               IAD=EIRENE_INDIRECT_ADDRESS(IION,JION,NION)
@@ -643,6 +760,16 @@ cdr test ion particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PIIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JION=1,NIONI
+              IAD=EIRENE_INDIRECT_ADDRESS(IION,JION,NION)
+              DUMMY(1:NSBOX_TAL) = PIIO(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PIIOI(IION+JION*(NION+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PIIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -653,6 +780,7 @@ cdr test ion particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PPHIO(IION,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHIOI2(0:NION,0:NPHOT) => PPHIOI(:,ISTRA)
             DO JPHOT=1,NPHOTI
               IAD=EIRENE_INDIRECT_ADDRESS(IION,JPHOT,NION)
@@ -662,6 +790,16 @@ cdr test ion particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PPHIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JPHOT=1,NPHOTI
+              IAD=EIRENE_INDIRECT_ADDRESS(IION,JPHOT,NION)
+              DUMMY(1:NSBOX_TAL) = PPHIO(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PPHIOI(IION+JPHOT*(NION+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PPHIO(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -757,6 +895,7 @@ cdr  photon particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PAPHT(IPHOT,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAPHTI2(0:NPHOT,0:NATM) => PAPHTI(:,ISTRA)
             DO JATM=1,NATMI
               IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JATM,NPHOT)
@@ -766,6 +905,16 @@ cdr  photon particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PAPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JATM=1,NATMI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JATM,NPHOT)
+              DUMMY(1:NSBOX_TAL) = PAPHT(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PAPHTI(IPHOT+JATM*(NPHOT+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PAPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -776,6 +925,7 @@ cdr  photon particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PMPHT(IPHOT,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMPHTI2(0:NPHOT,0:NMOL) => PMPHTI(:,ISTRA)
             DO JMOL=1,NMOLI
               IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JMOL,NPHOT)
@@ -785,6 +935,16 @@ cdr  photon particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PMPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JMOL=1,NMOLI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JMOL,NPHOT)
+              DUMMY(1:NSBOX_TAL) = PMPHT(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PMPHTI(IPHOT+JMOL*(NPHOT+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PMPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -795,6 +955,7 @@ cdr  photon particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PIPHT(IPHOT,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIPHTI2(0:NPHOT,0:NION) => PIPHTI(:,ISTRA)
             DO JION=1,NIONI
               IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JION,NPHOT)
@@ -804,6 +965,16 @@ cdr  photon particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PIPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JION=1,NIONI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JION,NPHOT)
+              DUMMY(1:NSBOX_TAL) = PIPHT(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PIPHTI(IPHOT+JION*(NPHOT+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PIPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -814,6 +985,7 @@ cdr  photon particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PPHPHT(IPHOT,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHPHTI2(0:NPHOT,0:NPHOT) => PPHPHTI(:,ISTRA)
             DO JPHOT=1,NPHOTI
               IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JPHOT,NPHOT)
@@ -823,6 +995,16 @@ cdr  photon particle tallies
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PPHPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JPHOT=1,NPHOTI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPHOT,JPHOT,NPHOT)
+              DUMMY(1:NSBOX_TAL) = PPHPHT(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PPHPHTI(IPHOT+JPHOT*(NPHOT+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PPHPHT(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -895,6 +1077,7 @@ cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PAPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PAPLI2(0:NPLS,0:NATM) => PAPLI(:,ISTRA)
             DO JATM=1,NATMI
               IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JATM,NPLS)
@@ -904,6 +1087,16 @@ cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PAPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JATM=1,NATMI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JATM,NPLS)
+              DUMMY(1:NSBOX_TAL) = PAPL(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PAPLI(IPLS+JATM*(NPLS+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PAPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -922,6 +1115,7 @@ cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PMPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PMPLI2(0:NPLS,0:NMOL) => PMPLI(:,ISTRA)
             DO JMOL=1,NMOLI
               IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JMOL,NPLS)
@@ -931,6 +1125,16 @@ cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PMPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JMOL=1,NMOLI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JMOL,NPLS)
+              DUMMY(1:NSBOX_TAL) = PMPL(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PMPLI(IPLS+JMOL*(NPLS+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PMPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 
@@ -949,6 +1153,7 @@ cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PIPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PIPLI2(0:NPLS,0:NION) => PIPLI(:,ISTRA)
             DO JION=1,NIONI
               IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JION,NPLS)
@@ -958,6 +1163,16 @@ cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PIPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JION=1,NIONI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JION,NPLS)
+              DUMMY(1:NSBOX_TAL) = PIPL(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PIPLI(IPLS+JION*(NPLS+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PIPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
          END IF
 
@@ -976,6 +1191,7 @@ cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
           PPHPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
           IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
             PPHPLI2(0:NPLS,0:NPHOT) => PPHPLI(:,ISTRA)
             DO JPHOT=1,NPHOTI
               IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JPHOT,NPLS)
@@ -985,6 +1201,16 @@ cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
      .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
               PPHPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
             END DO
+#else
+            DO JPHOT=1,NPHOTI
+              IAD=EIRENE_INDIRECT_ADDRESS(IPLS,JPHOT,NPLS)
+              DUMMY(1:NSBOX_TAL) = PPHPL(IAD,1:NSBOX_TAL)
+              CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                   PPHPLI(IPLS+JPHOT*(NPLS+1),ISTRA),
+     .                   NR1TAL,NP2TAL,NT3TAL,NBMLT)
+              PPHPL(IAD,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+            END DO
+#endif
           END IF
         END IF
 

@@ -3979,8 +3979,14 @@ C  PARTICLE SOURCE: SPLIT FOR MULTIPLE IPLS SPECIES
             IN=CPMUL%ICM
             PAPL(IPLS,IN)=CPMUL%VALUEM
             IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PAPL2(1:NPLS,0:NATM) => PAPL(:,IN)
               PAPL2(IPLS,1:NATMI) = CPMUL%VALUAM(1:NATMI)
+#else
+              DO JATM = 1, NATMI
+                PAPL(IPLS+JATM*NPLS,IN) = CPMUL%VALUAM(JATM)
+              END DO
+#endif
             END IF
             CPMUL => CPMUL%NXTMUL
           ENDDO
@@ -4022,8 +4028,12 @@ cdr for particle source, from atoms
             IF (LPAPL) THEN
               PAPL(JPLS,IN)=PAPL(JPLS,IN)+CHP
               IF (NLSPCSCL_ATM) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PAPL2(1:NPLS,0:NATM) => PAPL(:,IN)
                 PAPL2(JPLS,IATM)=PAPL2(JPLS,IATM)+CHP
+#else
+                PAPL(JPLS+IATM*NPLS,IN)=PAPL(JPLS+IATM*NPLS,IN)+CHP
+#endif
               END IF
             END IF
             CHPM(JPLS,IN)=CHPM(JPLS,IN)+CHP
@@ -4068,8 +4078,14 @@ cdr for particle source, from test ions
             IN=CPMUL%ICM
             PIPL(IPLS,IN)=CPMUL%VALUEM
             IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PIPL2(1:NPLS,0:NION) => PIPL(:,IN)
               PIPL2(IPLS,1:NIONI)=CPMUL%VALUIM(1:NIONI)
+#else
+              DO JION = 1, NIONI
+                PIPL(IPLS+JION*NPLS,IN) = CPMUL%VALUIM(JION)
+              END DO
+#endif
             END IF
             CPMUL => CPMUL%NXTMUL
           ENDDO
@@ -4111,8 +4127,12 @@ cdr for particle source, from test ions
             IF (LPIPL) THEN
               PIPL(JPLS,IN)=PIPL(JPLS,IN)+CHP
               IF (NLSPCSCL_ION) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PIPL2(1:NPLS,0:NION) => PIPL(:,IN)
                 PIPL2(JPLS,IION)=PIPL2(JPLS,IION)+CHP
+#else
+                PIPL(JPLS+IION*NPLS,IN)=PIPL(JPLS+IION*NPLS,IN)+CHP
+#endif
               END IF
             END IF
             CHPM(JPLS,IN)=CHPM(JPLS,IN)+CHP
@@ -4147,8 +4167,14 @@ C
             IN=CPMUL%ICM
             PMPL(IPLS,IN)=CPMUL%VALUEM
             IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PMPL2(1:NPLS,0:NMOL) => PMPL(:,IN)
               PMPL2(IPLS,1:NMOLI)=CPMUL%VALUMM(1:NMOLI)
+#else
+              DO JMOL = 1, NMOLI
+                PMPL(IPLS+JMOL*NPLS,IN) = CPMUL%VALUMM(JMOL)
+              END DO
+#endif
             END IF
             CPMUL => CPMUL%NXTMUL
           ENDDO
@@ -4188,8 +4214,12 @@ cdr for particle source, from molecules
             IF (LPMPL) THEN
               PMPL(JPLS,IN)=PMPL(JPLS,IN)+CHP
               IF (NLSPCSCL_MOL) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PMPL2(1:NPLS,0:NMOL) => PMPL(:,IN)
                 PMPL2(JPLS,IMOL)=PMPL2(JPLS,IMOL)+CHP
+#else
+                PMPL(JPLS+IMOL*NPLS,IN)=PMPL(JPLS+IMOL*NPLS,IN)+CHP
+#endif
               END IF
             END IF
             CHPM(JPLS,IN)=CHPM(JPLS,IN)+CHP

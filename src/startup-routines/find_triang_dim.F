@@ -11,7 +11,11 @@
       character(*), intent(in) :: casename
       integer :: ll, nrknot, i, id, nb1, ns1, inm1, nb2, ns2, inm2,
      .           nb3, ns3, inm3, iunco, iunel, iunng
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
       character(:), allocatable :: filename
+#else
+      character*80 :: filename
+#endif
       character(80) :: zeile
 
       LL=LEN_TRIM(CASENAME)
@@ -19,8 +23,9 @@
       NTRI=MAX(NTRI,NR1ST)
 
       if (ll > 0) then
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
         allocate (character(ll+10) :: filename)
-
+#endif
         FILENAME=CASENAME(1:LL) // '.npco_char'
         IUNCO = -9999
         CALL EIRENE_OPENFILE (iunco,FILE=FILENAME,ACCESS='SEQUENTIAL',
@@ -78,8 +83,8 @@
       END DO
 
       CLOSE (UNIT=IUNNG)
-
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
       if (allocated(filename)) deallocate (filename)
-
+#endif
       return
       end subroutine eirene_find_triang_dim

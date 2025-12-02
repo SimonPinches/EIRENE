@@ -200,6 +200,7 @@ cdr This perfectly cancels the source rate. This is an "idle" Monte Carlo partic
 #endif
               PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WEIGHT
               IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -208,6 +209,15 @@ cdr This perfectly cancels the source rate. This is an "idle" Monte Carlo partic
                 LMETSP2(1:NPHOT,0:NPHOT) => LMETSP(NTS_IPH+1:NTS_PHPH)
                 LMETSP2(IPHOT,0)=.TRUE.
                 LMETSP2(IPHOT,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PPHPHT(IPHOT+IPHOT*NPHOT,IRD) =
+     .           PPHPHT(IPHOT+IPHOT*NPHOT,IRD)-WEIGHT
+                LMETSP(NTS_IPH+IPHOT)=.TRUE.
+                LMETSP(NTS_IPH+IPHOT+IPHOT*NPHOT)=.TRUE.
+#endif
               END IF
             ENDIF
             IF (LEPHPHT) THEN
@@ -229,6 +239,7 @@ cdr This perfectly cancels the source rate. This is an "idle" Monte Carlo partic
 #endif
             PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)-WTRSIG
             IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
               PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -237,6 +248,15 @@ cdr This perfectly cancels the source rate. This is an "idle" Monte Carlo partic
               LMETSP2(1:NPHOT,0:NPHOT) => LMETSP(NTS_IPH+1:NTS_PHPH)
               LMETSP2(IPHOT,0)=.TRUE.
               LMETSP2(IPHOT,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+              PPHPHT(IPHOT+IPHOT*NPHOT,IRD) =
+     .         PPHPHT(IPHOT+IPHOT*NPHOT,IRD)-WTRSIG
+              LMETSP(NTS_IPH+IPHOT)=.TRUE.
+              LMETSP(NTS_IPH+IPHOT+IPHOT*NPHOT)=.TRUE.
+#endif
             END IF
           ENDIF
           IF (LEPHPHT) THEN
@@ -273,6 +293,7 @@ C
 #endif
               PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG
               IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -281,6 +302,15 @@ C
                 LMETSP2(1:NPHOT,0:NPHOT) => LMETSP(NTS_IPH+1:NTS_PHPH)
                 LMETSP2(IPHOT,0)=.TRUE.
                 LMETSP2(IPHOT,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PPHPHT(IPHOT+IPHOT*NPHOT,IRD) =
+     .           PPHPHT(IPHOT+IPHOT*NPHOT,IRD)+WTRSIG
+                LMETSP(NTS_IPH+IPHOT)=.TRUE.
+                LMETSP(NTS_IPH+IPHOT+IPHOT*NPHOT)=.TRUE.
+#endif
               END IF
             ENDIF
 cdr         if(updf==1) PPHPHT(IPHOT,IRD)=PPHPHT(IPHOT,IRD)+WTRSIG !prob. wrong
@@ -296,6 +326,7 @@ cdr  do this check in initialisation, only once
 #endif
               PPHPL(IPLS,IRD)=PPHPL(IPLS,IRD)-WTRSIG
               IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                 PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -304,6 +335,15 @@ cdr  do this check in initialisation, only once
                 LMETSP2(1:NPLS,0:NPHOT) => LMETSP(NTS_PHPH+1:NTS_PPH)
                 LMETSP2(IPLS,0)=.TRUE.
                 LMETSP2(IPLS,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                PPHPL(IPLS+IPHOT*NPLS,IRD) =
+     .           PPHPL(IPLS+IPHOT*NPLS,IRD)-WTRSIG
+                LMETSP(NTS_PHPH+IPLS)=.TRUE.
+                LMETSP(NTS_PHPH+IPLS+IPHOT*NPLS)=.TRUE.
+#endif
               END IF
               LMETSP(NSPAMI+IPLS)=.TRUE.
             END IF
@@ -324,6 +364,7 @@ C  FIRST SECONDARY:
 #endif
                   PPHAT(IAT1,IRD)= PPHAT(IAT1,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                     PPHAT2(1:NATM,0:NPHOT) => PPHAT(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -332,6 +373,15 @@ C  FIRST SECONDARY:
                     LMETSP2(1:NATM,0:NPHOT) => LMETSP(NTS_PI+1:NTS_APH)
                     LMETSP2(IAT1,0)=.TRUE.
                     LMETSP2(IAT1,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                    PPHAT(IAT1+IPHOT*NATM,IRD) =
+     .               PPHAT(IAT1+IPHOT*NATM,IRD)+WTRSIG*INUM
+                    LMETSP(NTS_PI+IAT1)=.TRUE.
+                    LMETSP(NTS_PI+IAT1+IPHOT*NATM)=.TRUE.
+#endif
                   END IF
                   LMETSP(NSPH+IAT1)=.TRUE.
                 END IF
@@ -345,6 +395,7 @@ C  FIRST SECONDARY:
 #endif
                   PPHML(IML1,IRD)= PPHML(IML1,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                     PPHML2(1:NMOL,0:NPHOT) => PPHML(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -353,6 +404,15 @@ C  FIRST SECONDARY:
                     LMETSP2(1:NMOL,0:NPHOT) => LMETSP(NTS_APH+1:NTS_MPH)
                     LMETSP2(IML1,0)=.TRUE.
                     LMETSP2(IML1,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                    PPHML(IML1+IPHOT*NMOL,IRD) =
+     .               PPHML(IML1+IPHOT*NMOL,IRD)+WTRSIG*INUM
+                    LMETSP(NTS_APH+IML1)=.TRUE.
+                    LMETSP(NTS_APH+IML1+IPHOT*NMOL)=.TRUE.
+#endif
                   END IF
                   LMETSP(NSPA+IML1)=.TRUE.
                 END IF
@@ -366,6 +426,7 @@ C  FIRST SECONDARY:
 #endif
                   PPHIO(IIO1,IRD)= PPHIO(IIO1,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                     PPHIO2(1:NION,0:NPHOT) => PPHIO(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -374,6 +435,15 @@ C  FIRST SECONDARY:
                     LMETSP2(1:NION,0:NPHOT) => LMETSP(NTS_MPH+1:NTS_IPH)
                     LMETSP2(IIO1,0)=.TRUE.
                     LMETSP2(IIO1,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                    PPHIO(IIO1+IPHOT*NION,IRD) =
+     .               PPHIO(IIO1+IPHOT*NION,IRD)+WTRSIG*INUM
+                    LMETSP(NTS_MPH+IIO1)=.TRUE.
+                    LMETSP(NTS_MPH+IIO1+IPHOT*NION)=.TRUE.
+#endif
                   END IF
                   LMETSP(NSPAM+IIO1)=.TRUE.
                 END IF
@@ -388,6 +458,7 @@ C               INUM=PHV_N1STOTPH(iphot,IRPH,3)
 #endif
                   PPHPL(IPL1,IRD)= PPHPL(IPL1,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                     PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -396,6 +467,15 @@ C               INUM=PHV_N1STOTPH(iphot,IRPH,3)
                     LMETSP2(1:NPLS,0:NPHOT)=>LMETSP(NTS_PHPH+1:NTS_PPH)
                     LMETSP2(IPL1,0)=.TRUE.
                     LMETSP2(IPL1,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                    PPHPL(IPL1+IPHOT*NPLS,IRD) =
+     .               PPHPL(IPL1+IPHOT*NPLS,IRD)+WTRSIG*INUM
+                    LMETSP(NTS_PHPH+IPL1)=.TRUE.
+                    LMETSP(NTS_PHPH+IPL1+IPHOT*NPLS)=.TRUE.
+#endif
                   END IF
 csw added updf check (stim.em)
 cdr: not ready
@@ -418,6 +498,7 @@ cdr  test iph1 > 0 only once, in initialisation. here: removed
 #endif
                     PPHPHT(iph1,ird)=PPHPHT(iph1,ird)+wtrsig*inum
                     IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                       PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -428,6 +509,15 @@ cdr  test iph1 > 0 only once, in initialisation. here: removed
      .                       LMETSP(NTS_IPH+1:NTS_PHPH)
                       LMETSP2(IPH1,0)=.TRUE.
                       LMETSP2(IPH1,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                    PPHPHT(IPH1+IPHOT*NPHOT,IRD) =
+     .               PPHPHT(IPH1+IPHOT*NPHOT,IRD)+WTRSIG*INUM
+                    LMETSP(NTS_IPH+IPH1)=.TRUE.
+                    LMETSP(NTS_IPH+IPH1+IPHOT*NPHOT)=.TRUE.
+#endif
                     END IF
                     LMETSP(IPH1)=.TRUE.
                   END IF
@@ -448,6 +538,7 @@ C  SECOND SECONDARY:
 #endif
                   PPHAT(IAT2,IRD)= PPHAT(IAT2,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                     PPHAT2(1:NATM,0:NPHOT) => PPHAT(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -456,6 +547,15 @@ C  SECOND SECONDARY:
                     LMETSP2(1:NATM,0:NPHOT)=>LMETSP(NTS_PI+1:NTS_APH)
                     LMETSP2(IAT2,0)=.TRUE.
                     LMETSP2(IAT2,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                    PPHAT(IAT2+IPHOT*NATM,IRD) =
+     .               PPHAT(IAT2+IPHOT*NATM,IRD)+WTRSIG*INUM
+                    LMETSP(NTS_PI+IAT2)=.TRUE.
+                    LMETSP(NTS_PI+IAT2+IPHOT*NATM)=.TRUE.
+#endif
                   END IF
                   LMETSP(NSPH+IAT2)=.TRUE.
                 END IF
@@ -469,6 +569,7 @@ C  SECOND SECONDARY:
 #endif
                   PPHML(IML2,IRD)= PPHML(IML2,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                     PPHML2(1:NMOL,0:NPHOT) => PPHML(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -477,6 +578,15 @@ C  SECOND SECONDARY:
                     LMETSP2(1:NMOL,0:NPHOT)=>LMETSP(NTS_APH+1:NTS_MPH)
                     LMETSP2(IML2,0)=.TRUE.
                     LMETSP2(IML2,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                    PPHML(IML2+IPHOT*NMOL,IRD) =
+     .               PPHML(IML2+IPHOT*NMOL,IRD)+WTRSIG*INUM
+                    LMETSP(NTS_APH+IML2)=.TRUE.
+                    LMETSP(NTS_APH+IML2+IPHOT*NMOL)=.TRUE.
+#endif
                   END IF
                   LMETSP(NSPA+IML2)=.TRUE.
                 END IF
@@ -490,6 +600,7 @@ C  SECOND SECONDARY:
 #endif
                   PPHIO(IIO2,IRD)= PPHIO(IIO2,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                     PPHIO2(1:NION,0:NPHOT) => PPHIO(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -498,6 +609,15 @@ C  SECOND SECONDARY:
                     LMETSP2(1:NION,0:NPHOT)=>LMETSP(NTS_MPH+1:NTS_IPH)
                     LMETSP2(IIO2,0)=.TRUE.
                     LMETSP2(IIO2,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                    PPHIO(IIO2+IPHOT*NION,IRD) =
+     .               PPHIO(IIO2+IPHOT*NION,IRD)+WTRSIG*INUM
+                    LMETSP(NTS_MPH+IIO2)=.TRUE.
+                    LMETSP(NTS_MPH+IIO2+IPHOT*NION)=.TRUE.
+#endif
                   END IF
                   LMETSP(NSPAM+IIO2)=.TRUE.
                 END IF
@@ -512,6 +632,7 @@ C               INUM=PHV_N2NDOTPH(iphot,IRPH,3)
 #endif
                   PPHPL(IPL2,IRD)= PPHPL(IPL2,IRD)+WTRSIG*INUM
                   IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                     PPHPL2(1:NPLS,0:NPHOT) => PPHPL(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -520,6 +641,15 @@ C               INUM=PHV_N2NDOTPH(iphot,IRPH,3)
                     LMETSP2(1:NPLS,0:NPHOT)=>LMETSP(NTS_PHPH+1:NTS_PPH)
                     LMETSP2(IPL2,0)=.TRUE.
                     LMETSP2(IPL2,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                    PPHPL(IPL2+IPHOT*NPLS,IRD) =
+     .               PPHPL(IPL2+IPHOT*NPLS,IRD)+WTRSIG*INUM
+                    LMETSP(NTS_PHPH+IPL2)=.TRUE.
+                    LMETSP(NTS_PHPH+IPL2+IPHOT*NPLS)=.TRUE.
+#endif
                   END IF
 csw added updf check (stim.em)
 cdr  stim emission: am besten: 2 secondaries in group 2.
@@ -541,6 +671,7 @@ cdr test iph2 > 0 removed, to be done only once in initialisation
 #endif
                     PPHPHT(iph2,ird)=PPHPHT(iph2,ird)+wtrsig*inum
                     IF (NLSPCSCL_PHOT) THEN
+#if ( !defined(G95) && !defined(LEGACYCOMP) )
                       PPHPHT2(1:NPHOT,0:NPHOT) => PPHPHT(:,IRD)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -551,6 +682,15 @@ cdr test iph2 > 0 removed, to be done only once in initialisation
      .                       LMETSP(NTS_IPH+1:NTS_PHPH)
                       LMETSP2(IPH2,0)=.TRUE.
                       LMETSP2(IPH2,IPHOT)=.TRUE.
+#else
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
+                      PPHPHT(IPH2+IPHOT*NPHOT,IRD) =
+     .                 PPHPHT(IPH2+IPHOT*NPHOT,IRD)+WTRSIG*INUM
+                      LMETSP(NTS_IPH+IPH2)=.TRUE.
+                      LMETSP(NTS_IPH+IPH2+IPHOT*NPHOT)=.TRUE.
+#endif
                     END IF
                     LMETSP(iph2)=.true.
                   END IF
