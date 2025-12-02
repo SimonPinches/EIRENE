@@ -130,21 +130,33 @@ cdr do these things ever get deallocated again?
         ENDIF
       END IF
 
+cdr  Now we have: NFLA_VIRT virtual background species.
+cdr  It is so far not guaranteed that all of them
+cdr  fall into the range of npls_fix+1,npls, for which
+cdr  we saved the (virtual) background parameters.
+
 cdr  Next: write atomic/molecular data set in MODUSR, for collision processes
 cdr        involving the npls_fix+1:npls virtual background species
 cdr        and their possible dependencies on parameters distinct from PLSTLS.
-cdr        There are NFLA_VIRT such data arrays.
+cdr        There are NFLA_VIRT such data arrays for the field particle parameters
+cdr        and NREA_VIRT reaction data.
 cdr  All other A&M data will be recomputed in SETAMD.f
 
 c  nfla_virt is not a pointer to some target
 
-      IF(NFLA_VIRT == 0) THEN
+      IF(NFLA_VIRT == 0 .and. NREA_VIRT == 0) THEN
         WRITE(iunout,'(1x,4a)')
-     w         ' WRPLAM_SHRT: NFLA_VIRT = 0 ',
+     w         ' WRPLAM_SHRT: NFLA_VIRT = 0 AND NREA_VIRT = 0 ',
      w         'NO ITERATION DATA WILL BE STORED ON ', FORT, '13'
 
         CLOSE (UNIT=13+ifoff)
         RETURN
+      ELSE
+
+        WRITE(iunout,'(1A,2i6)')
+     w         ' WRPLAM_SHRT: NFLA_VIRT, NREA_VIRT = ',
+     w          nfla_virt,nrea_virt
+
       END IF
 
 cdr  now we have: NFLA_VIRT

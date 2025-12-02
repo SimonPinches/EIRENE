@@ -142,6 +142,7 @@ c   LGVAC(...,0)     : background vacuum flag
       REAL(DP) :: tpb1, tpb2
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
      .                         BASE_DENSITY(:), BASE_TEMP(:),
+     .                         BASE_VELOC(:,:),
      .                         TALLY(:)
       INTEGER :: IR, IN, IP, IPM, IPLS, IOLD, IRE,
      .           I, J, IAIN, ISPZ,
@@ -260,8 +261,9 @@ cdr         itold=?                         ! type
 
             ALLOCATE (BASE_DENSITY(NRAD))
             ALLOCATE (BASE_TEMP(NRAD))
+            ALLOCATE (BASE_VELOC(3,NRAD))
 
-            CALL EIRENE_GET_BASE_DENSITY(1)
+            CALL EIRENE_GET_BASE_PARAMETERS(1)
 
             DIIN(IPLS,1:NSBOX)=MAX(DVAC,BASE_DENSITY(1:NSBOX))
 
@@ -279,6 +281,7 @@ cdr ???     ELSE
 
             DEALLOCATE (BASE_DENSITY)
             DEALLOCATE (BASE_TEMP)
+            DEALLOCATE (BASE_VELOC)
 
             IF ((ICALL > 0) .AND. (NBACK_SPEC > 0)) THEN
               FOUND = .TRUE.
@@ -320,8 +323,9 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
 
             ALLOCATE (BASE_DENSITY(NRAD))
             ALLOCATE (BASE_TEMP(NRAD))
+            ALLOCATE (BASE_VELOC(3,NRAD))
 
-            CALL EIRENE_GET_BASE_DENSITY(1)
+            CALL EIRENE_GET_BASE_PARAMETERS(1)
 
             DO IR=1,NSBOX
               IF (NLMLTI) TIIN(IPLSTI,IR)=MAX(TVAC,BASE_TEMP(IR)*
@@ -337,6 +341,7 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
 
             DEALLOCATE (BASE_DENSITY)
             DEALLOCATE (BASE_TEMP)
+            DEALLOCATE (BASE_VELOC)
 
           CASE ('BOLTZMANN')
             IOLD=TDMPAR(IPLS)%TDM%ISP(1)
@@ -345,8 +350,9 @@ c           ITOLD=TDMPAR(IPLS)%TDM%ITP(1) =4,  hard-wired
 
             ALLOCATE (BASE_DENSITY(NRAD))
             ALLOCATE (BASE_TEMP(NRAD))
+            ALLOCATE (BASE_VELOC(3,NRAD))
 
-            CALL EIRENE_GET_BASE_DENSITY(1)
+            CALL EIRENE_GET_BASE_PARAMETERS(1)
 
             IF (NLMLTI) THEN
               TIIN(IPLSTI,:)=BASE_TEMP(:)
@@ -386,6 +392,7 @@ CDR  ??
             ENDDO
             DEALLOCATE (BASE_DENSITY)
             DEALLOCATE (BASE_TEMP)
+            DEALLOCATE (BASE_VELOC)
 
           CASE ('PLANCK')
 cdr  use planck function, grey body: const. emissivity factor
@@ -393,7 +400,11 @@ cdr  and set "grey" photon density here
             IOLD=TDMPAR(IPLS)%TDM%ISP(1)
             IOLDTI=MPLSTI(IOLD)
 
+            ALLOCATE (BASE_DENSITY(NRAD))
             ALLOCATE (BASE_TEMP(NRAD))
+            ALLOCATE (BASE_VELOC(3,NRAD))
+
+            CALL EIRENE_GET_BASE_PARAMETERS(1)
 
             IF (NLMLTI) TIIN(IPLSTI,:)=BASE_TEMP(:)
 
@@ -402,7 +413,9 @@ cdr  and set "grey" photon density here
             DO IR=1,NSBOX
             ENDDO
 
+            DEALLOCATE (BASE_DENSITY)
             DEALLOCATE (BASE_TEMP)
+            DEALLOCATE (BASE_VELOC)
 c         CASE DEFAULT
 c
         END SELECT
@@ -457,6 +470,7 @@ C   COLRAD
 C
       ALLOCATE (BASE_DENSITY(NRAD))
       ALLOCATE (BASE_TEMP(NRAD))
+      ALLOCATE (BASE_VELOC(3,NRAD))
 
       DO JPLS=1,NPLSI
         IPLS=JPLS
@@ -486,7 +500,7 @@ cdr  The balance: n_iold * gain  = n_ipls * loss  provides density n_ipls
           IOLDTI=MPLSTI(IOLD)
           IOLDV=MPLSV(IOLD)
 
-          CALL EIRENE_GET_BASE_DENSITY(1)
+          CALL EIRENE_GET_BASE_PARAMETERS(1)
 
           IF (NLMLTI) TIIN(IPLSTI,:)=BASE_TEMP(:)
 cdr  why not: =TIIN(IOLDTI,:) ?
@@ -577,7 +591,7 @@ c  sum up contributions coupled to one or more (NRE) base-species
             IOLDTI=MPLSTI(IOLD)
             IOLDV=MPLSV(IOLD)
 c           write (iunout,*) 'test colrad ',iold,ioldti,ioldv
-            CALL EIRENE_GET_BASE_DENSITY(IRE)
+            CALL EIRENE_GET_BASE_PARAMETERS(IRE)
 
 c  temperature and density dependence in reduced population coefficient
 cdr  Jan 2019: generalized from SELECT CASE (ISW): AMJUEL H.11, H.12
@@ -681,6 +695,7 @@ c .................................................................colrad done
       END IF
       DEALLOCATE (BASE_DENSITY)
       DEALLOCATE (BASE_TEMP)
+      DEALLOCATE (BASE_VELOC)
 
       NBACK_SPEC = IBS
 
@@ -1003,13 +1018,13 @@ cdr         and particle density, ignoring flow velocities.
 cdr Also called with ICALL=0, then uses background field tallies,
 cdr e.g., for COLRAD model with coupling to continuum.
 
-      SUBROUTINE EIRENE_GET_BASE_DENSITY(IRE)
+      SUBROUTINE EIRENE_GET_BASE_PARAMETERS(IRE)
 c  input: ire: number of density that contributes to the
 c              evaluation of the expression for the selected species
 c              ipls with special density/temperature option
 c         ipls:
 c         icall:
-c  output: base_density, base_temp (missing: base_drift?)
+c  output: base_density, base_temp (missing: base_veloc)
 c
       INTEGER, INTENT(IN) :: IRE
       INTEGER :: IG, IT, ISTRA, ITYP
@@ -1017,6 +1032,7 @@ c
 
       BASE_DENSITY = 0._DP
       BASE_TEMP = 0._DP
+      BASE_VELOC = 0._DP
 
 cdr fix ph1: moved here, because needed also for icall=0
       ISTRA = TDMPAR(IPLS)%TDM%ISTR(IRE)
@@ -1117,7 +1133,7 @@ cdr  bulk particles
         CALL EIRENE_EXIT_OWN(1)
       END SELECT
 
-      END SUBROUTINE EIRENE_GET_BASE_DENSITY
+      END SUBROUTINE EIRENE_GET_BASE_PARAMETERS
 
 
 
