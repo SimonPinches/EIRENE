@@ -47,6 +47,8 @@ C
       USE EIRMOD_CLGIN
       USE EIRMOD_COUTAU
       USE EIRMOD_CTRIG
+      USE EIRMOD_CLOGAU, ONLY: NLSPCSPT_ATM, NLSPCSPT_MOL, NLSPCSPT_ION,
+     .                         NLSPCSPT_PHOT, NLSPCSPT_PLS
 
       IMPLICIT NONE
 
@@ -75,7 +77,7 @@ C
       INTEGER :: NR, NP, NT, MSURFG, J, NCELL, NTOTAL, N1, N2, N3, I,
      .           ITRII, IPLGN, ISPR, ITEXT, ISTS, NFTI, NFTE,
      .           K, ITALS, IADS, IALS, IION, IPLS, IATM, N,
-     .           IMOL, IPHOT, ISPC, IOUT, ISF, IE, IT, ILIM, ID,
+     .           IMOL, IPHOT, ISPC, IOUT, ISF, IE, IT, ILIM, ID, N1D,
      .           IRA, IRE, IPA, IPE, IS
       INTEGER :: IADTYP(0:4)
       LOGICAL :: LGVRA1(0:NATM,0:NSTRA),
@@ -2119,6 +2121,14 @@ C  SURFACE-AVERAGED TALLY NO. 51
      .       SUMA1,LOGATM,ISTRA,0,NATM,NATM,0,NSTRA,TEXTS(NSPH+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARA1,LGVRA1,ISTRA,0,NATM,NATM,0,NSTRA,TEXTS(NSPH+1))
+        IF (NLSPCSPT_ATM) THEN
+          N1D=NATMP*NATM
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NATMP,N1D
+            IF(SPTAAT(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,51),SPTAAT(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMM.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 56
@@ -2126,6 +2136,14 @@ C  SURFACE-AVERAGED TALLY NO. 56
      .       SUMM1,LOGMOL,ISTRA,0,NMOL,NMOL,0,NSTRA,TEXTS(NSPA+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARM1,LGVRM1,ISTRA,0,NMOL,NMOL,0,NSTRA,TEXTS(NSPA+1))
+        IF (NLSPCSPT_ATM) THEN
+          N1D=NMOLP*NATM
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NMOLP,N1D
+            IF(SPTAML(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,56),SPTAML(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMI.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 61
@@ -2133,6 +2151,14 @@ C  SURFACE-AVERAGED TALLY NO. 61
      .       SUMI1,LOGION,ISTRA,0,NION,NION,0,NSTRA,TEXTS(NSPAM+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARI1,LGVRI1,ISTRA,0,NION,NION,0,NSTRA,TEXTS(NSPAM+1))
+        IF (NLSPCSPT_ATM) THEN
+          N1D=NIONP*NATM
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NIONP,N1D
+            IF(SPTAIO(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,61),SPTAIO(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMPH.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 66
@@ -2140,6 +2166,14 @@ C  SURFACE-AVERAGED TALLY NO. 66
      .       SUMPH1,LOGPHOT,ISTRA,0,NPHOT,NPHOT,0,NSTRA,TEXTS(0+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARPH1,LGVRPH1,ISTRA,0,NPHOT,NPHOT,0,NSTRA,TEXTS(0+1))
+        IF (NLSPCSPT_ATM) THEN
+          N1D=NPHOTP*NATM
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NPHOTP,N1D
+            IF(SPTAPHT(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                        TXTSPW(K,66),SPTAPHT(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMP.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 71
@@ -2147,6 +2181,14 @@ C  SURFACE-AVERAGED TALLY NO. 71
      .       SUMP1,LOGPLS,ISTRA,0,NPLS,NPLS,0,NSTRA,TEXTS(NSPAMI+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARP1,LGVRP1,ISTRA,0,NPLS,NPLS,0,NSTRA,TEXTS(NSPAMI+1))
+        IF (NLSPCSPT_ATM) THEN
+          N1D=NPLSP*NATM
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NPLSP,N1D
+            IF(SPTAPL(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,71),SPTAPL(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       CALL EIRENE_LEER (1)
       WRITE (IUNOUT,*) 'TOT. FLX SPUTTERED BY INCIDENT ATOMS'
@@ -2310,6 +2352,14 @@ C  SURFACE-AVERAGED TALLY NO. 52
      .       SUMA1,LOGATM,ISTRA,0,NATM,NATM,0,NSTRA,TEXTS(NSPH+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARA1,LGVRA1,ISTRA,0,NATM,NATM,0,NSTRA,TEXTS(NSPH+1))
+        IF (NLSPCSPT_MOL) THEN
+          N1D=NATMP*NMOL
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NATMP,N1D
+            IF(SPTMAT(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,52),SPTMAT(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMM.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 57
@@ -2317,6 +2367,14 @@ C  SURFACE-AVERAGED TALLY NO. 57
      .       SUMM1,LOGMOL,ISTRA,0,NMOL,NMOL,0,NSTRA,TEXTS(NSPA+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARM1,LGVRM1,ISTRA,0,NMOL,NMOL,0,NSTRA,TEXTS(NSPA+1))
+        IF (NLSPCSPT_MOL) THEN
+          N1D=NMOLP*NMOL
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NMOLP,N1D
+            IF(SPTMML(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,57),SPTMML(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMI.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 62
@@ -2324,6 +2382,14 @@ C  SURFACE-AVERAGED TALLY NO. 62
      .       SUMI1,LOGION,ISTRA,0,NION,NION,0,NSTRA,TEXTS(NSPAM+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARI1,LGVRI1,ISTRA,0,NION,NION,0,NSTRA,TEXTS(NSPAM+1))
+        IF (NLSPCSPT_MOL) THEN
+          N1D=NIONP*NMOL
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NIONP,N1D
+            IF(SPTMIO(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,62),SPTMIO(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMPH.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 67
@@ -2331,6 +2397,14 @@ C  SURFACE-AVERAGED TALLY NO. 67
      .       SUMPH1,LOGPHOT,ISTRA,0,NPHOT,NPHOT,0,NSTRA,TEXTS(0+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARPH1,LGVRPH1,ISTRA,0,NPHOT,NPHOT,0,NSTRA,TEXTS(0+1))
+        IF (NLSPCSPT_MOL) THEN
+          N1D=NPHOTP*NMOL
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NPHOTP,N1D
+            IF(SPTMPHT(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                        TXTSPW(K,67),SPTMPHT(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMP.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 72
@@ -2338,6 +2412,14 @@ C  SURFACE-AVERAGED TALLY NO. 72
      .       SUMP1,LOGPLS,ISTRA,0,NPLS,NPLS,0,NSTRA,TEXTS(NSPAMI+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARP1,LGVRP1,ISTRA,0,NPLS,NPLS,0,NSTRA,TEXTS(NSPAMI+1))
+        IF (NLSPCSPT_MOL) THEN
+          N1D=NPLSP*NMOL
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NPLSP,N1D
+            IF(SPTMPL(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,72),SPTMPL(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       CALL EIRENE_LEER (1)
       WRITE (IUNOUT,*) 'TOT. FLX SPUTTERED BY INCIDENT MOLECULES '
@@ -2501,6 +2583,14 @@ C  SURFACE-AVERAGED TALLY NO. 53
      .       SUMA1,LOGATM,ISTRA,0,NATM,NATM,0,NSTRA,TEXTS(NSPH+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARA1,LGVRA1,ISTRA,0,NATM,NATM,0,NSTRA,TEXTS(NSPH+1))
+        IF (NLSPCSPT_ION) THEN
+          N1D=NATMP*NION
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NATMP,N1D
+            IF(SPTIAT(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,53),SPTIAT(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMM.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 58
@@ -2508,6 +2598,14 @@ C  SURFACE-AVERAGED TALLY NO. 58
      .       SUMM1,LOGMOL,ISTRA,0,NMOL,NMOL,0,NSTRA,TEXTS(NSPA+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARM1,LGVRM1,ISTRA,0,NMOL,NMOL,0,NSTRA,TEXTS(NSPA+1))
+        IF (NLSPCSPT_ION) THEN
+          N1D=NMOLP*NION
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NMOLP,N1D
+            IF(SPTIML(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,58),SPTIML(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMI.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 63
@@ -2515,6 +2613,14 @@ C  SURFACE-AVERAGED TALLY NO. 63
      .       SUMI1,LOGION,ISTRA,0,NION,NION,0,NSTRA,TEXTS(NSPAM+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARI1,LGVRI1,ISTRA,0,NION,NION,0,NSTRA,TEXTS(NSPAM+1))
+        IF (NLSPCSPT_ION) THEN
+          N1D=NIONP*NION
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NIONP,N1D
+            IF(SPTIIO(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,63),SPTIIO(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMPH.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 68
@@ -2522,6 +2628,14 @@ C  SURFACE-AVERAGED TALLY NO. 68
      .       SUMPH1,LOGPHOT,ISTRA,0,NPHOT,NPHOT,0,NSTRA,TEXTS(0+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARPH1,LGVRPH1,ISTRA,0,NPHOT,NPHOT,0,NSTRA,TEXTS(0+1))
+        IF (NLSPCSPT_ION) THEN
+          N1D=NPHOTP*NION
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NPHOTP,N1D
+            IF(SPTIPHT(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                        TXTSPW(K,68),SPTIPHT(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMP.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 73
@@ -2529,6 +2643,14 @@ C  SURFACE-AVERAGED TALLY NO. 73
      .       SUMP1,LOGPLS,ISTRA,0,NPLS,NPLS,0,NSTRA,TEXTS(NSPAMI+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARP1,LGVRP1,ISTRA,0,NPLS,NPLS,0,NSTRA,TEXTS(NSPAMI+1))
+        IF (NLSPCSPT_ION) THEN
+          N1D=NPLSP*NION
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NPLSP,N1D
+            IF(SPTIPL(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,73),SPTIPL(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       CALL EIRENE_LEER (1)
       WRITE (IUNOUT,*) 'TOT. FLX SPUTTERED BY INCIDENT TEST IONS'
@@ -2692,6 +2814,14 @@ C  SURFACE-AVERAGED TALLY NO. 54
      .       SUMA1,LOGATM,ISTRA,0,NATM,NATM,0,NSTRA,TEXTS(NSPH+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARA1,LGVRA1,ISTRA,0,NATM,NATM,0,NSTRA,TEXTS(NSPH+1))
+        IF (NLSPCSPT_PHOT) THEN
+          N1D=NATMP*NPHOT
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NATMP,N1D
+            IF(SPTPHAT(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                        TXTSPW(K,54),SPTPHAT(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMM.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 59
@@ -2699,6 +2829,14 @@ C  SURFACE-AVERAGED TALLY NO. 59
      .       SUMM1,LOGMOL,ISTRA,0,NMOL,NMOL,0,NSTRA,TEXTS(NSPA+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARM1,LGVRM1,ISTRA,0,NMOL,NMOL,0,NSTRA,TEXTS(NSPA+1))
+        IF (NLSPCSPT_PHOT) THEN
+          N1D=NMOLP*NPHOT
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NMOLP,N1D
+            IF(SPTPHML(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                        TXTSPW(K,59),SPTPHML(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMI.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 64
@@ -2706,6 +2844,14 @@ C  SURFACE-AVERAGED TALLY NO. 64
      .       SUMI1,LOGION,ISTRA,0,NION,NION,0,NSTRA,TEXTS(NSPAM+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARI1,LGVRI1,ISTRA,0,NION,NION,0,NSTRA,TEXTS(NSPAM+1))
+        IF (NLSPCSPT_PHOT) THEN
+          N1D=NIONP*NPHOT
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NIONP,N1D
+            IF(SPTPHIO(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                        TXTSPW(K,64),SPTPHIO(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMPH.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 69
@@ -2713,6 +2859,14 @@ C  SURFACE-AVERAGED TALLY NO. 69
      .       SUMPH1,LOGPHOT,ISTRA,0,NPHOT,NPHOT,0,NSTRA,TEXTS(0+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARPH1,LGVRPH1,ISTRA,0,NPHOT,NPHOT,0,NSTRA,TEXTS(0+1))
+        IF (NLSPCSPT_PHOT) THEN
+          N1D=NPHOTP*NPHOT
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NPHOTP,N1D
+            IF(SPTPHPHT(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                        TXTSPW(K,69),SPTPHPHT(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMP.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 74
@@ -2720,6 +2874,14 @@ C  SURFACE-AVERAGED TALLY NO. 74
      .       SUMP1,LOGPLS,ISTRA,0,NPLS,NPLS,0,NSTRA,TEXTS(NSPAMI+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARP1,LGVRP1,ISTRA,0,NPLS,NPLS,0,NSTRA,TEXTS(NSPAMI+1))
+        IF (NLSPCSPT_PHOT) THEN
+          N1D=NPLSP*NPHOT
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NPLSP,N1D
+            IF(SPTPHPL(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                        TXTSPW(K,74),SPTPHPL(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       CALL EIRENE_LEER (1)
       WRITE (IUNOUT,*) 'TOT. FLX SPUTTERED BY INCIDENT PHOTONS '
@@ -2883,6 +3045,14 @@ C  SURFACE-AVERAGED TALLY NO. 55
      .       SUMA1,LOGATM,ISTRA,0,NATM,NATM,0,NSTRA,TEXTS(NSPH+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARA1,LGVRA1,ISTRA,0,NATM,NATM,0,NSTRA,TEXTS(NSPH+1))
+        IF (NLSPCSPT_PLS) THEN
+          N1D=NATMP*NPLS
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NATMP,N1D
+            IF(SPTPAT(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,55),SPTPAT(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMM.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 60
@@ -2890,6 +3060,14 @@ C  SURFACE-AVERAGED TALLY NO. 60
      .       SUMM1,LOGMOL,ISTRA,0,NMOL,NMOL,0,NSTRA,TEXTS(NSPA+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARM1,LGVRM1,ISTRA,0,NMOL,NMOL,0,NSTRA,TEXTS(NSPA+1))
+        IF (NLSPCSPT_PLS) THEN
+          N1D=NMOLP*NPLS
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NMOLP,N1D
+            IF(SPTPML(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,60),SPTPML(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMI.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 65
@@ -2897,6 +3075,14 @@ C  SURFACE-AVERAGED TALLY NO. 65
      .       SUMI1,LOGION,ISTRA,0,NION,NION,0,NSTRA,TEXTS(NSPAM+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARI1,LGVRI1,ISTRA,0,NION,NION,0,NSTRA,TEXTS(NSPAM+1))
+        IF (NLSPCSPT_PLS) THEN
+          N1D=NIONP*NPLS
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NIONP,N1D
+            IF(SPTPIO(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,65),SPTPIO(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMPH.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 70
@@ -2904,6 +3090,14 @@ C  SURFACE-AVERAGED TALLY NO. 70
      .       SUMPH1,LOGPHOT,ISTRA,0,NPHOT,NPHOT,0,NSTRA,TEXTS(0+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARPH1,LGVRPH1,ISTRA,0,NPHOT,NPHOT,0,NSTRA,TEXTS(0+1))
+        IF (NLSPCSPT_PLS) THEN
+          N1D=NPHOTP*NPLS
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NPHOTP,N1D
+            IF(SPTPPHT(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                        TXTSPW(K,70),SPTPPHT(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       IF (SUMMP.NE.0._DP) THEN
 C  SURFACE-AVERAGED TALLY NO. 75
@@ -2911,6 +3105,14 @@ C  SURFACE-AVERAGED TALLY NO. 75
      .       SUMP1,LOGPLS,ISTRA,0,NPLS,NPLS,0,NSTRA,TEXTS(NSPAMI+1))
         CALL EIRENE_MASYR1('ST.DEV.% ',
      .       VARP1,LGVRP1,ISTRA,0,NPLS,NPLS,0,NSTRA,TEXTS(NSPAMI+1))
+        IF (NLSPCSPT_PLS) THEN
+          N1D=NPLSP*NPLS
+          WRITE(iunout,*) 'SPECIES RESOLVED CONTRIBUTIONS (not scaled):'
+          DO K=NPLSP,N1D
+            IF(SPTPPL(K,I)>0._DP) WRITE(iunout,'(1X,1A24,1X,1ES12.4)')
+     .                                       TXTSPW(K,75),SPTPPL(K,I)
+          ENDDO
+        ENDIF
       ENDIF
       CALL EIRENE_LEER (1)
       WRITE (IUNOUT,*) 'TOT. FLX SPUTTERED BY INCIDENT BULK IONS'

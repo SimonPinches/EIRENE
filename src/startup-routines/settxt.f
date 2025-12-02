@@ -615,10 +615,10 @@ C
 
       IMPLICIT NONE
       INTEGER :: IATM, IION, IPLS, IMOL, ISPZ, IPHOT,
-     .           JATM, JION, JMOL, JPHOT,
+     .           JATM, JION, JMOL, JPHOT, JPLS,
      .           N1,  N2,  N3,  N4,  N5,  N6,  N7,  N8,  N9,  N10,
-     .           N11, N12, N13, N14, N15, N16, N17, N18, N19, N20,
-     .           N21, N22, N23, N24, N25, N26, N27, N28, N29, N30, N31
+     .           N11, N12, N13, N14, N15, N16, N17, N18, N19, N20, N21,
+     .           N22, N23, N24, N25, N26, N27, N28, N29, N30, N31, N32
       INTEGER :: IAD, EIRENE_INDIRECT_ADDRESS
       EXTERNAL :: EIRENE_TEXT_COMBINE, EIRENE_INDIRECT_ADDRESS
 C
@@ -898,30 +898,130 @@ C
       NFSTWI(50)=NPLSI
 
       NFSTWI(51)=NATMI
+      IF (NLSPCSPT_ATM) THEN
+        NFSTWI(51)=NATM*NATMP
+        NEXTWI(51)=NATM
+      END IF
       NFSTWI(52)=NATMI
+      IF (NLSPCSPT_MOL) THEN
+        NFSTWI(52)=NATM*NMOLP
+        NEXTWI(52)=NATM
+      END IF
       NFSTWI(53)=NATMI
+      IF (NLSPCSPT_ION) THEN
+        NFSTWI(53)=NATM*NIONP
+        NEXTWI(53)=NATM
+      END IF
       NFSTWI(54)=NATMI
+      IF (NLSPCSPT_PHOT) THEN
+        NFSTWI(54)=NATM*NPHOTP
+        NEXTWI(54)=NATM
+      END IF
       NFSTWI(55)=NATMI
+      IF (NLSPCSPT_PLS) THEN
+        NFSTWI(55)=NATM*NPLSP
+        NEXTWI(55)=NATM
+      END IF
       NFSTWI(56)=NMOLI
+      IF (NLSPCSPT_ATM) THEN
+        NFSTWI(56)=NMOL*NATMP
+        NEXTWI(56)=NMOL
+      END IF
       NFSTWI(57)=NMOLI
+      IF (NLSPCSPT_MOL) THEN
+        NFSTWI(57)=NMOL*NMOLP
+        NEXTWI(57)=NMOL
+      END IF
       NFSTWI(58)=NMOLI
+      IF (NLSPCSPT_ION) THEN
+        NFSTWI(58)=NMOL*NIONP
+        NEXTWI(58)=NMOL
+      END IF
       NFSTWI(59)=NMOLI
+      IF (NLSPCSPT_PHOT) THEN
+        NFSTWI(59)=NMOL*NPHOTP
+        NEXTWI(59)=NMOL
+      END IF
       NFSTWI(60)=NMOLI
+      IF (NLSPCSPT_PLS) THEN
+        NFSTWI(60)=NMOL*NPLSP
+        NEXTWI(60)=NMOL
+      END IF
       NFSTWI(61)=NIONI
+      IF (NLSPCSPT_ATM) THEN
+        NFSTWI(61)=NION*NATMP
+        NEXTWI(61)=NION
+      END IF
       NFSTWI(62)=NIONI
+      IF (NLSPCSPT_MOL) THEN
+        NFSTWI(62)=NION*NMOLP
+        NEXTWI(62)=NION
+      END IF
       NFSTWI(63)=NIONI
+      IF (NLSPCSPT_ION) THEN
+        NFSTWI(63)=NION*NIONP
+        NEXTWI(63)=NION
+      END IF
       NFSTWI(64)=NIONI
+      IF (NLSPCSPT_PHOT) THEN
+        NFSTWI(64)=NION*NPHOTP
+        NEXTWI(64)=NION
+      END IF
       NFSTWI(65)=NIONI
+      IF (NLSPCSPT_PLS) THEN
+        NFSTWI(65)=NION*NPLSP
+        NEXTWI(65)=NION
+      END IF
       NFSTWI(66)=NPHOTI
+      IF (NLSPCSPT_ATM) THEN
+        NFSTWI(66)=NPHOT*NATMP
+        NEXTWI(66)=NPHOT
+      END IF
       NFSTWI(67)=NPHOTI
+      IF (NLSPCSPT_MOL) THEN
+        NFSTWI(67)=NPHOT*NMOLP
+        NEXTWI(67)=NPHOT
+      END IF
       NFSTWI(68)=NPHOTI
+      IF (NLSPCSPT_ION) THEN
+        NFSTWI(68)=NPHOT*NIONP
+        NEXTWI(68)=NPHOT
+      END IF
       NFSTWI(69)=NPHOTI
+      IF (NLSPCSPT_PHOT) THEN
+        NFSTWI(69)=NPHOT*NPHOTP
+        NEXTWI(69)=NPHOT
+      END IF
       NFSTWI(70)=NPHOTI
+      IF (NLSPCSPT_PLS) THEN
+        NFSTWI(70)=NPHOT*NPLSP
+        NEXTWI(70)=NPHOT
+      END IF
       NFSTWI(71)=NPLSI
+      IF (NLSPCSPT_ATM) THEN
+        NFSTWI(71)=NPLS*NATMP
+        NEXTWI(71)=NPLS
+      END IF
       NFSTWI(72)=NPLSI
+      IF (NLSPCSPT_MOL) THEN
+        NFSTWI(72)=NPLS*NMOLP
+        NEXTWI(72)=NPLS
+      END IF
       NFSTWI(73)=NPLSI
+      IF (NLSPCSPT_ION) THEN
+        NFSTWI(73)=NPLS*NIONP
+        NEXTWI(73)=NPLS
+      END IF
       NFSTWI(74)=NPLSI
+      IF (NLSPCSPT_PHOT) THEN
+        NFSTWI(74)=NPLS*NPHOTP
+        NEXTWI(74)=NPLS
+      END IF
       NFSTWI(75)=NPLSI
+      IF (NLSPCSPT_PLS) THEN
+        NFSTWI(75)=NPLS*NPLSP
+        NEXTWI(75)=NPLS
+      END IF
       NFSTWI(76)=1
       NFSTWI(77)=1
       NFSTWI(78)=1
@@ -1572,6 +1672,22 @@ C  for fluxes going into photons
       N22=N21+NPHOT*NIONP
       N23=N22+NPHOT*NPHOTP
 
+c  extra dimension for bulk ion resolved sputtering
+c  for fluxes going into atoms
+      N24=NATM*NPLSP
+c  for fluxes going into molecules
+      N25=N24+NMOL*NPLSP
+c  for fluxes going into test ions
+      N26=N25+NION*NPLSP
+c  for fluxes going into photons
+      N27=N23+N26+NPHOT*NPLSP
+c  for fluxes going into bulk ions
+      N28=N27+NPLS*NATMP
+      N29=N28+NPLS*NMOLP
+      N30=N29+NPLS*NIONP
+      N31=N30+NPLS*NPHOTP
+      N32=N31+NPLS*NPLSP
+
       NSPANW(1)=N1+1
       NSPANW(2)=N1+1
       IF (NLSPCSCL_ATM) NSPANW(2)=N7+1
@@ -1639,30 +1755,55 @@ C  for fluxes going into photons
       NSPANW(49)=1
       NSPANW(50)=N4+1
       NSPANW(51)=N1+1
+      IF (NLSPCSPT_ATM) NSPANW(51)=N7+1
       NSPANW(52)=N1+1
+      IF (NLSPCSPT_MOL) NSPANW(52)=N8+1
       NSPANW(53)=N1+1
+      IF (NLSPCSPT_ION) NSPANW(53)=N9+1
       NSPANW(54)=N1+1
+      IF (NLSPCSPT_PHOT) NSPANW(54)=N10+1
       NSPANW(55)=N1+1
+      IF (NLSPCSPT_PLS) NSPANW(55)=N11+1
       NSPANW(56)=N2+1
+      IF (NLSPCSPT_ATM) NSPANW(56)=N11+N24+1
       NSPANW(57)=N2+1
+      IF (NLSPCSPT_MOL) NSPANW(57)=N12+N24+1
       NSPANW(58)=N2+1
+      IF (NLSPCSPT_ION) NSPANW(58)=N13+N24+1
       NSPANW(59)=N2+1
+      IF (NLSPCSPT_PHOT) NSPANW(59)=N14+N24+1
       NSPANW(60)=N2+1
+      IF (NLSPCSPT_PLS) NSPANW(60)=N15+N24+1
       NSPANW(61)=N3+1
+      IF (NLSPCSPT_ATM) NSPANW(61)=N15+N25+1
       NSPANW(62)=N3+1
+      IF (NLSPCSPT_MOL) NSPANW(62)=N16+N25+1
       NSPANW(63)=N3+1
+      IF (NLSPCSPT_ION) NSPANW(63)=N17+N25+1
       NSPANW(64)=N3+1
+      IF (NLSPCSPT_PHOT) NSPANW(64)=N18+N25+1
       NSPANW(65)=N3+1
+      IF (NLSPCSPT_PLS) NSPANW(65)=N19+N25+1
       NSPANW(66)=1
+      IF (NLSPCSPT_ATM) NSPANW(66)=N19+N26+1
       NSPANW(67)=1
+      IF (NLSPCSPT_MOL) NSPANW(67)=N20+N26+1
       NSPANW(68)=1
+      IF (NLSPCSPT_ION) NSPANW(68)=N21+N26+1
       NSPANW(69)=1
+      IF (NLSPCSPT_PHOT) NSPANW(69)=N22+N26+1
       NSPANW(70)=1
+      IF (NLSPCSPT_PLS) NSPANW(70)=N23+N26+1
       NSPANW(71)=N4+1
+      IF (NLSPCSPT_ATM) NSPANW(71)=N27+1
       NSPANW(72)=N4+1
+      IF (NLSPCSPT_MOL) NSPANW(72)=N28+1
       NSPANW(73)=N4+1
+      IF (NLSPCSPT_ION) NSPANW(73)=N29+1
       NSPANW(74)=N4+1
+      IF (NLSPCSPT_PHOT) NSPANW(74)=N30+1
       NSPANW(75)=N4+1
+      IF (NLSPCSPT_PLS) NSPANW(75)=N31+1
       NSPANW(76)=0
       NSPANW(77)=0
       NSPANW(78)=0
@@ -1740,30 +1881,55 @@ C  for fluxes going into photons
       NSPENW(49)=N1
       NSPENW(50)=N5
       NSPENW(51)=N2
+      IF (NLSPCSPT_ATM) NSPENW(51)=N8
       NSPENW(52)=N2
+      IF (NLSPCSPT_MOL) NSPENW(52)=N9
       NSPENW(53)=N2
+      IF (NLSPCSPT_ION) NSPENW(53)=N10
       NSPENW(54)=N2
+      IF (NLSPCSPT_PHOT) NSPENW(54)=N11
       NSPENW(55)=N2
+      IF (NLSPCSPT_PLS) NSPENW(55)=N11+N24
       NSPENW(56)=N3
+      IF (NLSPCSPT_ATM) NSPENW(56)=N12+N24
       NSPENW(57)=N3
+      IF (NLSPCSPT_MOL) NSPENW(57)=N13+N24
       NSPENW(58)=N3
+      IF (NLSPCSPT_ION) NSPENW(58)=N14+N24
       NSPENW(59)=N3
+      IF (NLSPCSPT_PHOT) NSPENW(59)=N15+N24
       NSPENW(60)=N3
+      IF (NLSPCSPT_PLS) NSPENW(60)=N15+N25
       NSPENW(61)=N4
+      IF (NLSPCSPT_ATM) NSPENW(61)=N16+N25
       NSPENW(62)=N4
+      IF (NLSPCSPT_MOL) NSPENW(62)=N17+N25
       NSPENW(63)=N4
+      IF (NLSPCSPT_ION) NSPENW(63)=N18+N25
       NSPENW(64)=N4
+      IF (NLSPCSPT_PHOT) NSPENW(64)=N19+N25
       NSPENW(65)=N4
+      IF (NLSPCSPT_PLS) NSPENW(65)=N19+N26
       NSPENW(66)=N1
+      IF (NLSPCSPT_ATM) NSPENW(66)=N20+N26
       NSPENW(67)=N1
+      IF (NLSPCSPT_MOL) NSPENW(67)=N21+N26
       NSPENW(68)=N1
+      IF (NLSPCSPT_ION) NSPENW(68)=N22+N26
       NSPENW(69)=N1
+      IF (NLSPCSPT_PHOT) NSPENW(69)=N23+N26
       NSPENW(70)=N1
+      IF (NLSPCSPT_PLS) NSPENW(70)=N27
       NSPENW(71)=N5
+      IF (NLSPCSPT_ATM) NSPENW(71)=N28
       NSPENW(72)=N5
+      IF (NLSPCSPT_MOL) NSPENW(72)=N29
       NSPENW(73)=N5
+      IF (NLSPCSPT_ION) NSPENW(73)=N30
       NSPENW(74)=N5
+      IF (NLSPCSPT_PHOT) NSPENW(74)=N31
       NSPENW(75)=N5
+      IF (NLSPCSPT_PLS) NSPENW(75)=N32
       NSPENW(76)=0
       NSPENW(77)=0
       NSPENW(78)=0
@@ -1817,10 +1983,45 @@ C  for fluxes going into photons
         TXTSPW(IPHOT,48)=TEXTS(ISPZ)
         TXTSPW(IPHOT,49)=TEXTS(ISPZ)
         TXTSPW(IPHOT,66)=TEXTS(ISPZ)
+        IF (NLSPCSPT_ATM) THEN
+          DO IATM=1,NATMI
+            IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IATM,NPHOT)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPH+IATM),
+     .                               TXTSPW(IAD,66))
+          END DO
+        END IF
         TXTSPW(IPHOT,67)=TEXTS(ISPZ)
+        IF (NLSPCSPT_MOL) THEN
+          DO IMOL=1,NMOLI
+            IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IMOL,NPHOT)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPA+IMOL),
+     .                               TXTSPW(IAD,67))
+          END DO
+        END IF
         TXTSPW(IPHOT,68)=TEXTS(ISPZ)
+        IF (NLSPCSPT_ION) THEN
+          DO IION=1,NIONI
+            IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IION,NPHOT)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPAM+IION),
+     .                               TXTSPW(IAD,68))
+          END DO
+        END IF
         TXTSPW(IPHOT,69)=TEXTS(ISPZ)
+        IF (NLSPCSPT_PHOT) THEN
+          DO JPHOT=1,NPHOTI
+            IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,JPHOT,NPHOT)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(JPHOT),
+     .                               TXTSPW(IAD,69))
+          END DO
+        END IF
         TXTSPW(IPHOT,70)=TEXTS(ISPZ)
+        IF (NLSPCSPT_PLS) THEN
+          DO IPLS=1,NPLSI
+            IAD = EIRENE_INDIRECT_ADDRESS(IPHOT,IPLS,NPHOT)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPAMI+IPLS),
+     .                               TXTSPW(IAD,70))
+          END DO
+        END IF
       END DO
 
       DO IATM=1,NATMI
@@ -1866,10 +2067,45 @@ C  for fluxes going into photons
         TXTSPW(IATM,30)=TEXTS(ISPZ)
         TXTSPW(IATM,31)=TEXTS(ISPZ)
         TXTSPW(IATM,51)=TEXTS(ISPZ)
+        IF (NLSPCSPT_ATM) THEN
+          DO JATM=1,NATMI
+            IAD = EIRENE_INDIRECT_ADDRESS(IATM,JATM,NATM)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPH+JATM),
+     .                               TXTSPW(IAD,51))
+          END DO
+        END IF
         TXTSPW(IATM,52)=TEXTS(ISPZ)
+        IF (NLSPCSPT_MOL) THEN
+          DO IMOL=1,NMOLI
+            IAD = EIRENE_INDIRECT_ADDRESS(IATM,IMOL,NATM)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPA+IMOL),
+     .                               TXTSPW(IAD,52))
+          END DO
+        END IF
         TXTSPW(IATM,53)=TEXTS(ISPZ)
+        IF (NLSPCSPT_ION) THEN
+          DO IION=1,NIONI
+            IAD = EIRENE_INDIRECT_ADDRESS(IATM,IION,NATM)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPAM+IION),
+     .                               TXTSPW(IAD,53))
+          END DO
+        END IF
         TXTSPW(IATM,54)=TEXTS(ISPZ)
+        IF (NLSPCSPT_PHOT) THEN
+          DO IPHOT=1,NPHOTI
+            IAD = EIRENE_INDIRECT_ADDRESS(IATM,IPHOT,NATM)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(IPHOT),
+     .                               TXTSPW(IAD,54))
+          END DO
+        END IF
         TXTSPW(IATM,55)=TEXTS(ISPZ)
+        IF (NLSPCSPT_PLS) THEN
+          DO IPLS=1,NPLSI
+            IAD = EIRENE_INDIRECT_ADDRESS(IATM,IPLS,NATM)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPAMI+IPLS),
+     .                               TXTSPW(IAD,55))
+          END DO
+        END IF
       END DO
 C
       DO IMOL=1,NMOLI
@@ -1915,10 +2151,46 @@ C
         TXTSPW(IMOL,36)=TEXTS(ISPZ)
         TXTSPW(IMOL,37)=TEXTS(ISPZ)
         TXTSPW(IMOL,56)=TEXTS(ISPZ)
+        IF (NLSPCSPT_ATM) THEN
+          DO IATM=1,NATMI
+            IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IATM,NMOL)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPH+IATM),
+     .                               TXTSPW(IAD,56))
+          END DO
+        END IF
         TXTSPW(IMOL,57)=TEXTS(ISPZ)
+        IF (NLSPCSPT_MOL) THEN
+          DO JMOL=1,NMOLI
+            IAD = EIRENE_INDIRECT_ADDRESS(IMOL,JMOL,NMOL)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPA+JMOL),
+     .                               TXTSPW(IAD,57))
+          END DO
+        END IF
         TXTSPW(IMOL,58)=TEXTS(ISPZ)
+        TXTSPW(IMOL,10)=TEXTS(ISPZ)
+        IF (NLSPCSPT_ION) THEN
+          DO IION=1,NIONI
+            IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IION,NMOL)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPAM+IION),
+     .                               TXTSPW(IAD,58))
+          END DO
+        END IF
         TXTSPW(IMOL,59)=TEXTS(ISPZ)
+        IF (NLSPCSPT_PHOT) THEN
+          DO IPHOT=1,NPHOTI
+            IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IPHOT,NMOL)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(IPHOT),
+     .                               TXTSPW(IAD,59))
+          END DO
+        END IF
         TXTSPW(IMOL,60)=TEXTS(ISPZ)
+        IF (NLSPCSPT_PLS) THEN
+          DO IPLS=1,NPLSI
+            IAD = EIRENE_INDIRECT_ADDRESS(IMOL,IPLS,NMOL)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPAMI+IPLS),
+     .                               TXTSPW(IAD,60))
+          END DO
+        END IF
       END DO
 C
       DO IION=1,NIONI
@@ -1964,10 +2236,45 @@ C
         TXTSPW(IION,42)=TEXTS(ISPZ)
         TXTSPW(IION,43)=TEXTS(ISPZ)
         TXTSPW(IION,61)=TEXTS(ISPZ)
+        IF (NLSPCSPT_ATM) THEN
+          DO IATM=1,NATMI
+            IAD = EIRENE_INDIRECT_ADDRESS(IION,IATM,NION)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPH+IATM),
+     .                               TXTSPW(IAD,61))
+          END DO
+        END IF
         TXTSPW(IION,62)=TEXTS(ISPZ)
+        IF (NLSPCSPT_MOL) THEN
+          DO IMOL=1,NMOLI
+            IAD = EIRENE_INDIRECT_ADDRESS(IION,IMOL,NION)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPA+IMOL),
+     .                               TXTSPW(IAD,62))
+          END DO
+        END IF
         TXTSPW(IION,63)=TEXTS(ISPZ)
+        IF (NLSPCSPT_ION) THEN
+          DO JION=1,NIONI
+            IAD = EIRENE_INDIRECT_ADDRESS(IION,JION,NION)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPAM+JION),
+     .                               TXTSPW(IAD,63))
+          END DO
+        END IF
         TXTSPW(IION,64)=TEXTS(ISPZ)
+        IF (NLSPCSPT_PHOT) THEN
+          DO IPHOT=1,NPHOTI
+            IAD = EIRENE_INDIRECT_ADDRESS(IION,IPHOT,NION)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(IPHOT),
+     .                               TXTSPW(IAD,64))
+          END DO
+        END IF
         TXTSPW(IION,65)=TEXTS(ISPZ)
+        IF (NLSPCSPT_PLS) THEN
+          DO IPLS=1,NPLSI
+            IAD = EIRENE_INDIRECT_ADDRESS(IION,IPLS,NION)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPAMI+IPLS),
+     .                               TXTSPW(IAD,65))
+          END DO
+        END IF
       END DO
 C
       DO IPLS=1,NPLSI
@@ -1975,10 +2282,45 @@ C
         TXTSPW(IPLS,25)=TEXTS(ISPZ)
         TXTSPW(IPLS,50)=TEXTS(ISPZ)
         TXTSPW(IPLS,71)=TEXTS(ISPZ)
+        IF (NLSPCSPT_ATM) THEN
+          DO IATM=1,NATMI
+            IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IATM,NPLS)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPH+IATM),
+     .                               TXTSPW(IAD,71))
+          END DO
+        END IF
         TXTSPW(IPLS,72)=TEXTS(ISPZ)
+        IF (NLSPCSPT_MOL) THEN
+          DO IMOL=1,NMOLI
+            IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IMOL,NPLS)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPA+IMOL),
+     .                               TXTSPW(IAD,72))
+          END DO
+        END IF
         TXTSPW(IPLS,73)=TEXTS(ISPZ)
+        IF (NLSPCSPT_ION) THEN
+          DO IION=1,NIONI
+            IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IION,NPLS)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPAM+IION),
+     .                               TXTSPW(IAD,73))
+          END DO
+        END IF
         TXTSPW(IPLS,74)=TEXTS(ISPZ)
+        IF (NLSPCSPT_PHOT) THEN
+          DO IPHOT=1,NPHOTI
+            IAD = EIRENE_INDIRECT_ADDRESS(IPLS,IPHOT,NPLS)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(IPHOT),
+     .                               TXTSPW(IAD,74))
+          END DO
+        END IF
         TXTSPW(IPLS,75)=TEXTS(ISPZ)
+        IF (NLSPCSPT_PLS) THEN
+          DO JPLS=1,NPLSI
+            IAD = EIRENE_INDIRECT_ADDRESS(IPLS,JPLS,NPLS)
+            CALL EIRENE_TEXT_COMBINE(TEXTS(ISPZ),TEXTS(NSPAMI+JPLS),
+     .                               TXTSPW(IAD,75))
+          END DO
+        END IF
       END DO
 C
       TXTSPW(1,42)='                        '

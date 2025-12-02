@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin - SOLPS_coupling - d2a9a06a9e7ef04239ea35a8ec605e56deea89dd
+## X. Bonnin - SOLPS_coupling - 37fb1f2f592d4d15ccdfe3ec68894c09b4d7e5dc
 
 ### Based on SOLPS_bug_fixes - 765b12f7f7ab978e8340d215d330ec49c6c5417b
 
 ** Changes **
 
+- Implemented new sputtering tallies resolved by incident species causing the sputtering
 - Added support for legacy compilers (-DLEGACYCOMP) and G95
 - Bug fix for data mapping in snowflake geometries
 - New IMPROVED MPI parallelization strategy

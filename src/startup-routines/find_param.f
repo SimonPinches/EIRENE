@@ -6,7 +6,9 @@ C
       USE EIRMOD_PARMMOD
       USE EIRMOD_CLOGAU, ONLY: EIRENE_ALLOC_CLOGAU, NLSPCSCL,
      .                         NLSPCSCL_ATM, NLSPCSCL_MOL, NLSPCSCL_ION,
-     .                         NLSPCSCL_PHOT, NLSPCSCL_ON
+     .                         NLSPCSCL_PHOT, NLSPCSCL_ON,
+     .                         NLSPCSPT, NLSPCSPT_ATM, NLSPCSPT_MOL,
+     .                         NLSPCSPT_ION, NLSPCSPT_PHOT, NLSPCSPT_PLS
       USE EIRMOD_COMPRT, ONLY: IUNIN, IUNOUT
       USE EIRMOD_CPES, ONLY: NPRS
       USE EIRMOD_CESTIM
@@ -120,6 +122,25 @@ C     Add IFOFF again if IUNIN is adapted in EIRENE_DEFAULTS_USR.
       CALL EIRENE_MASL5('NLSPCSCL, _ATM, _MOL, _ION, _PHOT       ',
      .                   NLSPCSCL, NLSPCSCL_ATM, NLSPCSCL_MOL,
      .                   NLSPCSCL_ION, NLSPCSCL_PHOT)
+      CALL EIRENE_LEER(1)
+
+!AP   switch off species specific sputtering tallies if only one species per
+!AP   particle type is used
+      IF (MAX(NATM,NMOL,NION,NPLS,NPHOT) <= 1) THEN
+        NLSPCSPT=.FALSE.
+      END IF
+
+      NLSPCSPT_ATM = NLSPCSPT .AND. NATM > 1
+      NLSPCSPT_MOL = NLSPCSPT .AND. NMOL > 1
+      NLSPCSPT_ION = NLSPCSPT .AND. NION > 1
+      NLSPCSPT_PHOT = NLSPCSPT .AND. NPHOT > 1
+      NLSPCSPT_PLS = NLSPCSPT .AND. NPLS > 1
+
+      WRITE (IUNOUT,*) 'FLAGS FOR SPECIES RESOLVED SPUTTERING TALLIES'
+      WRITE (IUNOUT,*) 'NLSPCSPT      ',NLSPCSPT
+      CALL EIRENE_MASL5('NLSPCSPT_ATM, _MOL, _ION, _PHOT, _PLS      ',
+     .                   NLSPCSPT_ATM, NLSPCSPT_MOL, NLSPCSPT_ION,
+     .                   NLSPCSPT_PHOT, NLSPCSPT_PLS)
       CALL EIRENE_LEER(1)
 
       RETURN

@@ -48,7 +48,7 @@ This line was changed in EIRENE tag MsV-2023Mar-PBoernerUnified-beta to
       NLSCL NLTEST NLANA NLDRFT NLCRR
      .  NLERG NLIDENT NLONE NLMOVIE NLDFST
      .  NLRANMAR NLCASCAD NLOCTREE NLWRMSH NEXVS
-     .  NLTRIMESH NLSPCSCL NLSPCSCL_ON NLSOLEDGE
+     .  NLTRIMESH NLSPCSCL NLSPCSCL_ON NLSOLEDGE NLSPCSPT
 \end{lstlisting}
 
 Next input lines are only for EIRENE$_{2005}
@@ -414,6 +414,8 @@ version dependent.
         and calculate refined scaling factors
   \item[NLSPCSCL\_ON] apply the refined scaling factors
   \item[NLSOLEDGE] switch on use of FNUEQI\_SOL in FOLION and add contributions tally MIPL in FPKCOL
+  \item[NLSPCSPT] enable species specific surface averaged sputtering tallies,
+	otherwise only the type of incident particle is scored.
 \end{description}
 Optional input cards,
 for pathways to external databases.
