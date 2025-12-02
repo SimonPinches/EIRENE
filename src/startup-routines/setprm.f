@@ -53,8 +53,7 @@ cdr          may be allocated multiple times in associate_cestim?
 
       REAL(DP) :: RSAVE
       INTEGER :: ISAVE, J, ITAL, NLSTTL, NLSTTW
-      LOGICAL :: LEXTALV(NTALV), LEXTALS(NTALS),
-     .           LEXGENA, LEXGENM, LEXGENI, LEXGENPH
+      LOGICAL :: LEXTALV(NTALV), LEXTALS(NTALS)
       EXTERNAL :: EIRENE_LEER, EIRENE_EXIT_OWN
 C
 
@@ -71,11 +70,6 @@ c   e.g.  no photon tallies unless photons are included (NPHOT>0)
 c   e.g.  no test ion tallies unless test ions are included (NION>0)
 c   e.g.  no generation limit tallies unless there is, indeed a
 c         generation limit activated
-
-      LEXGENA  = ANY(NGENA(1:NATM) /= 0)
-      LEXGENM  = ANY(NGENM(1:NMOL) /= 0)
-      LEXGENI  = ANY(NGENI(1:NION) /= 0)
-      LEXGENPH = ANY(NGENPH(1:NPHOT) /= 0)
 
       LEXTALV(1)  =  NATM>0
       LEXTALV(2)  =  NMOL>0
@@ -157,18 +151,18 @@ C  some of these tallies may be
 c  turned off, depending upon whether generation limits
 c  are activated or not.
 
-      LEXTALV(63) = NATM>0  .AND. LEXGENA
-      LEXTALV(64) = NMOL>0  .AND. LEXGENM
-      LEXTALV(65) = NION>0  .AND. LEXGENI
-      LEXTALV(66) = NPHOT>0 .AND. LEXGENPH
-      LEXTALV(67) = NATM>0  .AND. LEXGENA
-      LEXTALV(68) = NMOL>0  .AND. LEXGENM
-      LEXTALV(69) = NION>0  .AND. LEXGENI
-      LEXTALV(70) = NPHOT>0 .AND. LEXGENPH
-      LEXTALV(71) = NATM>0  .AND. LEXGENA
-      LEXTALV(72) = NMOL>0  .AND. LEXGENM
-      LEXTALV(73) = NION>0  .AND. LEXGENI
-      LEXTALV(74) = NPHOT>0 .AND. LEXGENPH
+      LEXTALV(63) = NATM>0  .AND. (ANY(NGENA(1:NATM) /= 0))
+      LEXTALV(64) = NMOL>0  .AND. (ANY(NGENM(1:NMOL) /= 0))
+      LEXTALV(65) = NION>0  .AND. (ANY(NGENI(1:NION) /= 0))
+      LEXTALV(66) = NPHOT>0 .AND. (ANY(NGENPH(1:NPHOT) /= 0))
+      LEXTALV(67) = NATM>0  .AND. (ANY(NGENA(1:NATM) /= 0))
+      LEXTALV(68) = NMOL>0  .AND. (ANY(NGENM(1:NMOL) /= 0))
+      LEXTALV(69) = NION>0  .AND. (ANY(NGENI(1:NION) /= 0))
+      LEXTALV(70) = NPHOT>0 .AND. (ANY(NGENPH(1:NPHOT) /= 0))
+      LEXTALV(71) = NATM>0  .AND. (ANY(NGENA(1:NATM) /= 0))
+      LEXTALV(72) = NMOL>0  .AND. (ANY(NGENM(1:NMOL) /= 0))
+      LEXTALV(73) = NION>0  .AND. (ANY(NGENI(1:NION) /= 0))
+      LEXTALV(74) = NPHOT>0 .AND. (ANY(NGENPH(1:NPHOT) /= 0))
 C  PRIMARY SOURCE RATES, PARTICLES
       LEXTALV(75) = NATM>0
       LEXTALV(76) = NMOL>0

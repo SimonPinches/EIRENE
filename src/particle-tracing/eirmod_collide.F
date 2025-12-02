@@ -686,7 +686,7 @@ C  GENERATION LIMIT, CX, AND SAME SPECIES
                 XGENER=0.D0
               ENDIF
               IF (XGENER.GE.NGENX) THEN
-                CALL EIRENE_GENLIM
+                CALL EIRENE_GENLIM_POST(WEIGHT,E0*WEIGHT,NNEW)
                 RETURN
               ENDIF
             ENDIF
@@ -697,7 +697,7 @@ C  FLUID LIMIT, CX, AND SAME SPECIES
                 FP=VELO/SIGVCX(IRCX)  !mfp
                 FLTEST=FP/DIST
                 IF (FLTEST.LT.FDLMCX(IRCX)) THEN
-                  CALL EIRENE_GENLIM
+                  CALL EIRENE_GENLIM_POST(WEIGHT,E0*WEIGHT,NNEW)
                   RETURN
                 ENDIF
               ENDIF
@@ -953,7 +953,7 @@ C  CX GENERATION LIMIT, CX, AND SAME SPECIES
                 XGENER=0.D0
               ENDIF
               IF (XGENER.GE.NGENX) THEN
-                CALL EIRENE_GENLIM
+                CALL EIRENE_GENLIM_POST(WEIGHT,E0*WEIGHT,NNEW)
                 RETURN
               ENDIF
             ENDIF
@@ -964,7 +964,7 @@ C  FLUID LIMIT, CX, AND SAME SPECIES
                 FP=VELO/SIGVCX(IRCX)  !mfp
                 FLTEST=FP/DIST
                 IF (FLTEST.LT.FDLMCX(IRCX)) THEN
-                  CALL EIRENE_GENLIM
+                  CALL EIRENE_GENLIM_POST(WEIGHT,E0*WEIGHT,NNEW)
                   RETURN
                 ENDIF
               ENDIF
@@ -1000,7 +1000,7 @@ C  CX GENERATION LIMIT, CX, AND SAME SPECIES
                 XGENER=0.D0
               ENDIF
               IF (XGENER.GE.NGENX) THEN
-                CALL EIRENE_GENLIM
+                CALL EIRENE_GENLIM_POST(WEIGHT,E0*WEIGHT,NNEW)
                 RETURN
               ENDIF
             ENDIF
@@ -1011,7 +1011,7 @@ C  FLUID LIMIT, CX, AND SAME SPECIES
                 FP=VELO/SIGVCX(IRCX)  !mfp
                 FLTEST=FP/DIST
                 IF (FLTEST.LT.FDLMCX(IRCX)) THEN
-                  CALL EIRENE_GENLIM
+                  CALL EIRENE_GENLIM_POST(WEIGHT,E0*WEIGHT,NNEW)
                   RETURN
                 ENDIF
               ENDIF
@@ -1500,23 +1500,27 @@ C
 
       CONTAINS
 
-      SUBROUTINE EIRENE_GENLIM
+      SUBROUTINE EIRENE_GENLIM_POST(PWGHT,EWGHT,NSPZ2)
 C  UPDATE GENERATION LIMIT TALLIES, THEN STOP TRAJECTORY
 C  USE POST-COLLISION WEIGHT, VELOCITY AND ENERGY (NOT: PRE-COLLISION DATA)
 C  SHOULD MAKE NO DIFFERENCE ON AVERAGE, IF GENERATION LIMIT IS VALID.
 C  IF NOT, ONLY THIS FORM OF ABSORPTION ESTIMATOR GIVES CORRECT BALANCES.
+cdr  An analogous routine for PRE-COLLISION generation limit is
+cdr  contained in UPDATE.f and called from there.
+      REAL(DP), INTENT(IN) :: PWGHT, EWGHT
+      INTEGER, INTENT(IN) :: NSPZ2
 
       IF (LPGENX) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-        PGENX(NCELL)=PGENX(NCELL)-WEIGHT
+        PGENX(NCELL)=PGENX(NCELL)-PWGHT
       ENDIF
       IF (LEGENX) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-        EGENX(NCELL)=EGENX(NCELL)-WEIGHT*E0
+        EGENX(NCELL)=EGENX(NCELL)-EWGHT
       ENDIF
       IF (LVGENX) THEN
 C  FIND POST-COLLISION PARALLEL VELOCITY.
@@ -1527,10 +1531,10 @@ c  Mass of post-collision test particle is the same as pre-collision mass RMASSX
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-        VGENX(NCELL)=VGENX(NCELL)-WEIGHT*M0_N(0)
+        VGENX(NCELL)=VGENX(NCELL)-PWGHT*M0_N(0)
       END IF
 
-      IF (LPGENX.OR.LEGENX.OR.LVGENX) LMETSP(NOLD)=.TRUE.
+      IF (LPGENX.OR.LEGENX.OR.LVGENX) LMETSP(NSPZ2)=.TRUE.
 
       IF (NLTRC) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
@@ -1546,9 +1550,9 @@ cdr  also exit the calling routine
       ITYP=4
       COLTYP=2
       NCELL = NCLLO
-cdr   write (iunout,*) 'collide: genlim, npanu ',npanu
+cdr   write (iunout,*) 'collide: genlim_post, npanu ',npanu
       RETURN
-      END SUBROUTINE EIRENE_GENLIM
+      END SUBROUTINE EIRENE_GENLIM_POST
 
       END SUBROUTINE EIRENE_COLLIDE
 

@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin - SOLPS_DR_changes - 2140fa211baeebadefd8b4ba2f4b58b992a928e7
+## X. Bonnin - SOLPS_DR_changes - 178efc2a0978707cf31fa224acb1aa639a5e54ca
 
 ### Based on SOLPS_coupling - db157c759dbe59d340df6a0aca48200c1c024fe4
 
 ** Changes **
 
+- Modified treatment for generation limit
 - Preparatory work for new photon transport variables
 - Improvements to BGK background treatment
 - Removed polarization reflection file usage
