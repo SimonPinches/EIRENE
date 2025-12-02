@@ -131,7 +131,7 @@ module eirmod_balanced_strategy
     integer ierr, ierrr
     integer mpi_major, mpi_minor
     external eirene_masage, eirene_exit_own
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
     external mpi_allreduce
 #endif
 
@@ -208,7 +208,7 @@ module eirmod_balanced_strategy
     integer, dimension(nstrai) :: npts_remaining, n_epsilon
     integer :: i, k, idx, n, ierr
     character*13 hlp_frm
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
     external :: mpi_bcast, mpi_scatter
 #endif
 
@@ -396,7 +396,7 @@ module eirmod_balanced_strategy
     integer, dimension(nstrai*nprs) :: nparts_processed_all  !< for MPI communication
     integer :: k, i, idx, n, ierr, n_strat
     real(kind=dp) :: t, t_strat
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
     external :: mpi_gather
 #endif
 
@@ -535,7 +535,7 @@ module eirmod_balanced_strategy
     real(kind=dp), dimension(:), allocatable :: t_calstr_pe
     integer, dimension(nstrai) :: n_calstr_sum
     integer :: ierr, k, i, idx
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
     external :: mpi_gather, mpi_reduce
 #endif
 
@@ -602,7 +602,7 @@ module eirmod_balanced_strategy
     real(kind=dp), dimension(nstrai) :: t_postproc_avg
     integer :: ierr, k, n_tot
     real(kind=dp) :: n, tmp
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
     external :: mpi_reduce
 #endif
 

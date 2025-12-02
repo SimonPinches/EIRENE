@@ -2546,7 +2546,7 @@ c
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, IR
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
       EXTERNAL :: MPI_BCAST
 #endif
 
@@ -3073,7 +3073,7 @@ cdr  input:  pointer RP = REACDAT(IR)%TYP%.... with TYP = POT, CRS, RTC,...
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, ND1, ND2
       EXTERNAL :: EIRENE_CHECK_EXIT, EIRENE_EXIT_OWN
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       EXTERNAL :: MPI_BCAST
 #endif
 

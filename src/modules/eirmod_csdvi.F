@@ -198,7 +198,7 @@ c  lmetspw(i1): ditto, for surface-averaged tallies
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       EXTERNAL :: MPI_BCAST
 #endif
 

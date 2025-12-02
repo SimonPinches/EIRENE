@@ -3981,7 +3981,7 @@ c    .                           res
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER, NNROT, NRC, KK, IATM, IPHOT
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       EXTERNAL :: MPI_BCAST
 #endif
 

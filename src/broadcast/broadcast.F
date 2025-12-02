@@ -120,7 +120,7 @@ cdr
       INTEGER :: IER
       EXTERNAL :: EIRENE_ALLOCATE_MODULES, EIRENE_BROADCAST_USR,
      .            EIRENE_CHECK_EXIT
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       EXTERNAL :: MPI_BCAST
 #endif
 

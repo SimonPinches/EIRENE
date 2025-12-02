@@ -95,7 +95,7 @@ module eirmod_calstr_buffered
     integer, intent(in), dimension(:), allocatable :: nparts_loc
     logical :: flag
     integer :: ierr
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
     external :: mpi_testall
 #endif
     if (.not. allocated(next_check)) then
@@ -112,7 +112,7 @@ module eirmod_calstr_buffered
   subroutine calstr_buffered_finish()
     use eirmod_mpi
     integer :: ierr
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
     external :: mpi_waitall
 #endif
     call MPI_WAITALL(N_BUFFERS, calstr_request, MPI_STATUSES_IGNORE, ierr)
@@ -132,7 +132,7 @@ module eirmod_calstr_buffered
     logical, intent(in) :: leader !< whether the PE is the leader of the stratum
     integer :: ierr, isize
     external :: eirene_masage, eirene_exit_own
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
     external :: mpi_ireduce, mpi_waitall
 #endif
     call calstr_init_progress

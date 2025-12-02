@@ -9,7 +9,7 @@ cdr             evaluated "on the fly" instead (subr. sputer.f)
       USE EIRMOD_PARMMOD
       USE EIRMOD_MPI
       IMPLICIT NONE
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       EXTERNAL :: MPI_BCAST
 #endif
 

@@ -347,7 +347,7 @@ c--------------------------------------------------------------------------
       INTEGER :: TSTEP_FLAG, IER
       LOGICAL :: file_exists
       EXTERNAL :: EIRENE_CHECK_EXIT, EIRENE_EXIT_OWN
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       EXTERNAL :: MPI_BCAST
 #endif
 

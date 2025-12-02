@@ -346,7 +346,7 @@ cdr  FOR SOME COMPILERS THIS IS ILLEGAL.
       INTEGER :: IER, IPLS, NREF, IAN
       REAL(DP) :: RHELP(4)
       INTEGER, ALLOCATABLE :: IHELP(:)
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
       EXTERNAL :: MPI_BCAST
 #endif
 

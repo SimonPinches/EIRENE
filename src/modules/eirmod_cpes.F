@@ -152,7 +152,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         integer :: group !, gsize, grank
         logical :: found
         character*13 hlp_frm
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
         external :: mpi_allgather
 #endif
 
@@ -321,7 +321,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         integer, dimension(NSTRA) :: ipts
         external :: eirene_pedist, eirene_leer, eirene_masage,
      &              eirene_exit_own
-#if( defined(USE_MPI) && !defined(GFORTRAN) )
+#if( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
         external :: mpi_bcast
 #endif
 
@@ -428,7 +428,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         real(kind=dp) :: tot, time_avg, time_std
         real(kind=dp), dimension(0:nprs-1) :: time_pe
         external :: eirene_leer
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
         external :: mpi_gather
 #endif
 
@@ -630,7 +630,7 @@ CVKMPI CORRESPONDENCE TABLE "STRATA VERSUS PROCESSOR"
         integer, dimension(nprs) :: tmp
         integer :: grank
         external :: eirene_masage, eirene_exit_own
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
         external :: mpi_allgather
 #endif
 

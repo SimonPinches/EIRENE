@@ -46,7 +46,7 @@ c
       integer :: ier, icomgrp, ier1, i,
      .           mxdim, ns, ir
       logical, allocatable :: lhelp(:)
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       external :: mpi_reduce
 #endif
 

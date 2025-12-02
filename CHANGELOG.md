@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin and D. Reiter - SOLPS_bug_fixes - a10e85d4ad0f8d9e5f1974baf7a2cbcb1b9fe415
+## X. Bonnin and D. Reiter - SOLPS_bug_fixes - 48e9d3bda5370903c710e6ea11595b4fafb6a820
 
 ### Based on V1.2.0 (develop - b0027581a7c95e4fc92671f7a354b6c556eacb23)
 
 ** Changes **
 
+- Added OPEN_MPI pragma to better manage compiler warnings
 - Variable type corrections
 - Renamed some internal variables to avoid clashes
 - Added IOLD argument to EIRENE_UPDATE_SPTFLX

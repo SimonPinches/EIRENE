@@ -210,7 +210,7 @@ C
       USE EIRMOD_MPI
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       EXTERNAL :: MPI_BCAST
 #endif
 
@@ -247,7 +247,7 @@ cdr  additional output tallies added by code itself (rather than via input block
       INTEGER :: I, J, K, NUM_COMPO, NUM_CONTRIB, IER
       TYPE(TCONTRIB) :: CNT
       LOGICAL :: LINES_ALLOCATED
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
       EXTERNAL :: MPI_BCAST
 #endif
 

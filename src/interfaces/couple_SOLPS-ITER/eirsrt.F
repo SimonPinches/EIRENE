@@ -122,7 +122,7 @@ C
      .            EIRENE_PLSTRT, EIRENE_PLEND,
      .            EIRENE_REPLACE_STORED, EIRENE_RPLAM, EIRENE_SETAMD,
      .            EIRENE_WRPLAM, EIRENE_EXIT_OWN
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       EXTERNAL :: MPI_BCAST
 #endif
 C
@@ -1029,7 +1029,7 @@ C
       implicit none
       integer :: ierr_mpi
       LOGICAL :: LOGHELP(NSTRA)
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       EXTERNAL :: MPI_BCAST
 #endif
 

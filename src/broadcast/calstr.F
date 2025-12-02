@@ -69,7 +69,7 @@ C> - tallies
       logical :: lhelpa(0:natm), lhelpm(0:nmol), lhelpi(0:nion),
      .           lhelpp(0:npls), lhelpph(0:nphot)
       external :: eirene_calstr_usr, eirene_masage, eirene_exit_own
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       external :: mpi_reduce
 #endif
 

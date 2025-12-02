@@ -208,7 +208,7 @@ C> not (yet) implemented and may be part of the plasma code interface.)
 
       INTEGER, INTENT(IN) :: ME
       INTEGER :: IER
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       EXTERNAL :: MPI_BCAST
 #endif
 

@@ -1299,7 +1299,7 @@ C     READ IN THE NUMBER OF TRIANGLES
       integer, intent(in) :: istra
       integer, intent(in) :: rank
       integer :: ierr
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
       external :: mpi_send
 #endif
 
@@ -1436,7 +1436,7 @@ C     READ IN THE NUMBER OF TRIANGLES
       integer, intent(in) :: istra
       integer, intent(in) :: rank
       integer :: ierr
-#if ( defined(USE_MPI) && !defined(GFORTRAN) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) )
       external :: mpi_recv
 #endif
 
@@ -1573,7 +1573,7 @@ C     READ IN THE NUMBER OF TRIANGLES
      , ,only: my_pe, get_leader_comm
       implicit none
       integer :: comm, ierr
-#if ( defined(USE_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
+#if ( defined(USE_MPI) && !defined(OPEN_MPI) && !defined(GFORTRAN) && !defined(CRAY) )
       external :: mpi_reduce
 #endif
 
