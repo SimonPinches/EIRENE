@@ -148,7 +148,7 @@ cdr not the reduced "storage species index" NFRSTP
 cdr deal with input tally with indirect species index addressing
             endif
 cdr perhaps unfinished, for input tallies with indirect species index addressing
-cdr TI, VX,VY,VZ
+cdr TI, VX,VY,VZ, BV_VEC
 
             CALL EIRENE_GET_INTAL
             IF (IER > 0) EXIT   ! NO CORRESPONDING INPUT TALLY FOUND
@@ -779,7 +779,8 @@ C     return
       CONTAINS
 
       SUBROUTINE EIRENE_GET_INTAL
-      INTEGER KK
+      INTEGER KS, KK, ICO  ! for species index
+                           ! handling in vectorial tallies
 cdr fetch input tally no. ITL, species K, return as OP(:)
 cdr also set weighting function WEI(:) for averaging in calling routine.
 cdr K from full physical species range: 1:NF.
@@ -959,12 +960,25 @@ c  electr. Potential
         OP(1:NSBOX) = POT(1:NSBOX)
         WEI(1:NSBOX) = 1._DP
       CASE (23)
-c  flow velocity parallel to B field
-        OP(1:NSBOX) = BVIN(MPLSV(K),1:NSBOX)
+c       k = 0 option still missing
+cdr flow velocity wrt. B field: par, perp, dia
+cdr this is now a vectorial tally:
+cdr     K        1,...,NPLSI:    parallel
+cdr     K   NPLS+1,...,2*NPLSI:  perp (radial)
+cdr     K 2*NPLS+1,...,3*NPLSI:  diamagn (B cross perp)
+        KS=MOD(K,NPLSI)
+        IF (KS == 0) KS=NPLSI
+        ICO=(K-1)/NPLSV       ! = 0,1,2
+        KK=ICO*NPLSV
+        OP(1:NSBOX) = BV_VEC(KK+MPLSV(KS),1:NSBOX)
         WEI(1:NSBOX) = 1._DP
       CASE (24)
-c  parallel to B flow momentum
-        OP(1:NSBOX) = PARMOM(K,1:NSBOX)
+c       k = 0 option still missing
+c  momentum flow wrt. B field: par, perp, dia
+cdr     K        1,...,NPLSI:    parallel
+cdr     K   NPLS+1,...,2*NPLSI:  perp (radial)
+cdr     K 2*NPLS+1,...,3*NPLSI:  diamagn (B cross perp)
+        OP(1:NSBOX) = PMOM_VEC(K,1:NSBOX)
         WEI(1:NSBOX) = 1._DP
       CASE (25)
 c  psi

@@ -190,11 +190,11 @@ C  MOMENTUM DENSITY, Z DIRECTION
       LEXTALV(94) = NMOL>0
       LEXTALV(95) = NION>0
       LEXTALV(96) = NPHOT>0
-C  PARALLEL (TO B FIELD) MOMENTUM SOURCE RATES
-      LEXTALV(97) = (NPLS>0) .AND. (NATM>0)
-      LEXTALV(98) = (NPLS>0) .AND. (NMOL>0)
-      LEXTALV(99) = (NPLS>0) .AND. (NION>0)
-      LEXTALV(100) = (NPLS>0) .AND. (NPHOT>0)
+C  MOMENTUM SOURCE RATES, PAR, PERP, DIA
+      LEXTALV(97) = (3*NPLS>0) .AND. (NATM>0)
+      LEXTALV(98) = (3*NPLS>0) .AND. (NMOL>0)
+      LEXTALV(99) = (3*NPLS>0) .AND. (NION>0)
+      LEXTALV(100) = (3*NPLS>0) .AND. (NPHOT>0)
 
 C  RADIATION RATES
       LEXTALV(101) = NATM>0
@@ -358,11 +358,11 @@ C  MOMENTUM DENSITY, Z DIRECTION
       NFIRST(94)=NMOL
       NFIRST(95)=NION
       NFIRST(96)=NPHOT
-C  PARALLEL (TO B FIELD) MOMENTUM SOURCE RATES
-      NFIRST(97)=NPLS
-      NFIRST(98)=NPLS
-      NFIRST(99)=NPLS
-      NFIRST(100)=NPLS
+C  VECTORIAL MOMENTUM SOURCE RATES
+      NFIRST(97)=3*NPLS
+      NFIRST(98)=3*NPLS
+      NFIRST(99)=3*NPLS
+      NFIRST(100)=3*NPLS
 
 C  RADIATION RATES
       NFIRST(101)=NATM
@@ -738,14 +738,14 @@ c  standard deviation surface-averaged tallies
 C
 c  volume-averaged output tallies. Note: some volume tallies are removed from
 c  the run (put to cemeteryv), see eirmod_cestim.f
-      RSAVE=MPHPL(NPHOT,NRTAL)
-      MPHPL(NPHOT,NRTAL)=1.234567
+      RSAVE=MPHPL_VEC(NPHOT,NRTAL)
+      MPHPL_VEC(NPHOT,NRTAL)=1.234567
       write (iunout,*) nvoltl,nrtal
       IF (ESTIMV(NVOLTL,NRTAL).NE.1.234567) THEN
         WRITE (iunout,*) 'PARAMETER ERROR DETECTED IN SETPRM: NESTM1?'
 C       CALL EIRENE_EXIT_OWN(1)
       ENDIF
-      MPHPL(NPHOT,NRTAL)=RSAVE
+      MPHPL_VEC(NPHOT,NRTAL)=RSAVE
 C
 c  surface-averaged output tallies. Note: some surface tallies are removed from
 c  the run (put to cemeterys), see eirmod_cestim.f
@@ -829,6 +829,11 @@ c.............................................................................
         DO ITAL=1,NTALV
           IF (LIVTALV(ITAL)) THEN
             WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
+cdr  vectorial momentum source tallies, further components
+            if (ital.ge.97 .and. ital.le.100) then
+              WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(NPLS+1,ITAL)
+              WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(2*NPLS+1,ITAL)
+            endif
           ENDIF
         END DO
 
@@ -841,6 +846,11 @@ c.............................................................................
           DO ITAL=1,NTALV
             IF (.NOT.LIVTALV(ITAL)) THEN
               WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
+cdr  vectorial momentum source tallies, further components
+              if (ital.ge.97 .and. ital.le.100) then
+                WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(NPLS+1,ITAL)
+                WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(2*NPLS+1,ITAL)
+              endif
             ENDIF
           END DO
         END IF
@@ -854,6 +864,11 @@ c.............................................................................
           DO ITAL=1,NTALV
             IF (LMISTALV(ITAL)) THEN
               WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(1,ITAL)
+cdr  vectorial momentum source tallies, further components
+              if (ital.ge.97 .and. ital.le.100) then
+                WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(NPLS+1,ITAL)
+                WRITE (IUNOUT,'(I6,1X,A72)') ITAL,TXTTAL(2*NPLS+1,ITAL)
+              endif
             ENDIF
           END DO
         END IF

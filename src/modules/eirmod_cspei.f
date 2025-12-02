@@ -8,6 +8,9 @@ c
 c   Size of plasma_bckgrnd: currently NIINTF (formerly: NIDC)
 c   to be checked: is this consistent with usage of plasma_bckgrnd?
 c   also in modbgk?
+cdr june 23:  add unit vector for grad(PSI) direction.
+cdr           target: plasma_background, pointers: bxperf,...
+cdr           to be put onto eirene input tallies 16 ,17: bxperp,...
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 
@@ -40,7 +43,10 @@ c   also in modbgk?
      .  TEINTF(:),   TIINTF(:,:), DIINTF(:,:),
      .  VXINTF(:,:), VYINTF(:,:), VZINTF(:,:),
      .  BXINTF(:),   BYINTF(:),   BZINTF(:),   BFINTF(:),
-     .  VLINTF(:),   ADINTF(:,:)
+     .  VLINTF(:),   ADINTF(:,:),
+cdr unit vector perpendicular to PSI:  should be grad(PSI), but PSI is not ready here
+     .  BXPERF(:),   BYPERF(:)  ! BZPERF(:) == 0 in 2D equilibria
+                                ! (tor. symmetry)
 
       INTEGER, PUBLIC, SAVE :: IESTR
 
@@ -208,7 +214,7 @@ c
 c    currently: no E field information ?
 
 cdr  size of interfacing plasma data storage
-      NIINTF=6+1*NPLS+NPLSTI+3*NPLSV+NAIN
+      NIINTF=8+1*NPLS+NPLSTI+3*NPLSV+NAIN
 
       IF (.NOT.ALLOCATED(PLASMA_BCKGRND)) THEN
 
@@ -239,6 +245,11 @@ c
 c  7+npls+nplsti+3nplsv -- 6+npls+nplsti+3nplsv+nain
         ADINTF => PLASMA_BCKGRND(1+6+1*NPLS+NPLSTI+3*NPLSV :
      .                             6+1*NPLS+NPLSTI+3*NPLSV+NAIN, :)
+cdr 2 further scalar tallies: cartesian coordinates x and y of unit vector in grad(PSI) direction
+c  7+npls+nplsti+3nplsv+nain
+        BXPERF => PLASMA_BCKGRND(1+6+1*NPLS+NPLSTI+3*NPLSV+NAIN, :)
+c  8+npls+nplsti+3nplsv+nain
+        BYPERF => PLASMA_BCKGRND(1+7+1*NPLS+NPLSTI+3*NPLSV+NAIN, :)
 
         CALL EIRENE_INIT_BCKGRND
 
@@ -264,6 +275,8 @@ c  7+npls+nplsti+3nplsv -- 6+npls+nplsti+3nplsv+nain
       NULLIFY(BFINTF)
       NULLIFY(VLINTF)
       NULLIFY(ADINTF)
+      NULLIFY(BXPERF)
+      NULLIFY(BYPERF)
 
       RETURN
       END SUBROUTINE EIRENE_DEALLOC_BCKGRND

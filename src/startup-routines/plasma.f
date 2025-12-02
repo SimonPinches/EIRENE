@@ -75,6 +75,7 @@ c flow field
         VXIN = 0.D0
         VYIN = 0.D0
         VZIN = 0.D0
+cdr     BV_VEC
       ENDIF
 
       IF (INDPRO(11)/= 9) ZIIN = 0.D0
@@ -84,6 +85,9 @@ c  magnetic field
         BYIN = 0.D0
         BZIN = 0.D0
         BFIN = 0.D0
+        BXPERP = 0.D0
+        BYPERP = 0.D0
+cdr     BZPERP  : not there yet
 cdr     PSI     : not there yet
       ENDIF
 
@@ -403,6 +407,8 @@ C  DEFAULT: 1 TESLA B FIELD IN Z-DIRECTION, i.e., PITCH=0
         BYIN=0.
         BZIN=1.
         BFIN=1.
+        BXPERP=0.
+        BYPERP=0.
       END IF
 
       select case (ind)
@@ -446,6 +452,12 @@ c                default (vacuum) parameters in additional cells
         INI=4+NPLS+NPLSTI+3*NPLSV
         CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
         BFIN(1:NSURF) = RDUMMY(1,1:NSURF)
+        INI=6+NPLS+NPLSTI+3*NPLSV+NAIN
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
+        BXPERP(1:NSURF) = RDUMMY(1,1:NSURF)
+        INI=7+NPLS+NPLSTI+3*NPLSV+NAIN
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSURF)
+        BYPERP(1:NSURF) = RDUMMY(1,1:NSURF)
         DEALLOCATE(RDUMMY)
       case (7)
 c  INDPRO(5) =7: call profr (information comes from interfacing code)
@@ -463,6 +475,12 @@ c                include also additional cells
         INI=4+NPLS+NPLSTI+3*NPLSV
         CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
         BFIN(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        INI=6+NPLS+NPLSTI+3*NPLSV+NAIN
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
+        BXPERP(1:NSBOX) = RDUMMY(1,1:NSBOX)
+        INI=7+NPLS+NPLSTI+3*NPLSV+NAIN
+        CALL EIRENE_PROFR (RDUMMY,INI,1,1,NSBOX)
+        BYPERP(1:NSBOX) = RDUMMY(1,1:NSBOX)
         DEALLOCATE(RDUMMY)
       end select
 
@@ -494,6 +512,10 @@ C
             ELSE
               BFIN(J)=1.
             ENDIF
+cdr  tbd.:
+cdr  some convention for bxperp, byperp, e.g.:
+cdr       if not nlpitch: = (1.0, 0.0)
+cdr       if     nlpitch: = (0.0, 1.0)
  1401     CONTINUE
         ELSEIF (LEVGEO.EQ.2.AND.NLPOL) THEN
           DO 1402 J=1,NSURF
@@ -515,6 +537,8 @@ C
             ELSE
               BFIN(J)=1.
             ENDIF
+cdr  tbd.:
+cdr  some convention for bxperp, byperp, e.g.:
  1402     CONTINUE
         ELSEIF (LEVGEO.EQ.3.AND.NLPOL) THEN
           DO 1403 J=1,NSURF
@@ -534,6 +558,8 @@ C
             ELSE
               BFIN(J)=1.
             ENDIF
+cdr  tbd.:
+cdr  some convention for bxperp, byperp, e.g.:
  1403     CONTINUE
         ELSE
           CALL EIRENE_LEER(1)
@@ -562,6 +588,8 @@ C  CHECK FOR ZERO MAGNETIC FIELD IN ANY CELL (INCL. ADD. CELL REGION)
           WRITE (iunout,*) 'MAGNETIC FIELD STRENGTH = ZERO, JJ= ',JJ
           CALL EIRENE_EXIT_OWN(1)
         ENDIF
+cdr  here should come some test re bxperp, byperp....
+cdr  Now done in PLASMA_DERIV.F
   153 CONTINUE
 
   154 CONTINUE  !  B FIELD SPECIFIED AT ALL ??
@@ -777,6 +805,8 @@ C
             BYIN(J)=0.
             BZIN(J)=1.
             BFIN(J)=1.
+            BXPERP(J)=0.
+            BYPERP(J)=0.
           ENDDO
         ENDIF
       ENDIF

@@ -56,6 +56,11 @@ cdr          comments for further unification of colatm,colmol,colion routines
 cdr          P2NDS --> P2NEI
 c  unify: iold: nxeii, lgxei, rmassx, LEXEL, EXEL, EXPL, etc.
 cdr 2021   : former routines colatm, colmol, colion unified into collide.f
+cdr        : remove eirene specific sign convention (SIGNUM)
+cdr          in momentum source rates, to facilitate code with
+cdr          vectorial momentum source rates.
+cdr          This must also
+cdr          be done in UPDATE, and in interfacing code.
 cdr 2022   : cascading at collisions enabled: currently for CX 1st secondary
 cdr 2023   : absorption biassing generalized, no also for CX.
 cdr          tbd: for PI, EL, processes
@@ -95,13 +100,12 @@ cdr          tbd: for PI, EL, processes
       REAL(DP) :: DUMT(3), DUMV(3)
       REAL(DP) :: SIGSUM, WGHTO, FRSTP, SCNDP, PTOT,
      .          VELXO, VELYO, VELZO, VELO, E0O,
-     .          BX, BY, BZ, BXN(0:2), BYN(0:2), BZN(0:2),
-     .          V0_O(0:2), M0_O(0:2), VP_O(0:2), MP_O(0:2),
-     .          EDEL, VDEL, SIGNUM,
-     .          V0_PARB, V0_PARBO,
-     .          V0_N(0:2), M0_N(0:2), VP_N(0:2), MP_N(0:2),
+     .          BX(0:2), BY(0:2), BZ(0:2),
+     .          V0_O(0:2), M0_O(0:2), MP_O(0:2),
+     .          EDEL, VDEL(0:2),
+c    .          V0_PARB, V0_PARBO,  ! is now: M0_N(0) and M0_O(0), resp.
+     .          V0_N(0:2), M0_N(0:2), MP_N(0:2),
      .          FP, FLTEST, ZEP3, VELQ,
-     .          VX, VY, VZ, VPLASP,
      .          RMXIO, BF, ZEP
       REAL(DP) :: SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST
       INTEGER :: IOLD, NOLD, INEW, NNEW, ITYPO, ITYPN, IPLSO,
@@ -124,11 +128,10 @@ CDR         or integer (1/2 particle possible?)
 cym IAPH, RMMIO, RMIIO and IRPH removed during merge
 !$OMP THREADPRIVATE (dumt,dumv,
 !$OMP& SIGSUM, WGHTO, FRSTP, SCNDP, PTOT, VELXO,
-!$OMP& VELYO, VELZO, VELO, E0O, BX, BY, BZ, V0_PARBO,
-!$OMP& BXN, BYN, BZN, V0_O, M0_O,
-!$OMP& EDEL, VDEL, SIGNUM, V0_PARB, V0_N, M0_N, VP_N, MP_N,
+!$OMP& VELYO, VELZO, VELO, E0O, BX, BY, BZ,
+!$OMP& V0_O, M0_O, MP_O,
+!$OMP& EDEL, VDEL, V0_N, M0_N, MP_N,
 !$OMP& FP, FLTEST, ZEP3, VELQ,
-!$OMP& VX, VY, VZ, VPLASP,
 !$OMP& RMXIO, BF, ZEP,
 !$OMP& SIG_ELIM, SIG_TOT_N, SIG_TOT_O, SIG_TEST,
 !$OMP& IOLD, NOLD, INEW, NNEW, ITYPO, ITYPN, IPLSO,
@@ -185,10 +188,13 @@ C  VELOCITY AND MOMENTUM OF TEST PARTICLE INCIDENT TO COLLISION,
 C  RELATIVE TO B FIELD
 cdr  needed only in case if(any(iestab(:,2) .ne. 0)), "ab" stands for ei,cx,pi,el
 
-      IF (LMXPL.OR.NGENX.NE.0) THEN
+      IF (LMXPL_VEC.OR.NGENX.NE.0) THEN
         CALL EIRENE_BFIELD (NCLLO, X0, Y0, Z0, BX, BY, BZ, BF,.TRUE.)
-        V0_PARBO=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
-        V0_PARBO=V0_PARBO*AMUA*RMASSX
+        DO ICO=0,2
+          V0_O(ICO)=VEL*(VELX*BX(ICO)+VELY*BY(ICO)+VELZ*BZ(ICO))
+cdr  previous code: M0_O(ico=0) = v0_paraO
+          M0_O(ICO)=V0_O(ICO)*AMUA*RMASSX
+        ENDDO
       ENDIF
 
       E0O=E0
@@ -882,19 +888,20 @@ cdr  col estim. particle tally, but second secondary is not a bulk ion
 
 C  COLLISION ESTIMATOR CONTRIBUTION TO MXPL_VEC (FORMERLY: COPV)
             IF (IESTCX(IRCX,2).NE.0) THEN
-              IF (LMXPL) THEN
-C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY = PRE-COLLISION BULK (ION) VELOCITY
-                V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
-                V0_PARB=V0_PARB*AMUA*RMASSX
-                IF (INDPRO(4) == 8) THEN
-                  CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLSO,
-     .                               .TRUE.)
-                  VPLASP=VX*BX+VY*BY+VZ*BZ
-                  SIGNUM=SIGN(1._DP,VPLASP)
-                ELSE
-                  SIGNUM=1._DP
-                  IF (LBVIN) SIGNUM =SIGN(1._DP,BVIN(IPLSV,NCLLO))
-                ENDIF
+              IF (LMXPL_VEC) THEN
+C  SET THE POST-COLLISION TEST PARTICLE VELOCITY = PRE-COLLISION BULK (ION) VELOCITY
+                DO ICO=0,2
+                  KKK=ICO*NPLS
+cdr  CX model: V0_N = VP_O
+                  V0_N(ICO)=
+     .              VEL*(VELX*BX(ICO)+VELY*BY(ICO)+VELZ*BZ(ICO))
+cdr  new test particle momentum, wrt. B field
+cdr  unused, new mass?
+c                 M0_N(ICO)=V0_N(ICO)*AMUA*RMASSA(IATMN)
+cdr  old field particle momentum, wrt. B field
+                  MP_O(ICO)=V0_N(ICO)*AMUA*RMASSP(IPLSO)
+
+csig  setting "SIGNUM" removed
 
 C  ASSUME: OLD (INCIDENT) FIELD PARTICLE VELOCITY WAS EQUAL TO NEW TEST PARTICLE VELOCITY
 C          Scattering angle = PI in COM.
@@ -902,24 +909,31 @@ C  remove its momentum from field particles
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                MXPL(IPLSO,NCELL)=MXPL(IPLSO,NCELL)-
-     .                           WEIGHT*V0_PARB
-     .                           *SIGNUM
-                LMETSP(NSPAMI+IPLS)=.TRUE.
+                  MXPL_VEC(KKK+IPLSO,NCELL)=MXPL_VEC(KKK+IPLSO,NCELL)-
+     .                                     WEIGHT*MP_O(ICO)
+csig                            *SIGNUM
+                  LMETSP(NSPAMI+KKK+IPLS)=.TRUE.
+                ENDDO  !ICO
               END IF
 
               IF (N2NDX(IRCX,1).EQ.4) THEN
-                IF (LMXPL) THEN
+                IF (LMXPL_VEC) THEN
 C  IPLSN: BULK ION SPECIES AFTER CX
                   IPLSN=N2NDX(IRCX,2)
 C  ASSUME: NEW FIELD PARTICLE VELOCITY IS EQUAL TO (OLD) INCIDENT TEST PARTICLE VELOCITY
 C          Scattering angle = PI in COM. Exchange of identity
+                  DO ICO=0,2
+                    KKK=ICO*NPLS
+cdr  unused, new mass?
+c                   M0_O(ICO)=V0_O(ICO)*AMUA*RMASSX
+                    MP_N(ICO)=V0_O(ICO)*AMUA*RMASSP(IPLSN)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                  MXPL(IPLSN,NCELL)=MXPL(IPLSN,NCELL)+
-     .                              WGHTO*V0_PARBO
-     .                              *SIGNUM
+                    MXPL_VEC(KKK+IPLSN,NCELL)=MXPL_VEC(KKK+IPLSN,NCELL)+
+     .                                       WGHTO*MP_N(ICO)
+csig                                        *SIGNUM
+                  ENDDO
                   LMETSP(NSPAMI+IPLSN)=.TRUE.
                 END IF
               ELSEIF (N2NDX(IRCX,1).NE.4) THEN
@@ -1243,23 +1257,22 @@ c  UPDATE NET collision estimator for EL energy exchange tallies
 
 C  UPDATE COLLISION ESTIMATOR CONTRIBUTION TO MXPL_VEC (FORMERLY: COPV)
         IF (IESTEL(IREL,2).NE.0) THEN
-          IF (LMXPL) THEN
-C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY WRT. B FIELD
-            V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
-            V0_PARB=V0_PARB*AMUA*RMASSX
+          IF (LMXPL_VEC) THEN
+C  SET THE POST-COLLISION TEST PARTICLE VELOCITY WRT. B FIELD
+            DO ICO=0,2
+              KKK=ICO*NPLS
+              V0_N(ICO)=VEL*(VELX*BX(ICO)+VELY*BY(ICO)+VELZ*BZ(ICO))
+              M0_N(ICO)=V0_N(ICO)*AMUA*RMASSX
 C
-            VDEL=V0_PARBO*WGHTO-V0_PARB*WEIGHT
-            IF (INDPRO(4) == 8) THEN
-              CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLS,
-     .                           .TRUE.)
-              VPLASP=VX*BX+VY*BY+VZ*BZ
-              SIGNUM=SIGN(1._DP,VPLASP)
-            ELSE
-              SIGNUM=1._DP
-              IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,NCLLO))
-            ENDIF
+              VDEL(ICO)=M0_O(ICO)*WGHTO-M0_N(ICO)*WEIGHT
+csig  remove evaluation of parameter SIGNUM here.
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
-            MXPL(IPLS,NCELL)=MXPL(IPLS,NCELL)+VDEL*SIGNUM
+#endif
+              MXPL_VEC(KKK+IPLS,NCELL)=MXPL_VEC(KKK+IPLS,NCELL)+
+     .                                 VDEL(ICO)
+csig                        *SIGNUM
+            ENDDO
             LMETSP(NSPAMI+IPLS)=.TRUE.
           END IF
         ENDIF
@@ -1525,7 +1538,7 @@ cdr  contained in UPDATE.f and called from there.
       IF (LVGENX) THEN
 C  FIND POST-COLLISION PARALLEL VELOCITY.
 C  THE LOCAL B FIELD: KNOWN ALREADY FROM INITIALISATION
-        V0_N(0)=VEL*(VELX*BXN(0)+VELY*BYN(0)+VELZ*BZN(0))
+        V0_N(0)=VEL*(VELX*BX(0)+VELY*BY(0)+VELZ*BZ(0))
 c  Mass of post-collision test particle is the same as pre-collision mass RMASSX
         M0_N(0)=V0_N(0)*AMUA*RMASSX
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )

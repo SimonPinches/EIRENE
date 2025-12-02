@@ -44,6 +44,11 @@
 
 cdr Aug.  22 : notation, and bugfix: sumn,sumnt vs. sum (only affecting
 cdr            diagnostic output)
+cdr June  22 : vectorial momentum source rates.
+cdr            as in collide, update, etc...
+cdr            These momentum source tallies follow the
+cdr            different sign convention that came with
+cdr            this extension.
 cdr Sep.  21 : a bit more and corrected documentation
 cdr Nov.  19 : Nested do 6 loop: erroneous exit from loop
 cdr            corrected (300919): Possible significant
@@ -98,10 +103,10 @@ C
       SUBROUTINE EIRENE_SAMVL0
       IMPLICIT NONE
       REAL(DP) :: ADD, EIRENE_FTABRC1, CDYN, REC, XC, YC, ZC,
-     .            BX, BY, BZ, BF,
+     .            ADD_VEC(0:2), BX(0:2), BY(0:2), BZ(0:2), BF,
      .            VX, VY, VZ, EIRENE_FEELRC1,
-     .            VPARA, EELRC,
-     .            MOMPARA,
+     .            VPARA, VPERA, VDIAA, EELRC,
+     .            MOMPARA, MOMPERA, MOMDIAA,
      .            TOT_BREMS(NPLS), Z,
      .            BREMS, EIRENE_BREMS,
 cdr  sum over sub-strata
@@ -111,7 +116,7 @@ cdr  sum over sub-strata
      .           IFPLS, IIRC, IRRC, I, J, ICCT, IPLSTI, IPLSV,
      .           IR1, IR2, IP1, IP2, IT1, IT2, IR, IP, IT,
      .           ICC, IRC, ISTEP, IFRC, IND, JPLS, ISTRAI,
-     .           KK
+     .           KK, ICO
       EXTERNAL :: EIRENE_LEER, EIRENE_MASAJR, EIRENE_MASJ2R,
      .            EIRENE_MASJ3, EIRENE_MASJR2, EIRENE_MASAJR3,
      .            EIRENE_EXIT_OWN, EIRENE_BFIELD, EIRENE_VECUSR,
@@ -244,7 +249,7 @@ C
 cdr  for diagnostics only: further global primary volume source rates
         EIO=0.
         EEL=0.
-        MOM=0.
+        MOM_VEC=0.
 C
         DO 7 JPLS=1,NPLSI
           IPLS=JPLS
@@ -282,27 +287,48 @@ cdr  take center of gravity in cell, if needed (last parameter (logical) in bfie
                 xc=0.
                 yc=0.
                 zc=0.
+                mompara=0.
+                mompera=0.
+                momdiaa=0.
                 CALL EIRENE_BFIELD (J, XC,YC,ZC, BX,BY,BZ, BF,.FALSE.)
                 IF (INDPRO(4) == 8) THEN
                   CALL EIRENE_VECUSR(2,J,XC,YC,ZC,VX,VY,VZ,IPLS,.FALSE.)
-                  VPARA=VX*BX+VY*BY+VZ*BZ
-                  MOMPARA=VPARA*CDYN*SIGN(1._DP,VPARA)
+                  VPARA=VX*BX(0)+VY*BY(0)+VZ*BZ(0)
+                  MOMPARA=VPARA*CDYN
+                  VPERA=VX*BX(1)+VY*BY(1)+VZ*BZ(1)
+                  MOMPERA=VPERA*CDYN
+                  VDIAA=VX*BX(2)+VY*BY(2)+VZ*BZ(2)
+                  MOMDIAA=VDIAA*CDYN
                 ELSE IF (INDPRO(5) == 8) THEN
                   VX = VXIN(IPLSV,J)
                   VY = VYIN(IPLSV,J)
                   VZ = VZIN(IPLSV,J)
-                  VPARA=VX*BX+VY*BY+VZ*BZ
-                  MOMPARA=VPARA*CDYN*SIGN(1._DP,VPARA)
+                  VPARA=VX*BX(0)+VY*BY(0)+VZ*BZ(0)
+                  MOMPARA=VPARA*CDYN
+                  VPERA=VX*BX(1)+VY*BY(1)+VZ*BZ(1)
+                  MOMPERA=VPERA*CDYN
+                  VDIAA=VX*BX(2)+VY*BY(2)+VZ*BZ(2)
+                  MOMDIAA=VDIAA*CDYN
                 ELSE
-                  MOMPARA=PARMOM(IPLS,J)
+cdr  check if storage for pmom_vec(:,:) is available, else: use zero
+                  IF (LPMOM_VEC) THEN
+                    MOMPARA=PMOM_VEC(IPLS,J)
+                    MOMPERA=PMOM_VEC(IPLS+NPLS,J)
+                    MOMDIAA=PMOM_VEC(IPLS+2*NPLS,J)
+                  ENDIF
                 ENDIF
-                ADD=MOMPARA*REC
+                ADD_VEC(0)=MOMPARA*REC
+                ADD_VEC(1)=MOMPERA*REC
+                ADD_VEC(2)=MOMDIAA*REC
 
                 IF (ICCT > 0)
-     .            ADD = ADD*(XINTLEFT(ICCT,J) +
+     .            ADD_VEC(0:2) = ADD_VEC(0:2)*(XINTLEFT(ICCT,J) +
      .                       XINT_INF(ICCT,J) - XINTRIGHT(ICCT,J))
-                MOM(IPLS,IRRC)=MOM(IPLS,IRRC)-ADD
-                MOM(IPLS,0)   =MOM(IPLS,0   )-ADD
+                DO ICO=0,2
+                  KK=ICO*NPLS+IPLS
+                  MOM_VEC(KK,IRRC)=MOM_VEC(KK,IRRC)-ADD_VEC(ICO)
+                  MOM_VEC(KK,0)   =MOM_VEC(KK,0   )-ADD_VEC(ICO)
+                ENDDO
               ENDIF
             END DO
     6     CONTINUE
@@ -435,12 +461,14 @@ C
           ISPZ=ISPEZ(ITYP,IPHOT,IATM,IMOL,IION,IPLS)
           DO 17 IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)
-            CALL EIRENE_MASAJR('IPLS,IRRC,MOM           ',
-     .                   TEXTS(ISPZ),IRRC,MOM(IPLS,IRRC))
+            CALL EIRENE_MASAJR3('IPLS,IRRC,MOM_VEC       ',
+     .               TEXTS(ISPZ),IRRC,MOM_VEC(IPLS,IRRC),
+     .               MOM_VEC(IPLS+NPLS,IRRC),MOM_VEC(IPLS+2*NPLS,IRRC))
    17     CONTINUE
           IF (NPRCI(IPLS).GT.1) THEN
-            CALL EIRENE_MASAJR('IPLS,TOT.,MOM(IPLS,0)   ',
-     .                   TEXTS(ISPZ),0   ,MOM(IPLS,0))
+            CALL EIRENE_MASAJR3('IPLS,TOT.,MOM_VEC(IPL,0)',
+     .               TEXTS(ISPZ),0   ,MOM_VEC(IPLS,0),
+     .               MOM_VEC(IPLS+NPLS,0),MOM_VEC(IPLS+2*NPLS,0))
           ENDIF
    16   CONTINUE
         CALL EIRENE_LEER(1)

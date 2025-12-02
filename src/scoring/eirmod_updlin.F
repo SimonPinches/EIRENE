@@ -67,9 +67,11 @@ cpb  for scoring on COPV
              IRD = NCLTAL(IR)
 cdr  ir is fine grid for background medium, geometry, etc...
 cdr  ird is coarse grid for scoring
+cdr June 22: BV_VEC now contains all three vector components.
+cdr          For the time being we only use the parallel component here.
              IF (IRD > 0) THEN
                UAH(IPL,IRD) = 0._DP
-               IF (LBVIN) UAH(IPL,IRD) = BVIN(IPLV,IR)
+               IF (LBV_VEC) UAH(IPL,IRD) = BV_VEC(IPLV,IR)
                EKIN(IPL,IRD)= cvrssp(IPL) * UAH(IPL,IRD)**2       ! eV
              ENDIF
            END DO
@@ -91,7 +93,7 @@ cdr  ird is coarse grid for scoring
 
 !  current version:
 !    1) total particle source          (sni=papl+pmpl+pipl       , ICP+1  ,ICP2)
-!    2) total parallel momentum source (smo=mapl+mmpl+mipl       , ICP2+1 ,ICP3)
+!    2) total parallel momentum source (smo=mapl_vec+mmpl_vec+..., ICP2+1 ,ICP3)
 !    3) total ion energy source        (sei_tot=eapl+empl+eipl   , ICP3+1 ,ICP4)
 !    4) internal ion energy source     (sei_int=sei-u*smo+ek*sni , ICP4+1 ,ICP5)
 !    5) total electr. energy source    (see=eael+emel+eiel       , ICP5+1)
@@ -171,16 +173,16 @@ CDR  the present trajectory has visited NCLMT (coarse) scoring cells
 !$OMP CRITICAL
 #endif
              COPV(ICP2+IPL,IR) = 0._DP
-             IF (LMAPL) COPV(ICP2+IPL,IR)=
-     .                  COPV(ICP2+IPL,IR)+MAPL(IPL,IR)
-             IF (LMIPL) COPV(ICP2+IPL,IR)=
-     .                  COPV(ICP2+IPL,IR)+MIPL(IPL,IR)
-             IF (LMMPL) COPV(ICP2+IPL,IR)=
-     .                  COPV(ICP2+IPL,IR)+MMPL(IPL,IR)
+             IF (LMAPL_VEC) COPV(ICP2+IPL,IR)=
+     .                      COPV(ICP2+IPL,IR)+MAPL_VEC(IPL,IR)
+             IF (LMIPL_VEC) COPV(ICP2+IPL,IR)=
+     .                      COPV(ICP2+IPL,IR)+MIPL_VEC(IPL,IR)
+             IF (LMMPL_VEC) COPV(ICP2+IPL,IR)=
+     .                      COPV(ICP2+IPL,IR)+MMPL_VEC(IPL,IR)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
 #endif
-             IF (LMAPL.OR.LMMPL.OR.LMIPL)
+             IF (LMAPL_VEC.OR.LMMPL_VEC.OR.LMIPL_VEC)
      .           LMETSP(NMTSP+ICP2+IPL)=.TRUE.
 
            END DO

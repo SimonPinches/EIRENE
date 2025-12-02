@@ -3,13 +3,13 @@ C  21.01.06: photon background for test atoms: removed
 C  18.04.06: test ions and atoms: synchronized
 C            bug fix: V0_para --> parmom_0 for elastic momentum source
 C                                 contribution from atoms.
-C  10.01.07: parallel momentum exchange tallies MAPL, MMPL, MIPL
+C  10.01.07: parallel momentum exchange tallies MAPL_VEC, MMPL_VEC, MIPL_VEC
 C            included as default EIRENE tallies.
 C            Before these tallies have been updated in problem
 C            specific section UPTCOP, as COPV tallies.
 C  12.02.07: Add user-supplied B field and plasma flow option indpro=8
 C            to evaluation of parallel momentum sources,
-C            Do not use BVIN, PARMOM arrays in this case, because they
+C            Do not use BV_VEC, PMOM_VEC arrays in this case, because they
 C            may not have been initialized in subr. PLASMA_DERIV
 C            for these options.
 C            Use vsig_parp und val_parp instead.
@@ -32,6 +32,10 @@ cdr dec. 16: some more comments re sign convention for momentum sources
 cdr Nov. 17: merging of entries for atoms, molecules, test ions, from
 cdr          branch "code-combine" (p.b.), plus some naming conventions re-enforced
 cdr          tbd: entry update_photons now own routine: update_phot. to be integrated still.
+cdr Jan. 22: use full tensor: par, perp, diamagn. B field vectors wrt. cart. coord.
+cdr          removal of eirene specific sign convention
+cdr          in momentum source rates. See also: COLLIDE,
+cdr          and interfacing routines.
 cdr Mar- 22: remove unnecessary dimensions in LGX, PXX, etc.. pointer arrays
 cdr          as cleanup prior to adding new dimensions for species rescaling
 
@@ -99,21 +103,29 @@ C
       INTEGER, INTENT(IN) :: IFLAG
       REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, WTRV,
      .            DELE, PRAD, RMRATIO,
-     .            V0_PARB, PARMOM_0, P,
-     .            BX, BY, BZ,
+     .            V0_PARB(0:2), PMOM_0(0:2), P,
+     .            BX(0:2), BY(0:2), BZ(0:2),
      .            BF, VION,
      .            ELEI, EHEAVY
       REAL(DP), EXTERNAL :: EIRENE_FEELEI1, EIRENE_FEHVEI1
-      REAL(DP) :: VSIG_PARB(NPLS), VAL_PARB(NPLS),
+      REAL(DP) :: VSIG_PARB(0:2,NPLS), VAL_PARB(0:2,NPLS),
+
+cdr nomenclature has become increasingly illogical.
+cdr better rename: vsig_parb --> pmom_pl
+cdr                pmom_0    --> pmom_0,  is ok
+cdr                val_parb  --> v_pl
+cdr                v0_parb   --> v_0
+cdr  tbd.
      .            VX(NPLS), VY(NPLS),
      .            VZ(NPLS),XC,YC,ZC
       INTEGER :: IRD,  I, IRDO,
      .           IPL, IAT, IA,
      .           IM,  IIO, IP, IML, II, NPBGK,
      .           IBGK, IPLV,
-     .           KK
+     .           KK, ICO
 C SECONDARY SPECIES IDENTIFIERS
-      INTEGER :: IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPL1,IPL2
+      INTEGER :: IAT1,IAT2,IML1,IML2,IIO1,IIO2,IPL1,IPL2,
+     .           ISP1,ISP2,NSP1,NSP2
 C EL PROCESSES
       INTEGER :: IXEL,IREL
 C CX PROCESSES
@@ -1461,11 +1473,11 @@ C
 C.........................................................................
 C
 C
-C  PROJECTIONS, FIND PARALLEL COMPONENTS
+C  PROJECTIONS, FIND COMPONENTS PARALLEL, PERP and DIAMAG: ICO=0,1,2
 C
 C
-        IF (LMXPL) THEN
-
+        IF (LMXPL_VEC) THEN
+cdr  cartesian components BX,BY,BZ of Bpar, Bper, Bdia
           CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0,
      .                              BX, BY, BZ, BF,.FALSE.)
 
@@ -1484,49 +1496,63 @@ C
             END IF
           END DO
 
-c  set parameters for parallel momentum of incident bulk particle
-c  val_parb   : parallel velocity component, incl. sign, relative to B
-c  vsig_parb  : parallel momentum, modulus (always positive)
+c  set parameters for momentum of incident bulk particle
+c  val_parb   : velocity vector components, incl. sign, relative to B
+c  vsig_parb  : momentum vector components, incl. sign, relative to B
+
+          VAL_PARB (0:2,1:NPLSI) = 0._DP
+          VSIG_PARB(0:2,1:NPLSI) = 0._DP
 
           IF ((INDPRO(4) == 8) .AND. (INDPRO(5) == 8)) THEN
 cdr vdion: for which ipl?
             vion=EIRENE_vdion(irdo)
-            VAL_PARB(1:NPLSI) =VION
-            VSIG_PARB(1:NPLSI)=CNDYNP(1:NPLSI)*vion*
-     .                          SIGN(1._DP,VION)
+            VAL_PARB(0,1:NPLSI) =VION
+            VSIG_PARB(0,1:NPLSI)=CNDYNP(1:NPLSI)*vion
+cdr  perp. and diamagn. components not available in this model
+cdr         VAL_PARB(1:2,1:NPLSI) =0._DP
+cdr         VSIG_PARB(1:2,1:NPLSI)=0._DP
 
           ELSE IF ((INDPRO(4) == 8) .OR. (INDPRO(5) == 8)) THEN
-C  PARMOM AND BVIN NOT KNOWN FROM PLASMA_DERIV
+C  PMOM_VEC AND BV_VEC ARE NOT KNOWN FROM PLASMA_DERIV
             DO IPL=1,NPLSI
-              VAL_PARB(IPL) =(VX(IPL)*BX+VY(IPL)*BY+VZ(IPL)*BZ)
-              VSIG_PARB(IPL)=CNDYNP(IPL)*VAL_PARB(IPL)*
-     .                        SIGN(1._DP,VAL_PARB(IPL))
+              VAL_PARB(0,IPL) =
+     .            VX(IPL)*BX(0)+VY(IPL)*BY(0)+VZ(IPL)*BZ(0)
+              VSIG_PARB(0,IPL)=CNDYNP(IPL)*VAL_PARB(0,IPL)
+cdr           VAL_PARB(1:2,1:NPLSI) =0._DP
+cdr           VSIG_PARB(1:2,1:NPLSI)=0._DP
             END DO
 cdr use the regular eirene B field input tallies
           ELSE
-            VAL_PARB(1:NPLSI) = 0._DP
-            VSIG_PARB(1:NPLSI)= 0._DP
 
-cdr  from here on: only signum=sign(1.,val_parp) is used.
-cdr  tbd for consistency (default signum if bvin is not set:) 
-cdr       signum=1.
-cdr       if (lbvin) signum=sign(1.,val_parp)
-       
-            IF (LBVIN)   VAL_PARB(1:NPLSI) =BVIN(MPLSV(1:NPLSI),IRDO)
-            IF (LPARMOM) VSIG_PARB(1:NPLSI)=PARMOM(1:NPLSI,IRDO)         
+            IF (LBV_VEC) THEN
+              DO IPL=1,NPLSI
+              DO ICO=0,2
+                kk=ico*nplsv
+cdr 3 vector components: par, perp, dia, for ico=0,1,2, resp.
+                VAL_PARB(ICO,IPL) = BV_VEC(kk+MPLSV(IPL),IRDO)
+              ENDDO
+              ENDDO
+            END IF
+            IF (LPMOM_VEC) THEN
+              DO IPL=1,NPLSI
+              DO ICO=0,2
+                kk=ico*npls
+cdr 3 vector components: par, perp, dia, for ico=0,1,2, resp.
+                VSIG_PARB(ICO,IPL) = PMOM_VEC(kk+IPL,IRDO)
+              ENDDO
+              ENDDO
+            END IF
+
           END IF
 c
-c  set parameters for parallel momentum of incident neutral particle
-c  v0_parb   : parallel velocity component, incl. sign, relative to B
-c  parmom_0  : parallel momentum
-          V0_PARB=VEL*(VELX*BX+VELY*BY+VELZ*BZ)
-          PARMOM_0=V0_PARB*CNDYNX
-C                       *SIGN(1._DP,VAL_PARB(IPL))  !this sign factor is applied below
-C  WITH THIS FACTOR: NO MATTER HOW THE SIGN OF PARALLEL MOMENTUM IS DEFINED:
-C     THE PLASMA MOMENTUM IS TAKEN POSITIVE (PARMOM=|PARMOM|), AND
-C     |PARMOM_0| IS ADDED TO IPL MOMENTUM (SOURCE),  IF THE NEUTRAL V_PAR
-C                     HAS THE SAME SIGN AS THE IPL PLASMA ION V_PAR.
-c     |PARMOM_0| IS SUBTRACTED FROM IPL MOMENTUM (SOURCE), IF IT HAS OPPOSITE SIGN
+c  set parameters for momentum of incident test particle
+c  v0_parb   : velocity components, par, perp, dia.
+c  pmom_0    : momentum components, par, perp, dia.
+          DO ICO=0,2
+            V0_PARB(ICO)=VEL*(VELX*BX(ICO)+VELY*BY(ICO)+VELZ*BZ(ICO))
+            PMOM_0(ICO) =V0_PARB(ICO)*CNDYNX
+csig                       *SIGN(1._DP,VAL_PARB(IPL))  !this sign factor is now removed
+          ENDDO
 
 C  CHARGE EXCHANGE CONTRIBUTION FROM SPECIES IXSPZ
 C
@@ -1546,30 +1572,51 @@ C                                  AS FOR EL, and neglecting vel. dep. in rate)
 
 C
             WTRSIG=WTR*SIGVCX(IRCX)
-C  PREVIOUS BULK ION IPLS, NOW LOST.  REMOVE MODULUS OF PARALLEL MOMENTUM
+C  PREVIOUS BULK ION IPLS, NOW LOST.  REMOVE ITS MOMENTUM
+            DO ICO=0,2
+              KK=ICO*NPLS
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-            MXPL(IPLS,IRD)=MXPL(IPLS,IRD)-WTRSIG*VSIG_PARB(IPLS)
-            LMETSP(NSPAMI+IPLS)=.TRUE.
-C  NEW BULK ION IPL
-            IF (N1STX(IRCX,1).EQ.4) THEN
-              IPL=N1STX(IRCX,2)
+              MXPL_VEC(KK+IPLS,IRD)=MXPL_VEC(KK+IPLS,IRD)-
+     .                              WTRSIG*VSIG_PARB(ICO,IPLS)
+              LMETSP(NSPAMI+KK+IPLS)=.TRUE.
+
+C  NEW BULK ION ISP1 from former incident bulk ion
+              ISP1=N1STX(IRCX,2)
+CDR           MASS OF INCIDENT TEST PARTICLE = MASS OF ISP2?
+              IPL=ISP1 ! ??
+              IF (N1STX(IRCX,1).EQ.4) THEN
+                NSP1=NSPAMI+ISP1
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-              MXPL(IPL,IRD)=MXPL(IPL,IRD)+WTRSIG*VSIG_PARB(IPL)
-              LMETSP(NSPAMI+IPL)=.TRUE.
-            ENDIF
-            IF (N2NDX(IRCX,1).EQ.4) THEN
-              IPL=N2NDX(IRCX,2)
+                MXPL_VEC(KK+ISP1,IRD)=MXPL_VEC(KK+ISP1,IRD)+
+     .                                WTRSIG*VSIG_PARB(ICO,IPL)
+                LMETSP(NSP1+KK)=.TRUE.
+              ENDIF
+
+cdr  here should come: generation limit, in case n1stx le 3,
+cdr  with R=VSIG_PARB(ICO,IPL), ico=0,1,2
+
+C  NEW BULK ION ISP2 from former incident test particle
+              ISP2=N2NDX(IRCX,2)
+CDR           MASS OF INCIDENT TEST PARTICLE = MASS OF ISP2?
+              IF (N2NDX(IRCX,1).EQ.4) THEN
+                NSP2=NSPAMI+ISP2
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-              MXPL(IPL,IRD)=MXPL(IPL,IRD)+WTRSIG*PARMOM_0*
-     .                      SIGN(1._DP,VAL_PARB(IPL))
-              LMETSP(NSPAMI+IPL)=.TRUE.
-            ENDIF
+                MXPL_VEC(KK+ISP2,IRD)=MXPL_VEC(KK+ISP2,IRD)+WTRSIG*
+     .                      PMOM_0(ICO)
+csig .                     *SIGN(1._DP,VAL_PARB(IPL))
+                LMETSP(NSP2+KK)=.TRUE.
+              ENDIF
+
+cdr  here should come: generation limit, in case n2ndx le 3,
+cdr  with R=PMOM_0(ICO), ico=0,1,2
+
+            ENDDO
   156     CONTINUE
   159     CONTINUE
 C
@@ -1588,12 +1635,16 @@ C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
                   RMRATIO=RMASSP(IPL)/RMASSX
                   WTRSIG=WTR*SIGVEI(IREI)*P*RMRATIO
 C  NEW BULK ION IPL
+                  DO ICO=0,2
+                    KK=ICO*NPLS
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                  MXPL(IPL,IRD)=MXPL(IPL,IRD)+WTRSIG*PARMOM_0*
-     .                          SIGN(1._DP,VAL_PARB(IPL))
-                  LMETSP(NSPAMI+IPL)=.TRUE.
+                    MXPL_VEC(KK+IPL,IRD)=MXPL_VEC(KK+IPL,IRD)+
+     .                          WTRSIG*PMOM_0(ICO)
+csig .                         *SIGN(1._DP,VAL_PARB(IPL))
+                    LMETSP(NSPAMI+KK+IPL)=.TRUE.
+                  ENDDO
                 ENDIF
   162         CONTINUE
             ENDIF
@@ -1618,29 +1669,34 @@ cdr By default we switch to collision estimator. May be too restrictive?
 C
             IF (IBGK.NE.0) GOTO 181
 C  THIS SPECIES IS A BGK VIRTUAL BACKGROUND SPECIES.
-C  MAPL NEEDS NOT BE UPDATED HERE, ALTHOUGH IT WOULD NOT CAUSE PROBLEMS, BECAUSE
+C  MAPL_VEC NEEDS NOT BE UPDATED HERE, ALTHOUGH IT WOULD NOT CAUSE PROBLEMS, BECAUSE
 C       DISTINCT FROM EAPL THIS TALLY DOES HAVE A BULK SPECIES INDEX.
 cdr  Has changed a couple of years ago: now eapl also has a species index.
 cdr  On the other hand: for velocity indep. bgk reactions we can
-cdr  find MXPL a posteriori, from vdenx tallies and bgk rate (is done in modbgk.f).
+cdr  find MXPL_VEC a posteriori, from vdenx tallies and bgk rate (is done in modbgk.f).
 C
 C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
             IF (IESTEL(IREL,2).NE.0) GOTO 181
 C
             WTRSIG=WTR*SIGVEL(IREL)
 C
+            DO ICO=0,2
+              KK=ICO*NPLS
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-            MXPL(IPLS,IRD)=MXPL(IPLS,IRD)-WTRSIG*VSIG_PARB(IPLS)
-            LMETSP(NSPAMI+IPLS)=.TRUE.
-            IPL2=IPLS
+              MXPL_VEC(KK+IPLS,IRD)=MXPL_VEC(KK+IPLS,IRD)-
+     .                              WTRSIG*VSIG_PARB(ICO,IPLS)
+              LMETSP(NSPAMI+KK+IPLS)=.TRUE.
+              IPL2=IPLS
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-            MXPL(IPL2,IRD)=MXPL(IPL2,IRD)+WTRSIG*PARMOM_0*
-     .                     SIGN(1._DP,VAL_PARB(IPL2))
-            LMETSP(NSPAMI+IPL2)=.TRUE.
+              MXPL_VEC(KK+IPL2,IRD)=MXPL_VEC(KK+IPL2,IRD)+WTRSIG*
+     .                     PMOM_0(ICO)
+csig .                    *SIGN(1._DP,VAL_PARB(IPL2))
+              LMETSP(NSPAMI+KK+IPL2)=.TRUE.
+            ENDDO
   181     CONTINUE
   180     CONTINUE
 C

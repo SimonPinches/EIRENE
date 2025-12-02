@@ -19,7 +19,7 @@ csw
      R SEE(:,:,:),   SEI(:,:,:)
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R VOLSUMN(:), VOLSUMM(:), VOLSUMEI(:), VOLSUMEE(:)
+     R VOLSUMN(:), VOLSUMM(:,:), VOLSUMEI(:), VOLSUMEE(:)
 
       INTEGER, SAVE :: NDXD, NDYD, NFLD, NSTRAD
 
@@ -54,20 +54,20 @@ csw   NSTRAD = NSTRA
       NSTRAD = NSTRA + 1
 
       ALLOCATE (SNI(0:NDXD,0:NDYD,NFLD,NSTRAD))
-      ALLOCATE (SMO(0:NDXD,0:NDYD,NFLD,NSTRAD))
+      ALLOCATE (SMO(0:NDXD,0:NDYD,3*NFLD,NSTRAD))
       ALLOCATE (SEE(0:NDXD,0:NDYD,NSTRAD))
       ALLOCATE (SEI(0:NDXD,0:NDYD,NSTRAD))
 
       ALLOCATE (VOLSUMN(NSTRA))
-      ALLOCATE (VOLSUMM(NSTRA))
+      ALLOCATE (VOLSUMM(0:2,NSTRA))
       ALLOCATE (VOLSUMEI(NSTRA))
       ALLOCATE (VOLSUMEE(NSTRA))
 
       ALLOCATE (SRCSTRN(NSTRA))
 
       WRITE (IUNMEM,'(A,T25,I15)')
-     .             ' EIRBRA ',((NDXD+1)*(NDYD+1)*NSTRAD*2*NFLD+
-     .                        4*NSTRA)*8
+     .             ' EIRBRA ',((NDXD+1)*(NDYD+1)*NSTRAD*(4*NFLD+2)+
+     .                        7*NSTRA)*8
 
       CALL EIRENE_INIT_EIRBRA
 
@@ -117,6 +117,7 @@ csw mpi
       inum = (ndxd+1)*(ndyd+1)*nfld*nstrad
       call mpi_bcast (sni,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
+      inum = (ndxd+1)*(ndyd+1)*3*nfld*nstrad
       call mpi_bcast (smo,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
 
@@ -129,8 +130,10 @@ csw mpi
       inum = nstrad
       call mpi_bcast (volsumn,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
+      inum = 3*nstrad
       call mpi_bcast (volsumm,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
+      inum = nstrad
       call mpi_bcast (volsumee,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
       call mpi_bcast (volsumei,inum,MPI_DOUBLE_PRECISION,

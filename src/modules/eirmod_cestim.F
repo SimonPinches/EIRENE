@@ -63,15 +63,19 @@ c  more recent tallies  63 --100
      R EGENA(:,:), EGENM(:,:), EGENI(:,:), EGENPH(:,:),
      R VGENA(:,:), VGENM(:,:), VGENI(:,:), VGENPH(:,:),
 cdr from bulk to test particles, i.e.: primary bulk losses.
-cdr PPPL (ok), MPPL (not available), EPPL (ok), EPEL (not available)
+cdr PPPL (ok), MPPL_VEC (not available), EPPL (ok), EPEL (not available)
      R PPAT(:,:),  PPML(:,:),  PPIO(:,:),  PPPHT(:,:), PPPL(:,:),
+cdr "direct" momentum source rates MPAT_VEC,..., MPPL_VEC etc:
+cdr  missing (strictly: not needed inside eirene).
+cdr These momentum tallies are currently available only in INFCOP: MPPL_COP,...
+cdr and only in closed analytic form, not their sampled tally counterparts.
      R EPAT(:),    EPML(:),    EPIO(:),    EPPHT(:),   EPPL(:,:),
 cdr test particle momentum density vectors (e.g. used for BGK iterations)
      R VXDENA(:,:), VXDENM(:,:), VXDENI(:,:), VXDENPH(:,:),
      R VYDENA(:,:), VYDENM(:,:), VYDENI(:,:), VYDENPH(:,:),
      R VZDENA(:,:), VZDENM(:,:), VZDENI(:,:), VZDENPH(:,:),
-cdr parallel (to B field) momentum sources/sinks, from test particles A,M,I,PH to bulk particles PL
-     R MAPL(:,:), MMPL(:,:), MIPL(:,:), MPHPL(:,:)
+cdr momentum sources/sinks, from test particles A,M,I,PH to bulk particles PL
+     R MAPL_VEC(:,:), MMPL_VEC(:,:), MIPL_VEC(:,:), MPHPL_VEC(:,:)
 
 cdr  begin threadprivate here
 
@@ -86,7 +90,7 @@ cdr               for unified treatment in subr. COLLIDE.f
      R EXPHT(:),  EXPL(:,:),
      R VXDENX(:), VYDENX(:), VZDENX(:),
      R PGENX(:),  EGENX(:),  VGENX(:),
-     R MXPL(:,:),
+     R MXPL_VEC(:,:),
      R RXEL(:,:)  ! I think this should also be a "reflexive" tally,
                   ! 1D rather 2D array
 
@@ -103,7 +107,7 @@ cdr MXX is not available (no global test particle momentum flux balances are don
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(PDENX,EDENX,PXEL,PXAT,PXML,PXIO,PXPHT,PXPL,
 !$OMP& EXEL,EXAT,EXML,EXIO,EXPHT,EXPL,VXDENX,VYDENX,VZDENX,
-!$OMP& PGENX,EGENX,VGENX,MXPL,RXEL,PXX,EXX)
+!$OMP& PGENX,EGENX,VGENX,MXPL_VEC,RXEL,PXX,EXX)
 #endif
 
 C  NESTM2, REAL, SURFACE-AVERAGED TALLIES
@@ -256,7 +260,7 @@ c  test particle flow velocity densities
      L LVYDENA, LVYDENM, LVYDENI, LVYDENPH,
      L LVZDENA, LVZDENM, LVZDENI, LVZDENPH,
 c  parallel (to B field) momentum source tallies
-     L LMAPL,  LMMPL,  LMIPL,  LMPHPL,
+     L LMAPL_VEC,  LMMPL_VEC,  LMIPL_VEC,  LMPHPL_VEC,
 c  radiation tallies
      L LRAEL,  LRMEL,  LRIEL
 cdr  ? next line: tbd.: also a pointer ?
@@ -271,7 +275,7 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LEXEL,   LEXAT,   LEXML,   LEXIO, LEXPHT, LEXPL,
      L LVXDENX, LVYDENX, LVZDENX,
      L LPGENX,  LEGENX,  LVGENX,
-     L LMXPL,   LRXEL,   LPXX,    LEXX,
+     L LMXPL_VEC,   LRXEL,   LPXX,    LEXX,
      L LSCX
 
       INTEGER, PUBLIC, SAVE :: NDXX, NDXXA, NDXXE,
@@ -282,7 +286,7 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(LPDENX,LEDENX,LPXEL,LPXAT,LPXML,LPXIO,LPXPHT,LPXPL,
 !$OMP& LEXEL,LEXAT,LEXML,LEXIO,LEXPHT,LEXPL,LVXDENX,LVYDENX,LVZDENX,
-!$OMP& LPGENX,LEGENX,LVGENX,LMXPL,LRXEL,
+!$OMP& LPGENX,LEGENX,LVGENX,LMXPL_VEC,LRXEL,
 !$OMP& LPXX,LEXX,LSCX,NDXX,NDXXA,NDXXE,NTS_PXATA,NTS_PXATE,NTS_PXMLA,
 !$OMP& NTS_PXMLE,NTS_PXIOA,NTS_PXIOE,NTS_PXPHA,NTS_PXPHE,
 !$OMP& NTS_PXPLA,NTS_PXPLE)
@@ -309,7 +313,7 @@ c  POINTER FOR "A,M,I,PH"-UNIFIED SUBROUTINES
      L LMSVXDENA, LMSVXDENM, LMSVXDENI, LMSVXDENPH,
      L LMSVYDENA, LMSVYDENM, LMSVYDENI, LMSVYDENPH,
      L LMSVZDENA, LMSVZDENM, LMSVZDENI, LMSVZDENPH,
-     L LMSMAPL,  LMSMMPL,  LMSMIPL,  LMSMPHPL,
+     L LMSMAPL_VEC,  LMSMMPL_VEC,  LMSMIPL_VEC,  LMSMPHPL_VEC,
      L LMSRAEL,  LMSRMEL,  LMSRIEL  !  ph tally still missing?
 cdr  ? next line: tbd.: also a pointer ?
       LOGICAL, PUBLIC, TARGET, SAVE :: LMSRPHEL
@@ -983,25 +987,25 @@ cdr:  from recombination processes RC
       ELSE
         VZDENPH => CEMETERYV(0:0,:)
       END IF
-      IF (LMAPL) THEN
-        MAPL => ESTIMV(NADDV(97)+1:NADDV(98),:)
+      IF (LMAPL_VEC) THEN
+        MAPL_VEC => ESTIMV(NADDV(97)+1:NADDV(98),:)
       ELSE
-        MAPL => CEMETERYV(0:0,:)
+        MAPL_VEC => CEMETERYV(0:0,:)
       END IF
-      IF (LMMPL) THEN
-        MMPL => ESTIMV(NADDV(98)+1:NADDV(99),:)
+      IF (LMMPL_VEC) THEN
+        MMPL_VEC => ESTIMV(NADDV(98)+1:NADDV(99),:)
       ELSE
-        MMPL => CEMETERYV(0:0,:)
+        MMPL_VEC => CEMETERYV(0:0,:)
       END IF
-      IF (LMIPL) THEN
-        MIPL => ESTIMV(NADDV(99)+1:NADDV(100),:)
+      IF (LMIPL_VEC) THEN
+        MIPL_VEC => ESTIMV(NADDV(99)+1:NADDV(100),:)
       ELSE
-        MIPL => CEMETERYV(0:0,:)
+        MIPL_VEC => CEMETERYV(0:0,:)
       END IF
-      IF (LMPHPL) THEN
-        MPHPL => ESTIMV(NADDV(100)+1:NADDV(101),:)
+      IF (LMPHPL_VEC) THEN
+        MPHPL_VEC => ESTIMV(NADDV(100)+1:NADDV(101),:)
       ELSE
-        MPHPL => CEMETERYV(0:0,:)
+        MPHPL_VEC => CEMETERYV(0:0,:)
       END IF
       IF (LRAEL) THEN
         RAEL => ESTIMV(NADDV(101)+1:NADDV(102),:)
@@ -1753,10 +1757,10 @@ cdr  default: no tallies turned off in input block 11
         LVZDENI  => LIVTALV(95)
         LVZDENPH => LIVTALV(96)
 
-        LMAPL    => LIVTALV(97)
-        LMMPL    => LIVTALV(98)
-        LMIPL    => LIVTALV(99)
-        LMPHPL   => LIVTALV(100)
+        LMAPL_VEC  => LIVTALV(97)
+        LMMPL_VEC  => LIVTALV(98)
+        LMIPL_VEC  => LIVTALV(99)
+        LMPHPL_VEC => LIVTALV(100)
 
         LRAEL    => LIVTALV(101)
         LRMEL    => LIVTALV(102)
@@ -1859,10 +1863,10 @@ cdr  default: no tallies turned off in input block 11
         LMSVZDENM  => LMISTALV(94)
         LMSVZDENI  => LMISTALV(95)
         LMSVZDENPH => LMISTALV(96)
-        LMSMAPL    => LMISTALV(97)
-        LMSMMPL    => LMISTALV(98)
-        LMSMIPL    => LMISTALV(99)
-        LMSMPHPL   => LMISTALV(100)
+        LMSMAPL_VEC  => LMISTALV(97)
+        LMSMMPL_VEC  => LMISTALV(98)
+        LMSMIPL_VEC  => LMISTALV(99)
+        LMSMPHPL_VEC => LMISTALV(100)
 
         LMSRAEL    => LMISTALV(101)
         LMSRMEL    => LMISTALV(102)

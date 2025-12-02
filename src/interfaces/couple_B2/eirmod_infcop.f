@@ -141,13 +141,13 @@ c the corresponding tallies scored from random sampling in eirene
 C
      .           ,CPV_CMP(:,:,:)
       REAL(DP), ALLOCATABLE, SAVE ::
-     .            PPLODA(:,:), CPVODA(:,:),
+     .            PPLODA(:,:), MPLODA(:,:),
      .            EPLODA(:,:), EPEODA(:)
 C
 
       REAL(DP), SAVE :: SCALM, SCALE, SCALI, CHEIS, SEES, SEIS, TEST,
      .          SFEISY, SFEESY, RECADD, RECTOT,
-     .          EEADD, PIADD, SIGNUM, SMOCL,
+     .          EEADD, PIADD_VEC(0:2), SIGNUM, SMOCL_VEC(0:2),
      .          CHEES, EIADD, SNICL,
      .          SSE, BALANI, BALANE, SSEE, SSI, RE, RI, RNT, TOT,
      .          TOTI, TOTE, BALAN,
@@ -156,7 +156,7 @@ C
 c    .          DELTE_PARA, DELTI_PARA, DELTE_PERP, DELTI_PERP, TES, TIS,
      .          DELY, ALX, ALE, ALW, ALS, ALN, AL, ETOT,
      .          FLX, ESUM, VR, VTEST, EADD, EMAXW, ESHEATH,
-     .          PARWI, PERWI, SUMM, SUMN, SUMEI, SUMEE, FLXI,
+     .          PARWI, PERWI, SUMM_VEC(0:2), SUMN, SUMEI, SUMEE, FLXI,
      .          CHI, CHE, CHP, CS, THMAX, EESHT, EEMAX,
      .          RP1, DELX, PVYS, PVXS, PUPV, RRBS, PUYS, PUXS,
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
@@ -307,12 +307,12 @@ C
         ALLOCATE (CHMOM(NPLS,NRAD))
 
         ALLOCATE (PPPL_COP(NPLS,NRAD))
-        ALLOCATE (MPPL_COP(NPLS,NRAD))
+        ALLOCATE (MPPL_COP(3*NPLS,NRAD))
         ALLOCATE (EPPL_COP(NPLS,NRAD))
         ALLOCATE (EPEL_COP(NRAD))
 
         ALLOCATE (PPLODA(NPLS,NRAD))
-        ALLOCATE (CPVODA(NPLS,NRAD))
+        ALLOCATE (MPLODA(NPLS,NRAD))
         ALLOCATE (EPLODA(NPLS,NRAD))
         ALLOCATE (EPEODA(NRAD))
       END IF
@@ -918,6 +918,8 @@ c
           BYINTF(IN)=BY/BN
           BZINTF(IN)=BZ/BN
           BFINTF(IN)=BN
+          BXPERF(IN)=PVX(IN)
+          BYPERF(IN)=PVY(IN)
           VLINTF(IN)=VOLB(IX,IY)*VL
  2120   CONTINUE
  2110 CONTINUE
@@ -1897,6 +1899,7 @@ C
      .                                 IFRST,ISTRAA,ISTRAE,NEW_ITER)
       LOGICAL, INTENT(INOUT) :: LSTP
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST
+      INTEGER :: ICO, KK, KKK
       REAL(DP) :: SEES0(NSTRA), SEIS0(NSTRA)
       REAL(DP) :: DUMMY(0:NDXP,0:NDYP)
 
@@ -1904,10 +1907,10 @@ C
         ALLOCATE (CHPS(NFL))
         ALLOCATE (SNIS(0:NFL))
         ALLOCATE (CHMOS(NFL))
-        ALLOCATE (SMOS(0:NFL))
+        ALLOCATE (SMOS(3*NFL))
         ALLOCATE (SCALN(0:NFL))
         ALLOCATE (SNIS0(NSTRA,0:NFL))
-        ALLOCATE (SMOS0(NSTRA,0:NFL))
+        ALLOCATE (SMOS0(NSTRA,-3:NFL))
 
         ALLOCATE (RESSNI(0:NSTRA,NFL))
         ALLOCATE (RESSMO(0:NSTRA,NFL))
@@ -2021,39 +2024,39 @@ C
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MAPL=0.D0
+        MAPL_VEC=0.D0
         CPMUL => MAPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MAPL(IPLS,IN)=CPMUL%VALUEM
+          MAPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MMPL=0.D0
+        MMPL_VEC=0.D0
         CPMUL => MMPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MMPL(IPLS,IN)=CPMUL%VALUEM
+          MMPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MIPL=0.D0
+        MIPL_VEC=0.D0
         CPMUL => MIPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MIPL(IPLS,IN)=CPMUL%VALUEM
+          MIPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MPHPL=0.D0
+        MPHPL_VEC=0.D0
         CPMUL => MPHPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MPHPL(IPLS,IN)=CPMUL%VALUEM
+          MPHPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 C
@@ -2252,12 +2255,12 @@ C
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        CPVODA=0.D0
-        CPMUL => CPPVS(ISTRAI)%PMUL
+        MPLODA=0.D0
+        CPMUL => MPPL_COPS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          CPVODA(IPLS,IN)=CPMUL%VALUEM
+          MPLODA(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
@@ -2299,21 +2302,21 @@ cdr  what is this next 'lzden' option doing ? Why here, after short loop correct
               IF (LZDENA(IN,ISTRAI)) THEN
 C  NO ATOMS IN THIS STRATUM
                 PAPL(1:NPLSI,IN) = 0._DP
-                MAPL(1:NPLSI,IN) = 0._DP
+                MAPL_VEC(1:NPLSI,IN) = 0._DP
                 EAPL(1:NPLSI,IN) = 0._DP
                 EAEL(IN) = 0._DP
               END IF
               IF (LZDENM(IN,ISTRAI)) THEN
 C  NO MOLECULES IN THIS STRATUM
                 PMPL(1:NPLSI,IN) = 0._DP
-                MMPL(1:NPLSI,IN) = 0._DP
+                MMPL_VEC(1:NPLSI,IN) = 0._DP
                 EMPL(1:NPLSI,IN) = 0._DP
                 EMEL(IN) = 0._DP
               END IF
               IF (LZDENI(IN,ISTRAI)) THEN
 C  NO TEST IONS IN THIS STRATUM
                 PIPL(1:NPLSI,IN) = 0._DP
-                MIPL(1:NPLSI,IN) = 0._DP
+                MIPL_VEC(1:NPLSI,IN) = 0._DP
                 EIPL(1:NPLSI,IN) = 0._DP
                 EIEL(IN) = 0._DP
               END IF
@@ -2343,7 +2346,7 @@ C
                 IRRC=LGPRC(IPLS,IIRC)
                 IF ((ISTEP > 0) .AND. (ISTEP /= IRRC)) CYCLE
                 SUMN=0.0
-                SUMM=0.0
+                SUMM_VEC(0:2)=0.0
                 SUMEI=0.0
                 SUMEE=0.0
                 IR1 = MAX(1,INGRDA(ISR,ISTRAI,1))
@@ -2368,11 +2371,16 @@ C  EXCLUDE IPLS-VACUUM CELLS
                     END IF
                     PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
                     SUMN=SUMN+RECADD*VOL(IN)
-                    PIADD=0._DP
-                    IF (LPARMOM) THEN
-                      PIADD=PARMOM(IPLS,IN)*RECADD
-                      MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
-                      SUMM=SUMM+PIADD*VOL(IN)
+                    PIADD_VEC(0:2)=0._DP
+                    IF (LPMOM_VEC) THEN
+                      DO ICO=0,2
+                        KK=ICO*NPLS
+                        PIADD_VEC(ICO)=PMOM_VEC(KK+IPLS,IN)*RECADD
+                        MPPL_COP(KK+IPLS,INC)=MPPL_COP(KK+IPLS,INC)+
+     .                                        PIADD_VEC(ICO)
+                        SUMM_VEC(ICO)=SUMM_VEC(ICO)+
+     .                                        PIADD_VEC(ICO)*VOL(IN)
+                      END DO
                     END IF
                     EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
                     IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
@@ -2386,8 +2394,10 @@ C  EXCLUDE IPLS-VACUUM CELLS
  7471           CONTINUE
                 RECTOT = RECTOT + SUMN
                 WRITE (iunout,*) 'PARTIAL: IRRC ',IRRC
-                CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
-     .                             SUMN, SUMM, SUMEI, SUMEE)
+                CALL EIRENE_MASR6
+     .           ('SUMN, SUMM_VEC, SUMEI, SUMEE                    ',
+     .             SUMN, SUMM_VEC(0), SUMM_VEC(1), SUMM_VEC(2),
+     .             SUMEI, SUMEE)
  7472         CONTINUE
             END DO
  7473     CONTINUE
@@ -2440,8 +2450,8 @@ C
                   CPMUL%IART = IPLS
                   CPMUL%ICM = IN
                   CPMUL%VALUEM = MPPL_COP(IPLS,IN)
-                  CPMUL%NXTMUL => CPPVS(ISTRAI)%PMUL
-                  CPPVS(ISTRAI)%PMUL => CPMUL
+                  CPMUL%NXTMUL => MPPL_COPS(ISTRAI)%PMUL
+                  MPPL_COPS(ISTRAI)%PMUL => CPMUL
                 ENDIF
                 IF (EPPL_COP(IPLS,IN) .NE. 0.D0) THEN
 !pb               ALLOCATE(CPMUL)
@@ -2509,6 +2519,8 @@ cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
           SNIS(IFL)=0.
           CHMOS(IFL)=0.
           SMOS(IFL)=0.
+          SMOS(NFL+IFL)=0.
+          SMOS(2*NFL+IFL)=0.
 
           DO 7515 IPLS=1,NPLSI
             IF (IFLB(IPLS).NE.IFL) GOTO 7515
@@ -2547,7 +2559,7 @@ cdr  is this now any different from sni set above?
 
 cdr  add pppl contribution to internal energy sources rate
                 bv = 0._dp
-                if (lbvin) bv = bvin(iplsv,inn)
+                if (lbv_vec) bv = bv_vec(iplsv,inn)
                 cpv_cmp(icp4+ipls,in,istrai)=
      .                  cpv_cmp(icp4+ipls,in,istrai) +
      .                  cvrssp(ipls)*bv**2*PPPL_COP(IPLS,IN)
@@ -2593,13 +2605,19 @@ cdr   ipls contributes to plasma code species ifl
               DO 7533 IY=1,NDYA
                 IN=IY+(IX-1)*NR1ST
                 INC=NCLTAL(IN)
-                SIGNUM=1._DP
-                IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
-                SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
-     .                 MPPL_COP(IPLS,INC))*
-     .                 VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
-                SMOS(IFL)=SMOS(IFL)+SMOCL
+                DO ICO=0,2
+                  KK=ICO*NPLS
+                  KKK=ICO*NFL+IFL
+                  SMOCL_VEC(ICO)=
+     .             (MAPL_VEC(KK+IPLS,INC)+
+     .              MMPL_VEC(KK+IPLS,INC)+
+     .              MIPL_VEC(KK+IPLS,INC)+
+     .              MPPL_COP(KK+IPLS,INC))*
+     .             VOLTAL(INC)*1.D-5*FLX_EIR
+                  SMO(IX,IY,KKK,ISTRAI)=
+     .             SMO(IX,IY,KKK,ISTRAI)+SMOCL_VEC(ICO)
+                  SMOS(KKK)=SMOS(KKK)+SMOCL_VEC(ICO)
+                END DO
                 CHMOS(IFL)=CHMOS(IFL)+CHMOM(IPLS,INC)*VOLTAL(INC)
  7533         CONTINUE
  7536       CONTINUE
@@ -2613,19 +2631,18 @@ cdr  tbd: check storage on copv tallies, ncpv ??
               DO IY=1,NDYA
                 IN=IY+(IX-1)*NR1ST
                 INC=NCLTAL(IN)
-                SIGNUM=1._DP
-                IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
-                cfac = (MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC))/
+                cfac = (MAPL_VEC(IPLS,INC)+
+     .                  MMPL_VEC(IPLS,INC)+MIPL_VEC(IPLS,INC))/
      .                 (cpv_cmp(icp2+ipls,inc,istrai) + eps60)
                 cpv_cmp(icp2+ipls,inc,istrai)=
      .                 (cpv_cmp(icp2+ipls,inc,istrai)*cfac +
      .                  MPPL_COP(IPLS,INC))*
-     .                  VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+     .                  VOLTAL(INC)*1.D-5*FLX_EIR
 !pb 30012013 sei internal
                 bv = 0._dp
-                if (lbvin) bv = bvin(iplsv,in)
+                if (lbv_vec) bv = bv_vec(iplsv,in)
                 cpv_cmp(icp3+3,inc,istrai)=cpv_cmp(icp3+3,inc,istrai) -
-     .                  bv*MPPL_COP(IPLS,INC)*SIGNUM*
+     .                  bv*MPPL_COP(IPLS,INC)*
      .                  cveli2/amua*2._DP
               end do
             end do
@@ -2648,10 +2665,8 @@ cdr   ntalm is a copv tally.
                   DO IY=1,NDYA
                     IN=IY+(IX-1)*NR1ST
                     INC=NCLTAL(IN)
-                    SIGNUM=1._DP
-                    IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
-                    SMORES=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+
-     .                 MIPL(IPLS,INC))*VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+                    SMORES=(MAPL_VEC(IPLS,INC)+MMPL_VEC(IPLS,INC)+
+     .                 MIPL_VEC(IPLS,INC))*VOLTAL(INC)*1.D-5*FLX_EIR
                     RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
      .                                 ABS(SIGMA(ISTAT_COP,INC)*
      .                                 SMORES/100.D0*1.D5)
@@ -2830,12 +2845,16 @@ C
         IF (IFIRST.EQ.0) THEN
 C
           SNIS0(ISTRAI,0)=0.
-          SMOS0(ISTRAI,0)=0.
+          SMOS0(ISTRAI,-3:0)=0.
           DO 7550 IFL=1,NFLA
             SNIS0(ISTRAI,0)=SNIS0(ISTRAI,0)+SNIS(IFL)*FLXI
             SNIS0(ISTRAI,IFL)=SNIS(IFL)*FLXI
-            SMOS0(ISTRAI,0)=SMOS0(ISTRAI,0)+SMOS(IFL)*FLXI
+            SMOS0(ISTRAI,-1)=SMOS0(ISTRAI,-1)+SMOS(IFL)*FLXI
             SMOS0(ISTRAI,IFL)=SMOS(IFL)*FLXI
+            SMOS0(ISTRAI,-2)=SMOS0(ISTRAI,-2)+SMOS(NFL+IFL)*FLXI
+            SMOS0(ISTRAI,NFL+IFL)=SMOS(NFL+IFL)*FLXI
+            SMOS0(ISTRAI,-3)=SMOS0(ISTRAI,-3)+SMOS(2*NFL+IFL)*FLXI
+            SMOS0(ISTRAI,2*NFL+IFL)=SMOS(2*NFL+IFL)*FLXI
  7550     CONTINUE
           SEES0(ISTRAI)=SEES*FLXI
           SEIS0(ISTRAI)=SEIS*FLXI
@@ -2868,6 +2887,10 @@ C
               DO 7554 IY=0,NDYA+1
                 SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)*SCALN(IFL)
                 SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)*SCALN(IFL)
+                SMO(IX,IY,NFL+IFL,ISTRAI)=
+     .                            SMO(IX,IY,NFL+IFL,ISTRAI)*SCALN(IFL)
+                SMO(IX,IY,2*NFL+IFL,ISTRAI)=
+     .                          SMO(IX,IY,2*NFL+IFL,ISTRAI)*SCALN(IFL)
  7554         CONTINUE
  7553       CONTINUE
  7556     CONTINUE
@@ -2955,6 +2978,9 @@ CDR ???
               DO 7590 IY=0,NDYA+1
                 SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)*FLXI
                 SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)*FLXI
+                SMO(IX,IY,NFL+IFL,ISTRAI)=SMO(IX,IY,NFL+IFL,ISTRAI)*FLXI
+                SMO(IX,IY,2*NFL+IFL,ISTRAI)=
+     .                                  SMO(IX,IY,2*NFL+IFL,ISTRAI)*FLXI
  7590         CONTINUE
  7580       CONTINUE
  7570     CONTINUE
@@ -2985,7 +3011,7 @@ C
 C
         CALL EIRENE_INDMPI (SNI,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
-        CALL EIRENE_INDMPI (SMO,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
+        CALL EIRENE_INDMPI (SMO,DUMMY,NDX,NDY,3*NFL,NDXA,NDYA,NFLA,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
         CALL EIRENE_INDMPI (SEE,DUMMY,NDX,NDY,1  ,NDXA,NDYA,1   ,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)

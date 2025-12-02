@@ -2,6 +2,7 @@ c nov. 2015:  species index ipls added for energy-pl tallies:
 c             eapli,empli,eipli,ephpli,eppli
 cdr dec. 15:  comments added. missing tallies ppeli, epeli, etc..??
 cpb jan. 18:  array NFSTPI moved to module EIRMOD_COMUSR
+cdr jan. 22:  vectorial MXPL_VEC tallies
 
       MODULE EIRMOD_COUTAU
 cdr  mostly global tallies integrated from more deeply
@@ -55,8 +56,8 @@ cdr  Few tallies are directly scored: ptrash, etrash, .... xmcp
      R VXDENAI(:,:), VXDENMI(:,:), VXDENII(:,:), VXDENPHI(:,:),
      R VYDENAI(:,:), VYDENMI(:,:), VYDENII(:,:), VYDENPHI(:,:),
      R VZDENAI(:,:), VZDENMI(:,:), VZDENII(:,:), VZDENPHI(:,:),
-     R MAPLI(:,:),  MMPLI(:,:),  MIPLI(:,:),
-     R MPHPLI(:,:)
+     R MAPLI_VEC(:,:),  MMPLI_VEC(:,:),  MIPLI_VEC(:,:),
+     R MPHPLI_VEC(:,:)
 
 ! INTEGRALS OF SURFACE TALLIES: PARTICLE FLUXES
       REAL(DP), PUBLIC, ALLOCATABLE, TARGET, SAVE ::
@@ -309,10 +310,12 @@ cdr             tally for electron source missing ??
       ALLOCATE (VZDENMI(0:NMOL,0:NSTRA))
       ALLOCATE (VZDENII(0:NION,0:NSTRA))
       ALLOCATE (VZDENPHI(0:NPHOT,0:NSTRA))
-      ALLOCATE (MAPLI(0:NPLS,0:NSTRA))
-      ALLOCATE (MMPLI(0:NPLS,0:NSTRA))
-      ALLOCATE (MIPLI(0:NPLS,0:NSTRA))
-      ALLOCATE (MPHPLI(0:NPLS,0:NSTRA))
+cdr  vectorial tallies, component-wise species summed up on -1,-2,-3
+cdr                     sum over components and species (vector norm?): (0,0:nstra)
+      ALLOCATE (MAPLI_VEC(-3:3*NPLS,0:NSTRA))
+      ALLOCATE (MMPLI_VEC(-3:3*NPLS,0:NSTRA))
+      ALLOCATE (MIPLI_VEC(-3:3*NPLS,0:NSTRA))
+      ALLOCATE (MPHPLI_VEC(-3:3*NPLS,0:NSTRA))
 
 cdr surface-averaged tallies
 cdr  note: distinct from volumetric sources, these are ordered here
@@ -646,10 +649,10 @@ c tallies obtained by integration from volumetric tallies
       DEALLOCATE (VZDENMI)
       DEALLOCATE (VZDENII)
       DEALLOCATE (VZDENPHI)
-      DEALLOCATE (MAPLI)
-      DEALLOCATE (MMPLI)
-      DEALLOCATE (MIPLI)
-      DEALLOCATE (MPHPLI)
+      DEALLOCATE (MAPLI_VEC)
+      DEALLOCATE (MMPLI_VEC)
+      DEALLOCATE (MIPLI_VEC)
+      DEALLOCATE (MPHPLI_VEC)
 
 c  integrated surface-averaged tallies
       DEALLOCATE (POTATI)
@@ -919,10 +922,10 @@ cdr  energy sources from pl, for electrons: tally epeli missing ??
         VZDENMI(:,ISTRA)  = 0._DP
         VZDENII(:,ISTRA)  = 0._DP
         VZDENPHI(:,ISTRA) = 0._DP
-        MAPLI(:,ISTRA)    = 0._DP
-        MMPLI(:,ISTRA)    = 0._DP
-        MIPLI(:,ISTRA)    = 0._DP
-        MPHPLI(:,ISTRA)   = 0._DP
+        MAPLI_VEC(:,ISTRA)    = 0._DP
+        MMPLI_VEC(:,ISTRA)    = 0._DP
+        MIPLI_VEC(:,ISTRA)    = 0._DP
+        MPHPLI_VEC(:,ISTRA)   = 0._DP
 
 cdr  surface tallies
         POTATI(:,ISTRA) = 0._DP
@@ -1456,20 +1459,20 @@ c     write (iunout,*) 'pgenph, NPHOTP ',(IE-IA+1)/NSTRAP, NPHOTP
       OUTAU(IA:IE) = PACK(VZDENPHI,.TRUE.)
 
       IA = IE + 1
-      IE = IA - 1 + SIZE(MAPLI)
-      OUTAU(IA:IE) = PACK(MAPLI,.TRUE.)
+      IE = IA - 1 + SIZE(MAPLI_VEC)
+      OUTAU(IA:IE) = PACK(MAPLI_VEC,.TRUE.)
 c     write (iunout,*) 'mapl, NPLSP ',(IE-IA+1)/NSTRAP, NPLSP
       IA = IE + 1
-      IE = IA - 1 + SIZE(MMPLI)
-      OUTAU(IA:IE) = PACK(MMPLI,.TRUE.)
+      IE = IA - 1 + SIZE(MMPLI_VEC)
+      OUTAU(IA:IE) = PACK(MMPLI_VEC,.TRUE.)
 
       IA = IE + 1
-      IE = IA - 1 + SIZE(MIPLI)
-      OUTAU(IA:IE) = PACK(MIPLI,.TRUE.)
+      IE = IA - 1 + SIZE(MIPLI_VEC)
+      OUTAU(IA:IE) = PACK(MIPLI_VEC,.TRUE.)
 
       IA = IE + 1
-      IE = IA - 1 + SIZE(MPHPLI)
-      OUTAU(IA:IE) = PACK(MPHPLI,.TRUE.)
+      IE = IA - 1 + SIZE(MPHPLI_VEC)
+      OUTAU(IA:IE) = PACK(MPHPLI_VEC,.TRUE.)
 
       IF (IE /= NOUTA1) THEN
         WRITE (iunout,*) ' ERROR IN WRITE_COUTAU '
@@ -2322,20 +2325,20 @@ cdr  surface tallies
       VZDENPHI = RESHAPE(OUTAU(IA:IE),SHAPE(VZDENPHI))
 
       IA = IE + 1
-      IE = IA - 1 + SIZE(MAPLI)
-      MAPLI = RESHAPE(OUTAU(IA:IE),SHAPE(MAPLI))
+      IE = IA - 1 + SIZE(MAPLI_VEC)
+      MAPLI_VEC = RESHAPE(OUTAU(IA:IE),SHAPE(MAPLI_VEC))
 
       IA = IE + 1
-      IE = IA - 1 + SIZE(MMPLI)
-      MMPLI = RESHAPE(OUTAU(IA:IE),SHAPE(MMPLI))
+      IE = IA - 1 + SIZE(MMPLI_VEC)
+      MMPLI_VEC = RESHAPE(OUTAU(IA:IE),SHAPE(MMPLI_VEC))
 
       IA = IE + 1
-      IE = IA - 1 + SIZE(MIPLI)
-      MIPLI = RESHAPE(OUTAU(IA:IE),SHAPE(MIPLI))
+      IE = IA - 1 + SIZE(MIPLI_VEC)
+      MIPLI_VEC = RESHAPE(OUTAU(IA:IE),SHAPE(MIPLI_VEC))
 
       IA = IE + 1
-      IE = IA - 1 + SIZE(MPHPLI)
-      MPHPLI = RESHAPE(OUTAU(IA:IE),SHAPE(MPHPLI))
+      IE = IA - 1 + SIZE(MPHPLI_VEC)
+      MPHPLI_VEC = RESHAPE(OUTAU(IA:IE),SHAPE(MPHPLI_VEC))
 
 
 
@@ -2981,14 +2984,18 @@ cdr    for tally ITAL, species ISP, stratum ISTRA
         OUTAU = VZDENII(ISP,ISTRA)
       CASE (96)
         OUTAU = VZDENPHI(ISP,ISTRA)
+cdr Next:
+cdr  vectorial tallies: sum over IPLS species for each vector component
+cdr                     is on ISP=-1,-2,-3.
+cdr                     ISP=0 is for sum over species AND vector components
       CASE (97)
-        OUTAU = MAPLI(ISP,ISTRA)
+        OUTAU = MAPLI_VEC(ISP,ISTRA)
       CASE (98)
-        OUTAU = MMPLI(ISP,ISTRA)
+        OUTAU = MMPLI_VEC(ISP,ISTRA)
       CASE (99)
-        OUTAU = MIPLI(ISP,ISTRA)
+        OUTAU = MIPLI_VEC(ISP,ISTRA)
       CASE (100)
-        OUTAU = MPHPLI(ISP,ISTRA)
+        OUTAU = MPHPLI_VEC(ISP,ISTRA)
       CASE (101)
         OUTAU = RAELI(ISP,ISTRA)
       CASE (102)

@@ -227,7 +227,7 @@ c the corresponding tallies scored from random sampling in eirene
 C
 c  for short cycle correction terms, in vol. rec. strata.
       REAL(DP), ALLOCATABLE, SAVE ::
-     .            PPLODA(:,:), CPVODA(:,:),
+     .            PPLODA(:,:), MPLODA(:,:),
      .            EPLODA(:,:), EPEODA(:)
 C
       REAL(DP), SAVE :: SCALM, SCALE, SCALI, SEES, SEIS,
@@ -250,7 +250,7 @@ C
      .          PERW, PARW, PARWI, PERWI, DRR, EADD, EMAXW, ESHEATH,
      .          TE, CUR,
      .          VPZ, PM1, VPY, PN1, VPX, GAMMA, ESUM,
-     .          CHI, CHP, CHE, SUMEI, SUMEE, SUMM, SUMN,
+     .          CHI, CHP, CHE, SUMEI, SUMEE, SUMM_VEC(0:2), SUMN,
      .          ETOT, FLXI, FLX, OR, DELY, XANF, YANF, UDBC,
      .          RBC, UPBC, VVBC, DELX, PUYS, RRBS,
      .          EEMAX, EESHT, RP1, THMAX, TIS, TES,
@@ -437,12 +437,12 @@ C
         ALLOCATE (CHMOM(NPLS,NRAD))
 
         ALLOCATE (PPPL_COP(NPLS,NRAD))
-        ALLOCATE (MPPL_COP(NPLS,NRAD))
+        ALLOCATE (MPPL_COP(3*NPLS,NRAD))
         ALLOCATE (EPPL_COP(NPLS,NRAD))
         ALLOCATE (EPEL_COP(NRAD))
 
         ALLOCATE (PPLODA(NPLS,NRAD))
-        ALLOCATE (CPVODA(NPLS,NRAD))
+        ALLOCATE (MPLODA(NPLS,NRAD))
         ALLOCATE (EPLODA(NPLS,NRAD))
         ALLOCATE (EPEODA(NRAD))
       END IF
@@ -1678,6 +1678,8 @@ c
           BYINTF(ITRI)=BY/BN
           BZINTF(ITRI)=BZ/BN
           BFINTF(ITRI)=BN
+          BXPERF(ITRI)=PVX(IN)
+          BYPERF(ITRI)=PVY(IN)
 c
           VLINTF(ITRI)=VOLB(IX,IY)*VL
         ELSE
@@ -2955,6 +2957,7 @@ C
       LOGICAL, INTENT(INOUT) :: LSTP
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST
 C
+      INTEGER :: ICO, KK, KKK
       REAL(DP) :: SEES0(NSTRA), SEIS0(NSTRA)
       REAL(DP) :: DUMMY(0:NDXP,0:NDYP)
       REAL(DP) :: EIRENE_FTABRC1, EIRENE_FEELRC1
@@ -2965,10 +2968,10 @@ C
         ALLOCATE (CHPS(NFL))
         ALLOCATE (SNIS(0:NFL))
         ALLOCATE (CHMOS(NFL))
-        ALLOCATE (SMOS(0:NFL))
+        ALLOCATE (SMOS(3*NFL))
         ALLOCATE (SCALN(0:NFL))
         ALLOCATE (SNIS0(NSTRA,0:NFL))
-        ALLOCATE (SMOS0(NSTRA,0:NFL))
+        ALLOCATE (SMOS0(NSTRA,-3:NFL))
 
         ALLOCATE (RESSNI(0:NSTRA,NFL))
         ALLOCATE (RESSMO(0:NSTRA,NFL))
@@ -3074,39 +3077,39 @@ C
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MAPL=0.D0
+        MAPL_VEC=0.D0
         CPMUL => MAPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MAPL(IPLS,IN)=CPMUL%VALUEM
+          MAPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MMPL=0.D0
+        MMPL_VEC=0.D0
         CPMUL => MMPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MMPL(IPLS,IN)=CPMUL%VALUEM
+          MMPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MIPL=0.D0
+        MIPL_VEC=0.D0
         CPMUL => MIPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MIPL(IPLS,IN)=CPMUL%VALUEM
+          MIPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MPHPL=0.D0
+        MPHPL_VEC=0.D0
         CPMUL => MPHPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MPHPL(IPLS,IN)=CPMUL%VALUEM
+          MPHPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 C
@@ -3305,12 +3308,12 @@ C
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        CPVODA=0.D0
-        CPMUL => CPPVS(ISTRAI)%PMUL
+        MPLODA=0.D0
+        CPMUL => MPPL_COPS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          CPVODA(IPLS,IN)=CPMUL%VALUEM
+          MPLODA(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
@@ -3355,7 +3358,7 @@ cdr  only one bulk ion species per volume source stratum supported
           DO 7472 IIRC=1,NPRCI(IPLS)
               IRRC=LGPRC(IPLS,IIRC)
               SUMN=0.0
-              SUMM=0.0
+              SUMM_VEC(0:2)=0.0
               SUMEI=0.0
               SUMEE=0.0
               lhit = .false.
@@ -3369,9 +3372,12 @@ cdr  only one bulk ion species per volume source stratum supported
                   RECADD=-EIRENE_FTABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
                   EEADD=  EIRENE_FEELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
                 END IF
-                PIADD=0._DP
-                IF (LPARMOM) THEN
-                  PIADD=PARMOM(IPLS,IN)*RECADD
+                PIADD_VEC(0:2)=0._DP
+                IF (LPMOM_VEC) THEN
+                  DO ICO=0,2
+                    KK=ICO*NPLS
+                    PIADD_VEC(ICO)=PMOM_VEC(KK+IPLS,IN)*RECADD
+                  END DO
                 END IF
                 EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
                 IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
@@ -3380,7 +3386,11 @@ cdr  only one bulk ion species per volume source stratum supported
 !  tallies are to be scaled with voltal
                 if (.not.lhit(inc)) then
                   PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
-                  MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
+                  DO ICO=0,2
+                    KK=ICO*NPLS
+                    MPPL_COP(KK+IPLS,INC)=MPPL_COP(KK+IPLS,INC)+
+     .                                    PIADD_VEC(ICO)
+                  END DO
                   EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
                   EPEL_COP(INC)=EPEL_COP(INC)+EEADD
                   lhit(inc) = .true.
@@ -3391,7 +3401,7 @@ cdr  only one bulk ion species per volume source stratum supported
 !  here we scale with volume of triangle cell
 !  this needs to be done per triangle
                 SUMN=SUMN+RECADD*VOL(IN)
-                SUMM=SUMM+PIADD*VOL(IN)
+                SUMM_VEC(0:2)=SUMM_VEC(0:2)+PIADD_VEC(0:2)*VOL(IN)
                 SUMEI=SUMEI+EIADD*VOL(IN)
                 SUMEE=SUMEE+EEADD*VOL(IN)
 
@@ -3399,8 +3409,10 @@ cdr  only one bulk ion species per volume source stratum supported
 
               RECTOT = RECTOT + SUMN
               WRITE (iunout,*) 'IPLS,IRRC ',IPLS,IRRC
-              CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
-     .                           SUMN, SUMM, SUMEI, SUMEE)
+              CALL EIRENE_MASR6
+     .         ('SUMN, SUMM_VEC, SUMEI, SUMEE                    ',
+     .           SUMN, SUMM_VEC(0), SUMM_VEC(1), SUMM_VEC(2),
+     .           SUMEI, SUMEE)
  7472     CONTINUE
 
 cdr
@@ -3450,8 +3462,8 @@ C
                   CPMUL%IART = IPLS
                   CPMUL%ICM = IN
                   CPMUL%VALUEM = MPPL_COP(IPLS,IN)
-                  CPMUL%NXTMUL => CPPVS(ISTRAI)%PMUL
-                  CPPVS(ISTRAI)%PMUL => CPMUL
+                  CPMUL%NXTMUL => MPPL_COPS(ISTRAI)%PMUL
+                  MPPL_COPS(ISTRAI)%PMUL => CPMUL
                 ENDIF
                 IF (EPPL_COP(IPLS,IN) .NE. 0.D0) THEN
 !pb               ALLOCATE(CPMUL)
@@ -3513,6 +3525,8 @@ cdr  test particle may have scored on a finer mesh (lcoarse=.false)
           SNIS(IFL)=0.
           CHMOS(IFL)=0.
           SMOS(IFL)=0.
+          SMOS(NFL+IFL)=0.
+          SMOS(2*NFL+IFL)=0.
 
 cdr  fill bulk particle source rate sni(...ifl) from all contributing
 cdr  test particle sources papl,pmpl,pipl,pppl (...,ipls)
@@ -3632,13 +3646,18 @@ cdr   ipls contributes to plasma code species ifl
                   IT=CURPOI%TRIANGLE
                   INC=NCLTAL(IT)
                   CURPOI=>CURPOI%NEXT
-                  SIGNUM = 1._DP
-                  IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
-                  SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
-     .                   MPPL_COP(IPLS,INC))*
-     .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                  SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
-                  SMOS(IFL)=SMOS(IFL)+SMOCL
+                  DO ICO=0,2
+                    KK=ICO*NPLS
+                    KKK=ICO*NFL+IFL
+                    SMOCL_VEC(ICO)=(MAPL_VEC(KK+IPLS,INC)+
+     .                              MMPL_VEC(KK+IPLS,INC)+
+     .                              MIPL_VEC(KK+IPLS,INC)+
+     .                              MPPL_COP(KK+IPLS,INC))*
+     .                             VOLTAL(INC)*1.D-5*FLX_EIR
+                    SMO(IX,IY,KKK,ISTRAI)=SMO(IX,IY,KKK,ISTRAI)+
+     .                                    SMOCL_VEC(ICO)
+                    SMOS(KKK)=SMOS(KKK)+SMOCL_VEC(ICO)
+                  ENDDO
                   CHMOS(IFL)=CHMOS(IFL)+CHMOM(IPLS,INC)*VOLTAL(INC)
                 ENDDO
               ELSEIF (LCOARSE) THEN
@@ -3648,13 +3667,18 @@ cdr  associated(curpoi) is taken for granted here !?
                 CURPOI => HEADS(IY,IX)%P
                 IT=CURPOI%TRIANGLE
                 INC=IY+(IX-1)*NR1TAL_SAVE
-                SIGNUM = 1._DP
-                IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
-                SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
-     .                 MPPL_COP(IPLS,INC))*
-     .                 VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
-                SMOS(IFL)=SMOS(IFL)+SMOCL
+                DO ICO=0,2
+                  KK=ICO*NPLS
+                  KKK=ICO*NFL+IFL
+                  SMOCL_VEC(ICO)=(MAPL_VEC(KK+IPLS,INC)+
+     .                            MMPL_VEC(KK+IPLS,INC)+
+     .                            MIPL_VEC(KK+IPLS,INC)+
+     .                            MPPL_COP(IKK+PLS,INC))*
+     .                           VOLTAL(INC)*1.D-5*FLX_EIR
+                  SMO(IX,IY,KKK,ISTRAI)=SMO(IX,IY,KKK,ISTRAI)+
+     .                                  SMOCL_VEC(ICO)
+                  SMOS(KKK)=SMOS(KKK)+SMOCL_VEC(ICO)
+                ENDDO
                 CHMOS(IFL)=CHMOS(IFL)+CHMOM(IPLS,INC)*VOLTAL(INC)
               ENDIF  ! LCOARSE OPTION
 
@@ -3675,18 +3699,16 @@ c  skip working on internal lin. comb. of tallies, unless sufficient storage
               if ((ix<=0).or.(iy <= 0)) cycle
               IN=IY+(IX-1)*NR1TAL_SAVE
               if (lhit(in)) cycle
-              SIGNUM = 1._DP
-              IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,ITRI))
-              cfac = (MAPL(IPLS,IN)+MMPL(IPLS,IN)+MIPL(IPLS,IN))/
+              cfac = (MAPL_VEC(IPLS,IN)+MMPL_VEC(IPLS,IN)+MIPL_VEC(IPLS,IN))/
      .               (copv(icp2+ipls,in) + eps60)
               copv(icp2+ipls,in)=(copv(icp2+ipls,in)*cfac +
      .                MPPL_COP(IPLS,IN))*
-     .                VOLTAL(IN)*1.D-5*SIGNUM*FLX_EIR
+     .                VOLTAL(IN)*1.D-5*FLX_EIR
 !pb 30012013 sei internal
               bv = 0._dp
               if (lbvin) bv = bvin(iplsv,itri)
               copv(icp3+3,in)=copv(icp3+3,in) -
-     .            bv*MPPL_COP(IPLS,IN)*SIGNUM*
+     .            bv*MPPL_COP(IPLS,IN)*
      .            cveli2/amua*2._DP
               lhit(in) = .true.
             end do  !itri loop
@@ -3715,11 +3737,9 @@ cdr   ntalm is a copv tally.
 !                    IT=CURPOI%TRIANGLE
 !                    INC=NCLTAL(IT)
                      INC=IY+(IX-1)*NR1TAL_SAVE
-                     SIGNUM = 1._DP
-                     IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
-                     SMORES=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+
-     .                       MIPL(IPLS,INC))*
-     .                       VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+                     SMORES=(MAPL_VEC(IPLS,INC)+MMPL_VEC(IPLS,INC)+
+     .                       MIPL_VEC(IPLS,INC))*
+     .                       VOLTAL(INC)*1.D-5*FLX_EIR
                      RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
      .                                  ABS(SIGMA(ISTAT_COP,INC)*
      .                                  SMORES/100.D0*1.D5)
@@ -3945,12 +3965,16 @@ C
         IF (IFIRST.EQ.0) THEN
 C
           SNIS0(ISTRAI,0)=0.
-          SMOS0(ISTRAI,0)=0.
+          SMOS0(ISTRAI,-3:0)=0.
           DO 7550 IFL=1,NFLA
             SNIS0(ISTRAI,0)=SNIS0(ISTRAI,0)+SNIS(IFL)*FLXI
             SNIS0(ISTRAI,IFL)=SNIS(IFL)*FLXI
-            SMOS0(ISTRAI,0)=SMOS0(ISTRAI,0)+SMOS(IFL)*FLXI
+            SMOS0(ISTRAI,-1)=SMOS0(ISTRAI,-1)+SMOS(IFL)*FLXI
             SMOS0(ISTRAI,IFL)=SMOS(IFL)*FLXI
+            SMOS0(ISTRAI,-2)=SMOS0(ISTRAI,-2)+SMOS(NFL+IFL)*FLXI
+            SMOS0(ISTRAI,NFL+IFL)=SMOS(NFL+IFL)*FLXI
+            SMOS0(ISTRAI,-3)=SMOS0(ISTRAI,-3)+SMOS(2*NFL+IFL)*FLXI
+            SMOS0(ISTRAI,2*NFL+IFL)=SMOS(2*NFL+IFL)*FLXI
  7550     CONTINUE
           SEES0(ISTRAI)=SEES*FLXI
           SEIS0(ISTRAI)=SEIS*FLXI
@@ -3983,6 +4007,10 @@ C
               DO 7554 IY=0,NDYA+1
                 SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)*SCALN(IFL)
                 SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)*SCALN(IFL)
+                SMO(IX,IY,NFL+IFL,ISTRAI)=
+     .                            SMO(IX,IY,NFL+IFL,ISTRAI)*SCALN(IFL)
+                SMO(IX,IY,2*NFL+IFL,ISTRAI)=
+     .                          SMO(IX,IY,2*NFL+IFL,ISTRAI)*SCALN(IFL)
  7554         CONTINUE
  7553       CONTINUE
  7556     CONTINUE
@@ -4059,6 +4087,9 @@ C
               DO 7590 IY=0,NDYA+1
                 SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)*FLXI
                 SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)*FLXI
+                SMO(IX,IY,NFL+IFL,ISTRAI)=SMO(IX,IY,NFL+IFL,ISTRAI)*FLXI
+                SMO(IX,IY,2*NFL+IFL,ISTRAI)=
+     .                                  SMO(IX,IY,2*NFL+IFL,ISTRAI)*FLXI
  7590         CONTINUE
  7580       CONTINUE
  7570     CONTINUE
@@ -4072,7 +4103,7 @@ C
 C
         CALL EIRENE_INDMPI (SNI,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
-        CALL EIRENE_INDMPI (SMO,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
+        CALL EIRENE_INDMPI (SMO,DUMMY,NDX,NDY,3*NFL,NDXA,NDYA,NFLA,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
         CALL EIRENE_INDMPI (SEE,DUMMY,NDX,NDY,1  ,NDXA,NDYA,1   ,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)

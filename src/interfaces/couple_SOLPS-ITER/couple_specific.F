@@ -1637,45 +1637,45 @@ cdr  save volumetric sources for plasma species ipls: particle, momentum, ion en
             ENDIF
           ENDIF
 
-          IF (LMAPL) THEN
-            IF (MAPL(IPLS,IN) .NE. 0.0_DP) THEN
+          IF (LMAPL_VEC) THEN
+            IF (MAPL_VEC(IPLS,IN) .NE. 0.0_DP) THEN
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
-              CPMUL%VALUEM = MAPL(IPLS,IN)*FLXI
+              CPMUL%VALUEM = MAPL_VEC(IPLS,IN)*FLXI
               CPMUL%NXTMUL => MAPLS(ISTRAI)%PMUL
               MAPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
 
-          IF (LMMPL) THEN
-            IF (MMPL(IPLS,IN) .NE. 0.0_DP) THEN
+          IF (LMMPL_VEC) THEN
+            IF (MMPL_VEC(IPLS,IN) .NE. 0.0_DP) THEN
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
-              CPMUL%VALUEM = MMPL(IPLS,IN)*FLXI
+              CPMUL%VALUEM = MMPL_VEC(IPLS,IN)*FLXI
               CPMUL%NXTMUL => MMPLS(ISTRAI)%PMUL
               MMPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
 
-          IF (LMIPL) THEN
-            IF (MIPL(IPLS,IN) .NE. 0.0_DP) THEN
+          IF (LMIPL_VEC) THEN
+            IF (MIPL_VEC(IPLS,IN) .NE. 0.0_DP) THEN
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
-              CPMUL%VALUEM = MIPL(IPLS,IN)*FLXI
+              CPMUL%VALUEM = MIPL_VEC(IPLS,IN)*FLXI
               CPMUL%NXTMUL => MIPLS(ISTRAI)%PMUL
               MIPLS(ISTRAI)%PMUL => CPMUL
             ENDIF
           ENDIF
 
-          IF (LMPHPL) THEN
-            IF (MPHPL(IPLS,IN) .NE. 0.0_DP) THEN
+          IF (LMPHPL_VEC) THEN
+            IF (MPHPL_VEC(IPLS,IN) .NE. 0.0_DP) THEN
               CPMUL => EIRENE_NEW_MULARR()
               CPMUL%IART = IPLS
               CPMUL%ICM = IN
-              CPMUL%VALUEM = MPHPL(IPLS,IN)*FLXI
+              CPMUL%VALUEM = MPHPL_VEC(IPLS,IN)*FLXI
               CPMUL%NXTMUL => MPHPLS(ISTRAI)%PMUL
               MPHPLS(ISTRAI)%PMUL => CPMUL
             ENDIF

@@ -1,5 +1,8 @@
 cdr  docu started, still more needed. What are the rules applied
 cdr  to switch input tallies off?
+cdr  June 23: default setting for BXPERP, BYPERP changed.
+cdr           By default these derived input tallies -16 and -17 are now
+cdr           active.
 C
 C      SUBROUTINE SETPRM_INTAL
 C
@@ -62,11 +65,18 @@ cdr to be written
       LIVTALI(13)  = .TRUE.       ! EDRIFT, else: =0.0
       LIVTALI(14)  = .TRUE.       ! VOL
 
-      LIVTALI(23)  = NPLSV>0      ! BVIN, else: sign(1.,bvin)=1.0   
-      LIVTALI(24)  = NPLS>0       ! PARMOM, else: = 0.0
+      LIVTALI(23)  = 3*NPLSV>0    ! BV_VEC, else: = 0.0
+      LIVTALI(24)  = 3*NPLS>0     ! PMOM_VEC, else: = 0.0
 
 cnh   02.12.2019
       LIVTALI(26)  = .TRUE.       ! ZIIN
+
+cdr   20.06.2023
+cdr for vectorial momentum sources
+cdr perp and diamagn. components relative to B field
+cdr are set in PLASMA_DERIV
+      LIVTALI(16)  = .TRUE.       ! BXPERP
+      LIVTALI(17)  = .TRUE.       ! BYPERP
 
 C  CURRENTLY THE LAST USED INPUT TALLY IS TALLY NO. 26 (NTALG=30)
 
@@ -233,8 +243,10 @@ c  indirect species addressing is possible for V_IN
       NFRSTP(20)=0      ! EZ
       NFRSTP(21)=0      ! EF
       NFRSTP(22)=0      ! POT
-      NFRSTP(23)=NPLSV  ! # BVIN,    DERIVED QUANTITY
-      NFRSTP(24)=NPLS   ! # PARMOM,  DERIVED QUANTITY
+c  next two tallies: vectorial form
+c  indirect species addressing is possible for BV_VEC
+      NFRSTP(23)=3*NPLSV! # BV_VEC,    DERIVED QUANTITY
+      NFRSTP(24)=3*NPLS ! # PMOM_VEC,  DERIVED QUANTITY
       NFRSTP(25)=0      ! # PSI  (belongs to; BX,BY,BZ,BF,
                         !         but added to code only later)
       NFRSTP(26)=NPLS   ! # ZIIN
@@ -317,12 +329,13 @@ c  Vin_VEC: 3x3-dyadic, for each IPLSV
       NFRSTP(94)=0      ! POT
       NFRSTP(95)=0      ! POT
       NFRSTP(96)=0      ! POT
-      NFRSTP(97)=NPLSV  ! BVIN
-      NFRSTP(98)=NPLSV  ! BVIN
-      NFRSTP(99)=NPLSV  ! BVIN
-      NFRSTP(100)=NPLS  ! PARMOM
-      NFRSTP(101)=NPLS  ! PARMOM
-      NFRSTP(102)=NPLS  ! PARMOM
+cdr  gradients of vector components: dyadic
+      NFRSTP(97)=3*NPLSV! BV_VEC
+      NFRSTP(98)=3*NPLSV! BV_VEC
+      NFRSTP(99)=3*NPLSV! BV_VEC
+      NFRSTP(100)=3*NPLS! PMOM_VEC
+      NFRSTP(101)=3*NPLS! PMOM_VEC
+      NFRSTP(102)=3*NPLS! PMOM_VEC
 
       NFRSTP(103)=0     ! PSI
       NFRSTP(104)=0     ! PSI
@@ -379,17 +392,17 @@ C  TOTAL NUMBER OF INPUT TALLIES, LAST TALLY NTALI WAS NOT YET IN NADDP(..)
 
 c  allocate and initialize plstls
       CALL EIRENE_ALLOC_COMUSR(2)
-c  set pointers: input tallies TEIN, TIIN,...,PARMOM on PLTTLS
+c  set pointers: input tallies TEIN, TIIN,...,PMOM_VEC on PLTTLS
       CALL EIRENE_ASSOCIATE_COMUSR
 
-cdr  hard-coded test, in case PARMOM is the last active input tally
-cdr   tsave=PARMOM(npls,nrad)
-cdr   PARMOM(npls,nrad)=1.2345678
+cdr  hard-coded test, in case PMOM_VEC is the last active input tally
+cdr   tsave=PMOM_VEC(3*npls,nrad)
+cdr   PMOM_VEC(3*npls,nrad)=1.2345678
 cdr   if (abs(plstls(ninptl,nrad)-1.2345678).gt.eps10) then
-cdr     write (iunout,*) 'error ninptl, assuming PARMOM is last tally'
+cdr     write (iunout,*) 'error ninptl, assuming PMOM_VEC is last tally'
 cdr     call eirene_exit_own(1)
 cdr   endif
-cdr   PARMOM(npls,nrad)=tsave
+cdr   PMOM_VEC(3*npls,nrad)=tsave
 
 !  CHECK VALUE ON LAST CELL IN LAST ACTIVE TALLY
 !  THIS TEST CANNOT BE PERFORMED DUE TO SWITCHING OFF OF INPUT TALLIES
@@ -408,8 +421,32 @@ c.............................................................................
             IF (LSMOPRO(ITAL)) THEN
               WRITE (IUNOUT,'(I6,1X,A,A10)')
      .          ITAL,trim(TXTPLS(1,ITAL)),', SMOOTHED'
+cdr  further components: vectorial tallies 23 and 24
+              if (ital.eq.23) then
+                WRITE (IUNOUT,'(I6,1X,A,A10)')
+     .            ITAL,trim(TXTPLS(1*NPLSV+1,ITAL)),', SMOOTHED'
+                WRITE (IUNOUT,'(I6,1X,A,A10)')
+     .            ITAL,trim(TXTPLS(2*NPLSV+1,ITAL)),', SMOOTHED'
+              elseif (ital.le.24) then
+                WRITE (IUNOUT,'(I6,1X,A,A10)') ITAL,
+     .            trim(TXTPLS(1*NPLS+1,ITAL)),', SMOOTHED'
+                WRITE (IUNOUT,'(I6,1X,A,A10)') ITAL,
+     .            trim(TXTPLS(2*NPLS+1,ITAL)),', SMOOTHED'
+              endif
             ELSE
               WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
+cdr  further components: vectorial tallies 23 and 24
+              if (ital.eq.23) then
+                WRITE (IUNOUT,'(I6,1X,A)')
+     .            ITAL,trim(TXTPLS(1*NPLSV+1,ITAL))
+                WRITE (IUNOUT,'(I6,1X,A)')
+     .            ITAL,trim(TXTPLS(2*NPLSV+1,ITAL))
+              elseif (ital.eq.24) then
+                WRITE (IUNOUT,'(I6,1X,A)') ITAL,
+     .            trim(TXTPLS(1*NPLS+1,ITAL))
+                WRITE (IUNOUT,'(I6,1X,A)') ITAL,
+     .            trim(TXTPLS(2*NPLS+1,ITAL))
+              endif
             ENDIF
           ENDIF
         END DO
@@ -428,6 +465,18 @@ cdr typically we will have no gradient input tallies
           DO ITAL=1,NTAL
             IF (.NOT.LIVTALI(ITAL)) THEN
               WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
+cdr  vectorial tallies 23 and 24
+              if (ital.eq.23) then
+                WRITE (IUNOUT,'(I6,1X,A)')
+     .            ITAL,trim(TXTPLS(1*NPLSV+1,ITAL))
+                WRITE (IUNOUT,'(I6,1X,A)')
+     .            ITAL,trim(TXTPLS(2*NPLSV+1,ITAL))
+              elseif (ital.eq.24) then
+                WRITE (IUNOUT,'(I6,1X,A)') ITAL,
+     .            trim(TXTPLS(1*NPLS+1,ITAL))
+                WRITE (IUNOUT,'(I6,1X,A)') ITAL,
+     .            trim(TXTPLS(2*NPLS+1,ITAL))
+              endif
             ENDIF
           END DO
         END IF
@@ -445,6 +494,18 @@ cdr typically we will have no gradient input tallies
           DO ITAL=1,NTALI
             IF (INTLOPTS(ITAL) < 0) THEN
               WRITE (IUNOUT,'(I6,1X,A)') ITAL,trim(TXTPLS(1,ITAL))
+cdr  vectorial tallies 23 and 24
+              if (ital.eq.23) then
+                WRITE (IUNOUT,'(I6,1X,A)')
+     .            ITAL,trim(TXTPLS(1*NPLSV+1,ITAL))
+                WRITE (IUNOUT,'(I6,1X,A)')
+     .            ITAL,trim(TXTPLS(2*NPLSV+1,ITAL))
+              elseif (ital.eq.24) then
+                WRITE (IUNOUT,'(I6,1X,A)')
+     .            ITAL,trim(TXTPLS(1*NPLS+1,ITAL))
+                WRITE (IUNOUT,'(I6,1X,A)')
+     .            ITAL,trim(TXTPLS(2*NPLS+1,ITAL))
+              endif
             ENDIF
           END DO
         END IF

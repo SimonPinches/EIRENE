@@ -17,7 +17,9 @@ cdr  begin threadprivate here
       REAL(DP), PUBLIC, SAVE ::
      R E0PAR, VELPAR, VELPER, VLXPAR, VLYPAR, VLZPAR, SIGPAR,
      R BVEC(3),  !dr local B field vector, cartesian
-     R BBX, BBY, BBZ,
+cdr B field, full transf. tensor (dyadic)
+cdr cart. B field components wrt. par,(0) perp,(1) and dia,(2) components, resp.
+     R BX(0:2), BY(0:2), BZ(0:2),
      R TAUE
       LOGICAL, public, save :: LCART,COLFLAG
 
@@ -25,7 +27,7 @@ cdr  begin threadprivate here
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  THREADPRIVATE(E0PAR,VELPAR,VELPER,VLXPAR,VLYPAR,VLZPAR,SIGPAR,
-!$OMP& BVEC,BBX,BBY,BBZ,TAUE,LCART,COLFLAG,FNUIAR)
+!$OMP& BVEC,BX,BY,BZ,TAUE,LCART,COLFLAG,FNUIAR)
 #endif
 
 cdr  end threadprivate here

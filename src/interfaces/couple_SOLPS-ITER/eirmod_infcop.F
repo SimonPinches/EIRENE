@@ -40,8 +40,6 @@ cdr  tbd:  check storage on copv, whenever used.
 cdr  jan.17
 cdr  epel(nrad)      --> epel_cop(nrad)
 cdr  cppv(ncpv,nrad) --> mppl_cop(npls,nrad), for notational consistency
-c    also done        :  cpvoda(ncpv,...) --> cpvoda(npls,...). perhaps 'ncpv' can go out??
-C    to be done          CPPVS            --> mppls_cop
 c    new: write file of triang. data for idl plotting tool.
 
 cdr  to be done: check handling of paat and pppl_cop for wrneutral.
@@ -73,6 +71,9 @@ c            code was correct in solps4.3, and garching versions of couple_b2/b2
 cdr March 18: new variable LCOARSE: maintain underlying coarse structured grid, scoring
 cdr           on coarse grid (NCLTAL array). Otherwise: only fine (triangular) grid structure
 cdr Mar 18:  ELTEST from couple_Tria
+cdr Jan 22:  vectorial momentum exchange tallies MAPL_VEC....
+cdr          received from EIRENE.
+cdr          ... plus some notational cleanup
 c......................................................................................
 
 
@@ -217,7 +218,7 @@ c Aug 22: ...both: mppl and epel tallies do not exist so far.
 C
 c  for short cycle correction terms, in vol. rec. strata.
       REAL(DP), ALLOCATABLE, SAVE ::
-     .            PPLODA(:,:), CPVODA(:,:),
+     .            PPLODA(:,:), MPLODA(:,:),
      .            EPLODA(:,:), EPEODA(:)
 
       real(dp), allocatable :: save_estimv(:,:), save_estims(:,:)
@@ -309,18 +310,18 @@ cdr  for short cycle only. Obsolete
         ALLOCATE (CHPM(NPLS,NRAD))
         ALLOCATE (CHEEM(NRAD))
         ALLOCATE (CHEIM(NRAD))
-        ALLOCATE (CHMOM(NPLS,NRAD))
+        ALLOCATE (CHMOM(NPLS,NRAD))  !  should be made vectorial tally
 
 cdr  for direct (primary) contributions from vol.rec sources
 cdr  Always needed for vol rec strata. Not only for short cycle
         ALLOCATE (PPPL_COP(NPLS,NRAD))
-        ALLOCATE (MPPL_COP(NPLS,NRAD))
+        ALLOCATE (MPPL_COP(3*NPLS,NRAD))
         ALLOCATE (EPPL_COP(NPLS,NRAD))
         ALLOCATE (EPEL_COP(NRAD))
 
 cdr  for short cycle only. Obsolete
         ALLOCATE (PPLODA(NPLS,NRAD))
-        ALLOCATE (CPVODA(NPLS,NRAD))
+        ALLOCATE (MPLODA(3*NPLS,NRAD))
         ALLOCATE (EPLODA(NPLS,NRAD))
         ALLOCATE (EPEODA(NRAD))
       END IF
@@ -2285,6 +2286,9 @@ c  avoid using bfeldb, because limited accuracy if coming through fort.31 (stand
             BZINTF(ITRI)=BZ/BN
             BFINTF(ITRI)=BN
 
+cdr  try to also bring grad(PSI) direction unit vector into eirene
+            BXPERF(ITRI)=PVX(IN)
+            BYPERF(ITRI)=PVY(IN)
           END IF
 c
           VLINTF(ITRI)=VOLB(IX,IY)*VL
@@ -3638,17 +3642,18 @@ C
       INTEGER, INTENT(IN) :: IENTRY, ISTRAA, ISTRAE, NEW_ITER
       LOGICAL, INTENT(INOUT) :: LSTP
       REAL(DP), SAVE :: SCALM, SCALE, SCALI, SEES, SEIS,
-     .          SIGNUM, SMOCL, SNIRES, SMORES, SEERES, SEIRES,
-     .          SUMM, SUMN, SUMEI, SUMEE, SUMN_OLD,
+     .          SMOCL_VEC(0:2), SNIRES, SMORES, SEERES, SEIRES,
+     .          SUMM_VEC(0:2), SUMN, SUMEI, SUMEE, SUMN_OLD,
      .          TEST, FLX, FLXI,
-     .          RECADD, RECTOT, PIADD,
+     .          RECADD, RECTOT, PIADD_VEC(0:2),
      .          PRESS00, SNICL, FLX_EIR,
      .          EAMISUM, EEADD, EIADD, CHE, CHI, CHP, CHEES, CHEIS
 C
       logical :: lhit(nrad)
       INTEGER :: I, JATM, JMOL, JION, JPLS, IPLSV, IPLSTI, ISTRAI,
      .           IN, IT, IX, IY, IFL, INC, IIRC, IRRC, IST_RATE, IER,
-     .           ISTAT_COP, ICPV
+     .           ISTAT_COP, ICPV,
+     .           KK, KKK, ICO
       INTEGER, SAVE :: IFIRST
       REAL(DP) :: DUMMY(0:NDXP,0:NDYP)
 
@@ -3700,12 +3705,12 @@ csw 14jul2011
         ALLOCATE (CHPS(NFL))
         ALLOCATE (SNIS(0:NFL))
         ALLOCATE (CHMOS(NFL))
-        ALLOCATE (SMOS(0:NFL))
+        ALLOCATE (SMOS(3*NFL))
         ALLOCATE (SCALN(0:NFL))
         ALLOCATE (SEES0(NSTRA))
         ALLOCATE (SEIS0(NSTRA))
         ALLOCATE (SNIS0(NSTRA,0:NFL))
-        ALLOCATE (SMOS0(NSTRA,0:NFL))
+        ALLOCATE (SMOS0(NSTRA,-3:3*NFL))
 
         ALLOCATE (RESSNI(0:NSTRA,NFL))
         ALLOCATE (RESSMO(0:NSTRA,NFL))
@@ -3732,12 +3737,12 @@ cdr  primary volumetric source contributions, from volumetric sources
 cdr  Here: not sampled, but exact
 cdr  Always needed for vol. rec. strata. Not only for short cycle
         ALLOCATE (PPPL_COP(NPLS,NRAD))
-        ALLOCATE (MPPL_COP(NPLS,NRAD))
+        ALLOCATE (MPPL_COP(3*NPLS,NRAD))
         ALLOCATE (EPPL_COP(NPLS,NRAD))
         ALLOCATE (EPEL_COP(NRAD))
 cdr  next 4: for short cycle. Obsolete
         ALLOCATE (PPLODA(NPLS,NRAD))
-        ALLOCATE (CPVODA(NCPV,NRAD))
+        ALLOCATE (MPLODA(3*NPLS,NRAD))
         ALLOCATE (EPLODA(NPLS,NRAD))
         ALLOCATE (EPEODA(NRAD))
       END IF
@@ -3762,7 +3767,7 @@ C
       ENDIF
 
       volSUMN(ISTRAA:ISTRAE)=0.0           !dpc
-      volSUMM(ISTRAA:ISTRAE)=0.0           !dpc
+      volSUMM(0:2,ISTRAA:ISTRAE)=0.0       !dr
       volSUMEI(ISTRAA:ISTRAE)=0.0          !dpc
       volSUMEE(ISTRAA:ISTRAE)=0.0          !dpc
 
@@ -3790,7 +3795,7 @@ csw 20mar2013
          smo_mapl(:,:,:,istrai) = 0.d0 !djm Jan2017
          smo_mmpl(:,:,:,istrai) = 0.d0
          smo_mipl(:,:,:,istrai) = 0.d0
-         smo_cppv(:,:,:,istrai) = 0.d0
+         smo_mppl(:,:,:,istrai) = 0.d0
          see(:,:,istrai) = 0.d0
          see_eael(:,:,istrai) = 0.d0 !djm Jan2017
          see_emel(:,:,istrai) = 0.d0
@@ -3862,10 +3867,12 @@ C
               SNI_PIPL(IX,IY,IFL,ISTRAI)=0.
               SNI_PPPL(IX,IY,IFL,ISTRAI)=0.
               SMO(IX,IY,IFL,ISTRAI)=0.
+              SMO(IX,IY,  NFL+IFL,ISTRAI)=0.
+              SMO(IX,IY,2*NFL+IFL,ISTRAI)=0.
               SMO_MAPL(IX,IY,IFL,ISTRAI)=0. !djm Jan2017
               SMO_MMPL(IX,IY,IFL,ISTRAI)=0.
               SMO_MIPL(IX,IY,IFL,ISTRAI)=0.
-              SMO_CPPV(IX,IY,IFL,ISTRAI)=0.
+              SMO_MPPL(IX,IY,IFL,ISTRAI)=0.
  7230       CONTINUE
  7220     CONTINUE
  7210   CONTINUE
@@ -3922,46 +3929,54 @@ cdr momentum sinks for bulk ions?
         END IF
 cdr end
 
-        MAPL=0.D0
-        IF (LMAPL) THEN
+cdr  mapl, mmpl, mipl are now vectorial tallies.
+cdr  The code below only deals with the parallel momentum source component.
+cdr  This code (from former "short cycle") was obsolete anyway.
+cdr  So I have not bothered to update it.
+cdr  If it is used accidentally, then we are in big trouble anyway.
+cdr  I think we urgently need to separate the (entirely obsolete)
+cdr  short cycle snippets from the active code.
+
+        MAPL_VEC=0.D0
+        IF (LMAPL_VEC) THEN
           CPMUL => MAPLS(ISTRAI)%PMUL
           DO WHILE (ASSOCIATED(CPMUL))
             IPLS=CPMUL%IART
             IN=CPMUL%ICM
-            MAPL(IPLS,IN)=CPMUL%VALUEM
+            MAPL_VEC(IPLS,IN)=CPMUL%VALUEM
             CPMUL => CPMUL%NXTMUL
           ENDDO
         END IF
 
-        MMPL=0.D0
-        IF (LMMPL) THEN
+        MMPL_VEC=0.D0
+        IF (LMMPL_VEC) THEN
           CPMUL => MMPLS(ISTRAI)%PMUL
           DO WHILE (ASSOCIATED(CPMUL))
             IPLS=CPMUL%IART
             IN=CPMUL%ICM
-            MMPL(IPLS,IN)=CPMUL%VALUEM
+            MMPL_VEC(IPLS,IN)=CPMUL%VALUEM
             CPMUL => CPMUL%NXTMUL
           ENDDO
         END IF
 
-        MIPL=0.D0
-        IF (LMIPL) THEN
+        MIPL_VEC=0.D0
+        IF (LMIPL_VEC) THEN
           CPMUL => MIPLS(ISTRAI)%PMUL
           DO WHILE (ASSOCIATED(CPMUL))
             IPLS=CPMUL%IART
             IN=CPMUL%ICM
-            MIPL(IPLS,IN)=CPMUL%VALUEM
+            MIPL_VEC(IPLS,IN)=CPMUL%VALUEM
             CPMUL => CPMUL%NXTMUL
           ENDDO
         END IF
 
-        MPHPL=0.D0
-        IF (LMPHPL) THEN
+        MPHPL_VEC=0.D0
+        IF (LMPHPL_VEC) THEN
           CPMUL => MPHPLS(ISTRAI)%PMUL
           DO WHILE (ASSOCIATED(CPMUL))
             IPLS=CPMUL%IART
             IN=CPMUL%ICM
-            MPHPL(IPLS,IN)=CPMUL%VALUEM
+            MPHPL_VEC(IPLS,IN)=CPMUL%VALUEM
             CPMUL => CPMUL%NXTMUL
           ENDDO
         END IF
@@ -4252,12 +4267,12 @@ cdr  probably obsolete: no short cycle for vol. rec strata ever existed?
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        CPVODA=0.D0
-        CPMUL => CPPVS(ISTRAI)%PMUL
+        MPLODA=0.D0
+        CPMUL => MPPL_COPS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          CPVODA(IPLS,IN)=CPMUL%VALUEM
+          MPLODA(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
@@ -4304,7 +4319,7 @@ cdr  only one bulk ion species per volume source stratum supported
           DO 7472 IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)
             SUMN=0.0
-            SUMM=0.0
+            SUMM_VEC(0:2)=0.0
             SUMEI=0.0
             SUMEE=0.0
             lhit = .false.
@@ -4318,9 +4333,13 @@ cdr  only one bulk ion species per volume source stratum supported
                 RECADD=-EIRENE_FTABRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
                 EEADD=  EIRENE_FEELRC1(IRRC,IN)*DIIN(IPLS,IN)*ELCHA
               END IF
-              PIADD=0._DP
-              IF (LPARMOM) THEN
-                PIADD=PARMOM(IPLS,IN)*RECADD
+              PIADD_VEC(0:2)=0._DP
+              IF (LPMOM_VEC) THEN
+cdr vectorial direct momentum sink rates via vol. recomb.
+                DO ICO=0,2
+                  KK=ICO*NPLS
+                  PIADD_VEC(ICO)=PMOM_VEC(KK+IPLS,IN)*RECADD
+                ENDDO
               ENDIF
               EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
               IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
@@ -4331,18 +4350,23 @@ cdr  only one bulk ion species per volume source stratum supported
 cdr to be checked again. Not sure that this is correct
               if (.not.lhit(inc)) then
                 PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
-                MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
+cdr  mppl_cop is a vectorial tally: par., perp., and diamagn. component
+                DO ICO=0,2
+                  KK=ICO*NPLS
+                  MPPL_COP(KK+IPLS,INC)=MPPL_COP(KK+IPLS,INC)+
+     .                                  PIADD_VEC(ICO)
+                ENDDO
                 EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
                 EPEL_COP(INC)=EPEL_COP(INC)+EEADD
                 lhit(inc) = .true.
               end if
 
 ! ALL INPUT TALLIES, TAB.., FTAB.., VOL, ARE ON UNDERLYING FINE GRID.
-! and hence: RECADD,PIADD,EIADD,EEADD also on fine grid.
+! and hence: RECADD,PIADD_VEC,EIADD,EEADD also on fine grid.
 !  here we scale with volume of triangle cell
 !  this needs to be done per triangle
               SUMN=SUMN+RECADD*VOL(IN)
-              SUMM=SUMM+PIADD*VOL(IN)
+              SUMM_VEC(0:2) =SUMM_VEC(0:2) +PIADD_VEC(0:2) *VOL(IN)
               SUMEI=SUMEI+EIADD*VOL(IN)
               SUMEE=SUMEE+EEADD*VOL(IN)
 
@@ -4351,20 +4375,22 @@ cdr to be checked again. Not sure that this is correct
             RECTOT = RECTOT + SUMN
 
             WRITE (iunout,*) 'PARTIAL: IRRC ',IRRC
-            CALL EIRENE_MASR4
-     .           ('SUMN, SUMM, SUMEI, SUMEE        ',
-     .             SUMN, SUMM, SUMEI, SUMEE)
+            CALL EIRENE_MASR6
+     .           ('SUMN, SUMM_VEC, SUMEI, SUMEE                    ',
+     .             SUMN, SUMM_VEC(0), SUMM_VEC(1), SUMM_VEC(2),
+     .             SUMEI, SUMEE)
             volSUMN(ISTRAI)=volSUMN(ISTRAI)+SUMN             ! dpc
-            volSUMM(ISTRAI)=volSUMM(ISTRAI)+SUMM             ! dpc
+            volSUMM(0:2,ISTRAI)=volSUMM(0:2,ISTRAI)+SUMM_VEC(0:2)! dr
             volSUMEI(ISTRAI)=volSUMEI(ISTRAI)+SUMEI          ! dpc
             volSUMEE(ISTRAI)=volSUMEE(ISTRAI)+SUMEE          ! dpc
  7472     CONTINUE  !IRRC
 
           WRITE (iunout,*) 'TOTAL'
-          CALL EIRENE_MASR4
-     .         ('SUMN, SUMM, SUMEI, SUMEE        ',
-     .           volSUMN(ISTRAI),  volSUMM(ISTRAI),
-     .           volSUMEI(ISTRAI), volSUMEE(ISTRAI))
+          CALL EIRENE_MASR6
+     .         ('SUMN, SUMM_VEC, SUMEI, SUMEE                    ',
+     .           volSUMN(ISTRAI),   volSUMM(0,ISTRAI),
+     .           volSUMM(1,ISTRAI), volSUMM(2,ISTRAI),
+     .           volSUMEI(ISTRAI),  volSUMEE(ISTRAI))
 cdr
 CC SUMN_OLD=WTOTP ???
           IF (.NOT.LSHORT) SUMN_OLD=RECTOT
@@ -4414,8 +4440,8 @@ C
                   CPMUL%IART = JPLS
                   CPMUL%ICM = IN
                   CPMUL%VALUEM = MPPL_COP(JPLS,IN)
-                  CPMUL%NXTMUL => CPPVS(ISTRAI)%PMUL
-                  CPPVS(ISTRAI)%PMUL => CPMUL
+                  CPMUL%NXTMUL => MPPL_COPS(ISTRAI)%PMUL
+                  MPPL_COPS(ISTRAI)%PMUL => CPMUL
                 ENDIF
                 IF (EPPL_COP(JPLS,IN) .NE. 0.D0) THEN
 !pb               ALLOCATE(CPMUL)
@@ -4478,7 +4504,10 @@ cdr  test particle may have scored on a finer mesh (lcoarse=.false)
           CHPS(IFL)=0.
           SNIS(IFL)=0.
           CHMOS(IFL)=0.
-          SMOS(IFL)=0.
+          DO ICO=0,2
+            KKK=ICO*NFL+IFL
+            SMOS(KKK)=0.
+          END DO
 
           DO JPLS=1,NPLSI
             IF (IFLB(JPLS).NE.IFL) CYCLE
@@ -4626,81 +4655,102 @@ cdr   JPLS contributes to plasma code species IFL
                     IT=CURPOI%TRIANGLE
                     INC=NCLTAL(IT)
                     CURPOI=>CURPOI%NEXT
-                    SIGNUM=1._DP
-                    IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
-                    SMOCL=0._DP
+                    SMOCL_VEC(0:2)=0._DP
+                    DO ICO=0,2
+cdr  EIRENE species indexing, for vectorial tallies
+                      KK=ICO*NPLS
+cdr  B2.5 species indexing
+                      KKK=ICO*NFL+IFL
 
-                    IF (LMAPL)
-     .                 SMOCL=SMOCL+MAPL(JPLS,INC)*
-     .                     VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                    IF (LMMPL)
-     .                 SMOCL=SMOCL+MMPL(JPLS,INC)*
-     .                     VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                    IF (LMIPL)
-     .                 SMOCL=SMOCL+MIPL(JPLS,INC)*
-     .                     VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                    SMOCL=SMOCL+MPPL_COP(JPLS,INC)*
-     .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                    SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
-                    SMOS(IFL)=SMOS(IFL)+SMOCL
+                      IF (LMAPL_VEC)
+     .                 SMOCL_VEC(ico)=SMOCL_VEC(ico)+
+     .                  MAPL_VEC(kk+JPLS,INC)*VOLTAL(INC)*1.D-5*FLX_EIR
+                      IF (LMMPL_VEC)
+     .                 SMOCL_VEC(ico)=SMOCL_VEC(ico)+
+     .                  MMPL_VEC(kk+JPLS,INC)*VOLTAL(INC)*1.D-5*FLX_EIR
+                      IF (LMIPL_VEC)
+     .                 SMOCL_VEC(ico)=SMOCL_VEC(ico)+
+     .                  MIPL_VEC(kk+JPLS,INC)*VOLTAL(INC)*1.D-5*FLX_EIR
+cdr  sampled tally MPPL does not exist.
+cdr  MPPL_COP is analytic tally, and is for vol.rec. only.
+                      SMOCL_VEC(ico)=SMOCL_VEC(ico)+
+     .                 MPPL_COP(kk+JPLS,INC)*VOLTAL(INC)*1.D-5*FLX_EIR
+cdr  now use B2.5 species indexing: 1:3*NFLA
+                      SMO(IX,IY,kkk,ISTRAI)=SMO(IX,IY,kkk,ISTRAI)+
+     .                 SMOCL_VEC(ico)
+cdr:  totals, these now include mppl contribution (from mppl_cop)
+                      SMOS(kkk)=SMOS(kkk)+SMOCL_VEC(ico)
+                    ENDDO  ! ICO loop over three vector components
+                           ! of momentum sources
                     CHMOS(IFL)=CHMOS(IFL)+CHMOM(JPLS,INC)*VOLTAL(INC)
 cdjm Jan2017
 cdr  careful: IFL is B2.5 species index, JPLS is EIRENE species index
-                    IF (LMAPL) SMO_MAPL(IX,IY,IFL,ISTRAI)=
-     .               SMO_MAPL(IX,IY,IFL,ISTRAI)+MAPL(JPLS,INC)*
-     .                VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                    IF (LMMPL) SMO_MMPL(IX,IY,IFL,ISTRAI)=
-     .               SMO_MMPL(IX,IY,IFL,ISTRAI)+MMPL(JPLS,INC)*
-     .                VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                    IF (LMIPL) SMO_MIPL(IX,IY,IFL,ISTRAI)=
-     .               SMO_MIPL(IX,IY,IFL,ISTRAI)+MIPL(JPLS,INC)*
-     .                VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                    SMO_CPPV(IX,IY,IFL,ISTRAI)=
-     .               SMO_CPPV(IX,IY,IFL,ISTRAI)+MPPL_COP(JPLS,INC)*
-     .                VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+                    IF (LMAPL_VEC) SMO_MAPL(IX,IY,IFL,ISTRAI)=
+     .               SMO_MAPL(IX,IY,IFL,ISTRAI)+MAPL_VEC(JPLS,INC)*
+     .                VOLTAL(INC)*1.D-5*FLX_EIR
+                    IF (LMMPL_VEC) SMO_MMPL(IX,IY,IFL,ISTRAI)=
+     .               SMO_MMPL(IX,IY,IFL,ISTRAI)+MMPL_VEC(JPLS,INC)*
+     .                VOLTAL(INC)*1.D-5*FLX_EIR
+                    IF (LMIPL_VEC) SMO_MIPL(IX,IY,IFL,ISTRAI)=
+     .               SMO_MIPL(IX,IY,IFL,ISTRAI)+MIPL_VEC(JPLS,INC)*
+     .                VOLTAL(INC)*1.D-5*FLX_EIR
+cdr  sampled tally MPPL does not exist.
+cdr  MPPL_COP is analytic tally, and is for vol.rec. only.
+                    SMO_MPPL(IX,IY,IFL,ISTRAI)=
+     .               SMO_MPPL(IX,IY,IFL,ISTRAI)+MPPL_COP(JPLS,INC)*
+     .                VOLTAL(INC)*1.D-5*FLX_EIR
                   ENDDO
                 ELSEIF (LCOARSE) THEN
-! use BVIN from first triangle belonging the quadrangular cell
+! use BV_VEC from first triangle belonging the quadrangular cell
 cdr  associated(curpoi) is taken for granted here !?
 
                   CURPOI => HEADS(IY,IX)%P
                   IT=CURPOI%TRIANGLE
                   INC=IY+(IX-1)*NR1TAL_SAVE
 
-                  SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
-                  SMOCL=0._DP
-                  IF (LMAPL)
-     .                   SMOCL=SMOCL+MAPL(JPLS,INC)*
-     .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                  IF (LMMPL)
-     .                   SMOCL=SMOCL+MMPL(JPLS,INC)*
-     .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                  IF (LMIPL)
-     .                   SMOCL=SMOCL+MIPL(JPLS,INC)*
-     .                   VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                  SMOCL=SMOCL+MPPL_COP(JPLS,INC)*
-     .                 VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+                  SMOCL_VEC(0:2)=0._DP
+                  DO ICO=0,2
+                    KK=ICO*NPLS
+                    KKK=ICO*NFL+IFL
+                    IF (LMAPL_VEC)
+     .                   SMOCL_VEC(ico)=SMOCL_VEC(ico)+
+     .                   MAPL_VEC(kk+JPLS,INC)*
+     .                   VOLTAL(INC)*1.D-5*FLX_EIR
+                    IF (LMMPL_VEC)
+     .                   SMOCL_VEC(ico)=SMOCL_VEC(ico)+
+     .                   MMPL_VEC(kk+JPLS,INC)*
+     .                   VOLTAL(INC)*1.D-5*FLX_EIR
+                    IF (LMIPL_VEC)
+     .                   SMOCL_VEC(ico)=SMOCL_VEC(ico)+
+     .                   MIPL_VEC(kk+JPLS,INC)*
+     .                   VOLTAL(INC)*1.D-5*FLX_EIR
+                    SMOCL_VEC(ico)=SMOCL_VEC(ico)+
+     .                   MPPL_COP(kk+JPLS,INC)*
+     .                   VOLTAL(INC)*1.D-5*FLX_EIR
 
-                  SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
-                  SMOS(IFL)=SMOS(IFL)+SMOCL
+                    SMO(IX,IY,kkk,ISTRAI)=SMO(IX,IY,kkk,ISTRAI)+
+     .                                  SMOCL_VEC(ico)
+                    SMOS(kkk)=SMOS(kkk)+SMOCL_VEC(ico)
+                  ENDDO  ! loop over three vector components
+                         ! of momentum sources
                   CHMOS(IFL)=CHMOS(IFL)+CHMOM(JPLS,INC)*VOLTAL(INC)
 cdjm Jan2017
-                  IF (LMAPL) SMO_MAPL(IX,IY,IFL,ISTRAI)=
+                  IF (LMAPL_VEC) SMO_MAPL(IX,IY,IFL,ISTRAI)=
      .                       SMO_MAPL(IX,IY,IFL,ISTRAI)+
-     .                           MAPL(JPLS,INC)*VOLTAL(INC)*
-     .                           1.D-5*SIGNUM*FLX_EIR
-                  IF (LMMPL) SMO_MMPL(IX,IY,IFL,ISTRAI)=
+     .                           MAPL_VEC(JPLS,INC)*VOLTAL(INC)*
+     .                           1.D-5*FLX_EIR
+                  IF (LMMPL_VEC) SMO_MMPL(IX,IY,IFL,ISTRAI)=
      .                       SMO_MMPL(IX,IY,IFL,ISTRAI)+
-     .                           MMPL(JPLS,INC)*VOLTAL(INC)*
-     .                           1.D-5*SIGNUM*FLX_EIR
-                  IF (LMIPL) SMO_MIPL(IX,IY,IFL,ISTRAI)=
+     .                           MMPL_VEC(JPLS,INC)*VOLTAL(INC)*
+     .                           1.D-5*FLX_EIR
+                  IF (LMIPL_VEC) SMO_MIPL(IX,IY,IFL,ISTRAI)=
      .                       SMO_MIPL(IX,IY,IFL,ISTRAI)+
-     .                           MIPL(JPLS,INC)*VOLTAL(INC)*
-     .                           1.D-5*SIGNUM*FLX_EIR
-                  SMO_CPPV(IX,IY,IFL,ISTRAI)=SMO_CPPV(IX,IY,IFL,ISTRAI)+
+     .                           MIPL_VEC(JPLS,INC)*VOLTAL(INC)*
+     .                           1.D-5*FLX_EIR
+                  SMO_MPPL(IX,IY,IFL,ISTRAI)=SMO_MPPL(IX,IY,IFL,ISTRAI)+
      .                                       MPPL_COP(JPLS,INC)*
      .                                       VOLTAL(INC)*
-     .                                       1.D-5*SIGNUM*FLX_EIR
+     .                                       1.D-5*FLX_EIR
 cdr:  totals, these now include MPPL contribution (from mppl_cop)
                 ENDIF  ! LCOARSE OPTION
 
@@ -4729,15 +4779,13 @@ cdr   ntalm is a copv tally.
                        INC=NCLTAL(IT) !here: inc=it:
                                       !all tally data are on fine grid
                        CURPOI=>CURPOI%NEXT
-                       SIGNUM=1._DP
-                       IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IT))
                        SMORES=0._DP
-                       IF (LMAPL) SMORES=SMORES+MAPL(JPLS,INC)*
-     .                  VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                       IF (LMMPL) SMORES=SMORES+MMPL(JPLS,INC)*
-     .                  VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
-                       IF (LMIPL) SMORES=SMORES+MIPL(JPLS,INC)*
-     .                  VOLTAL(INC)*1.D-5*SIGNUM*FLX_EIR
+                       IF (LMAPL_VEC) SMORES=SMORES+MAPL_VEC(JPLS,INC)*
+     .                  VOLTAL(INC)*1.D-5*FLX_EIR
+                       IF (LMMPL_VEC) SMORES=SMORES+MMPL_VEC(JPLS,INC)*
+     .                  VOLTAL(INC)*1.D-5*FLX_EIR
+                       IF (LMIPL_VEC) SMORES=SMORES+MIPL_VEC(JPLS,INC)*
+     .                  VOLTAL(INC)*1.D-5*FLX_EIR
 
 cdr  no need to add mppl_cop contribution here, because this is exact (MC noise free)
                        RESSMO(ISTRAI,IFL)=RESSMO(ISTRAI,IFL)+
@@ -5144,8 +5192,10 @@ CVK SCALING TO MAKE POSSIBLE COMPARISON WITH B2
         CALL EIRENE_LEER(1)
         WRITE (iunout,*) 'IF3COP: TOTAL SOURCES P,EI,EE,MOM_VEC: ISTRA='
      .                   ,ISTRAI
-        WRITE (iunout,'(4E14.6)') sum(SNIS(1:nfla)), SEIS, SEES,
-     .                            sum(SMOS(1:nfla))
+        WRITE (iunout,'(6E14.6)') sum(SNIS(1:nfla)), SEIS, SEES,
+     .                            sum(SMOS(1:nfla)),
+     .                            sum(SMOS(1*nfl+1:1*nfl+nfla)),
+     .                            sum(SMOS(2*nfl+1:2*nfl+nfla))
 C
 C   NEXT:
 C   IF LSHORT OR IFIRST.GT.0     : CRITERION TO STOP SHORT CYCLE,
@@ -5155,13 +5205,17 @@ C
         IF (IFIRST.EQ.0) THEN
 C
           SNIS0(ISTRAI,0)=0.
-          SMOS0(ISTRAI,0)=0.
+          SMOS0(ISTRAI,-3:0)=0.
           DO 7550 IFL=1,NFLA
             SNIS0(ISTRAI,0)=SNIS0(ISTRAI,0)+SNIS(IFL)*FLXI
             SNIS0(ISTRAI,IFL)=SNIS(IFL)*FLXI
 
-            SMOS0(ISTRAI,0)=SMOS0(ISTRAI,0)+SMOS(IFL)*FLXI
+            SMOS0(ISTRAI,-1)=SMOS0(ISTRAI,-1)+SMOS(IFL)*FLXI
             SMOS0(ISTRAI,IFL)=SMOS(IFL)*FLXI
+            SMOS0(ISTRAI,-2)=SMOS0(ISTRAI,-2)+SMOS(NFL+IFL)*FLXI
+            SMOS0(ISTRAI,NFL+IFL)=SMOS(NFL+IFL)*FLXI
+            SMOS0(ISTRAI,-3)=SMOS0(ISTRAI,-3)+SMOS(2*NFL+IFL)*FLXI
+            SMOS0(ISTRAI,2*NFL+IFL)=SMOS(2*NFL+IFL)*FLXI
  7550     CONTINUE
           SEES0(ISTRAI)=SEES*FLXI
           SEIS0(ISTRAI)=SEIS*FLXI
@@ -5217,7 +5271,14 @@ cdjm Jan2017
                 SNI_PPPL(IX,IY,IFL,ISTRAI)=
      .                     SNI_PPPL(IX,IY,IFL,ISTRAI)*SCALN(IFL)
 
-                SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)*
+                KKK=IFL
+                SMO(IX,IY,KKK,ISTRAI)=SMO(IX,IY,KKK,ISTRAI)*
+     .                                SCALN(IFL)
+                KKK=NFL+IFL
+                SMO(IX,IY,KKK,ISTRAI)=SMO(IX,IY,KKK,ISTRAI)*
+     .                                SCALN(IFL)
+                KKK=2*NFL+IFL
+                SMO(IX,IY,KKK,ISTRAI)=SMO(IX,IY,KKK,ISTRAI)*
      .                                SCALN(IFL)
 cdjm Jan2017
                 SMO_MAPL(IX,IY,IFL,ISTRAI)=
@@ -5226,8 +5287,9 @@ cdjm Jan2017
      .                     SMO_MMPL(IX,IY,IFL,ISTRAI)*SCALN(IFL)
                 SMO_MIPL(IX,IY,IFL,ISTRAI)=
      .                     SMO_MIPL(IX,IY,IFL,ISTRAI)*SCALN(IFL)
-                SMO_CPPV(IX,IY,IFL,ISTRAI)=
-     .                     SMO_CPPV(IX,IY,IFL,ISTRAI)*SCALN(IFL)
+!dr  smo_cppv --> smo_MPPL
+                SMO_MPPL(IX,IY,IFL,ISTRAI)=
+     .                     SMO_MPPL(IX,IY,IFL,ISTRAI)*SCALN(IFL)
  7554         CONTINUE
  7553       CONTINUE
  7556     CONTINUE
@@ -5390,7 +5452,12 @@ cdjm Jan2017
                 SNI_PPPL(IX,IY,IFL,ISTRAI)=
      .               SNI_PPPL(IX,IY,IFL,ISTRAI)*FLXI
 
-                SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)*FLXI
+                KKK=IFL
+                SMO(IX,IY,KKK,ISTRAI)=SMO(IX,IY,KKK,ISTRAI)*FLXI
+                KKK=NFL+IFL
+                SMO(IX,IY,KKK,ISTRAI)=SMO(IX,IY,KKK,ISTRAI)*FLXI
+                KKK=2*NFL+IFL
+                SMO(IX,IY,KKK,ISTRAI)=SMO(IX,IY,KKK,ISTRAI)*FLXI
 cdjm Jan2017
                 SMO_MAPL(IX,IY,IFL,ISTRAI)=
      .               SMO_MAPL(IX,IY,IFL,ISTRAI)*FLXI
@@ -5398,8 +5465,8 @@ cdjm Jan2017
      .               SMO_MMPL(IX,IY,IFL,ISTRAI)*FLXI
                 SMO_MIPL(IX,IY,IFL,ISTRAI)=
      .               SMO_MIPL(IX,IY,IFL,ISTRAI)*FLXI
-                SMO_CPPV(IX,IY,IFL,ISTRAI)=
-     .               SMO_CPPV(IX,IY,IFL,ISTRAI)*FLXI
+                SMO_MPPL(IX,IY,IFL,ISTRAI)=
+     .               SMO_MPPL(IX,IY,IFL,ISTRAI)*FLXI
  7590         CONTINUE
  7580       CONTINUE
  7570     CONTINUE
@@ -5485,7 +5552,7 @@ cdjm Jan2017
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
         CALL EIRENE_INDMPI (SNI_PPPL,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
-        CALL EIRENE_INDMPI (SMO,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
+        CALL EIRENE_INDMPI (SMO,DUMMY,NDX,NDY,3*NFL,NDXA,NDYA,3*NFLA,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
         CALL EIRENE_INDMPI (SMO_MAPL,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
@@ -5494,7 +5561,7 @@ cdjm Jan2017
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
         CALL EIRENE_INDMPI (SMO_MIPL,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
-        CALL EIRENE_INDMPI (SMO_CPPV,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
+        CALL EIRENE_INDMPI (SMO_MPPL,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
         CALL EIRENE_INDMPI (SEE,DUMMY,NDX,NDY,1  ,NDXA,NDYA,1   ,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
@@ -6370,7 +6437,7 @@ csw mpi 09jun2010
         ALLOCATE (SEES0(NSTRAi))
         ALLOCATE (SEIS0(NSTRAi))
         ALLOCATE (SNIS0(NSTRAi,0:NFL))
-        ALLOCATE (SMOS0(NSTRAi,0:NFL))
+        ALLOCATE (SMOS0(NSTRAi,-3:3*NFL))
         ALLOCATE (RESSNI(0:NSTRAi,NFL))
         ALLOCATE (RESSMO(0:NSTRAi,NFL))
         ALLOCATE (RESSEE(0:NSTRAi))
@@ -6381,8 +6448,11 @@ csw mpi 09jun2010
       do istrx=1,nstrai
         if(procforstra(istrx,my_pe) .and. my_pe /= 0) then
           SNIS0(istrx,0) = sum(snis0(istrx,1:nfl))
-          SMOS0(istrx,0) = sum(smos0(istrx,1:nfl))
+          SMOS0(istrx,0) = sum(smos0(istrx,1:3*nfl))
           DO IFL=1,NFL
+            SMOS0(istrx,-1) = sum(smos0(istrx,      1:  nfl))
+            SMOS0(istrx,-2) = sum(smos0(istrx,  nfl+1:2*nfl))
+            SMOS0(istrx,-3) = sum(smos0(istrx,2*nfl+1:3*nfl))
             RESSNI(0,IFL) = ressni(0,ifl) + RESSNI(istrx,IFL)
             RESSMO(0,IFL) = ressni(0,ifl) + RESSMO(istrx,IFL)
           END DO
@@ -6397,12 +6467,20 @@ csw mpi 09jun2010
         call mpi_bcast(dumvec, nfl+1,MPI_DOUBLE_PRECISION,
      .                 0, MPI_COMM_WORLD,ier)
         snis0(istrx,0:nfl) = dumvec(0:nfl)
+      end do
+      deallocate(dumvec)
 
-        dumvec(0:nfl) = smos0(istrx,0:nfl)
-        call mpi_bcast(dumvec, nfl+1,MPI_DOUBLE_PRECISION,
+      allocate(dumvec(-3:3*nfl))
+      do istrx=1,nstrai
+        dumvec(-3:3*nfl) = smos0(istrx,-3:3*nfl)
+        call mpi_bcast(dumvec,3*nfl+4,MPI_DOUBLE_PRECISION,
      .                 0, MPI_COMM_WORLD,ier)
         smos0(istrx,0:nfl) = dumvec(0:nfl)
+      end do
+      deallocate(dumvec)
 
+      allocate(dumvec(0:nfl))
+      do istrx=1,nstrai
         call mpi_bcast(sees0(istrx),    1,MPI_DOUBLE_PRECISION,
      .                 0, MPI_COMM_WORLD,ier)
 
@@ -6451,11 +6529,14 @@ csw mpi 09jun2010
      .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
      .              ier)
       snis0(istrr,0:nfl) = dumvec(0:nfl)
+      deallocate(dumvec)
 
-      call mpi_recv(dumvec, (nfl+1), MPI_DOUBLE_PRECISION,
+      allocate(dumvec(-3:3*nfl))
+      call mpi_recv(dumvec, (3*nfl+4), MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
      .              ier)
-      smos0(istrr,0:nfl) = dumvec(0:nfl)
+      smos0(istrr,-3:3*nfl) = dumvec(-3:3*nfl)
+      deallocate(dumvec)
 
       call mpi_recv(sees0(istrr),    1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
@@ -6469,6 +6550,7 @@ csw mpi 09jun2010
      .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
      .              ier)
 
+      allocate(dumvec(0:nfl))
       call mpi_recv(dumvec, nfl+1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
      .              ier)
@@ -6563,8 +6645,8 @@ cdjm Jan2017
      &              size(smo_mipl(:,:,:,istrr)),
      &              MPI_DOUBLE_PRECISION, irank, istrr,
      &              MPI_COMM_WORLD, MPI_STATUS_IGNORE, ier)
-      call mpi_recv(smo_cppv(0,0,1,istrr),
-     &              size(smo_cppv(:,:,:,istrr)),
+      call mpi_recv(smo_mppl(0,0,1,istrr),
+     &              size(smo_mppl(:,:,:,istrr)),
      &              MPI_DOUBLE_PRECISION, irank, istrr,
      &              MPI_COMM_WORLD, MPI_STATUS_IGNORE, ier)
 cdjm Jan2017
@@ -6626,10 +6708,13 @@ cdjm Jan2017
       dumvec(0:nfl) = snis0(istrr,0:nfl)
       call mpi_send(dumvec, (nfl+1), MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, ier)
+      deallocate(dumvec)
 
-      dumvec(0:nfl) = smos0(istrr,0:nfl)
-      call mpi_send(dumvec, (nfl+1), MPI_DOUBLE_PRECISION,
+      allocate(dumvec(-3:3*nfl))
+      dumvec(-3:3*nfl) = smos0(istrr,-3:3*nfl)
+      call mpi_send(dumvec, (3*nfl+4), MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, ier)
+      deallocate(dumvec)
 
       call mpi_send(sees0(istrr),    1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, ier)
@@ -6640,6 +6725,7 @@ cdjm Jan2017
       call mpi_send(flxeir(istrr),   1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, ier)
 
+      allocate(dumvec(0:nfl))
       dumvec(1:nfl) = ressni(istrr,1:nfl)
       call mpi_send(dumvec, nfl+1, MPI_DOUBLE_PRECISION,
      .              irank, istrr, MPI_COMM_WORLD, ier)
@@ -6709,8 +6795,8 @@ cdjm Jan2017
       call mpi_send(smo_mipl(0,0,1,istrr),
      &         size(smo_mipl(:,:,:,istrr)),
      &         MPI_DOUBLE_PRECISION, irank, istrr, MPI_COMM_WORLD, ier)
-      call mpi_send(smo_cppv(0,0,1,istrr),
-     &         size(smo_cppv(:,:,:,istrr)),
+      call mpi_send(smo_mppl(0,0,1,istrr),
+     &         size(smo_mppl(:,:,:,istrr)),
      &         MPI_DOUBLE_PRECISION, irank, istrr, MPI_COMM_WORLD, ier)
 cdjm Jan2017
       call mpi_send(sna_paat(0,0,1,istrr),
@@ -7064,7 +7150,7 @@ C  TO THE QUADRANGLE
         DEALLOCATE (EPEL_COP)
 
         DEALLOCATE (PPLODA)
-        DEALLOCATE (CPVODA)
+        DEALLOCATE (MPLODA)
         DEALLOCATE (EPLODA)
         DEALLOCATE (EPEODA)
       END IF

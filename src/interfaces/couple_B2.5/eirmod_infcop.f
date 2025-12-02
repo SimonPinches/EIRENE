@@ -143,7 +143,7 @@ c the corresponding tallies scored from random sampling in eirene
 C
 c  for short cycle correction terms, in vol. rec. strata.
       REAL(DP), ALLOCATABLE, SAVE ::
-     .            PPLODA(:,:), CPVODA(:,:),
+     .            PPLODA(:,:), MPLODA(:,:),
      .            EPLODA(:,:), EPEODA(:)
 C
       REAL(DP), ALLOCATABLE, SAVE ::
@@ -165,7 +165,7 @@ C
      .          DELY, ALX, ALE, ALW, ALS, ALN, AL, ETOT,
      .          FLX, ESUM, DR, VR, VTEST, VTEST2, EADD,
      .          EMAXW, ESHEATH, SI,
-     .          PARWI, PERWI, SUMM, SUMN, SUMEI, SUMEE, FLXI,
+     .          PARWI, PERWI, SUMM_VEC(0:2), SUMN, SUMEI, SUMEE, FLXI,
      .          CHI, CHP, CHE, CS, THMAX, EESHT, EEMAX,
      .          RP1, DELX, PNORM, PVYS, PVXS, PUPV, RRBS, PUYS, PUXS,
      .          VPX, VPY, VT, PARW, PERW, PN1, OR, VPZ, GAMMA, CUR, TE,
@@ -308,12 +308,12 @@ C
         ALLOCATE (CHMOM(NPLS,NRAD))
 
         ALLOCATE (PPPL_COP(NPLS,NRAD))
-        ALLOCATE (MPPL_COP(NPLS,NRAD))
+        ALLOCATE (MPPL_COP(3*NPLS,NRAD))
         ALLOCATE (EPPL_COP(NPLS,NRAD))
         ALLOCATE (EPEL_COP(NRAD))
 
         ALLOCATE (PPLODA(NPLS,NRAD))
-        ALLOCATE (CPVODA(NPLS,NRAD))
+        ALLOCATE (MPLODA(3*NPLS,NRAD))
         ALLOCATE (EPLODA(NPLS,NRAD))
         ALLOCATE (EPEODA(NRAD))
       END IF
@@ -823,6 +823,8 @@ c
           BYINTF(IN)=BY/BN
           BZINTF(IN)=BZ/BN
           BFINTF(IN)=BN
+          BXPERF(IN)=PVX(IN)
+          BYPERF(IN)=PVY(IN)
           VLINTF(IN)=VOLB(IX,IY)*VL
  2120   CONTINUE
  2110 CONTINUE
@@ -1704,6 +1706,7 @@ C
       LOGICAL, INTENT(INOUT) :: LSTP
       INTEGER, INTENT(IN) :: ISTRAA, ISTRAE, NEW_ITER, IFRST
 C
+      INTEGER :: ICO, KK, KKK
       REAL(DP) :: SEES0(NSTRA), SEIS0(NSTRA)
       REAL(DP) :: DUMMY(0:NDXP,0:NDYP)
       REAL(DP) :: EIRENE_FTABRC1, EIRENE_FEELRC1
@@ -1712,10 +1715,10 @@ C
         ALLOCATE (CHPS(NFL))
         ALLOCATE (SNIS(0:NFL))
         ALLOCATE (CHMOS(NFL))
-        ALLOCATE (SMOS(0:NFL))
+        ALLOCATE (SMOS(3*NFL))
         ALLOCATE (SCALN(0:NFL))
         ALLOCATE (SNIS0(NSTRA,0:NFL))
-        ALLOCATE (SMOS0(NSTRA,0:NFL))
+        ALLOCATE (SMOS0(NSTRA,-3:3*NFL))
 
         ALLOCATE (RESSNI(0:NSTRA,NFL))
         ALLOCATE (RESSMO(0:NSTRA,NFL))
@@ -1735,7 +1738,7 @@ C
       ENDIF
 
       volSUMN(ISTRAA:ISTRAE)=0.0           !dpc
-      volSUMM(ISTRAA:ISTRAE)=0.0           !dpc
+      volSUMM(0:2,ISTRAA:ISTRAE)=0.0       !dpc
       volSUMEI(ISTRAA:ISTRAE)=0.0          !dpc
       volSUMEE(ISTRAA:ISTRAE)=0.0          !dpc
 
@@ -1815,39 +1818,39 @@ C
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MAPL=0.D0
+        MAPL_VEC=0.D0
         CPMUL => MAPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MAPL(IPLS,IN)=CPMUL%VALUEM
+          MAPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MMPL=0.D0
+        MMPL_VEC=0.D0
         CPMUL => MMPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MMPL(IPLS,IN)=CPMUL%VALUEM
+          MMPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MIPL=0.D0
+        MIPL_VEC=0.D0
         CPMUL => MIPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MIPL(IPLS,IN)=CPMUL%VALUEM
+          MIPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        MPHPL=0.D0
+        MPHPL_VEC=0.D0
         CPMUL => MPHPLS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          MPHPL(IPLS,IN)=CPMUL%VALUEM
+          MPHPL_VEC(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 C
@@ -2046,12 +2049,12 @@ C
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
-        CPVODA=0.D0
-        CPMUL => CPPVS(ISTRAI)%PMUL
+        MPLODA=0.D0
+        CPMUL => MPPL_COPS(ISTRAI)%PMUL
         DO WHILE (ASSOCIATED(CPMUL))
           IPLS=CPMUL%IART
           IN=CPMUL%ICM
-          CPVODA(IPLS,IN)=CPMUL%VALUEM
+          MPLODA(IPLS,IN)=CPMUL%VALUEM
           CPMUL => CPMUL%NXTMUL
         ENDDO
 
@@ -2096,7 +2099,7 @@ cdr  only one bulk ion species per volume source stratum supported
           DO 7472 IIRC=1,NPRCI(IPLS)
             IRRC=LGPRC(IPLS,IIRC)
             SUMN=0.0
-            SUMM=0.0
+            SUMM_VEC(0:2)=0.0
             SUMEI=0.0
             SUMEE=0.0
             DO 7471 IR=1,NR1ST-1
@@ -2119,12 +2122,16 @@ c dpc
                 END IF
                 PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
                 SUMN=SUMN+RECADD*VOL(IN)
-                PIADD=0._DP
-                IF (LPARMOM) THEN
-                  PIADD=PARMOM(IPLS,IN)*RECADD
-                  MPPL_COP(IPLS,INC)=MPPL_COP(IPLS,INC)+PIADD
+                PIADD_VEC(0:2)=0._DP
+                IF (LPMOM_VEC) THEN
+                  DO ICO=0,2
+                    KK=ICO*NPLS
+                    PIADD_VEC(ICO)=PMOM_VEC(KK+IPLS,IN)*RECADD
+                    MPPL_COP(KK+IPLS,INC)=MPPL_COP(KK+IPLS,INC)+
+     .                                    PIADD_VEC(ICO)
+                  END DO
                 END IF
-                SUMM=SUMM+PIADD*VOL(IN)
+                SUMM_VEC(0:2)=SUMM_VEC(0:2)+PIADD_VEC(0:2)*VOL(IN)
                 EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
                 IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
                 EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
@@ -2136,19 +2143,22 @@ c dpc
  7471       CONTINUE  ! loop over grid
 
             WRITE (iunout,*) 'PARTIAL: IRRC ',IRRC
-            CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
-     .                         SUMN, SUMM, SUMEI, SUMEE)
+            CALL EIRENE_MASR6
+     .            ('SUMN, SUMM_VEC, SUMEI, SUMEE                    ',
+     .              SUMN, SUMM_VEC(0), SUMM_VEC(1), SUMM_VEC(2),
+     .              SUMEI, SUMEE)
 c  now sum over IRRC rec processes for bulk ion IPLS
             volSUMN(ISTRAI)=volSUMN(ISTRAI)+SUMN             ! dpc
-            volSUMM(ISTRAI)=volSUMM(ISTRAI)+SUMM             ! dpc
+            volSUMM(0:2,ISTRAI)=volSUMM(0:2,ISTRAI)+SUMM_VEC(0:2) ! dpc
             volSUMEI(ISTRAI)=volSUMEI(ISTRAI)+SUMEI          ! dpc
             volSUMEE(ISTRAI)=volSUMEE(ISTRAI)+SUMEE          ! dpc
  7472     CONTINUE
 
           WRITE (iunout,*) 'TOTAL'
-          CALL EIRENE_MASR4
-     .          ('SUMN, SUMM, SUMEI, SUMEE        ',
-     .            volSUMN(ISTRAI), volSUMM(ISTRAI),
+          CALL EIRENE_MASR6
+     .          ('SUMN, SUMM_VEC, SUMEI, SUMEE                    ',
+     .            volSUMN(ISTRAI), volSUMM_VEC(0,ISTRAI),
+     .            volSUMM_VEC(1,ISTRAI), volSUMM_VEC(2,ISTRAI),
      .            volSUMEI(ISTRAI), volSUMEE(ISTRAI))
         ENDIF
 C
@@ -2189,13 +2199,19 @@ c  ipls contributes to plasma code species ifl
               DO 7533 IY=1,NDYA
                 IN=IY+(IX-1)*NR1ST
                 INC=NCLTAL(IN)
-                SIGNUM=1._DP
-                IF (LBVIN) SIGNUM=SIGN(1._DP,BVIN(IPLSV,IN))
-                SMOCL=(MAPL(IPLS,INC)+MMPL(IPLS,INC)+MIPL(IPLS,INC)+
-     .                 MPPL_COP(IPLS,INC))*
-     .                 VOLTAL(INC)*1.D-5*SIGNUM
-                SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)+SMOCL
-                SMOS(IFL)=SMOS(IFL)+SMOCL
+                SMOCL_VEC(0:2)=0.
+                DO ICO=0,2
+                  KK=ICO*NPLS
+                  KKK=ICO*NFL+IFL
+                  SMOCL_VEC(ICO)=(MAPL_VEC(KK+IPLS,INC)+
+     .                            MMPL_VEC(KK+IPLS,INC)+
+     .                            MIPL_VEC(KK+IPLS,INC)+
+     .                            MPPL_COP(KK+IPLS,INC))*
+     .                   VOLTAL(INC)*1.D-5
+                  SMO(IX,IY,KKK,ISTRAI)=SMO(IX,IY,KKK,ISTRAI)+
+     .             SMOCL_VEC(ICO)
+                  SMOS(KKK)=SMOS(KKK)+SMOCL_VEC(ICO)
+                ENDDO
                 CHMOS(IFL)=CHMOS(IFL)+CHMOM(IPLS,INC)*VOLTAL(INC)
  7533         CONTINUE
  7536       CONTINUE
@@ -2257,12 +2273,16 @@ C
         IF (LSHORT.AND.IFIRST.EQ.0) THEN
 C
           SNIS0(ISTRAI,0)=0.
-          SMOS0(ISTRAI,0)=0.
+          SMOS0(ISTRAI,-3:0)=0.
           DO 7550 IFL=1,NFLA
             SNIS0(ISTRAI,0)=SNIS0(ISTRAI,0)+SNIS(IFL)
             SNIS0(ISTRAI,IFL)=SNIS(IFL)
-            SMOS0(ISTRAI,0)=SMOS0(ISTRAI,0)+SMOS(IFL)
+            SMOS0(ISTRAI,-1)=SMOS0(ISTRAI,-1)+SMOS(IFL)
             SMOS0(ISTRAI,IFL)=SMOS(IFL)
+            SMOS0(ISTRAI,-2)=SMOS0(ISTRAI,-2)+SMOS(NFL+IFL)
+            SMOS0(ISTRAI,NFL+IFL)=SMOS(NFL+IFL)
+            SMOS0(ISTRAI,-3)=SMOS0(ISTRAI,-3)+SMOS(2*NFL+IFL)
+            SMOS0(ISTRAI,2*NFL+IFL)=SMOS(2*NFL+IFL)
  7550     CONTINUE
           SEES0(ISTRAI)=SEES
           SEIS0(ISTRAI)=SEIS
@@ -2295,6 +2315,10 @@ C
               DO 7554 IY=0,NDYA+1
                 SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)*SCALN(IFL)
                 SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)*SCALN(IFL)
+                SMO(IX,IY,NFL+IFL,ISTRAI)=
+     .                            SMO(IX,IY,NFL+IFL,ISTRAI)*SCALN(IFL)
+                SMO(IX,IY,2*NFL+IFL,ISTRAI)=
+     .                          SMO(IX,IY,2*NFL+IFL,ISTRAI)*SCALN(IFL)
  7554         CONTINUE
  7553       CONTINUE
  7556     CONTINUE
@@ -2366,6 +2390,9 @@ C
               DO 7590 IY=0,NDYA+1
                 SNI(IX,IY,IFL,ISTRAI)=SNI(IX,IY,IFL,ISTRAI)*FLXI
                 SMO(IX,IY,IFL,ISTRAI)=SMO(IX,IY,IFL,ISTRAI)*FLXI
+                SMO(IX,IY,NFL+IFL,ISTRAI)=SMO(IX,IY,NFL+IFL,ISTRAI)*FLXI
+                SMO(IX,IY,2*NFL+IFL,ISTRAI)=
+     .                                  SMO(IX,IY,2*NFL+IFL,ISTRAI)*FLXI
  7590         CONTINUE
  7580       CONTINUE
  7570     CONTINUE
@@ -2379,7 +2406,7 @@ C
 C
         CALL EIRENE_INDMPI (SNI,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
-        CALL EIRENE_INDMPI (SMO,DUMMY,NDX,NDY,NFL,NDXA,NDYA,NFLA,
+        CALL EIRENE_INDMPI (SMO,DUMMY,NDX,NDY,3*NFL,NDXA,NDYA,NFLA,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
         CALL EIRENE_INDMPI (SEE,DUMMY,NDX,NDY,1  ,NDXA,NDYA,1   ,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)

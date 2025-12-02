@@ -26,7 +26,8 @@ C
 #endif
       INTEGER :: IATM, IMOL, IION, IPHOT, IPLS, IADV, ICLV, ISNV,
      .           ICPV, IBGV,
-     .           JATM, JMOL, JION, JPHOT
+     .           JATM, JMOL, JION, JPHOT,
+     .           KK, ICO
       INTEGER :: IAD, EIRENE_INDIRECT_ADDRESS
       EXTERNAL :: EIRENE_INTTAL, EIRENE_INTVOL,
      .            EIRENE_INDIRECT_ADDRESS
@@ -1238,37 +1239,41 @@ cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
           EPPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
         END IF
 
-        IF (LMAPL) THEN
-          DUMMY(1:NSBOX_TAL) = MAPL(IPLS,1:NSBOX_TAL)
-          CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
-     .                 MAPLI(IPLS,ISTRA),
+cdr  next: vectorial tallies
+        do ico=0,2
+          kk=ico*npls
+          IF (LMAPL_VEC) THEN
+            DUMMY(1:NSBOX_TAL) = MAPL_VEC(KK+IPLS,1:NSBOX_TAL)
+            CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                 MAPLI_VEC(KK+IPLS,ISTRA),
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
-          MAPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
-        END IF
+            MAPL_VEC(KK+IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+          END IF
 
-        IF (LMMPL) THEN
-          DUMMY(1:NSBOX_TAL) = MMPL(IPLS,1:NSBOX_TAL)
-          CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
-     .                 MMPLI(IPLS,ISTRA),
+          IF (LMMPL_VEC) THEN
+            DUMMY(1:NSBOX_TAL) = MMPL_VEC(KK+IPLS,1:NSBOX_TAL)
+            CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                 MMPLI_VEC(KK+IPLS,ISTRA),
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
-          MMPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
-        END IF
+            MMPL_VEC(KK+IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+          END IF
 
-        IF (LMIPL) THEN
-          DUMMY(1:NSBOX_TAL) = MIPL(IPLS,1:NSBOX_TAL)
-          CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
-     .                 MIPLI(IPLS,ISTRA),
+          IF (LMIPL_VEC) THEN
+            DUMMY(1:NSBOX_TAL) = MIPL_VEC(KK+IPLS,1:NSBOX_TAL)
+            CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                 MIPLI_VEC(KK+IPLS,ISTRA),
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
-          MIPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
-        END IF
+            MIPL_VEC(KK+IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+          END IF
 
-        IF (LMPHPL) THEN
-          DUMMY(1:NSBOX_TAL) = MPHPL(IPLS,1:NSBOX_TAL)
-          CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
-     .                 MPHPLI(IPLS,ISTRA),
+          IF (LMPHPL_VEC) THEN
+            DUMMY(1:NSBOX_TAL) = MPHPL_VEC(KK+IPLS,1:NSBOX_TAL)
+            CALL EIRENE_INTTAL (DUMMY,VOLTAL,1,1,NSBOX_TAL,
+     .                 MPHPLI_VEC(KK+IPLS,ISTRA),
      .                 NR1TAL,NP2TAL,NT3TAL,NBMLT)
-          MPHPL(IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
-        END IF
+            MPHPL_VEC(KK+IPLS,1:NSBOX_TAL) = DUMMY(1:NSBOX_TAL)
+          END IF
+        enddo
 
   454 CONTINUE
 

@@ -42,7 +42,7 @@ cdr            now only via IRC reaction card, block 4. Not in block 12 any more
 cdr            "Density Models" are now charcterized by a reaction IRC (from block 4)
 cdr            and a donor state ISPZ, ITYP, rather than by a full reaction deck CHELP.
 cdr  Oct. 18:  input tallies on PLSTLS(NINPTL). Includes 18 old input tallies but
-cdr            now also derived tallies: EDRIFT, BVIN, PARMOM
+cdr            now also derived tallies: EDRIFT, BV_VEC, PMOM_VEC
 cdr  tbd:      broadcast: livtali etc. move to correct position
 cdr  Jan. 19:  separate routine for broadcast of CCOUPL
 cdr  ???       apparently also COMNNL removed here from broadcasting

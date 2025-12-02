@@ -69,7 +69,7 @@ c  plasma particles, ion energy, electron energy, plasma momentum
 c  Only applicable in case: NLPLS(ISTRA)
 c
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R SREC(:,:),   EIO(:,:),    EEL(:,:),   MOM(:,:)
+     R SREC(:,:),   EIO(:,:),    EEL(:,:),   MOM_VEC(:,:)
 
 cdr  should go into LCMSOU
       LOGICAL, PUBLIC, ALLOCATABLE, SAVE ::
@@ -187,7 +187,7 @@ cdr  should go into LCMSOU
         ALLOCATE (SREC(0:NPLS,0:NREC))
         ALLOCATE (EIO(0:NPLS,0:NREC))
         ALLOCATE (EEL(0:NPLS,0:NREC))
-        ALLOCATE (MOM(0:NPLS,0:NREC))
+        ALLOCATE (MOM_VEC(-3:3*NPLS,0:NREC))
 
       END IF
 
@@ -217,7 +217,7 @@ cdr  should go into LCMSOU
         DEALLOCATE (SREC)
         DEALLOCATE (EIO)
         DEALLOCATE (EEL)
-        DEALLOCATE (MOM)
+        DEALLOCATE (MOM_VEC)
       END IF
 
       RETURN
@@ -249,7 +249,7 @@ cdr  should go into LCMSOU
         SREC   = 0._DP
         EIO    = 0._DP
         EEL    = 0._DP
-        MOM    = 0._DP
+        MOM_VEC= 0._DP
 
       END IF
 

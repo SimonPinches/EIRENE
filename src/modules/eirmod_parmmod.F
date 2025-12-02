@@ -286,6 +286,7 @@ c                         WITHOUT COUNTING GRADIENT TALLIES:
 c                         INCREASED IN 2014 FROM 21 TO 22
 c                         INCREASED IN 2018 FROM 22 TO 24
 c                         INCREASED IN 2018 FROM 24 TO 30
+cdr  Jan.22               Amongst these: 2 vectorial tallies: 23 and 24
         NTALI=NTALG*4   ! total number of VOLUME INPUT TALLIES
 c                         INCLUDE ALL POSSIBLE GRADIENT TALLIES d(TL)/dX, d(TL)/dY, d(TL)/dZ...
 
@@ -408,7 +409,7 @@ C        and for SCLTAL in mcarlo.f
 !pb  N1MX needs to cover the first dimensions of all tallies
 !pb  NSPZ added because of SPUMP(NSPZ)
 !pb  NSPZ could replace MAX(NPHOT,NATM,NMOL,NION,NPLS), left for clarity
-        N1MX=MAX(NPHOT,NATM,NMOL,NION,NPLS,NADV,NALV,NCLV,NCPV,NBGV,
+        N1MX=MAX(NPHOT,NATM,NMOL,NION,3*NPLS,NADV,NALV,NCLV,NCPV,NBGV,
      .           NSNV,NAIN,NSPZ)
 cdr  same MEANING as n1mx?.  Check: why not n1mx=max(....)
 
@@ -439,7 +440,7 @@ C  SET IN SETPRM ACCORDING TO LIVING TALLIES SPECIFIED IN LIVTALV
         NVLTLP=9*(NATMP+NMOLP+NIONP+NPHOTP)+28+6*NPLSP+
      P         4*(NATMP+NMOLP+NIONP+NPHOTP+NPLSP)+
      P         1*NADVP+1*NCLVP+1*NSNVP+1*NCPVP+1*NBGVP+1*NALVP+
-     P         4*NPLSP
+     P         4*(3*NPLSP+1)
 
         IF (NLSPCSCL_ATM) THEN
           NVLTLP=NVLTLP-NATMP-NMOLP-NIONP-NPHOTP-NPLSP

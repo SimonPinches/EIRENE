@@ -29,14 +29,14 @@ cdjm Jan2017
      R SNI_PAPL(:,:,:,:), SNI_PMPL(:,:,:,:),
      R SNI_PIPL(:,:,:,:), SNI_PPPL(:,:,:,:),
      R SMO_MAPL(:,:,:,:), SMO_MMPL(:,:,:,:),
-     R SMO_MIPL(:,:,:,:), SMO_CPPV(:,:,:,:),
+     R SMO_MIPL(:,:,:,:), SMO_MPPL(:,:,:,:),
      R SEE_EAEL(:,:,:), SEE_EMEL(:,:,:),
      R SEE_EIEL(:,:,:), SEE_EPEL(:,:,:),
      R SEI_EAPL(:,:,:), SEI_EMPL(:,:,:),
      R SEI_EIPL(:,:,:), SEI_EPPL(:,:,:)
 
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R VOLSUMN(:), VOLSUMM(:), VOLSUMEI(:), VOLSUMEE(:)
+     R VOLSUMN(:), VOLSUMM(:,:), VOLSUMEI(:), VOLSUMEE(:)
 
       INTEGER, PUBLIC, SAVE ::
      I NDXD, NDYD, NFLD, NATD, NMLD, NIOD, NSTRAD
@@ -100,12 +100,13 @@ cdjm Jan2017
       ALLOCATE (SNI_PIPL(0:NDXD,0:NDYD,NFLD,NSTRAD))
       ALLOCATE (SNI_PPPL(0:NDXD,0:NDYD,NFLD,NSTRAD))
 
-      ALLOCATE (SMO(0:NDXD,0:NDYD,NFLD,NSTRAD))
+!dr  may 2022: vectorial momentum sources
+      ALLOCATE (SMO(0:NDXD,0:NDYD,3*NFLD,NSTRAD))
 cdjm Jan2017
       ALLOCATE (SMO_MAPL(0:NDXD,0:NDYD,NFLD,NSTRAD))
       ALLOCATE (SMO_MMPL(0:NDXD,0:NDYD,NFLD,NSTRAD))
       ALLOCATE (SMO_MIPL(0:NDXD,0:NDYD,NFLD,NSTRAD))
-      ALLOCATE (SMO_CPPV(0:NDXD,0:NDYD,NFLD,NSTRAD))
+      ALLOCATE (SMO_MPPL(0:NDXD,0:NDYD,NFLD,NSTRAD))
 
       ALLOCATE (SEE(0:NDXD,0:NDYD,NSTRAD))
 cdjm Jan2017
@@ -122,7 +123,7 @@ cdjm Jan2017
       ALLOCATE (SEI_EPPL(0:NDXD,0:NDYD,NSTRAD))
 
       ALLOCATE (VOLSUMN(NSTRAD))
-      ALLOCATE (VOLSUMM(NSTRAD))
+      ALLOCATE (VOLSUMM(0:2,NSTRAD))
       ALLOCATE (VOLSUMEI(NSTRAD))
       ALLOCATE (VOLSUMEE(NSTRAD))
 
@@ -131,8 +132,8 @@ cdjm Jan2017
       ALLOCATE (FLXSPCI(NFLD,NSTRAD))
 
       IMEM = INT((INT(NDXD+1,LONG)*INT(NDYD+1,LONG)*INT(NSTRAD,LONG)*
-     .            INT(10*NFLD+3*(NATD+NMLD+NIOD)+12,LONG)+
-     .            INT(NATD+NFLD+5,LONG)*INT(NSTRAD,LONG))*8,LONG)
+     .            INT(12*NFLD+3*(NATD+NMLD+NIOD)+12,LONG)+
+     .            INT(NATD+NFLD+7,LONG)*INT(NSTRAD,LONG))*8,LONG)
       WRITE (IUNMEM,'(A,T25,I15)')
      .             ' EIRBRA ', IMEM
 
@@ -173,7 +174,7 @@ cdjm Jan2017
       DEALLOCATE (SMO_MAPL)
       DEALLOCATE (SMO_MMPL)
       DEALLOCATE (SMO_MIPL)
-      DEALLOCATE (SMO_CPPV)
+      DEALLOCATE (SMO_MPPL)
 
       DEALLOCATE (SEE)
 cdjm Jan2017
@@ -231,7 +232,7 @@ cdjm Jan2017
       SMO_MAPL = 0._DP
       SMO_MMPL = 0._DP
       SMO_MIPL = 0._DP
-      SMO_CPPV = 0._DP
+      SMO_MPPL = 0._DP
 
       SEE = 0._DP
 cdjm Jan2017
@@ -281,16 +282,18 @@ cdjm Jan2017
       call mpi_bcast (sni_pppl,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
 
+      inum = (ndxd+1)*(ndyd+1)*3*nfld*nstrad
       call mpi_bcast (smo,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
 cdjm Jan2017
+      inum = (ndxd+1)*(ndyd+1)*nfld*nstrad
       call mpi_bcast (smo_mapl,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
       call mpi_bcast (smo_mmpl,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
       call mpi_bcast (smo_mipl,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
-      call mpi_bcast (smo_cppv,inum,MPI_DOUBLE_PRECISION,
+      call mpi_bcast (smo_mppl,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
 
 cdjm Jan2017
@@ -353,8 +356,10 @@ cdjm Jan2017
       inum = nstrad
       call mpi_bcast (volsumn,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
+      inum = 3*nstrad
       call mpi_bcast (volsumm,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
+      inum = nstrad
       call mpi_bcast (volsumee,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
       call mpi_bcast (volsumei,inum,MPI_DOUBLE_PRECISION,
@@ -375,7 +380,7 @@ cdjm Jan2017
 
         call mpi_send(volsumn(istr), 1, MPI_DOUBLE_PRECISION,
      .                irank, istr, MPI_COMM_WORLD, ierr)
-        call mpi_send(volsumm(istr), 1, MPI_DOUBLE_PRECISION,
+        call mpi_send(volsumm(:,istr), 1, MPI_DOUBLE_PRECISION,
      .                irank, istr, MPI_COMM_WORLD, ierr)
         call mpi_send(volsumee(istr), 1, MPI_DOUBLE_PRECISION,
      .                irank, istr, MPI_COMM_WORLD, ierr)
@@ -396,7 +401,7 @@ cdjm Jan2017
         call mpi_recv(volsumn(istr), 1, MPI_DOUBLE_PRECISION,
      .                irank, istr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
      .                ierr)
-        call mpi_recv(volsumm(istr), 1, MPI_DOUBLE_PRECISION,
+        call mpi_recv(volsumm(:,istr), 1, MPI_DOUBLE_PRECISION,
      .                irank, istr, MPI_COMM_WORLD, MPI_STATUS_IGNORE,
      .                ierr)
         call mpi_recv(volsumee(istr), 1, MPI_DOUBLE_PRECISION,

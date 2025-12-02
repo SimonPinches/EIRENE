@@ -220,8 +220,8 @@ c  find B field in cell NCELL: return cartesian B field vectors in module CFPLK
 
 C  SIGPAR: SIGN OF PARALLEL VELOCITY WITH RESPECT TO B
 c  calculating the angle between full velocity and B field
-c  BBX, BBY, BBZ are normalized!
-      VCOS = VELX*BBX + VELY*BBY + VELZ*BBZ
+c  BX, BY, BZ are normalized!
+      VCOS = VELX*BX(0) + VELY*BY(0) + VELZ*BZ(0)
       IF (ABS(VCOS).LT.EPS30) GOTO 992
       SIGPAR=SIGN(1._DP,VCOS)
       VELPAR=ABS(VEL*VCOS)
@@ -237,9 +237,9 @@ c  APPROXIMATION A)
 c  use B field line as trajectory
 c  VLXPAR,VLYPAR,VLZPAR gives the direction of the full parallel velocity
 c  in Cartesian coordinates - absolute value is not correct!!!
-      VLXPAR=SIGPAR*BBX
-      VLYPAR=SIGPAR*BBY
-      VLZPAR=SIGPAR*BBZ
+      VLXPAR=SIGPAR*BX(0)
+      VLYPAR=SIGPAR*BY(0)
+      VLZPAR=SIGPAR*BZ(0)
 c  VL_PAR: parallel unit speed vector, VL_PAR = SIG*B
 c  VL_PAR = (/ VLXPAR, VLYPAR, VLZPAR /)
 
@@ -1294,7 +1294,7 @@ C
       CALL EIRENE_MASAGE('ERROR IN FOLION, PROJECTION TO V_PAR, V_PERP')
       CALL EIRENE_MASAGE
      .  ('PROBABLY ILL-DEFINED B FIELD WRT. PARTICLE SPEED')
-      WRITE (iunout,*) 'BBX,BBY,BBZ ',BBX,BBY,BBZ
+      WRITE (iunout,*) 'BX(0),BY(0),BZ(0) ',BX(0),BY(0),BZ(0)
       ZT=0.
       GOTO 9951
 
@@ -1530,21 +1530,21 @@ C
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       IMPLICIT NONE
       REAL(DP), INTENT(IN) :: X,Y,Z,VELS
-      REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BBF
+      REAL(DP) :: BVEC_1(3), VVEC(3), GYRO, BF
       INTEGER :: IND
       EXTERNAL :: EIRENE_BFIELD, EIRENE_B_PROJI
 
-      CALL EIRENE_BFIELD (NCELL, X, Y, Z, BBX, BBY, BBZ, BBF, .TRUE.)
-      BVEC = (/ BBX, BBY, BBZ /)
+      CALL EIRENE_BFIELD (NCELL, X, Y, Z, BX, BY, BZ, BF, .TRUE.)
+      BVEC = (/ BX(0), BY(0), BZ(0) /)
 
       IF (IND.LT.1) RETURN
 
 C  FIND NEW REDUCED (GUIDING CENTRE) VELOCITY, LCART=F
 C  RETAIN MODULI VEL, V_PARALLEL, V_PERP, SIGPAR,
 C  ONLY THE NEW DIRECTION (REDUCED SPEED UNIT VECTORS) ARE EVALUATED
-      VLXPAR=SIGPAR*BBX
-      VLYPAR=SIGPAR*BBY
-      VLZPAR=SIGPAR*BBZ
+      VLXPAR=SIGPAR*BX(0)
+      VLYPAR=SIGPAR*BY(0)
+      VLZPAR=SIGPAR*BZ(0)
       VELX = VLXPAR
       VELY = VLYPAR
       VELZ = VLZPAR

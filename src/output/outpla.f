@@ -19,7 +19,7 @@ cdr             prttal and prtvol are largely identical, remove one ?
 cdr oct 18    : all input tallies selectable, also derived tallies.
 cdr             also: gradient tallies of input tallies: currently no. 31--120
 cdr may 19    : remove NF=NFRSTP(ITAL) (unused, meaning ?), comments...
-cdr jan 22    : bug fix: missing weighting function for PARMOM tally added
+cdr jan 22    : bug fix: missing weighting function for PMOM_VEC tally added
 cdr             as long as fine-grid data are identical to coarse grid
 cdr             data, as e.g. in B2.5 interfaces, this bug made no difference.
 cdr mar 23    : account for bgk virt. species as if they were "densmodel" species
@@ -59,7 +59,7 @@ C
       INTEGER :: IR, IP, IT, I, I_FINE, NBLCKA, IB, IPRV, ITAL,
      .           NXM, NYM, NZM, NR1PR, NP2PR, NT3PR, NSBPR, NFLGPR,
      .           ITALI, K, NFTI, NFTE, KG,
-     .           KK
+     .           KS, KK, ICO   ! indexing in vectorial tallies
       EXTERNAL :: EIRENE_INTTAL, EIRENE_INTVOL, EIRENE_PRTTAL,
      .            EIRENE_PRTVOL, EIRENE_HEADNG, EIRENE_LEER,
      .            EIRENE_MASAGE, EIRENE_MASR1, EIRENE_MASR2
@@ -96,8 +96,8 @@ C                 TALTYP=4: UNKNOWN        (?)
       TALTYP(20)=0
       TALTYP(21)=0
       TALTYP(22)=0
-      TALTYP(23)=0  ! bvin, units: cm/s
-      TALTYP(24)=0  ! parmom units: g*cm/s
+      TALTYP(23)=0  ! bv_vec, units: cm/s
+      TALTYP(24)=0  ! pmom_vec, units: g*cm/s
       TALTYP(25)=0  ! psi, units: Tesla*m
       TALTYP(26)=3  ! zi
 
@@ -257,14 +257,25 @@ cdr  missing here: verify cdenmodel(k) ?
               HELPP(1:NSBOX) = EFIN(1:NSBOX)
             CASE (22)
               HELPP(1:NSBOX) = POT(1:NSBOX)
+cdr  next two tallies are vectorial tallies
             CASE (23)
+cdr K ranges from 1 to 3*NPLS, KS: 1:NPLS
+cdr BV_VEC(1:3*NPLSV)
+              KS=MOD(K,NPLS)
+              IF (KS == 0 ) KS=NPLS
+              ICO=(K-1)/NPLS  ! = 0,1,2
+              KK=ICO*NPLSV
               IF ((ICAL == 1) .AND.
-     .            (VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
-              HELPP(1:NSBOX) = BVIN(MPLSV(K),1:NSBOX)
+     .            (VERIFY(CDENMODEL(KS),' ') == 0)) CYCLE
+              HELPP(1:NSBOX) = BV_VEC(KK+MPLSV(KS),1:NSBOX)
             CASE (24)
+cdr  K ranges from 1 to 3*NPLS, KS: 1:NPLS
+cdr  PMOM_VEC(1:3*NPLS)
+              KS=MOD(K,NPLS)
+              IF (KS == 0 ) KS=NPLS
               IF ((ICAL == 1) .AND.
-     .            (VERIFY(CDENMODEL(K),' ') == 0)) CYCLE
-              HELPP(1:NSBOX) = PARMOM(K,1:NSBOX)
+     .            (VERIFY(CDENMODEL(KS),' ') == 0)) CYCLE
+              HELPP(1:NSBOX) = PMOM_VEC(K,1:NSBOX)
             CASE (25)
               HELPP(1:NSBOX) = PSI(1:NSBOX)
             CASE (26)
@@ -367,9 +378,8 @@ cdr  here K also must range from 1 to NPLSI,  not only to NPLSTI
 C  3,4: PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+VOL(I_FINE)
-              CASE (5:7,23)
+              CASE (5:7)
 C  5,6,7: ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
-C  23: FLOW VELOCITY PARALLEL B
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
@@ -409,12 +419,22 @@ C  22: (ELECTRIC) POTENTIAL
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              CASE (24)
-C  24) PARALLEL TO B FLOW MOMENTUM
-cdr Jan.22: bug fix. weighting was missing
+              CASE (23)
+C  23: FLOW VELOCITY WRT. B
+                KS=MOD(K,NPLSI)
+                IF (KS == 0 ) KS=NPLSI
                 HELPP(I)=HELPP(I)+
-     .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
-                HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
+     .                   HELPS(I_FINE)*DIIN(KS,I_FINE)*VOL(I_FINE)
+                HELPW(I)=HELPW(I)+DIIN(KS,I_FINE)*VOL(I_FINE)
+              CASE (24)
+C  24: MOMENTUM FLOW VECTOR, : NI(K)*VOLUME-WEIGHTED AVERAGES
+cdr for tally 24 K ranges from 1 to 3*NPLS
+cdr Jan.22:  weighting was missing. Now corrected for this tally
+                KS=MOD(K,NPLSI)
+                IF (KS == 0 ) KS=NPLSI
+                HELPP(I)=HELPP(I)+
+     .                   HELPS(I_FINE)*DIIN(KS,I_FINE)*VOL(I_FINE)
+                HELPW(I)=HELPW(I)+DIIN(KS,I_FINE)*VOL(I_FINE)
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (25)
 C  25) PSI
@@ -479,9 +499,8 @@ C  ION TEMPERATURE: NI(K)*VOLUME-WEIGHTED AVERAGES
 C  PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+VOL(I_FINE)
-              CASE (5:7,23)
+              CASE (5:7)
 C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
-C  FLOW VELOCITY PARALLEL TO B FIELD
                 HELPP(I)=HELPP(I)+
      .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
                 HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
@@ -521,12 +540,25 @@ C  (ELECTRIC) POTENTIAL
                 HELPP(I)=HELPP(I)+HELPS(I_FINE)
                 HELPW(I)=HELPW(I)+1.D0
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
-              CASE (24)
-C  PARALLEL TO B FLOW MOMENTUM
-cdr Jan.22: bug fix, weighting was missing
+              CASE (23)
+C  FLOW VELOCITY VECTOR wrt B FIELD
+cdr K ranges from 1 to 3*NPLS
+                KS=MOD(K,NPLS)
+                IF (KS == 0 ) KS=NPLS
+cdr weighting is the same for all 3 vector components of BV_VEC
                 HELPP(I)=HELPP(I)+
-     .                   HELPS(I_FINE)*DIIN(K,I_FINE)*VOL(I_FINE)
-                HELPW(I)=HELPW(I)+DIIN(K,I_FINE)*VOL(I_FINE)
+     .                   HELPS(I_FINE)*DIIN(KS,I_FINE)*VOL(I_FINE)
+                HELPW(I)=HELPW(I)+DIIN(KS,I_FINE)*VOL(I_FINE)
+                IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
+              CASE (24)
+C  MOMENTUM FLOW VECTOR wrt. B field
+cdr for tally 24 K ranges from 1 to 3*NPLS
+cdr Jan.22:  weighting was missing, Now corrected for this tally
+                KS=MOD(K,NPLS)
+                IF (KS == 0 ) KS=NPLS
+                HELPP(I)=HELPP(I)+
+     .                   HELPS(I_FINE)*DIIN(KS,I_FINE)*VOL(I_FINE)
+                HELPW(I)=HELPW(I)+DIIN(KS,I_FINE)*VOL(I_FINE)
                 IF (NSTGRD(I).GT.0) HELPW(I)=0.D0
               CASE (25)
 C  PSI

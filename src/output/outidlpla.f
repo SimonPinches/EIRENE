@@ -4,6 +4,10 @@ cdr  Possible pitfall: coarse graining onto scoring grid is not done here.
 cdr  Perhaps now some input tallies are on different grids?
 cpb  Input tallies are ALWAYS defined on the fine grid.
 cdr  2020   :  NTAL vs. NTALG, remove redundant printout
+cdr  feb. 22:  BV_VEC and PMOM_VEC (formerly: BVIN, PARMOM, tallies 23 and 24) are now full vectorial tallies,
+cdr            not only for the parallel to B components, but for all three components.
+cdr            Needed now because of corresponding
+cdr            extensions for momentum source tallies MAPL, MMPL, MIPL, etc..
 
 C
       SUBROUTINE EIRENE_OUTIDLPLA
@@ -41,7 +45,7 @@ C
       REAL(DP) :: TALTYP(NTALI)
       REAL(DP) :: HELPI, TOTAL
       INTEGER :: IR, IP, IT, I, NBLCKA, IB, ITAL, NXM, NYM, NZM,
-     .           K, KK,
+     .           K, KS, KK, ICO,
      .           NFTI, NFTE, MXSPZ, IOUT, NTAL
       CHARACTER(6) :: CITAL, CNFTI, CNFTE
       CHARACTER(50) :: FNAME, FORMA, FORME, FORME2
@@ -195,10 +199,18 @@ cdr
             HELPP(1:NSBOX,K) = EFIN(1:NSBOX)
           CASE (22)
             HELPP(1:NSBOX,K) = POT(1:NSBOX)
+cdr next 2 tallies: vectorial tallies (Feb 2022)
           CASE (23)
-            HELPP(1:NSBOX,K) = BVIN(MPLSV(K),1:NSBOX)
+cdr  K is in range 1,..3*NPLSI for this tally
+            KS=MOD(K,NPLS)
+            IF (KS == 0 ) KS=NPLS
+            ICO=(K-1)/NPLS  ! = 0,1,2
+            KK=ICO*NPLSV
+            HELPP(1:NSBOX,K) = BV_VEC(KK+MPLSV(KS),1:NSBOX)
           CASE (24)
-            HELPP(1:NSBOX,K) = PARMOM(K,1:NSBOX)
+cdr  K is in range 1,..3*NPLSI for this tally
+cdr  but there is no indirect species index addressing here
+            HELPP(1:NSBOX,K) = PMOM_VEC(K,1:NSBOX)
           CASE (25)
             HELPP(1:NSBOX,K) = PSI(1:NSBOX)
           CASE (26)
@@ -240,9 +252,8 @@ C  ION TEMPERATURE: NI(K)*VOLUME-WEIGHTED AVERAGES
             CASE (3:4)
 C  PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
               HELPW(I,K)=VOL(I)
-            CASE (5:7,23)
+            CASE (5:7)
 C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
-C  FLOW VELOCITY PARALLEL B
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             CASE (8:11)
 C  B FIELD UNIT VECTOR, B FIELD STRENGTH "1 - WEIGHTED" AVERAGES
@@ -265,9 +276,16 @@ C  E FIELD UNIT VECTOR, E FIELD STRENGTH
             CASE (22)
 C  ELECTRIC POTENTIAL
               HELPW(I,K)=1.D0
+            CASE (23)
+C  FLOW VELOCITY RELATIVE TO B
+              KS=MOD(K,NPLS)
+              IF (KS == 0 ) KS=NPLS
+              HELPW(I,K)=DIIN(KS,I)*VOL(I)
             CASE (24)
-C  PARALLEL TO B FLOW MOMENTUM
-              HELPW(I,K)=1.D0
+C  MOMENTUM WRT. B FIELD
+              KS=MOD(K,NPLS)
+              IF (KS == 0 ) KS=NPLS
+              HELPW(I,K)=DIIN(KS,I)*VOL(I)
             CASE (25)
 C  PSI
               HELPW(I,K)=1.D0
@@ -309,9 +327,8 @@ C  ION TEMPERATURE: NI(K)*VOLUME-WEIGHTED AVERAGES
             CASE (3:4)
 C  PARTICLE DENSITY PROFILES: VOLUME-WEIGHTED AVERAGES
               HELPW(I,K)=VOL(I)
-            CASE (5:7,23)
+            CASE (5:7)
 C  ION DRIFT VELOCITY: NI(K)*VOLUME-WEIGHTED AVERAGES
-C  FLOW VELOCITY PARALLEL B
               HELPW(I,K)=DIIN(K,I)*VOL(I)
             CASE (8:11)
 C  B FIELD UNIT VECTOR, B FIELD STRENGTH "1 - WEIGHTED" AVERAGES
@@ -334,9 +351,16 @@ C  E FIELD UNIT VECTOR, E FIELD STRENGTH
             CASE (22)
 C  ELECTRIC POTENTIAL
               HELPW(I,K)=1.D0
+            CASE (23)
+C  FLOW VELOCITY WRT. B
+              KS=MOD(K,NPLS)
+              IF (KS == 0 ) KS=NPLS
+              HELPW(I,K)=DIIN(KS,I)*VOL(I)
             CASE (24)
-C  PARALLEL TO B FLOW MOMENTUM
-              HELPW(I,K)=1.D0
+C  MOMENTUM FLOW  WRT. B FIELD
+              KS=MOD(K,NPLS)
+              IF (KS == 0 ) KS=NPLS
+              HELPW(I,K)=DIIN(KS,I)*VOL(I)
             CASE (25)
 C  PSI
               HELPW(I,K)=1.D0

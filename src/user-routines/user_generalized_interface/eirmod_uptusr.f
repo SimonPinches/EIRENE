@@ -34,11 +34,12 @@ C
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                        XSTORV2(NSTORV,N2ND+N3RD), WV
       INTEGER, INTENT(IN) :: IFLAG
-      REAL(DP), ALLOCATABLE :: PPPL_COP(:,:), CPPV_COP(:,:),
+      REAL(DP), ALLOCATABLE :: PPPL_COP(:,:), MPPL_COP(:,:),
      .                         EPPL_COP(:,:), EPEL_COP(:)
-      REAL(DP) :: RECTOT, SUMN, SUMM, SUMEI, SUMEE, RECADD, EEADD,
-     .            EIRENE_FTABRC1, EIRENE_FEELRC1, PIADD, EIADD
-      INTEGER :: IPL, JPLS, ISR, ISTEP, IIRC, IU, IPLSTI, IRRC, IN, INC
+      REAL(DP) :: RECTOT, SUMN, SUMM(0:2), SUMEI, SUMEE, RECADD, EEADD,
+     .            EIRENE_FTABRC1, EIRENE_FEELRC1, PIADD_VEC, EIADD
+      INTEGER :: IPL, JPLS, ISR, ISTEP, IIRC, IU, IPLSTI, IRRC, IN, INC,
+     .           ICO, KK
       INTEGER, SAVE :: ISTROLD=-1
 
 
@@ -48,11 +49,11 @@ C
 C  ADD CONTRIBUTIONS FROM VOLUME RECOMBINATION SOURCE
 C
         ALLOCATE (PPPL_COP(NPLS,NRAD))
-        ALLOCATE (CPPV_COP(NPLS,NRAD))
+        ALLOCATE (MPPL_COP(NPLS,NRAD))
         ALLOCATE (EPPL_COP(NPLS,NRAD))
         ALLOCATE (EPEL_COP(NRAD))
         PPPL_COP =0.D0
-        CPPV_COP = 0.D0
+        MPPL_COP = 0.D0
         EPPL_COP = 0.D0
         EPEL_COP = 0.D0
 
@@ -70,7 +71,7 @@ C
                 IRRC=LGPRC(IPLS,IIRC)
                 IF ((ISTEP > 0) .AND. (ISTEP /= IRRC)) CYCLE
                 SUMN=0.0
-                SUMM=0.0
+                SUMM(0:2)=0.0
                 SUMEI=0.0
                 SUMEE=0.0
 !pb                DO IN=1,NTRII
@@ -85,10 +86,17 @@ C
                   END IF
                   PPPL_COP(IPLS,INC)=PPPL_COP(IPLS,INC)+RECADD
                   SUMN=SUMN+RECADD*VOL(IN)
-                  PIADD=0._DP
-                  IF (LPARMOM) PIADD=PARMOM(IPLS,IN)*RECADD
-                  CPPV_COP(IPLS,INC)=CPPV_COP(IPLS,INC)+PIADD
-                  SUMM=SUMM+PIADD*VOL(IN)
+                  PIADD_VEC(0:2)=0._DP
+                  IF (LPMOM_VEC) THEN
+                    DO ICO = 0,2
+                      KK=ICO*NPLS
+                      PIADD_VEC(ICO)=PMOM_VEC(KK+IPLS,IN)*RECADD
+                      MPPL_COP(KK+IPLS,INC)=MPPL_COP(KK+IPLS,INC)+
+     .                                      PIADD_VEC(ICO)
+                      SUMM_VEC(ICO)=SUMM_VEC(ICO)+
+     .                              PIADD_VEC(ICO)*VOL(IN)
+                    END DO
+                  END IF
                   EIADD=1.5*TIIN(IPLSTI,IN)*RECADD
                   IF (LEDRIFT) EIADD=EIADD+EDRIFT(IPLS,IN)*RECADD
                   EPPL_COP(IPLS,INC)=EPPL_COP(IPLS,INC)+EIADD
@@ -97,9 +105,11 @@ C
                   SUMEE=SUMEE+EEADD*VOL(IN)
                 END DO
                 RECTOT = RECTOT + SUMN
-                WRITE (iunout,*) 'IPLS,IRRC ',IPLS,IRRC
-                CALL EIRENE_MASR4('SUMN, SUMM, SUMEI, SUMEE        ',
-     .                      SUMN,SUMM,SUMEI,SUMEE)
+                WRITE (iunout,*) 'PARTIAL: IRRC ',IRRC
+                CALL EIRENE_MASR6
+     .           ('SUMN, SUMM_VEC, SUMEI, SUMEE                    ',
+     .             SUMN, SUMM_VEC(0), SUMM_VEC(1), SUMM_VEC(2),
+     .             SUMEI, SUMEE)
  7472         CONTINUE
             END DO
  7473     CONTINUE
@@ -111,7 +121,7 @@ C
           IF (IU >= NPLSI)
      .      COPV(1:NPLSI,:) = PPPL_COP(1:NPLSI,:)
           IF (IU >= 2*NPLSI)
-     .      COPV(NPLSI+1:2*NPLSI,:) = CPPV_COP(1:NPLSI,:)
+     .      COPV(NPLSI+1:2*NPLSI,:) = MPPL_COP(1:NPLSI,:)
           IF (IU >= 3*NPLSI)
      .      COPV(2*NPLSI+1:3*NPLSI,:) = EPPL_COP(1:NPLSI,:)
           IF (IU >= 3*NPLSI+1)
@@ -119,7 +129,7 @@ C
         END IF
 
         DEALLOCATE (PPPL_COP)
-        DEALLOCATE (CPPV_COP)
+        DEALLOCATE (MPPL_COP)
         DEALLOCATE (EPPL_COP)
         DEALLOCATE (EPEL_COP)
 

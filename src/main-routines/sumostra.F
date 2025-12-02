@@ -20,7 +20,8 @@ C
 #if ( defined(G95) || defined(LEGACYCOMP) )
       INTEGER :: JMOL, JATM, JION, JPHOT
 #endif
-      INTEGER :: IADV, ICLV, ISNV, ICPV, IBGV
+      INTEGER :: IADV, ICLV, ISNV, ICPV, IBGV,
+     .           KK, ICO  ! for vectorial tallies, species indexing
       REAL(DP), POINTER, SAVE ::
      R  PAATIS(:,:),  PMATIS(:,:),  PIATIS(:,:),  PPHATIS(:,:),
      R  PRFAAIS(:,:), PRFMAIS(:,:), PRFIAIS(:,:), PRFPHAIS(:,:)
@@ -800,10 +801,18 @@ C
         SPTIPLI(IPLS,0)=SPTIPLI(IPLS,0)+SPTIPLI(IPLS,ISTRA)
         SPTPHPLI(IPLS,0)=SPTPHPLI(IPLS,0)+SPTPHPLI(IPLS,ISTRA)
         SPTPPLI(IPLS,0)=SPTPPLI(IPLS,0)+SPTPPLI(IPLS,ISTRA)
-        MAPLI (IPLS,0)=MAPLI (IPLS,0)+MAPLI (IPLS,ISTRA)
-        MMPLI (IPLS,0)=MMPLI (IPLS,0)+MMPLI (IPLS,ISTRA)
-        MIPLI (IPLS,0)=MIPLI (IPLS,0)+MIPLI (IPLS,ISTRA)
-        MPHPLI(IPLS,0)=MPHPLI(IPLS,0)+MPHPLI(IPLS,ISTRA)
+cdr vectorial tallies, sum over strata for each component
+        DO ICO=0,2
+          KK=ICO*NPLS
+          MAPLI_VEC (KK+IPLS,0)=MAPLI_VEC (KK+IPLS,0)+
+     .                          MAPLI_VEC (KK+IPLS,ISTRA)
+          MMPLI_VEC (KK+IPLS,0)=MMPLI_VEC (KK+IPLS,0)+
+     .                          MMPLI_VEC (KK+IPLS,ISTRA)
+          MIPLI_VEC (KK+IPLS,0)=MIPLI_VEC (KK+IPLS,0)+
+     .                          MIPLI_VEC (KK+IPLS,ISTRA)
+          MPHPLI_VEC(KK+IPLS,0)=MPHPLI_VEC(KK+IPLS,0)+
+     .                          MPHPLI_VEC(KK+IPLS,ISTRA)
+        ENDDO
  1104 CONTINUE
       WTOTE(0)=WTOTE(0)+WTOTE(ISTRA)
       DO 1105 IADV=0,NADVI

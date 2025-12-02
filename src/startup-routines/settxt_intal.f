@@ -17,7 +17,8 @@ c
 
       IMPLICIT NONE
 
-      INTEGER :: IPLS, ISPZ, I, J
+      INTEGER :: IPLS, ISPZ, I, J,
+     .           KK, ICO   ! species index handling in vectorial tallies
       CHARACTER(24) :: TEXT24
       CHARACTER(72) :: TEXT72
 C
@@ -52,8 +53,8 @@ cdr 2019: now added as tally 25 below.
       TXTPLS(1,20)='ELEC. FIELD UNIT VECTOR, Z DIRECTION             '
       TXTPLS(1,21)='ELEC. FIELD STRENGTH                             '
       TXTPLS(1,22)='ELECTR. POTENTIAL                                '
-      TXTPLS(1,23)='FLOW VELOCITY PARALLEL TO BFIELD                 '
-      TXTPLS(1,24)='PARALLEL TO B MOMENTUM FLOW                      '
+      TXTPLS(1,23)='FLOW VELOCITY WRT. B FIELD                       '
+      TXTPLS(1,24)='MOMENTUM FLOW WRT. B FIELD                       '
       TXTPLS(1,25)='PSI                                              '
       TXTPLS(1,26)='ZI                                               '
 
@@ -145,13 +146,13 @@ c 12
       TXTPLS(1,94)='dPOT/dX                                          '
       TXTPLS(1,95)='dPOT/dY                                          '
       TXTPLS(1,96)='dPOT/dZ                                          '
-      TXTPLS(1,97)='dBVIN/dX                                         '
-      TXTPLS(1,98)='dBVIN/dY                                         '
-      TXTPLS(1,99)='dBVIN/dZ                                         '
+      TXTPLS(1,97)='dBV_VEC/dX                                       '
+      TXTPLS(1,98)='dBV_VEC/dY                                       '
+      TXTPLS(1,99)='dBV_VEC/dZ                                       '
 
-      TXTPLS(1,100)='dPARMOM/dX                                       '
-      TXTPLS(1,101)='dPARMOM/dY                                       '
-      TXTPLS(1,102)='dPARMOM/dZ                                       '
+      TXTPLS(1,100)='dPMOM_VEC/dX                                     '
+      TXTPLS(1,101)='dPMOM_VEC/dY                                     '
+      TXTPLS(1,102)='dPMOM_VEC/dZ                                     '
 c 25 psi-function
       TXTPLS(1,103)='dPSI/dX                                          '
       TXTPLS(1,104)='dPSI/dY                                          '
@@ -177,7 +178,36 @@ cnh 19.08.2020 Average charge
 C
 c  currently: ntali=4*30=120
       DO J=1,NTALI
-        IF (J.NE.12) THEN  ! retain individual tally names for adin tally no. 12
+        IF (J.EQ.12) CYCLE  ! retain individual tally names
+                            ! for adin tally no. 12
+cdr vectorial input tallies 23, 24:
+        IF (J.EQ.23) THEN
+          DO I=1,NPLS
+            TEXT72='FLOW VELOCITY PARALLEL TO B FIELD                '
+            TXTPLS(I,J)=TEXT72
+          ENDDO
+          DO I=1,NPLS
+            TEXT72='FLOW VELOCITY PERP.    TO B FIELD                '
+            TXTPLS(NPLS+I,J)=TEXT72
+          ENDDO
+          DO I=1,NPLS
+            TEXT72='FLOW VELOCITY DIAMAGN. TO B FIELD                '
+            TXTPLS(2*NPLS+I,J)=TEXT72
+          ENDDO
+        ELSEIF (J.EQ.24) THEN
+          DO I=1,NPLS
+            TEXT72='MOMENTUM FLOW PARALLEL TO B FIELD                '
+            TXTPLS(I,J)=TEXT72
+          ENDDO
+          DO I=1,NPLS
+            TEXT72='MOMENTUM FLOW PERP.    TO B FIELD                '
+            TXTPLS(NPLS+I,J)=TEXT72
+          ENDDO
+          DO I=1,NPLS
+            TEXT72='MOMENTUM FLOW DIAMAGN. TO B FIELD                '
+            TXTPLS(2*NPLS+I,J)=TEXT72
+          ENDDO
+        ELSE
           TEXT72=TXTPLS(1,J)
           DO I=2,N1MX
             TXTPLS(I,J)=TEXT72
@@ -212,8 +242,8 @@ CDR  JUNE 2019: SEE BELOW, TALLY 25
       TXTPUN(1,20)=' ---                    '
       TXTPUN(1,21)='V/CM                    '  ! EF
       TXTPUN(1,22)='V                       '  ! POT
-      TXTPUN(1,23)='CM/S                    '  ! BVIN
-      TXTPUN(1,24)='G*CM/S                  '  ! PARMOM
+      TXTPUN(1,23)='CM/S                    '  ! BV_VEC
+      TXTPUN(1,24)='G*CM/S                  '  ! PMOM_VEC
 ! PSI   ! CHECK FOR FACTOR 2Pi
       TXTPUN(1,25)='TESLA*CM                '
       TXTPUN(1,26)=' ---                    '  ! ZI
@@ -300,12 +330,12 @@ C     TXTPUN(1,66)='TO BE READ, ADIN        '
       TXTPUN(1,96)='V/CM                    '  ! POT
       TXTPUN(1,96)='V/CM                    '  ! POT
 
-      TXTPUN(1,97)='CM/S/CM                 '  ! BVIN
-      TXTPUN(1,98)='CM/S/CM                 '  ! BVIN
-      TXTPUN(1,99)='CM/S/CM                 '  ! BVIN
-      TXTPUN(1,100)='G*CM/S/CM               '  ! PARMOM
-      TXTPUN(1,101)='G*CM/S/CM               '  ! PARMOM
-      TXTPUN(1,102)='G*CM/S/CM               '  ! PARMOM
+      TXTPUN(1,97)='CM/S/CM                 '  ! BV_VEC
+      TXTPUN(1,98)='CM/S/CM                 '  ! BV_VEC
+      TXTPUN(1,99)='CM/S/CM                 '  ! BV_VEC
+      TXTPUN(1,100)='G*CM/S/CM               '  ! PMOM_VEC
+      TXTPUN(1,101)='G*CM/S/CM               '  ! PMOM_VEC
+      TXTPUN(1,102)='G*CM/S/CM               '  ! PMOM_VEC
 c  grad PSI
       TXTPUN(1,103)='TESLA                   '  ! PSI
       TXTPUN(1,104)='TESLA                   '  ! PSI
@@ -367,8 +397,8 @@ cdr  inconsistent with using N1MX as first dimension
       NFSTPI(20)=1
       NFSTPI(21)=1
       NFSTPI(22)=1
-      NFSTPI(23)=NPLSI
-      NFSTPI(24)=NPLSI
+      NFSTPI(23)=3*NPLSI
+      NFSTPI(24)=3*NPLSI
 
       NFSTPI(25)=1
 
@@ -448,12 +478,14 @@ cdr
       NFSTPI(94)=1
       NFSTPI(95)=1
       NFSTPI(96)=1
-      NFSTPI(97)=NPLSI
-      NFSTPI(98)=NPLSI
-      NFSTPI(99)=NPLSI
-      NFSTPI(100)=NPLSI
-      NFSTPI(101)=NPLSI
-      NFSTPI(102)=NPLSI
+c  grad BV_VEC:  strictly: a 3x3 dyadic now
+      NFSTPI(97)=3*NPLSI
+      NFSTPI(98)=3*NPLSI
+      NFSTPI(99)=3*NPLSI
+c  grad PMOM_VEC: strictly: a 3x3 dyadic now
+      NFSTPI(100)=3*NPLSI
+      NFSTPI(101)=3*NPLSI
+      NFSTPI(102)=3*NPLSI
 c  grad PSI
       NFSTPI(103)=1
       NFSTPI(104)=1
@@ -595,8 +627,14 @@ C
         TXTPSP(IPLS,6)=TEXTS(ISPZ)
         TXTPSP(IPLS,7)=TEXTS(ISPZ)
         TXTPSP(IPLS,13)=TEXTS(ISPZ)
-        TXTPSP(IPLS,23)=TEXTS(ISPZ)
-        TXTPSP(IPLS,24)=TEXTS(ISPZ)
+        DO ICO=0,2
+c  grad bv_vec. ICO=0  parallel component in older code versions
+          KK=ICO*NPLSI
+          TXTPSP(KK+IPLS,23)=TEXTS(ISPZ)
+c  grad pmom_vec. ICO=0  parallel component in older code versions
+          KK=ICO*NPLSI
+          TXTPSP(KK+IPLS,24)=TEXTS(ISPZ)
+        ENDDO
 
 c  dTi/dx, dTi/dy, dTi/dz
         TXTPSP(IPLS,34)=TEXTS(ISPZ)
@@ -622,12 +660,18 @@ c grad vz
         TXTPSP(IPLS,67)=TEXTS(ISPZ)
         TXTPSP(IPLS,68)=TEXTS(ISPZ)
         TXTPSP(IPLS,69)=TEXTS(ISPZ)
-        TXTPSP(IPLS,97)=TEXTS(ISPZ)
-        TXTPSP(IPLS,98)=TEXTS(ISPZ)
-        TXTPSP(IPLS,99)=TEXTS(ISPZ)
-        TXTPSP(IPLS,100)=TEXTS(ISPZ)
-        TXTPSP(IPLS,101)=TEXTS(ISPZ)
-        TXTPSP(IPLS,102)=TEXTS(ISPZ)
+        DO ICO=0,2
+c  grad BV_VEC
+          KK=ICO*NPLSI
+          TXTPSP(KK+IPLS,97)=TEXTS(ISPZ)
+          TXTPSP(KK+IPLS,98)=TEXTS(ISPZ)
+          TXTPSP(KK+IPLS,99)=TEXTS(ISPZ)
+c  grad PMOM_VEC
+          KK=ICO*NPLSI
+          TXTPSP(KK+IPLS,100)=TEXTS(ISPZ)
+          TXTPSP(KK+IPLS,101)=TEXTS(ISPZ)
+          TXTPSP(KK+IPLS,102)=TEXTS(ISPZ)
+        ENDDO
    80 CONTINUE
 C
       RETURN

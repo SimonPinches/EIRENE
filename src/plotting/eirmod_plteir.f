@@ -79,7 +79,7 @@ C
      .           IALV, ITL, JTAL, IBLD, ICURV, IE, IXSET3, IS,
      .           IERR, ICINC, IYSET3, IX, I2M, J, IRAD, I1, I2, IT,
      .           ITT, ITP,
-     .           KK, JJTAL
+     .           KS, KK, ICO, JJTAL
       LOGICAL :: LPLOT2(NPLT), LSDVI(NPLT), LINLOG, L_SAME
       CHARACTER(24) :: TXUNIT(NPLT), TXSPEC(NPLT)
       CHARACTER(24) :: TXUNT1, TXSPC1
@@ -372,9 +372,19 @@ cdr  clearly wrong.
                 CASE (22)
                   VECTOR(1:NSBOX,ICURV) = POT(1:NSBOX)
                 CASE (23)
-                  VECTOR(1:NSBOX,ICURV) = SUM(BVIN(1:NF,1:NSBOX),1)
+cdr vectorial tally: NF=3*NPLSI
+
+cdr  so far: only parallel component can be plotted here
+cdr  weighting ? unfinished...
+                  VECTOR(1:NSBOX,ICURV) =
+     .              SUM(BV_VEC(1:NPLSV,1:NSBOX),1)
                 CASE (24)
-                  VECTOR(1:NSBOX,ICURV) = SUM(PARMOM(1:NF,1:NSBOX),1)
+cdr vectorial tally: NF=3*NPLSI
+
+cdr  so far: only parallel component can be plotted here
+cdr  weighting ? unfinished
+                  VECTOR(1:NSBOX,ICURV) =
+     .              SUM(PMOM_VEC(1:NPLSI,1:NSBOX),1)
                 CASE (25)
                   VECTOR(1:NSBOX,ICURV) = PSI(1:NSBOX)
                 CASE (26)
@@ -442,9 +452,15 @@ cdr  individual species indices
                 CASE (22)
                   VECTOR(1:NSBOX,ICURV) = POT(1:NSBOX)
                 CASE (23)
-                  VECTOR(1:NSBOX,ICURV) = BVIN(MPLSV(ISPZ),1:NSBOX)
+cdr physical species index range: 3*nplsi, even if indirect addressing
+                  KS = MOD(ISPZ,NPLSI)
+                  IF (KS == 0) KS=NPLSI   ! =1,,..,NPLSI
+                  ICO=(ISPZ-1)/NPLSI      ! =0,1,2
+                  KK=ICO*NPLSV
+                  VECTOR(1:NSBOX,ICURV) = BV_VEC(KK+MPLSV(KS),1:NSBOX)
                 CASE (24)
-                  VECTOR(1:NSBOX,ICURV) = PARMOM(ISPZ,1:NSBOX)
+cdr  ispz= 1...3*nplsi
+                  VECTOR(1:NSBOX,ICURV) = PMOM_VEC(ISPZ,1:NSBOX)
                 CASE (25)
                   VECTOR(1:NSBOX,ICURV) = PSI(1:NSBOX)
                 CASE (26)

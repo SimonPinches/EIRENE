@@ -14,6 +14,16 @@
 # Changelog of EIRENE repository:
 ---
 
+## X. Bonnin - SOLPS_vector_tallies
+
+### Based on SOLPS_DR_changes - 7f59f4c18f601a0a35a33d85866f2d5a486f4ef1
+
+** Changes **
+
+- Implemented vectorial momentum tallies
+
+---
+
 ## X. Bonnin - SOLPS_DR_changes - 0638d7e91f10d5ce09f561a0e9991df19b6f43e8
 
 ### Based on SOLPS_coupling - db157c759dbe59d340df6a0aca48200c1c024fe4

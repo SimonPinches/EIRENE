@@ -168,7 +168,7 @@ C  save stratum, old type, species
       NULLIFY (EGENX)
       NULLIFY (VGENX)
 
-      NULLIFY (MXPL)
+      NULLIFY (MXPL_VEC)
       NULLIFY (RXEL)
 
       NULLIFY (PXX)
@@ -206,7 +206,7 @@ C  save stratum, old type, species
        LEGENX  => LEGENPH
        LVGENX  => LVGENPH
 
-       LMXPL   => LMPHPL
+       LMXPL_VEC => LMPHPL_VEC
        LRXEL   => LRPHEL
 
        LPXX    => LPPHPHT
@@ -267,7 +267,7 @@ C  save stratum, old type, species
        IF (LEGENX) EGENX   => EGENPH(IPHOT,:)
        IF (LVGENX) VGENX   => VGENPH(IPHOT,:)
 
-       IF (LMXPL)   MXPL   => MPHPL(1:NPLSI,:)
+       IF (LMXPL_VEC) MXPL_VEC => MPHPL_VEC(1:3*NPLSI,:)
        IF (LRXEL) RXEL => RPHEL(1:NPHOTI,:)
 
        IF (LSCX) THEN
@@ -348,7 +348,7 @@ cdr now: allocatable, rather than pointer
        LEGENX  => LEGENA
        LVGENX  => LVGENA
 
-       LMXPL   => LMAPL
+       LMXPL_VEC => LMAPL_VEC
 
        LRXEL   => LRAEL
        LPXX    => LPAAT
@@ -412,7 +412,7 @@ cdr now: allocatable, rather than pointer
        IF (LEGENX)  EGENX  => EGENA(IATM,:)
        IF (LVGENX)  VGENX  => VGENA(IATM,:)
 
-       IF (LMXPL)   MXPL   => MAPL(1:NPLSI,:)
+       IF (LMXPL_VEC) MXPL_VEC => MAPL_VEC(1:3*NPLSI,:)
 
        IF (LSCX) THEN
          NDXX = NATM
@@ -488,7 +488,7 @@ cdr now: allocatable, rather than pointer
        LEGENX  => LEGENM
        LVGENX  => LVGENM
 
-       LMXPL   => LMMPL
+       LMXPL_VEC => LMMPL_VEC
 
        LRXEL   => LRMEL
 
@@ -551,7 +551,7 @@ cdr now: allocatable, rather than pointer
        IF (LEGENX)  EGENX  => EGENM(IMOL,:)
        IF (LVGENX)  VGENX  => VGENM(IMOL,:)
 
-       IF (LMXPL)   MXPL   => MMPL(1:NPLSI,:)
+       IF (LMXPL_VEC) MXPL_VEC => MMPL_VEC(1:3*NPLSI,:)
 
        IF (LRXEL)   RXEL   => RMEL(1:NMOLI,:)
 
@@ -631,7 +631,7 @@ cdr now: allocatable, rather than pointer
        LEGENX  => LEGENI
        LVGENX  => LVGENI
 
-       LMXPL   => LMIPL
+       LMXPL_VEC => LMIPL_VEC
 
        LPXX    => LPIIO
        LEXX    => LEIIO
@@ -694,7 +694,7 @@ cdr now: allocatable, rather than pointer
        IF (LEGENX)  EGENX  => EGENI(IION,:)
        IF (LVGENX)  VGENX  => VGENI(IION,:)
 
-       IF (LMXPL)   MXPL   => MIPL(1:NPLSI,:)
+       IF (LMXPL_VEC) MXPL_VEC => MIPL_VEC(1:3*NPLSI,:)
 
        IF (LSCX) THEN
          NDXX = NION

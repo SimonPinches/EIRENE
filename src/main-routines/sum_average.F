@@ -18,7 +18,8 @@ C
 
       INTEGER, INTENT(IN) :: ISTRA
       INTEGER :: J, IATM, IMOL, IION, IPLS, IPHOT, ISPZ, IADV, ICLV,
-     .           ISNV, ICPV, IBGV
+     .           ISNV, ICPV, IBGV,
+     .           KK, ICO
 #if ( defined(G95) || defined(LEGACYCOMP) )
       INTEGER :: JATM, JMOL, JION, JPLS, JPHOT
 #endif
@@ -502,10 +503,28 @@ C
         SPTIPLI(0,ISTRA)=SPTIPLI(0,ISTRA)+SPTIPLI(IPLS,ISTRA)
         SPTPHPLI(0,ISTRA)=SPTPHPLI(0,ISTRA)+SPTPHPLI(IPLS,ISTRA)
         SPTPPLI(0,ISTRA)=SPTPPLI(0,ISTRA)+SPTPPLI(IPLS,ISTRA)
-        MAPLI(0,ISTRA)=MAPLI(0,ISTRA)+MAPLI(IPLS,ISTRA)
-        MMPLI(0,ISTRA)=MMPLI(0,ISTRA)+MMPLI(IPLS,ISTRA)
-        MIPLI(0,ISTRA)=MIPLI(0,ISTRA)+MIPLI(IPLS,ISTRA)
-        MPHPLI(0,ISTRA)=MPHPLI(0,ISTRA)+MPHPLI(IPLS,ISTRA)
+CDR VECTORIAL COMPONENTS, PUT IPLS-INTEGRALS ON ISP=-1,-2,-3
+        DO ICO=0,2
+          KK=ICO*NPLS
+          MAPLI_VEC(-(ICO+1),ISTRA) = MAPLI_VEC(-(ICO+1),ISTRA)+
+     .                                MAPLI_VEC(KK+IPLS,ISTRA)
+          MMPLI_VEC(-(ICO+1),ISTRA) = MMPLI_VEC(-(ICO+1),ISTRA)+
+     .                                MMPLI_VEC(KK+IPLS,ISTRA)
+          MIPLI_VEC(-(ICO+1),ISTRA) = MIPLI_VEC(-(ICO+1),ISTRA)+
+     .                                MIPLI_VEC(KK+IPLS,ISTRA)
+          MPHPLI_VEC(-(ICO+1),ISTRA)= MPHPLI_VEC(-(ICO+1),ISTRA)+
+     .                                MPHPLI_VEC(KK+IPLS,ISTRA)
+cdr  summing the vector components of totals makes no sense.
+cdr  left here for analogy reasons.
+          MAPLI_VEC(0,ISTRA) = MAPLI_VEC(0,ISTRA)+
+     .                                MAPLI_VEC(KK+IPLS,ISTRA)
+          MMPLI_VEC(0,ISTRA) = MMPLI_VEC(0,ISTRA)+
+     .                                MMPLI_VEC(KK+IPLS,ISTRA)
+          MIPLI_VEC(0,ISTRA) = MIPLI_VEC(0,ISTRA)+
+     .                                MIPLI_VEC(KK+IPLS,ISTRA)
+          MPHPLI_VEC(0,ISTRA)= MPHPLI_VEC(0,ISTRA)+
+     .                                MPHPLI_VEC(KK+IPLS,ISTRA)
+        ENDDO
   661 CONTINUE
       DO 662 IION=1,NIONI
         PDENII(0,ISTRA)=PDENII(0,ISTRA)+PDENII(IION,ISTRA)

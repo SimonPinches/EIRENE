@@ -5,7 +5,7 @@ cdr             rather than public
 cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
 cpb  jan 2018:  remove unused arrays TEDTEDX, TEDTEDY, TEDTEDZ
 cdr             added: nstpi (formerly: coutou), naddcor
-cdr  oct 2018:  bvin moved into LBSMO condition
+cdr  oct 2018:  BV_VEC moved into LBSMO condition
 cdr             POT  moved into LESMO condition
 cdr             tbd: BXPERP, BYPERP, PSI: move into LBSMO condition
 cdr             missing: dealloc_corners  ??
@@ -73,6 +73,8 @@ C  THE FIRST NPLPR1 DATA ARE PRIMARY INPUT PROFILES, SET IN SUBROUTINE PLASMA
      R        BXIN(:),        BYIN(:),        BZIN(:),     BFIN(:),
      R        ADIN(:,:),
 cdr Up to this point: also storage is on PLASMA_BCKGRND
+cdr June 23:  BXPERP and BYPERP (see below) added to PLASMA_BCKGRND
+cdr           as an alternative to "deriving" these from the B field vector.
 cdr    (for background data transfer, iteration), except the derived tally DEIN.
 cdr So temporarily this storage is allocated twice.
 cdr Next: Derived and assistant input tallies:
@@ -81,9 +83,14 @@ cdr Next: Derived and assistant input tallies:
      R        POT(:),
 c  derived from primary input profils, in subr. PLASMA_DERIV
 c  (strictly: tally no. -3: DEIN, is also a derived tally) :
+cdr june 2023: BXPERP, BYPERP
+cdr            rather than the coding in plasma_deriv, these
+cdr            vector components (grad(PSI))
+cdr            can now also be directly transferred from external code indpro(6)=9.
+cdr            or be read from file (indpro(5)=6,7)
      R        BXPERP(:),      BYPERP(:),
 cdr   only set in plasma_deriv.
-     R        BVIN(:,:),      PARMOM(:,:),    EDRIFT(:,:),
+     R        BV_VEC(:,:),    PMOM_VEC(:,:),    EDRIFT(:,:),
 c  B field fluxfunction PSI, corresponds to POT tally for electric field
      R        PSI(:),         ZIIN(:,:),      FREE27(:),
      R        FREE28(:),      FREE29(:),      FREE30(:),
@@ -112,10 +119,10 @@ c  then provide the full dyad (all nine components).
      R        DEFDX(:),       DEFDY(:),       DEFDZ(:),
      R        DPOTDX(:),      DPOTDY(:),      DPOTDZ(:),
 c
-     R        DBXPERPDX(:),   DBXPERPDY(:),   DBXPERPDZ(:),
-     R        DBYPERPDX(:),   DBYPERPDY(:),   DBYPERPDZ(:),
-     R        DBVINDX(:,:),   DBVINDY(:,:),   DBVINDZ(:,:),
-     R        DPARMOMDX(:,:), DPARMOMDY(:,:), DPARMOMDZ(:,:),
+     R        DBXPERPDX(:),     DBXPERPDY(:),     DBXPERPDZ(:),
+     R        DBYPERPDX(:),     DBYPERPDY(:),     DBYPERPDZ(:),
+     R        DBV_VECDX(:,:),   DBV_VECDY(:,:),   DBV_VECDZ(:,:),
+     R        DPMOM_VECDX(:,:), DPMOM_VECDY(:,:), DPMOM_VECDZ(:,:),
      R        DEDRIFTDX(:,:), DEDRIFTDY(:,:), DEDRIFTDZ(:,:),
      R        DPSIDX(:),      DPSIDY(:),      DPSIDZ(:),
      R        DZIDX(:,:),     DZIDY(:,:),     DZIDZ(:,:),
@@ -140,9 +147,9 @@ c  electr. field
      L         LEXIN,      LEYIN,      LEZIN,     LEFIN,
      L         LPOT,
 c  derived tallies
-     L         LBXPERP,    LBYPERP,  ! redundant, now:
-                                     !optional gradient tallies.
-     L         LBVIN,      LPARMOM,    LEDRIFT,
+     L         LBXPERP,    LBYPERP,  !dr will become redundant, then:
+                                     !optional gradient tally grad(PSI)
+     L         LBV_VEC,    LPMOM_VEC,  LEDRIFT,
 c  added later, belongs to magn. field tallies
      L         LPSI,                 !dr not ready,
                                      !   just placeholder by now.
@@ -183,8 +190,8 @@ C  gradient of electric potential
 C  gradients of derived tallies
      L         LDBXPERPDX, LDBXPERPDY, LDBXPERPDZ,
      L         LDBYPERPDX, LDBYPERPDY, LDBYPERPDZ,
-     L         LDBVINDX,   LDBVINDY,   LDBVINDZ,
-     L         LDPARMOMDX, LDPARMOMDY, LDPARMOMDZ,
+     L         LDBV_VECDX,   LDBV_VECDY,   LDBV_VECDZ,
+     L         LDPMOM_VECDX, LDPMOM_VECDY, LDPMOM_VECDZ,
      L         LDEDRIFTDX, LDEDRIFTDY, LDEDRIFTDZ,
 C  gradient of average ion charge
      L         LDZIDX,     LDZIDY,     LDZIDZ,
@@ -245,8 +252,8 @@ c  for FEM-routines (interpolations, gradients,...)
      .        EFCORNER(:),     POTCORNER(:),
      .        ADCORNER(:,:),   VOLCORNER(:),    WGHTCORNER(:,:),
      .        BXPERPCORNER(:), BYPERPCORNER(:),
-     .        BVINCORNER(:,:),
-     .        PARMOMCORNER(:,:),
+     .        BV_VECCORNER(:,:),
+     .        PMOM_VECCORNER(:,:),
      .        EDRIFTCORNER(:,:),
      .        PSICORNER(:),    ZIINCORNER(:,:), FREE27CORNER(:),
      .        FREE28CORNER(:), FREE29CORNER(:), FREE30CORNER(:)
@@ -308,7 +315,7 @@ C  (REQUIRES AVAILABILITY OF ...CORNER(:) TALLIES)
      L         LPOTSMO,
 C
      L         LBXPSMO,    LBYPSMO,
-     L         LBVSMO,     LPARMOMSMO, LEDRIFTSMO,
+     L         LBV_VECSMO, LPMOM_VECSMO, LEDRIFTSMO,
      L         LPSISMO,    LZISMO,     LFREE27SMO,
      L         LFREE28SMO, LFREE29SMO, LFREE30SMO
 
@@ -549,7 +556,7 @@ c  logicals
 c
 !        NPLPR1=(12+1*NPLS+NPLSTI+3*NPLSV)*NRAD  ! background data, set in plasma.f, 17 arrays
 !        NPLPRM=NPLPR1+(NAIN+NSPZMC)*NRAD        ! adin, wght,...??? adin is allocated in call with ICAL == 2
-cdr BVIN: add nplsv to nplpr2 and remove npls from nplprm. tbd: check correct dimension of bvin !
+cdr BV_VEC: add nplsv to nplpr2 and remove npls from nplprm. tbd: check correct dimension of bv_vec !
 
 
         NPLPR1 = NINPTL*NRAD            ! storage only for
@@ -733,15 +740,15 @@ cdr  BZPERP == 0, for the time being
         POT => CEMETERYP(0,:)
       END IF
 
-      IF (LBVIN) THEN
-        BVIN => PLSTLS(NADDP(23)+1:NADDP(24),:)
+      IF (LBV_VEC) THEN
+        BV_VEC => PLSTLS(NADDP(23)+1:NADDP(24),:)
       ELSE
-        BVIN => CEMETERYP(0:0,:)
+        BV_VEC => CEMETERYP(0:0,:)
       END IF
-      IF (LPARMOM) THEN
-        PARMOM => PLSTLS(NADDP(24)+1:NADDP(25),:)
+      IF (LPMOM_VEC) THEN
+        PMOM_VEC => PLSTLS(NADDP(24)+1:NADDP(25),:)
       ELSE
-        PARMOM => CEMETERYP(0:0,:)
+        PMOM_VEC => CEMETERYP(0:0,:)
       END IF
       IF (LPSI) THEN
         PSI => PLSTLS(NADDP(25)+1,:)
@@ -1105,35 +1112,35 @@ C  TALLIES 31--130: DERIVATIVES WRT. X,Y,Z COORDINATES OF TALLIES 1--30
       ELSE
         DPOTDZ => CEMETERYP(0,:)
       END IF
-      IF (LDBVINDX) THEN
-        DBVINDX => PLSTLS(NADDP(97)+1:NADDP(98),:)
+      IF (LDBV_VECDX) THEN
+        DBV_VECDX => PLSTLS(NADDP(97)+1:NADDP(98),:)
       ELSE
-        DBVINDX => CEMETERYP(0:0,:)
+        DBV_VECDX => CEMETERYP(0:0,:)
       END IF
-      IF (LDBVINDY) THEN
-        DBVINDY => PLSTLS(NADDP(98)+1:NADDP(99),:)
+      IF (LDBV_VECDY) THEN
+        DBV_VECDY => PLSTLS(NADDP(98)+1:NADDP(99),:)
       ELSE
-        DBVINDY => CEMETERYP(0:0,:)
+        DBV_VECDY => CEMETERYP(0:0,:)
       END IF
-      IF (LDBVINDZ) THEN
-        DBVINDZ => PLSTLS(NADDP(99)+1:NADDP(100),:)
+      IF (LDBV_VECDZ) THEN
+        DBV_VECDZ => PLSTLS(NADDP(99)+1:NADDP(100),:)
       ELSE
-        DBVINDZ => CEMETERYP(0:0,:)
+        DBV_VECDZ => CEMETERYP(0:0,:)
       END IF
-      IF (LDPARMOMDX) THEN
-        DPARMOMDX => PLSTLS(NADDP(100)+1:NADDP(101),:)
+      IF (LDPMOM_VECDX) THEN
+        DPMOM_VECDX => PLSTLS(NADDP(100)+1:NADDP(101),:)
       ELSE
-        DPARMOMDX => CEMETERYP(0:0,:)
+        DPMOM_VECDX => CEMETERYP(0:0,:)
       END IF
-      IF (LDPARMOMDY) THEN
-        DPARMOMDY => PLSTLS(NADDP(101)+1:NADDP(102),:)
+      IF (LDPMOM_VECDY) THEN
+        DPMOM_VECDY => PLSTLS(NADDP(101)+1:NADDP(102),:)
       ELSE
-        DPARMOMDY => CEMETERYP(0:0,:)
+        DPMOM_VECDY => CEMETERYP(0:0,:)
       END IF
-      IF (LDPARMOMDZ) THEN
-        DPARMOMDZ => PLSTLS(NADDP(102)+1:NADDP(103),:)
+      IF (LDPMOM_VECDZ) THEN
+        DPMOM_VECDZ => PLSTLS(NADDP(102)+1:NADDP(103),:)
       ELSE
-        DPARMOMDZ => CEMETERYP(0:0,:)
+        DPMOM_VECDZ => CEMETERYP(0:0,:)
       END IF
       IF (LDPSIDX) THEN
         DPSIDX => PLSTLS(NADDP(103)+1,:)
@@ -1255,7 +1262,8 @@ cdr  Smoothing is probably not correctly implemented
       IF (LVXSMO) IVSMO = IVSMO + 1
       IF (LVYSMO) IVSMO = IVSMO + 1
       IF (LVZSMO) IVSMO = IVSMO + 1
-      IF (LBVSMO) IVSMO = IVSMO + 1
+      IF (LBV_VECSMO) IVSMO = IVSMO + 1
+cdr   PMOM_VEC should also be here
 
       IBSMO = 0
 cdr  strictly: a vectorial quantity.
@@ -1264,6 +1272,11 @@ cdr  Smoothing is probably not correctly implemented
       IF (LBYSMO) IBSMO = IBSMO + 1
       IF (LBZSMO) IBSMO = IBSMO + 1
       IF (LBFSMO) IBSMO = IBSMO + 1
+cdr    LBXPSMO, LBYPSMO added
+      IF (LBXPSMO) IBSMO = IBSMO + 1
+      IF (LBYPSMO) IBSMO = IBSMO + 1
+cdr   both BV_VEC and PMOM_VEC should also be here,
+cdr   as well as PSI
 
       IESMO = 0
 cdr  strictly: a vectorial quantity.
@@ -1296,6 +1309,7 @@ cdr as if they were independent scalars.
 cdr This can lead to spectacular unphysical results.
 cdr A cleanup of input tally options for vectorial quantities
 cdr V, B, E is needed, in particular for div-free B field.
+cdr 2022: already done for BV_VEC and PMOM_VEC,
 
       IF ((IVSMO > 0) .AND. (IVSMO < 4)) THEN
         WRITE (IUNOUT,*)
@@ -1315,15 +1329,15 @@ cdr V, B, E is needed, in particular for div-free B field.
           WRITE (IUNOUT,*)
      .      'SMOOTHING OF DRIFT VELOCITY IN Z-DIRECTION SWITCHED ON'
         END IF
-        IF (.NOT.LBVSMO) THEN
-          LBVSMO =.TRUE.
+        IF (.NOT.LBV_VECSMO) THEN
+          LBV_VECSMO =.TRUE.
           WRITE (IUNOUT,*)
-     .      'SMOOTHING OF FLOW VELOCITY PARALLEL B-FIELD SWITCHED ON'
+     .      'SMOOTHING OF FLOW VELOCITY WRT B-FIELD SWITCHED ON'
         END IF
       END IF
 
-cdr legal values IBSMO: =0 or =4
-      IF ((IBSMO > 0) .AND. (IBSMO < 4)) THEN
+cdr legal values IBSMO: =0 or =6
+      IF ((IBSMO > 0) .AND. (IBSMO < 6)) THEN
         WRITE (IUNOUT,*)
      .       'INCONSISTENCY IN SMOOTHING OF '//
      .       'MAGN. FIELD VECTORS ENCOUNTERED'
@@ -1346,6 +1360,16 @@ cdr legal values IBSMO: =0 or =4
           LBFSMO =.TRUE.
           WRITE (IUNOUT,*)
      .      'SMOOTHING OF MAGN. FIELD STRENGTH SWITCHED ON'
+        END IF
+        IF (.NOT.LBXPSMO) THEN
+          LBXPSMO =.TRUE.
+          WRITE (IUNOUT,*)
+     .      'SMOOTHING OF PERP MAGN FIELD DIRECTION X SWITCHED ON'
+        END IF
+        IF (.NOT.LBYPSMO) THEN
+          LBYPSMO =.TRUE.
+          WRITE (IUNOUT,*)
+     .      'SMOOTHING OF PERP MAGN. FIELD DIRECTION Y SWITCHED ON'
         END IF
       END IF
 
@@ -1382,7 +1406,7 @@ cdr                   between related input tallies (e.g. vector components)
 cdr not finished. WIP.
 cdr but at least now: if one component, then automatically all.
       LDSMO = LDESMO .AND. LDISMO
-      LVSMO = LVXSMO .AND. LVYSMO .AND. LVZSMO .AND. LBVSMO
+      LVSMO = LVXSMO .AND. LVYSMO .AND. LVZSMO .AND. LBV_VECSMO
       LBSMO = LBXSMO .AND. LBYSMO .AND. LBZSMO .AND. LBFSMO
 CDR  .       .OR.LPSISMO
       LESMO = LEXSMO .AND. LEYSMO .AND. LEZSMO .AND. LEFSMO
@@ -1474,16 +1498,16 @@ cdr incl. electrons, in order to not wreck quasineutrality.
         ELSE
           NULLIFY(VZINCORNER)
         END IF
-        IF (LBVSMO) THEN
-          BVINCORNER => CORNER_PROFILES(:,NADDCOR(23)+1 : NADDCOR(24))
+        IF (LBSMO) THEN
+          BV_VECCORNER => CORNER_PROFILES(:,NADDCOR(23)+1 : NADDCOR(24))
         ELSE
-          NULLIFY(BVINCORNER)
+          NULLIFY(BV_VECCORNER)
         END IF
       ELSE
         NULLIFY(VXINCORNER)
         NULLIFY(VYINCORNER)
         NULLIFY(VZINCORNER)
-        NULLIFY(BVINCORNER)
+        NULLIFY(BV_VECCORNER)
       END IF
 cdr  same simplification needed for other vectors...
       IF (LBSMO) THEN
@@ -1584,11 +1608,12 @@ cdr  same simplification needed for other vectors...
         NULLIFY(EFCORNER)
         NULLIFY(POTCORNER)
       END IF
-
-      IF (LPARMOMSMO) THEN
-        PARMOMCORNER => CORNER_PROFILES(:,NADDCOR(24)+1 : NADDCOR(25))
+cdr  hidden link warning:
+cdr  this should go into LVSMO
+      IF (LPMOM_VECSMO) THEN
+        PMOM_VECCORNER => CORNER_PROFILES(:,NADDCOR(24)+1 : NADDCOR(25))
       ELSE
-        NULLIFY(PARMOMCORNER)
+        NULLIFY(PMOM_VECCORNER)
       END IF
 cdr  hidden link warning:
 cdr  this should go into LBSMO
@@ -1779,9 +1804,9 @@ c  plasma flow field
         LVXSMO      => LSMOPRO(5)
         LVYSMO      => LSMOPRO(6)
         LVZSMO      => LSMOPRO(7)
-c  plasma flow parallel
-        LBVSMO      => LSMOPRO(23)
-        LPARMOMSMO  => LSMOPRO(24)
+c  vectorial plasma flow: parallel, perp and diamagn.
+        LBV_VECSMO    => LSMOPRO(23)
+        LPMOM_VECSMO  => LSMOPRO(24)
 
 c  B field
         LBXSMO      => LSMOPRO(8)
@@ -1938,8 +1963,8 @@ cdr
         LEIN = lexin.and.leyin.and.lezin.and.lefin  !  pot ?
 c
 
-        LBVIN      => LIVTALI(23)
-        LPARMOM    => LIVTALI(24)
+        LBV_VEC    => LIVTALI(23)
+        LPMOM_VEC  => LIVTALI(24)
 
         LZIIN      => LIVTALI(26)
 
@@ -2017,12 +2042,13 @@ c
         LDPOTDX    => LIVTALI(94)
         LDPOTDY    => LIVTALI(95)
         LDPOTDZ    => LIVTALI(96)
-        LDBVINDX   => LIVTALI(97)
-        LDBVINDY   => LIVTALI(98)
-        LDBVINDZ   => LIVTALI(99)
-        LDPARMOMDX => LIVTALI(100)
-        LDPARMOMDY => LIVTALI(101)
-        LDPARMOMDZ => LIVTALI(102)
+cdr  vectorial input tallies:  par, perp, dia
+        LDBV_VECDX   => LIVTALI(97)
+        LDBV_VECDY   => LIVTALI(98)
+        LDBV_VECDZ   => LIVTALI(99)
+        LDPMOM_VECDX => LIVTALI(100)
+        LDPMOM_VECDY => LIVTALI(101)
+        LDPMOM_VECDZ => LIVTALI(102)
 
         LDPSIDX    => LIVTALI(103)
         LDPSIDY    => LIVTALI(104)

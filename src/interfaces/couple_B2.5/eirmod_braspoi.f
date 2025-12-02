@@ -23,7 +23,7 @@ cdr  purpose ....?
      .          PDENAS, PDENMS, PDENIS,
      .          EDENAS, COPVS,
      .          MAPLS, MMPLS, MIPLS, MPHPLS,
-     .          PPPL_COPS, CPPVS, EPPL_COPS
+     .          PPPL_COPS, MPPL_COPS, EPPL_COPS
 
       TYPE :: CELLSIM
         REAL(DP) :: VALUES
@@ -52,7 +52,7 @@ cdr  purpose ....?
      .                                   EPPL_COPS(:),
      .                                   PDENAS(:),PDENMS(:),PDENIS(:),
      .                                   EDENAS(:),COPVS(:),
-     .                                   PPPL_COPS(:), CPPVS(:),
+     .                                   PPPL_COPS(:), MPPL_COPS(:),
      .                                   MAPLS(:), MMPLS(:), MIPLS(:),
      .                                   MPHPLS(:)
 
@@ -85,7 +85,7 @@ cdr  purpose ....?
       ALLOCATE (EDENAS(NSTRA))
       ALLOCATE (COPVS(NSTRA))
       ALLOCATE (PPPL_COPS(NSTRA))
-      ALLOCATE (CPPVS(NSTRA))
+      ALLOCATE (MPPL_COPS(NSTRA))
       ALLOCATE (MAPLS(NSTRA))
       ALLOCATE (MMPLS(NSTRA))
       ALLOCATE (MIPLS(NSTRA))
@@ -115,7 +115,7 @@ cdr  purpose ....?
       NULLIFY(COPVS(ISTRAI)%PMUL)
       NULLIFY(PPPL_COPS(ISTRAI)%PMUL)
       NULLIFY(EPPL_COPS(ISTRAI)%PMUL)
-      NULLIFY(CPPVS(ISTRAI)%PMUL)
+      NULLIFY(MPPL_COPS(ISTRAI)%PMUL)
 
       NULLIFY(MAPLS(ISTRAI)%PMUL)
       NULLIFY(MMPLS(ISTRAI)%PMUL)
@@ -155,7 +155,7 @@ cdr  purpose ....?
       DEALLOCATE (EDENAS)
       DEALLOCATE (COPVS)
       DEALLOCATE (PPPL_COPS)
-      DEALLOCATE (CPPVS)
+      DEALLOCATE (MPPL_COPS)
       DEALLOCATE (MAPLS)
       DEALLOCATE (MMPLS)
       DEALLOCATE (MIPLS)
@@ -399,15 +399,15 @@ C  FREE PPPL_COPS
         NULLIFY(PPPL_COPS(ISTRAI)%PMUL)
       END IF
 
-C  FREE CPPVS
-      P => CPPVS(ISTRAI)%PMUL
+C  FREE MPPL_COPS
+      P => MPPL_COPS(ISTRAI)%PMUL
       IF (ASSOCIATED(P)) THEN
         DO WHILE (ASSOCIATED(P%NXTMUL))
           P => P%NXTMUL
         END DO
         P%NXTMUL => COLLECT_MULARR
-        COLLECT_MULARR => CPPVS(ISTRAI)%PMUL
-        NULLIFY(CPPVS(ISTRAI)%PMUL)
+        COLLECT_MULARR => MPPL_COPS(ISTRAI)%PMUL
+        NULLIFY(MPPL_COPS(ISTRAI)%PMUL)
       END IF
 
 C  FREE MAPLS

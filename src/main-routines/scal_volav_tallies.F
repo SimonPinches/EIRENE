@@ -42,7 +42,8 @@ c                or  also: cumulated (flight times/reaction time) [1] to source 
       REAL(DP) :: ZFAC, FACDT
       REAL(DP) :: DEL, DELI, ELEFT, ERIGHT
       INTEGER :: IATM, I, J, IMOL, IION, IPHOT, IPLS, IADV, ICLV,
-     .           ISNV, ICPV, IBGV, ISPC, ICL
+     .           ISNV, ICPV, IBGV, ISPC, ICL,
+     .           KK, ICO
 #if ( defined(G95) || defined(LEGACYCOMP) )
       INTEGER :: JATM, JMOL, JION, JPHOT
 #endif
@@ -493,10 +494,17 @@ C
             IF (LEIPL)  EIPL(IPLS,J) =EIPL(IPLS,J) *ZVOLIW(J)
             IF (LEPHPL) EPHPL(IPLS,J)=EPHPL(IPLS,J)*ZVOLIW(J)
             IF (LEPPL)  EPPL(IPLS,J) =EPPL(IPLS,J) *ZVOLIW(J)
-            IF (LMAPL)  MAPL(IPLS,J) =MAPL(IPLS,J) *ZVOLIW(J)
-            IF (LMMPL)  MMPL(IPLS,J) =MMPL(IPLS,J) *ZVOLIW(J)
-            IF (LMIPL)  MIPL(IPLS,J) =MIPL(IPLS,J) *ZVOLIW(J)
-            IF (LMPHPL) MPHPL(IPLS,J)=MPHPL(IPLS,J)*ZVOLIW(J)
+            DO ICO=0,2
+              KK=ICO*NPLS
+              IF (LMAPL_VEC)  MAPL_VEC(KK+IPLS,J) =
+     .                        MAPL_VEC(KK+IPLS,J) *ZVOLIW(J)
+              IF (LMMPL_VEC)  MMPL_VEC(KK+IPLS,J) =
+     .                        MMPL_VEC(KK+IPLS,J) *ZVOLIW(J)
+              IF (LMIPL_VEC)  MIPL_VEC(KK+IPLS,J) =
+     .                        MIPL_VEC(KK+IPLS,J) *ZVOLIW(J)
+              IF (LMPHPL_VEC) MPHPL_VEC(KK+IPLS,J)=
+     .                        MPHPL_VEC(KK+IPLS,J)*ZVOLIW(J)
+            ENDDO
   228     CONTINUE
           SCLTAL(IPLS,14)=3
           SCLTAL(IPLS,20)=3

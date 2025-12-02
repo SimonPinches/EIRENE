@@ -66,10 +66,9 @@ C
 
       REAL(DP) :: DUR, E0OLD, E0NEW, VNEW, WS, FAC, GYRO,
      .            BVEC_1(3), VVEC(3), VELS, FNUI, EWG,
-     .            BX, BY, BZ,
-     .            BF, DIRPROJ, VDEL,
-     .            VPLASP, SIG, VX, VY, VZ
-      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IPL, IPLSV, IPLSLOC
+     .            BF, DIRPROJ, VDEL
+      INTEGER :: IOLD, EIRENE_LEARC2, NCELLT, IPL, IPLSLOC,
+     .            KK, ICO
 ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       EXTERNAL :: EIRENE_BFIELD, EIRENE_B_PROJI, EIRENE_CLLTST,
      .            EIRENE_NEWFIELD, EIRENE_LEER, EIRENE_MASAGE,
@@ -190,26 +189,21 @@ C
         IF (NLSOLEDGE) THEN
 
 CNR Now update the parallel momentum tallies (*** WARNING: Only for main background ion ***)
-         IF (LMIPL) THEN
+         IF (LMIPL_VEC) THEN
 C  SET THE POST-COLLISION TEST PARTICLE PARALLEL VELOCITY
           IPLSLOC = 1 ! Hardcoded only for main background ion
           CALL EIRENE_BFIELD (NCELL,X0,Y0,Z0,BX,BY,BZ,BF,.TRUE.)
-          DIRPROJ = VELX*BX+VELY*BY+VELZ*BZ ! The test ion does not change (parallel) direction during the collision
+          DO ICO=0,2
+            KK=ICO*NPLS
+! The test ion does not change (parallel) direction during the collision
+            DIRPROJ = VELX*BX(ICO)+VELY*BY(ICO)+VELZ*BZ(ICO)
 ! VELPAR_old-VNEW_parallel
-          VDEL=VELPAR*(1._DP-FAC)*DIRPROJ*AMUA*RMASSI(IION)*WEIGHT
+            VDEL=VELPAR*(1._DP-FAC)*DIRPROJ*AMUA*RMASSI(IION)*WEIGHT
 C
-          IF (INDPRO(4) == 8) THEN
-            CALL EIRENE_VECUSR(2,NCELL,X0,Y0,Z0,VX,VY,VZ,IPLSLOC,
-     .                         .TRUE.)
-            VPLASP=VX*BX+VY*BY+VZ*BZ
-            SIG=SIGN(1._DP,VPLASP)
-          ELSE
-            IPLSV=MPLSV(IPLSLOC)
-            SIG=1._DP
-            IF (LBVIN) SIG=SIGN(1._DP,BVIN(IPLSV,NCELL))
-          ENDIF
-          MIPL(IPLSLOC,NCELL)=MIPL(IPLSLOC,NCELL)+VDEL*SIG
-          LMETSP(NSPAMI+IPLSLOC)=.TRUE.
+            MIPL_VEC(KK+IPLSLOC,NCELL)=MIPL_VEC(KK+IPLSLOC,NCELL)+VDEL
+csig                        *SIG
+            LMETSP(NSPAMI+KK+IPLSLOC)=.TRUE.
+          ENDDO
          ENDIF
         END IF
 C in this particlar case: retain old pitch: velpar/velper. No pitch angle scattering so far.

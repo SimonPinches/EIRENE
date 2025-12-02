@@ -138,7 +138,9 @@ c   LGVAC(...,0)     : background vacuum flag
      .            RC1MIN, RC1MAX, RC2MIN, RC2MAX,
      .            BXP, BYP, BNORM, TE, DE
       REAL(DP) :: FP1(6), FP2(6)
-      REAL(DP) :: BX, BY, BZ
+cdr  Cartesian (contravariant) components of
+cdr  parallel, grad-PSI and diamagn. B field, resp.
+      REAL(DP) :: BPAR(3), BPER(3), BCROSS(3)
       REAL(DP) :: tpb1, tpb2
       REAL(DP), ALLOCATABLE :: DEINTF(:), SUMNI(:), SUMMNI(:),
      .                         BASE_DENSITY(:), BASE_TEMP(:),
@@ -146,10 +148,13 @@ c   LGVAC(...,0)     : background vacuum flag
      .                         TALLY(:)
       INTEGER :: IR, IN, IP, IPM, IPLS, IOLD, IRE,
      .           I, J, IAIN, ISPZ,
-     .           KK,
+     .           ICO, KK,
      .           IPLSTI, IPLSV, IOLDTI, IOLDV, IBS, IFLG,
      .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX,
      .           ITAL, K, NFTI, NFTE, JPLS, IRC
+cdr june 23: testing b_perp via input, rather than default
+      real(dp) :: bxpp,bypp,bpp,dist1,dist2
+      integer  :: ico1,ico2
       EXTERNAL :: EIRENE_RATE_COEFF, EIRENE_OTHER_RATE_COEFF,
      .            EIRENE_VDION
 
@@ -706,7 +711,7 @@ c .................................................................colrad done
 C
 C  SPECIAL PLASMA BACKGROUND MODELS DONE
 C
-C  NEXT: SET SOME "DERIVED" FIELDS: EDRIFT, BPERP, BVIN, PARMOM,
+C  NEXT: SET SOME "DERIVED" FIELDS: EDRIFT, BPERP, BV_VEC, PMOM_VEC,
 C                                   LGVAC, TIINL, DIINL, ZT1, ZRG
 
 C  SET DRIFT ENERGY (EV)
@@ -742,9 +747,28 @@ C      B_PAR IS ALREADY GIVEN AS INPUT TALLY BXIN,BYIN,BZIN
 C
 c  IF BXIN AND BYIN ARE NOT AVAILABLE: ALSO: LBXPERP=LBYPERP=.FALSE.
 
+cdr note: by default: lbxperp = lbyperp = false.
+cdr       These "derived tallies" must be turned on explicitly,
+cdr       at the end of input block 5, "optional" tallies.
+cdr       Otherwise the perp and
+cdr       diamagn. components of BV and PMOM are zero.
+cdr probably these default settings need to be revised?
+cdr June 23: Done: LBXPERP = LBYPERP = TRUE by default now.
+cdr          SETPRM_INTAL modified accordingly for tallies -16 and -17
+
       IF (LBXPERP .AND. LBYPERP) THEN
 
+       ico1=0
+       ico2=0
        DO J=1,NSBOX
+cdr  lets see if these are already set:
+        bxpp=bxperp(j)
+        bypp=byperp(j)
+        bpp=sqrt(bxperp(j)**2+byperp(j)**2)
+        if (bpp .gt. eps5) then
+c         write (iunout,*) 'b_perp already available ,j ',bpp,j
+          ico1=ico1+1
+        endif
 
         IF (ABS(BXIN(J)) > EPS10) THEN
            BYP = 1._DP
@@ -764,11 +788,35 @@ C  (this coincides with the z-component of B_DIA being > 0)
            BYP = -BYP
         END IF
 C  NORMALIZE
-        BNORM=SQRT(BXP*BXP+BYP*BYP)+EPS60
-        BXPERP(J)=BXP/BNORM
-        BYPERP(J)=BYP/BNORM
+        BNORM=SQRT(BXP*BXP+BYP*BYP)
+        if (bnorm.gt.eps60) then
+          BXP=BXP/BNORM
+          BYP=BYP/BNORM
+        endif
+cdr   and... bzperp(j)=0, by construction in 2D symmetric cases
 
+        if (bpp .ne. 0.0) then
+cdr compare with default
+          dist1=(bxpp-bxp)**2 + (bypp-byp)**2
+cdr  try opposite sign
+          dist2=(bxpp+bxp)**2 + (bypp+byp)**2
+          if (dist1 .gt. eps5 .and. dist2 .gt. eps5) then
+            write (iunout,*) 'j available but different',j,dist1,dist2
+          elseif (dist1 .gt. eps5) then
+c           write (iunout,*) 'j available but different sign',j
+            ico2=ico2+1
+          endif
+cdr  use the B_PERP transferred from outside, rather than the default
+          bxperp(j)=bxpp
+          byperp(j)=bypp
+        else
+cdr  use the default setting
+          bxperp(j)=bxp
+          byperp(j)=byp
+        endif
        END DO  ! NSBOX
+       write (iunout,*) 'B_PERP available in ICO1 cells ',ico1,nsbox
+       write (iunout,*) 'B_PERP sign changed in ICO2 cells ',ico2
       END IF
 
       DO 5103 J=1,NSBOX
@@ -813,28 +861,69 @@ C  FACTOR FOR ROOT MEAN SQUARE SPEED
         IPLSTI=MPLSTI(IPLS)
         IPLSV=MPLSV(IPLS)
 
-        IF (LBVIN) BVIN(IPLSV,:)=0._DP
-        IF (LPARMOM) PARMOM(IPLS,:)=0._DP
+        IF (LBV_VEC) THEN
+cdr  tally -23, 1:3*nplsv
+          DO ICO=0,2
+            KK=ICO*NPLSV
+            BV_VEC(KK+IPLSV,:)=0._DP
+          ENDDO
+        ENDIF
+        IF (LPMOM_VEC) THEN
+cdr   tally -24, 1:3*npls
+          DO ICO=0,2
+            KK=ICO*NPLS
+            PMOM_VEC(KK+IPLS,:)=0._DP
+          ENDDO
+        ENDIF
 
         DO J=1,NSBOX
           ZTII=MAX(TVAC,MIN(TIIN(IPLSTI,J),1.E10_DP))
           TIINL(IPLSTI,J)=LOG(ZTII)
-          bx=0._dp
-          by=0._dp
-          bz=1._dp
-          if (lbxin) bx=bxin(j)
-          if (lbyin) by=byin(j)
-          if (lbzin) bz=bzin(j)
-          IF (LBVIN) 
-     .      BVIN(IPLSV,J)=BX*VXIN(IPLSV,J)+
-     .                    BY*VYIN(IPLSV,J)+
-     .                    BZ*VZIN(IPLSV,J)
-!PB  changed due to problem with gfortran 9 compiler
-!     IF (LPARMOM.AND.LBVIN)
-!     .      PARMOM(IPLS,J)=BVIN(IPLSV,J)*SIGN(1._DP,BVIN(IPLSV,J))*
-!     .                     AMUA*RMASSP(IPLS)
-          IF (LPARMOM.AND.LBVIN)
-     .      PARMOM(IPLS,J)=ABS(BVIN(IPLSV,J))*AMUA*RMASSP(IPLS)
+CDR  BPAR: PARALLEL COMPONENT UNIT VECTOR, DEFAULT: Z COORDINATE ONLY
+          bpar(1)=0._dp
+          bpar(2)=0._dp
+          bpar(3)=1._dp
+          if (lbxin) bpar(1)=bxin(j)
+          if (lbyin) bpar(2)=byin(j)
+          if (lbzin) bpar(3)=bzin(j)
+          IF (LBV_VEC)
+     .      BV_VEC(IPLSV,J)=Bpar(1)*VXIN(IPLSV,J)+
+     .                      Bpar(2)*VYIN(IPLSV,J)+
+     .                      Bpar(3)*VZIN(IPLSV,J)
+          IF (LPMOM_VEC.AND.LBV_VEC)
+     .      PMOM_VEC(IPLS,J)=BV_VEC(IPLSV,J)*
+     .                       AMUA*RMASSP(IPLS)
+
+CDR  BPER: PERP COMPONENT, GRAD PSI, DEFAULT: 0
+cdr  PSI function input tally is not fully ready, I believe.
+cdr  So I use input tallies bxperp,byperp.  Needs to be checked.
+          bper(1)=0._dp
+          bper(2)=0._dp
+          bper(3)=0._dp
+          if (lbxperp) bper(1)=bxperp(j)
+          if (lbyperp) bper(2)=byperp(j)
+          IF (LBV_VEC)
+     .      BV_VEC(NPLSV+IPLSV,J)=Bper(1)*VXIN(IPLSV,J)+
+     .                            Bper(2)*VYIN(IPLSV,J)+
+     .                            Bper(3)*VZIN(IPLSV,J)
+          IF (LPMOM_VEC.AND.LBV_VEC)
+     .      PMOM_VEC(NPLS+IPLS,J)=BV_VEC(NPLSV+IPLSV,J)*
+     .                            AMUA*RMASSP(IPLS)
+
+CDR  DIAMAGN. COMPONENT (B X GRAD PSI), DEFAULT: 0
+          bcross(1)=0._dp
+          bcross(2)=0._dp
+          bcross(3)=0._dp
+          bcross(1) = bpar(2)*bper(3) - bpar(3)*bper(2)
+          bcross(2) =-bpar(3)*bper(1) + bpar(1)*bper(3)
+          bcross(3) = bpar(1)*bper(2) - bpar(2)*bper(1)
+          IF (LBV_VEC)
+     .      BV_VEC(2*NPLSV+IPLSV,J)=BCROSS(1)*VXIN(IPLSV,J)+
+     .                              BCROSS(2)*VYIN(IPLSV,J)+
+     .                              BCROSS(3)*VZIN(IPLSV,J)
+          IF (LPMOM_VEC.AND.LBV_VEC)
+     .      PMOM_VEC(2*NPLS+IPLS,J)=BV_VEC(2*NPLSV+IPLSV,J)*
+     .                              AMUA*RMASSP(IPLS)
 
 C
 C  ZT1: FOR "EFFECTIVE" PLASMA PARTICLE VELOCITY IN CROSS-SECTIONS
@@ -883,9 +972,14 @@ C
          call eirene_cell_to_corner(EDRIFT(ipls,:),EDRIFTCORNER(:,ipls))
         ENDDO
       ENDIF
-      IF (LPARMOMSMO) THEN
+      IF (LPMOM_VECSMO) THEN
         do ipls = 1, npls
-         call eirene_cell_to_corner(PARMOM(ipls,:),PARMOMCORNER(:,ipls))
+         call eirene_cell_to_corner(PMOM_VEC(ipls,:),
+     .          PMOM_VECCORNER(:,ipls))
+         call eirene_cell_to_corner(PMOM_VEC(npls+ipls,:),
+     .          PMOM_VECCORNER(:,npls+ipls))
+         call eirene_cell_to_corner(PMOM_VEC(2*npls+ipls,:),
+     .          PMOM_VECCORNER(:,2*npls+ipls))
         end do
       ENDIF
 
@@ -897,8 +991,14 @@ C
      .     call eirene_cell_to_corner(VYIN(iplsv,:),VYINCORNER(:,iplsv))
           if (lvzsmo)
      .     call eirene_cell_to_corner(VZIN(iplsv,:),VZINCORNER(:,iplsv))
-          if (lbvsmo)
-     .     call eirene_cell_to_corner(BVIN(iplsv,:),BVINCORNER(:,iplsv))
+          if (lbv_vecsmo) THEN
+            call eirene_cell_to_corner(BV_VEC(iplsv,:),
+     .          BV_VECCORNER(:,iplsv))
+            call eirene_cell_to_corner(BV_VEC(nplsv+iplsv,:),
+     .          BV_VECCORNER(:,nplsv+iplsv))
+            call eirene_cell_to_corner(BV_VEC(2*nplsv+iplsv,:),
+     .          BV_VECCORNER(:,2*nplsv+iplsv))
+          ENDIF
         end do
       END IF
 
