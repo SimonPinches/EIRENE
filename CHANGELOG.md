@@ -14,6 +14,16 @@
 # Changelog of EIRENE repository:
 ---
 
+## X. Bonnin and A. Pshenov - SOLPS_event_limit
+
+### Based on SOLPS_nprll_wrstrt - f5dcd68af8af6fdc736b93f159a1a9cf71d75a6d
+
+** Changes **
+
+- Implemented an event number limit for individual trajectories
+
+---
+
 ## X. Bonnin - SOLPS_nprll_wrstrt
 
 ### Based on SOLPS_vector_tallies - bd537444943622e1e37d50acb55e18aadb999e01
@@ -24,7 +34,7 @@
 
 ---
 
-## X. Bonnin - SOLPS_vector_tallies
+## X. Bonnin and D. Reiter - SOLPS_vector_tallies
 
 ### Based on SOLPS_DR_changes - 7f59f4c18f601a0a35a33d85866f2d5a486f4ef1
 

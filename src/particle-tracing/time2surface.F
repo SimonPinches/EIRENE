@@ -1,6 +1,6 @@
       SUBROUTINE EIRENE_TIME_TO_STANDARD_SURFACE
      .           (TL, TF, TT, TS, ZDT1, ZT, ZTST,
-     .            VELXS, VELYS, VELZS, VELS, ISRFCL, IRET)
+     .            VELXS, VELYS, VELZS, VELS, ISRFCL, IRET, NEVNT)
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -10,6 +10,7 @@
       USE EIRMOD_CLOGAU
       USE EIRMOD_CCONA
       USE EIRMOD_CUPD, ONLY : NCOU, NUPC, CLPD, NCOUNT, NCOUNP
+      USE EIRMOD_COMUSR, ONLY: NEVNTMAX, LVNMXTR
       use eirmod_timer
       use eirmod_timep
       use eirmod_cfplk, only : lcart, velpar, vlxpar, vlypar, vlzpar
@@ -20,6 +21,7 @@
      .                           VELS, VELXS, VELYS, VELZS
       INTEGER, INTENT(INOUT) :: ISRFCL
       INTEGER, INTENT(OUT) :: IRET
+      INTEGER, INTENT(IN) :: NEVNT
       REAL(DP) :: T
       EXTERNAL :: EIRENE_TIMET, EIRENE_LEER, EIRENE_MASAGE,
      .            EIRENE_MASJ4, EIRENE_MASR2
@@ -51,6 +53,7 @@ c  switch to gc velocity
           CALL EIRENE_TIMER(TS)
           IF (.NOT.LGPART) THEN
             IRET = 1
+            IF (NEVNTMAX.GT.0.AND.NEVNT.GT.NEVNTMAX) GOTO 9913
             GOTO 9911
           END IF
 C
@@ -198,6 +201,25 @@ C
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')
       WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
       WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP END CRITICAL
+#endif
+      RETURN
+C
+ 9913 CONTINUE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP CRITICAL
+#endif
+      IF (LVNMXTR) THEN
+        CALL EIRENE_LEER(1)
+        CALL EIRENE_MASAGE('TIME_TO_STANDARD_SURFACE: '//
+     .                     'STOPPING THE LONG TRACE')
+        CALL EIRENE_MASAGE('MAXIMUM NUMBER OF EVENTS PER '//
+     .                     'TRAJECTORY REACHED')
+        CALL EIRENE_MASAGE('PARTICLE IS KILLED')
+        WRITE (iunout,*) 'NPANU,NCELL,NRCELL,NPCELL,NTCELL '
+        WRITE (iunout,*)  NPANU,NCELL,NRCELL,NPCELL,NTCELL
+      ENDIF
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
 #endif

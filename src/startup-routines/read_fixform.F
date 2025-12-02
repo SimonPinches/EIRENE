@@ -286,8 +286,10 @@ C
         END IF
         GOTO 109
       ELSE
+        call fix_integer_input(zeile,10)
         READ (ZEILE,6666) NPRLL,NMODE,NTCPU,NFILE,NDUMM1,NITER,
-     .                    NDUMM2,NTIME
+     .                    NDUMM2,NTIME,NEVNTMAX,NVNMXTR
+        NEVNTMAX=1000*NEVNTMAX
       ENDIF
       CALL EIRENE_LEER(1)
       IITER=1
@@ -672,6 +674,12 @@ C  ??
         WRITE (iunout,*) '       EIRENE RUN IN STATIONARY MODE'
       ENDIF
       CALL EIRENE_LEER(1)
+
+      IF (NEVNTMAX.GT.0) THEN
+        WRITE(iunout,*) '        EIRENE LIMITS THE NUMBER OF EVENTS ON',
+     .    ' A NEUTRAL TRACE to ',NEVNTMAX
+        CALL EIRENE_LEER(1)
+      ENDIF
 C
 C  to be done:
 c  printout: which default storage settings have we overruled (consequences thereof?)

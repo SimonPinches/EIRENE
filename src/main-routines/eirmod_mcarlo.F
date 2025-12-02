@@ -858,6 +858,11 @@ C Should this not go into EIRENE_CLEAR_STRATUM as it resets a quantity
 C for this stratum?
           IPRNLS=0
 C
+          LVNMXTR=NVNMXTR.GT.0.AND.KVNMXTR(ISTRA).LT.NVNMXTR
+          KCFF=0
+          XVNMX=0._DP
+          XVNMX2=0._DP
+C
 C This will never happen as NLSRON status have not changed...
 cym fortunate that it 'never happens' because not compatible with OpenMP
 cym if NLSRON status is 'fixed' would require another way of implementing
@@ -1279,6 +1284,21 @@ C
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP MASTER
 #endif
+C
+          IF (KCFF.GT.0) THEN
+            CALL EIRENE_LEER(1)
+            WRITE(iunout,*) KCFF,' HISTORIES CUT OFF(',
+     .        NEVNTMAX,' EVENTS)'
+            DO I=1,3
+              XVNMX2(I)=SQRT((XVNMX2(I)-XVNMX(I)**2./KCFF)/KCFF)
+              XVNMX(I)=XVNMX(I)/KCFF
+            ENDDO
+            WRITE(iunout,'(t12,3(6x,a1,5x))') 'X','Y','Z'
+            WRITE(iunout,'(a,1p,t12,3e12.4)') 'AVERAGE',XVNMX,
+     .        'SPREAD',XVNMX2
+            KVNMXTR(ISTRA)=KVNMXTR(ISTRA)+1
+          END IF
+C
           XMCT(istra)=timused
           call time_particles(istra, timused, ipanu)
           call time_particles_improved(istra, timused, ipanu)

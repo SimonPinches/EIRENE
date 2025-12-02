@@ -159,7 +159,8 @@ c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
      .           ICO, NLI, NLE, JCOL, NRC,
      .           NRCOLD, IPLTI, I, IM, ICOUN,
      .           EIRENE_LEARC2, COLTYP,
-     .           indf, NJUMP_EMC3 = 0, IRET, IRT_STAT, KK
+     .           indf, NJUMP_EMC3 = 0, IRET, IRT_STAT, KK,
+     .           NEVNT_DUMMY
       LOGICAL :: LCNDEXP
       EXTERNAL :: EIRENE_CLLTST, EIRENE_ESCAPE, EIRENE_FOLSTAT_ION,
      .            EIRENE_FPATH, EIRENE_FPKCOL, EIRENE_NEWFIELD,
@@ -177,6 +178,8 @@ c  IC_NEUT, IC_ION: counter for generations within static loop
       IC_ION=IC_NEUT
 C  XGENER: COUNTER FOR GENERATION LIMIT
       LCART=.TRUE.
+C  NEVNT: EVENT COUNTER, NOT IN USE FOR TEST IONS
+      NEVNT_DUMMY=0
 
   100 LGPART=.TRUE.
       IC_ION=IC_ION+1
@@ -587,7 +590,7 @@ CCC  210 CONTINUE
 C
       CALL EIRENE_TIME_TO_STANDARD_SURFACE
      .    (TL, TF, TT, TS, ZDT1, ZT, ZTST,
-     .     VELXS, VELYS, VELZS, VELS, ISRFCL, IRET)
+     .     VELXS, VELYS, VELZS, VELS, ISRFCL, IRET, NEVNT_DUMMY)
       IF (IRET /= 0) GOTO 995
 C
       IF (ZTST.GE.1.D30) GOTO 990

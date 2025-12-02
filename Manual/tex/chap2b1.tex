@@ -20,7 +20,8 @@ depending on the simulation model (drifts included or not, etc.).
 first card:  integer flags controlling global options for the entire run.
 
 \begin{lstlisting}
-      NPRLL  NMODE  NTCPU  NFILE  NITER0  NITER  NTIME0  NTIME
+      NPRLL  NMODE  NTCPU  NFILE  NITER0  NITER  NTIME0
+     .  NTIME NEVNTMAX NVNMXTR
 \end{lstlisting}
 
 next input line is only for EIRENE$_{2002}
@@ -270,6 +271,12 @@ There can be any number of these cards starting with character string
         I.e., the census population then determines the initial condition for the
         distribution function $f(\underline{r},\underline{v}, i, t = t_0)$.
         The source strength FLUX is computed from that initial condition.
+  \item[NEVNTMAX] Limit of number of events allowed per individual particle history in thousands
+	(i.e. actual limit is NEVNTMAX $\times$ 1000).
+	If the limit is reached, the corresponding test particle history is stopped. To be
+	used with caution. If set to 0 (default), no limit is imposed.
+  \item[NVNMXTR] Number of time-steps for which coordinates of the particles stopped
+	due to imposed NEVENTMAX limit is written to the log-file. Optional. Default: 0
   \item[NOPTIM] Default: NRAD, = total number of grid cells
 
         (verify this default in case of older versions: there it may have been

@@ -128,7 +128,8 @@ C
      .           EIRENE_LEARC2, J, NCOUS, NLE, NRC, JCOL, NLI, ISTS,
      .           NPCOLC, COLTYP,
      .           JJ, NPCELC, NTCELC, NTCOLC, IFLAG, I, IM,
-     .           NCLLN, IRET, IRT_STAT, KK
+     .           NCLLN, IRET, IRT_STAT, KK,
+     .           NEVNT
       LOGICAL :: NLPR, LCNDEXP
       TYPE(CELL_INFO), POINTER :: NEW_CELL
       EXTERNAL :: EIRENE_CLLTST, EIRENE_COLPHOT, EIRENE_ESCAPE,
@@ -146,6 +147,8 @@ c  IC_NEUT, IC_ION: counter for generations within static loop
       IC_NEUT=IC_ION
 C  XGENER: COUNTER FOR GENERATION LIMIT
       XGENER=0.D0
+C  NEVNT: EVENT COUNTER
+      NEVNT=0
 !PB UNNECESSARY, JUST FOR SAFETY
       VELXS=VELX
       VELYS=VELY
@@ -429,11 +432,35 @@ C  SCAN OVER SEGMENT
 C
   210 CONTINUE
 C
+C CHECK IF MAXIMUM NUMBER OF EVENTS IS REACHED
+      IF (NEVNTMAX.GT.0) THEN
+        NEVNT=NEVNT+1
+        IF (NEVNT.GT.NEVNTMAX) THEN
+          LGPART=.FALSE.
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP CRITICAL
+#endif
+          KCFF=KCFF+1
+          XVNMX(1)=XVNMX(1)+X0
+          XVNMX(2)=XVNMX(2)+Y0
+          XVNMX(3)=XVNMX(3)+Z0
+          XVNMX2(1)=XVNMX2(1)+X0**2.
+          XVNMX2(2)=XVNMX2(2)+Y0**2.
+          XVNMX2(3)=XVNMX2(3)+Z0**2.
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP END CRITICAL
+#endif
+        ENDIF
+      END IF
+C
 !PB VELS, VEL.S are only used with test ions, irrelevant here
       CALL EIRENE_TIME_TO_STANDARD_SURFACE
      .    (TL, TF, TT, TS, ZDT1, ZT, ZTST,
-     .     VELXS, VELYS, VELZS, VELS, ISRFCL, IRET)
-      IF (IRET /= 0) GOTO 995
+     .     VELXS, VELYS, VELZS, VELS, ISRFCL, IRET, NEVNT)
+      IF (IRET /= 0) THEN
+        IF (NEVNTMAX.GT.0.AND.NEVNT.GT.NEVNTMAX) GOTO 9913
+        GOTO 995
+      END IF
 
       IF (ZTST.GE.1.D30) GOTO 990
 C
@@ -1168,6 +1195,37 @@ cym
 !$OMP END CRITICAL
 #endif
       ENDIF
+      GOTO 999
+ 9913 IF (LVNMXTR) THEN
+        WRITE (iunout,*) 'MRSURF,MPSURF,MTSURF,MASURF ',
+     .                    MRSURF,MPSURF,MTSURF,MASURF
+        X0ERR=X0+ZT*VELX
+        Y0ERR=Y0+ZT*VELY
+        Z0ERR=Z0+ZT*VELZ
+        IF (NLTRC) THEN
+cym
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP CRITICAL
+#endif
+          CALL EIRENE_CHCTRC(X0ERR,Y0ERR,Z0ERR,16,18)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP END CRITICAL
+#endif
+        ELSE
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP CRITICAL
+#endif
+          WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'X0,Y0,Z0,ZT ',
+     .                                          X0,Y0,Z0,ZT
+          WRITE (iunout,'(A,1P,4(1X,1E14.7))') 'VELX,VELY,VELZ,VEL ',
+     .                                          VELX,VELY,VELZ,VEL
+          WRITE (iunout,'(A,1P,3(1X,1E14.7))') 'X0ERR,Y0ERR,Z0ERR ',
+     .                                          X0ERR,Y0ERR,Z0ERR
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP END CRITICAL
+#endif
+        ENDIF
+      END IF
       GOTO 999
   997 CALL EIRENE_MASAGE('ERROR IN FOLNEUT, DETECTED IN SUBR. CLLTST')
       CALL EIRENE_MASAGE('PARTICLE IS KILLED')

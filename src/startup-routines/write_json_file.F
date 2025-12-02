@@ -163,6 +163,8 @@
       call json%add(me,'NITER',niter)
       call json%add(me,'NTIME0',itimv)
       call json%add(me,'NTIME',ntime_in)
+      call json%add(me,'NEVNTMAX',nevntmax/1000)
+      call json%add(me,'NVNMXTR',nvnmxtr)
 
       call json%add(me,'NOPTIM',noptim_in)
       call json%add(me,'NOPTM1',noptm1)

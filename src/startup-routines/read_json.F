@@ -286,6 +286,9 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
       call json%get(p,'NTIME0',ntime0,found)
       call json%get(p,'NTIME',ntime,found)
       NTIME_IN = NTIME
+      call json%get(p,'NEVNTMAX',nevntmax,found)
+      NEVNTMAX=1000*NEVNTMAX
+      call json%get(p,'NVNMXTR',nvnmxtr,found)
       call json%get(p,'NSTORAM',nstoram,found)
       call json%get(p,'NGSTAL',ngstal,found)
 
@@ -600,6 +603,12 @@ C         Reserved for default, see below
         WRITE (iunout,*) '       EIRENE RUN IN STATIONARY MODE'
       ENDIF
       CALL EIRENE_LEER(1)
+
+      IF (NEVNTMAX.GT.0) THEN
+        WRITE(iunout,*) '        EIRENE LIMITS THE NUMBER OF EVENTS ON',
+     .    ' A NEUTRAL TRACE to ',NEVNTMAX
+        CALL EIRENE_LEER(1)
+      ENDIF
 C
 C  to be done:
 c  printout:  which default storage settings have we overruled (consequences thereof?)
