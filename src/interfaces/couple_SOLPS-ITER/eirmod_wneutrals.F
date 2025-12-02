@@ -2446,7 +2446,7 @@ C******************************************************************************
       REAL(DP),INTENT(IN) :: FSUM1,FSUM2
       CHARACTER(6),INTENT(IN) :: NAME
       INTEGER,INTENT(IN) :: IS,ISPC
-      REAL(DP) :: EPS=1e-12
+      REAL(DP) :: EPS=1.0e-12_DP
 
       IF( ABS(FSUM1-FSUM2).GT.EPS*ABS(FSUM1+FSUM2).AND.
      w   (ABS(FSUM1).GT.EPS.OR.ABS(FSUM2).GT.EPS) ) THEN

@@ -388,7 +388,7 @@ C  STANDARD DEVIATION IS NOT AVAILABLE
 C  DEAL WITH ENERGY BIN NO. IE
 C  central energy bin value
                     EN = ESTIML(ISPC)%SPCMIN +
-     .                   (IE-0.5)*ESTIML(ISPC)%SPCDEL
+     .                   (IE-0.5_DP)*ESTIML(ISPC)%SPCDEL
                     IF (ESTIML(ISPC)%LOG) THEN
                       WRITE (IOUT,'(I6,2ES12.4)') IE,10._DP**EN,
      .                 ESTIML(ISPC)%SPC(IE)
@@ -403,7 +403,7 @@ C  STANDARD DEVIATION IS AVAILABLE
 C
                   DO IE=1, ESTIML(ISPC)%NSPC
                     EN = ESTIML(ISPC)%SPCMIN +
-     .                   (IE-0.5)*ESTIML(ISPC)%SPCDEL
+     .                   (IE-0.5_DP)*ESTIML(ISPC)%SPCDEL
                     IF (ESTIML(ISPC)%LOG) THEN
                       WRITE (IOUT,'(I6,3ES12.4)') IE,10._DP**EN,
      .                   ESTIML(ISPC)%SPC(IE),

@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin and D. Reiter - SOLPS_bug_fixes - 0ca5dc0d82eed4af98af24699aa515db7dea4f51
+## X. Bonnin and D. Reiter - SOLPS_bug_fixes - a10e85d4ad0f8d9e5f1974baf7a2cbcb1b9fe415
 
 ### Based on V1.2.0 (develop - b0027581a7c95e4fc92671f7a354b6c556eacb23)
 
 ** Changes **
 
+- Variable type corrections
 - Renamed some internal variables to avoid clashes
 - Added IOLD argument to EIRENE_UPDATE_SPTFLX
 - Added ISTRA argument to EIRENE_SAMVL1
