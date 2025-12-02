@@ -771,7 +771,7 @@ csw
 #if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
 !$OMP PARALLEL
 #endif
-        CLOSE (UNIT=IUNOUT)
+        IF (MY_PE > 0 .OR. EIRENE_ITHREAD > 0) CLOSE (UNIT=IUNOUT)
         init_open = 0
 #if ( !defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
 !$OMP END PARALLEL
