@@ -12,7 +12,7 @@ cdr              resolved wrt. species of emitted particle
 
 
 
-      SUBROUTINE EIRENE_UPDATE_SPTFLX (ITOLD,WGH,IND)
+      SUBROUTINE EIRENE_UPDATE_SPTFLX (ITOLD,IOLD,WGH,IND)
 
 cdr  score sputtered fluxes on
 cdr            sputtered flux tallies SP_A_OT(MSURF) (_A_: type of incident particle), IND=1, IND=2)
@@ -45,7 +45,7 @@ c          sputtered (emitted) particle species: iphot,iatm,imol,iion,ipls (comm
 
       IMPLICIT NONE
 
-      INTEGER, INTENT(IN) :: ITOLD,IND
+      INTEGER, INTENT(IN) :: ITOLD,IOLD,IND
       REAL(DP), INTENT(IN) :: WGH
 
       IF (MSURF .LE. 0) RETURN
@@ -110,7 +110,7 @@ C  AT THIS PLACE: NEW ITYP AND NEW SPECIES INDEX NOT NECESSARILY KNOWN
 
       IF (IND.EQ.1) RETURN
 
-C  FROM HERE ON: INCIDENT TYPE (ITOLD) AND
+C  FROM HERE ON: INCIDENT TYPE (ITOLD), SPECIES (IOLD) AND
 C  SPUTTERED TYPE (ITYP) AND SPECIES (IPHOT,IATM,....) RESOLVED FLUXES,
 C  ITYP AND ISPEZ ARE SET TO SPUTTERED (emitted) PARTICLE SPECIES
 

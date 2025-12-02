@@ -1018,7 +1018,10 @@ c
       BASE_DENSITY = 0._DP
       BASE_TEMP = 0._DP
 
+cdr fix ph1: moved here, because needed also for icall=0
+      ISTRA = TDMPAR(IPLS)%TDM%ISTR(IRE)
       ITYP  = TDMPAR(IPLS)%TDM%ITP(IRE)
+c     write (iunout,*) 'base_parameters',istra,ityp,ire
 
       IF (ICALL > 0) THEN
 
@@ -1029,7 +1032,6 @@ cdr  Particle densities, energy densities and momentum densities
 cdr  would suffice. No need to read entire fort.10, fort.11
 cdr  for this stratum.
 
-        ISTRA = TDMPAR(IPLS)%TDM%ISTR(IRE)
         IF (ISTRA.EQ.IESTR.OR.ITYP.EQ.4) THEN
 C  NOTHING TO BE DONE
         ELSEIF ((NFILEN.EQ.1.OR.NFILEN.EQ.2).OR.

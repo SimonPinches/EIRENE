@@ -17,6 +17,7 @@ cdr  jun. 2022:  include particle balance scaling factors in the
 cdr              census fluxes and weights.
 cdr  jan. 2023:  separate counting of Scores and Histories on census,
 cdr              due to new cascading options.
+CDR  jun. 2023   ADDS --> ADDSC  (avoid name conflict with add surface tally ADDS)
 
 C
       SUBROUTINE EIRENE_MOD_TMSTEP
@@ -63,7 +64,7 @@ cdr            NPANUS, ISTRAS, ISPZS, WEIGHTS
       REAL(DP) :: SGMTOT(NSTRA),FLX(NSTRA),
      .            ADDA(0:NATM,0:NSTRA),ADDM(0:NMOL,0:NSTRA),
      .            ADDI(0:NION,0:NSTRA),ADDPH(0:NPHOT,0:NSTRA)
-      REAL(DP) :: FLXQ, FCT, SGMREL, SGMTQN, ADDS, ADD, ADDP, SGMTQ1,
+      REAL(DP) :: FLXQ, FCT, SGMREL, SGMTQN, ADDSC, ADD, ADDP, SGMTQ1,
      .            SUMM
 cdr some state vector components from census score no. I
       REAL(DP) :: WEIGHTS
@@ -165,7 +166,7 @@ cdr  needed for initializing the std. deviation estimates. First score to census
       NPANUO=IPART(1,1)
       ISTRAO=IPART(8,1)
 
-      ADDS=0.
+      ADDSC=0.
 
       ADDPH=0.
       ADDA =0.
@@ -235,20 +236,20 @@ C  ACCUMULATE CONTRIBUTION FROM TEST FLIGHT NO. NPANUO
 C  FOR ESTIMATION OF STATISTICAL VARIANCE OF CENSUS FLUX
 C  NPANUO MAY HAVE SCORED AT CENSUS SEVERAL TIMES
         IF (NPANUS.EQ.NPANUO) THEN
-          ADDS=ADDS+ADD
+          ADDSC=ADDSC+ADD
         ENDIF
 
 C  NPANU IS A NEW PARTICLE ?
         IF (NPANUS.NE.NPANUO) THEN
-C  ADD PREVIOUS CENSUS SCORE NPANUO TO FLUX, SGMTOT,...
+C  ADD PREVIOUS CENSUS SCORE ADDSC FROM PARTICLE NPANUO TO FLUX, SGMTOT,...
 C  FLUX IS TOTAL "ATOMIC FLUX" ON CENSUS
-          FLUX(NSTRAI)=FLUX(NSTRAI)+ADDS
-          FLX(ISTRAO)=FLX(ISTRAO)+ADDS
-          SGMTOT(ISTRAO)=SGMTOT(ISTRAO)+ADDS*ADDS
+          FLUX(NSTRAI)=FLUX(NSTRAI)+ADDSC
+          FLX(ISTRAO)=FLX(ISTRAO)+ADDSC
+          SGMTOT(ISTRAO)=SGMTOT(ISTRAO)+ADDSC*ADDSC
           NPANUO=NPANUS
           ISTRAO=ISTRAS
-C   PUT WEIGHT OF CURRENT CENSUS SCORE NPANU ONTO ADDS
-          ADDS=ADD
+C   PUT WEIGHT OF CURRENT CENSUS SCORE NPANU ONTO ADDSC
+          ADDSC=ADD
           ICOUNT=ICOUNT+1
         ENDIF
 
@@ -258,9 +259,9 @@ C   WEIGHT may have been altered above. So: redefine this component of state vec
 
 C  CONTRIBUTION FROM LAST CENSUS SCORE NO. IPRNL
 
-      FLUX(NSTRAI)=FLUX(NSTRAI)+ADDS
-      FLX(ISTRAO)=FLX(ISTRAO)+ADDS
-      SGMTOT(ISTRAO)=SGMTOT(ISTRAO)+ADDS*ADDS
+      FLUX(NSTRAI)=FLUX(NSTRAI)+ADDSC
+      FLX(ISTRAO)=FLX(ISTRAO)+ADDSC
+      SGMTOT(ISTRAO)=SGMTOT(ISTRAO)+ADDSC*ADDSC
 C
 C  SUM OVER SPECIES, CENSUS FLUXES
       DO ISTRAI=1,NSTRAI

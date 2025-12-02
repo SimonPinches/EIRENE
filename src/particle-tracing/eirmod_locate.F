@@ -840,7 +840,7 @@ C  SUBSTRATA OF VOLUME SOURCE: IVOLM
    72     CONTINUE
         ENDIF
         ISECT=IVOLM
-        CALL EIRENE_SAMVL1(IVOLM,
+        CALL EIRENE_SAMVL1(ISTRA,IVOLM,
      .              TIWL,TEWL,DIWL,VXWL,VYWL,VZWL,EFWL,SHWL,ZIWL,
      .              WEISPZ)
         IF (.NOT.LGPART) RETURN
@@ -1304,6 +1304,7 @@ C           E0_MEAN=1.5*TIWD+0.
           ENDIF
 C
           ITYP_OLD=1
+          IOLD = IATM
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
@@ -1396,6 +1397,7 @@ C
           ENDIF
 C
           ITYP_OLD=2
+          IOLD = IMOL
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
@@ -1532,6 +1534,7 @@ C
           ENDIF
 C
           ITYP_OLD=3
+          IOLD = IION
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
@@ -1754,6 +1757,7 @@ C
 C
             NLSPUT=.FALSE.
             ITYP_OLD = 4
+            IOLD = IPLS
 
 csw 10jan2011
 CVK       IF (ILSPT(MSURF).NE.0) THEN
@@ -1800,6 +1804,7 @@ C                                  FOR INCICENT BULK IONS
 C  NOW MOVED TO SUBROUTINE EIRENE_UPDATE_SPTFLX, CALLED SEPARATELY
 C  FOR PHYSICAL AND CHEMICAL SPUTTERING RESP.
               ITYP_OLD  = 4
+              IOLD = IPLS
               IGASP_OLD = ISRS(ISPZ,MSURF)
               IGASC_OLD = ISRC(ISPZ,MSURF)
 
@@ -1809,9 +1814,11 @@ C   update total sputter fluxes for those cases in which sputtered particle spec
 C   (e.g. if target material is not an eirene test particle in this run)
 
                 IF (WGHTSP.GT.0.AND.ISSPTP.EQ.0)
-     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSP,1)
+     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,IOLD,
+     .                                       WGHTSP,1)
                 IF (WGHTSC.GT.0..AND.ISSPTC.EQ.0)
-     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSC*YSPTWL,1)
+     .            CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,IOLD,
+     .                                       WGHTSC*YSPTWL,1)
 C
               ENDIF
             ENDIF
@@ -1856,7 +1863,7 @@ C
 C
 cdr  species index of physically sputtered particle is known.
 cdr  update total and sputtered species-resolved sputtered fluxes
-              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSP,2)
+              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,IOLD,WGHTSP,2)
 C
               IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WGHTSP,2)
               IF (NADSPC_S.GE.1) CALL EIRENE_UPDATE_SPECTRUM(WGHTSP,2,0)
@@ -1968,7 +1975,7 @@ C
 cdr  species index of chemically sputtered particle is known.
 cdr  update total and sputtered species-resolved sputtered fluxes
 
-              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,WGHTSC*YSPTWL,2)
+              CALL EIRENE_UPDATE_SPTFLX (ITYP_OLD,IOLD,WGHTSC*YSPTWL,2)
               IF (NADSI.GE.1) CALL EIRENE_UPSUSR(WGHTSC*YSPTWL,2)
               IF (NADSPC_S.GE.1)
      .         CALL EIRENE_UPDATE_SPECTRUM(WGHTSC*YSPTWL,2,0)

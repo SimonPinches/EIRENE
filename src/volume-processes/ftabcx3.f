@@ -59,7 +59,8 @@ c
       if (modc.eq.1) then
 c  input parameters for rate_coeff: ln(Ti) only
         IFLG=0
-        TBCX = EIRENE_RATE_COEFF(KK,K,TII,0.0_DP,.TRUE.,IFLG)*
+        PLS=0._DP
+        TBCX = EIRENE_RATE_COEFF(KK,K,TII,PLS,.TRUE.,IFLG)*
      .         FACRCX(IRCX,1)
         IF (IFTFLG(KK,2) < 100) TBCX = TBCX*DIIN(IPLS,K)
 

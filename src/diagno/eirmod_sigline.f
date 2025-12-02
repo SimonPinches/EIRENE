@@ -93,7 +93,7 @@ C
       REAL(DP), INTENT(IN) :: ZDS, DUMMY2, PEN
       REAL(DP), INTENT(IN OUT) :: PSIG(0:), ARGST(0:,:)
       INTEGER :: LNO
-      INTEGER :: JCOMP, IADV
+      INTEGER :: JCOMP, IADV, IADS
       INTEGER :: NCELC
       LOGICAL :: LARGST
       EXTERNAL :: EIRENE_FIND_EMIS_LINE
@@ -144,10 +144,10 @@ C
         END DO
 
 c  sum over components of line LNO
-        IADV = EMIS_LINES(LNO)%IADV_TOTAL
+        IADS = EMIS_LINES(LNO)%IADV_TOTAL
 
-        PSIG(0) = PSIG(0) + ZDS*ADDV(IADV,NCELC)
-        IF (LARGST) ARGST(0,JJJ) = ADDV(IADV,NCELC)
+        PSIG(0) = PSIG(0) + ZDS*ADDV(IADS,NCELC)
+        IF (LARGST) ARGST(0,JJJ) = ADDV(IADS,NCELC)
       END IF
 C
       RETURN

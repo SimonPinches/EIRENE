@@ -20,6 +20,9 @@
 
 ** Changes **
 
+- Renamed some internal variables to avoid clashes
+- Added IOLD argument to EIRENE_UPDATE_SPTFLX
+- Added ISTRA argument to EIRENE_SAMVL1
 - Corrected units for spectra output + added message about NFILEL and fort.13 format + adapted output formats
 - Corrected comments and typos in printout statements
 - Removed trailing whitespaces and alignment corrections
