@@ -603,12 +603,12 @@ C     READ IN THE NUMBER OF TRIANGLES
             if (ledenm) tmb2(ix,iy,jmol,1)=tmb2(ix,iy,jmol,1)+
      &                      edenm(jmol,in)*vl
             if (lpmml) srcml(ix,iy,jmol,1)=srcml(ix,iy,jmol,1)+
-     &                      pmml(jmol,in)*vl
+     &                      pmml(jmol,in)*vol(in)*hlp_cnv
             !c*** Potential energy source related to hydrogen molecules
             !c*** for determining the radiation (W per cell)
             if (ncharm(jmol).eq.2 .and. lpmml)
      >       edissml(ix,iy,jmol,istra)=edissml(ix,iy,jmol,istra)+
-     &                      pmml(jmol,in)*vl*diss_pot_H2
+     &                      pmml(jmol,in)*vol(in)*diss_pot_H2
           endif
         end do
       end do

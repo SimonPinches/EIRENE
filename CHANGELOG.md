@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin and D. Reiter - SOLPS_bug_fixes - c024951a254d1e4f979b22b7ccef77f90ca7b4de
+## X. Bonnin and D. Reiter - SOLPS_bug_fixes - 02e7eac7749c7b61fdd1bde637a48bef61fdcb20
 
 ### Based on V1.2.0 (develop - b0027581a7c95e4fc92671f7a354b6c556eacb23)
 
 ** Changes **
 
+- Corrected output in SOLPS-ITER interface for EMISS, EMISSMOL, EDISSML, and SRCML arrays
 - Improved treatment of time census stratum (only use DELTAT if non-zero, correct broadcast of census stratum quantities, enforced consistency of related inputs)
 - Bug fixes to tally print-outs for special cases
 - Performance improvements for MPI parallelization

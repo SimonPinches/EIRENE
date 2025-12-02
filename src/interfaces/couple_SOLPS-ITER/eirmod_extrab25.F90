@@ -2146,6 +2146,7 @@
       subroutine eirene_extrab25_emissivity
       implicit none
       integer :: istr, i, j, iadv, icell, ncelc, ix, iy
+      real(dp) :: vl
       external :: eirene_emissivity, eirene_rstrt
 
       istr = 0
@@ -2204,10 +2205,11 @@
               ix=ixtri(ncelc)
               iy=iytri(ncelc)
               if(b2_cell(ix,iy)) then
+                vl=voltal(ncelc)/volcel(ix,iy)
                 if (j.ge.1 .and. j.le.2) then ! Atomic components
-                  emiss(ix,iy,1,1)=emiss(ix,iy,1,1)+addv(iadv,ncelc)*1.0d6
+                  emiss(ix,iy,1,1)=emiss(ix,iy,1,1)+addv(iadv,ncelc)*1.0d6*vl
                 else if (j.ge.3 .and. j.le.6) then ! Molecular components
-                  emissmol(ix,iy,1,1)=emissmol(ix,iy,1,1)+addv(iadv,ncelc)*1.0d6
+                  emissmol(ix,iy,1,1)=emissmol(ix,iy,1,1)+addv(iadv,ncelc)*1.0d6*vl
                 end if
               end if
             end do
