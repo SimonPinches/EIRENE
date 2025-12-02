@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin and D. Reiter - SOLPS_bug_fixes - 949cdb08a88084e08b39f39a4bc70cb6c8d1d198
+## X. Bonnin and D. Reiter - SOLPS_bug_fixes - c024951a254d1e4f979b22b7ccef77f90ca7b4de
 
 ### Based on V1.2.0 (develop - b0027581a7c95e4fc92671f7a354b6c556eacb23)
 
 ** Changes **
 
+- Improved treatment of time census stratum (only use DELTAT if non-zero, correct broadcast of census stratum quantities, enforced consistency of related inputs)
 - Bug fixes to tally print-outs for special cases
 - Performance improvements for MPI parallelization
 - Added OPEN_MPI pragma to better manage compiler warnings

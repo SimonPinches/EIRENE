@@ -201,7 +201,6 @@ C> not (yet) implemented and may be part of the plasma code interface.)
       SUBROUTINE EIRENE_BROADCAST_COMNNL(ME)
 
       USE EIRMOD_PARMMOD, ONLY: MPARTT, NPARTT, NPRNL, NSTRA
-      USE EIRMOD_COMUSR, ONLY: NPRLL
       USE EIRMOD_MPI
 
       IMPLICIT NONE
@@ -262,7 +261,7 @@ C> not (yet) implemented and may be part of the plasma code interface.)
       CALL MPI_BCAST (NTMSTP,1,MPI_INTEGER,0,MPI_COMM_WORLD,IER)
       CALL MPI_BCAST (ITMSTP,1,MPI_INTEGER,0,MPI_COMM_WORLD,IER)
 
-      IF ( NPRLL > 0 ) THEN
+      IF ( NPRNL > 0 ) THEN
         CALL MPI_BCAST (RPART,NPRNL*NPARTT,MPI_REAL8,
      >                  0,MPI_COMM_WORLD,IER)
         CALL MPI_BCAST (RPARTC,NPRNL*NPARTT,MPI_REAL8,

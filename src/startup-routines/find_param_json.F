@@ -78,6 +78,7 @@ C
      .                         NMASSA, NCHARA, NMASSM, NMASSI, NCHARI,
      .                         NCHRGI, LKINDI, COMUSR_FIRST_PASS
       USE EIRMOD_COMSOU, ONLY: NSTRAI
+      USE EIRMOD_COMNNL, ONLY: NPRNLI
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       USE EIRMOD_CLOGAU, ONLY: NLWRMSH, NLSPCSCL, EIRENE_ALLOC_CLOGAU,
      .                         NLSPCSCL_ON, NLSOLEDGE
@@ -103,7 +104,7 @@ C
         END SUBROUTINE EIRENE_IF0PRM_JSON
       END INTERFACE
 c
-      integer :: nstsi, j, nprnli, nlimi
+      integer :: nstsi, j, nlimi
       INTEGER :: INDPRO(12)
       LOGICAL :: NLSCL, NLTEST, NLANA, NLDRFT, NLCRR, NLERG, NLIDENT,
      .           NLONE, NLMOVIE, NLCASCAD, NLDFST,
