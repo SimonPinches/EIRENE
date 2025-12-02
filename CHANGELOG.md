@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin and D. Reiter - SOLPS_bug_fixes - c01f1442296c38c0dafaa426afe2863ae79182ff
+## X. Bonnin and D. Reiter - SOLPS_bug_fixes - 8f586da88c5113442f53dc42c865d8e40daa8e6a
 
 ### Based on V1.2.0 (develop - b0027581a7c95e4fc92671f7a354b6c556eacb23)
 
 ** Changes **
 
+- Bug fix for computation of momentum source associated with inhomogeneous heavy-heavy collisions
 - OpenMP fix for MARLOWE reflection model
 - Do not close the master log output file to avoid problems with coupled runs
 - Added some input safeties

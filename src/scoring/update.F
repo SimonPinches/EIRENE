@@ -98,7 +98,7 @@ C
      .                            XSTORV2(NSTORV,N2ND+N3RD)
       INTEGER, INTENT(IN) :: IFLAG
       REAL(DP) :: WTRSIG, DIST, WTR, WTRE0, WV, WTRV,
-     .            DELE, PRAD,
+     .            DELE, PRAD, RMRATIO,
      .            V0_PARB, PARMOM_0, P,
      .            BX, BY, BZ,
      .            BF, VION,
@@ -880,11 +880,11 @@ C
                 IF (ITYP.EQ.1) DELE=-EION(IXSPZ)
               END IF
               IF (NSTORDR >= NRAD) THEN
-                ELEI = EELEI1(IREI,IRD)
-                EHEAVY = EHVEI1(IREI,IRD)
+                ELEI = EELEI1(IREI,IRDO)
+                EHEAVY = EHVEI1(IREI,IRDO)
               ELSE
-                ELEI = EIRENE_FEELEI1(IREI,IRD)
-                EHEAVY = EIRENE_FEHVEI1(IREI,IRD)
+                ELEI = EIRENE_FEELEI1(IREI,IRDO)
+                EHEAVY = EIRENE_FEHVEI1(IREI,IRDO)
               END IF
               PRAD=ELEI+EHEAVY-DELE
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
@@ -1143,11 +1143,11 @@ C
                 IF (ITYP.EQ.1) DELE=-EION(IXSPZ)
               END IF
               IF (NSTORDR >= NRAD) THEN
-                ELEI = EELEI1(IREI,IRD)
-                EHEAVY = EHVEI1(IREI,IRD)
+                ELEI = EELEI1(IREI,IRDO)
+                EHEAVY = EHVEI1(IREI,IRDO)
               ELSE
-                ELEI = EIRENE_FEELEI1(IREI,IRD)
-                EHEAVY = EIRENE_FEHVEI1(IREI,IRD)
+                ELEI = EIRENE_FEELEI1(IREI,IRDO)
+                EHEAVY = EIRENE_FEHVEI1(IREI,IRDO)
               END IF
               PRAD=ELEI+EHEAVY-DELE
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
@@ -1346,7 +1346,8 @@ C  COLLISION ESTIMATOR IN SUBR. COLLIDE ?
               DO 162 IPL=1,NPLSI
                 P=PPLEI(IREI,IPL)
                 IF (P.GT.0) THEN
-                  WTRSIG=WTR*SIGVEI(IREI)*P
+                  RMRATIO=RMASSP(IPL)/RMASSX
+                  WTRSIG=WTR*SIGVEI(IREI)*P*RMRATIO
 C  NEW BULK ION IPL
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
