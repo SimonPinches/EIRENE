@@ -21,7 +21,6 @@
       USE EIRMOD_SAMUSR, ONLY: EIRENE_SAMUSR, EIRENE_SAMUSR_INIT
 
       IMPLICIT NONE
-      PRIVATE
 
       PUBLIC :: EIRENE_SAMVL0, EIRENE_SAMVL1,
      .          EIRENE_SAMVOL_REINIT
@@ -36,6 +35,9 @@
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(ISTROLD)
+!$OMP THREADPRIVATE(FREC,VSOURC,VSMXI,RQ21,PS21,ASIMP)
+!$OMP THREADPRIVATE(ISOURC,ICMX,IFREC)
+!$OMP THREADPRIVATE(LPLSSR,LATSSR)
 #endif
 
       CONTAINS
@@ -115,6 +117,12 @@ cdr  sum over sub-strata
      .            EIRENE_EXIT_OWN, EIRENE_BFIELD, EIRENE_VECUSR,
      .            EIRENE_FTABRC1, EIRENE_FEELRC1, EIRENE_BREMS
 
+#if ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
+!$OMP PARALLEL DEFAULT(none)
+!$OMP& SHARED(NATMI,NPLS,NPLSI,NSTRAI,NPRCI,NRAD,NSRFS,N1ST,N2ND,NSPEZ)
+!$OMP& SHARED(LEVGEO,FLUX,NLVOL,NLPLS)
+!$OMP& PRIVATE(MXREC,MXPLS)
+#endif
       IF (.NOT.ALLOCATED(FREC)) THEN
 
 cdr  some preparatory work, for plasma (field particle) sources (strata with NLPLS=T),
@@ -156,6 +164,9 @@ c  same, but compressed: only non-zero entries thereof, for faster NCELL samplin
         ALLOCATE (ICMX(NSRFS))
         ALLOCATE (IFREC(NPLS))
       END IF
+#if ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
+!$OMP END PARALLEL
+#endif
 C
       FREC=0.
       SREC=0.
@@ -1061,6 +1072,10 @@ C     the following SUBROUTINE is for reinitialization of EIRENE (DMH)
       SUBROUTINE EIRENE_SAMVOL_REINIT
       IMPLICIT NONE
 
+#if ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
+!$OMP PARALLEL DEFAULT(none)
+!$OMP& SHARED(LEVGEO)
+#endif
       ISTROLD = -1
 
       DEALLOCATE (LPLSSR)
@@ -1074,6 +1089,9 @@ C     the following SUBROUTINE is for reinitialization of EIRENE (DMH)
       DEALLOCATE (ISOURC)
       DEALLOCATE (ICMX)
       DEALLOCATE (IFREC)
+#if ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
+!$OMP END PARALLEL
+#endif
 
       return
 

@@ -50,6 +50,8 @@ cdr  via iterative loops or stepping.
 #ifndef USE_EXT_OPENMP
 cym these variables need copyin
       USE EIRMOD_SPUTER, ONLY: ETH, Q, M2M1, ES, ETF
+      USE EIRMOD_SAMVOL, ONLY: FREC, VSOURC, VSMXI, RQ21, PS21, ASIMP,
+     .                         ISOURC, ICMX, IFREC, LPLSSR, LATSSR
 #endif
 #endif
       USE EIRMOD_STATIS, ONLY: EIRENE_STATS0, EIRENE_STATS1,
@@ -59,6 +61,11 @@ cym these variables need copyin
 cym variables that need to be allocated/associated for worker threads
 cym will disappear when parallel zone will encompass the whole code
      .                         IREDUC, FREDUC, EREDUC
+#if ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
+      USE EIRMOD_REFLEC, ONLY: ZIDED, ZENGY, ZRANGE,
+     .                         ZDE, ZDEL, ZR, ZIDE,
+     .                         E0AV, QUOTE, QUOTR
+#endif
       USE EIRMOD_PLT2D, ONLY: EIRENE_CHCTRC
       USE EIRMOD_OPENMP
       USE EIRMOD_INFCOP, ONLY: EIRENE_IF3COP, EIRENE_INFCOP_PRE_STRATA,
@@ -589,7 +596,10 @@ CHJL Need to check this removal of over_acc
 #if ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
 !$OMP  PARALLEL DEFAULT(SHARED)
 !$OMP& COPYIN(ETH,Q,M2M1,ES,ETF,ISDVI,IPSTD,RPST,
-!$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV)
+!$OMP& RCMSPL,ICMSPL,LCMSOU,XSTOR,XSTORV,
+!$OMP& ZIDED,ZENGY,ZRANGE,ZDE,ZDEL,ZR,ZIDE,E0AV,QUOTE,QUOTR,
+!$OMP& FREC,VSOURC,VSMXI,RQ21,PS21,ASIMP,
+!$OMP& ISOURC,ICMX,IFREC,LPLSSR,LATSSR)
 !$OMP& PRIVATE(ISTR)
 #endif
       DO ISTR=1,NSTRAI   ! main loop over strata
@@ -880,8 +890,12 @@ C  PARTICLE LOOP WITHIN STRATUM ISTRA
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP  DO REDUCTION(.OR.:LOGATM,LOGMOL,LOGION,LOGPLS,
 !$OMP&                   LOGPHOT,LMETSPW,LMETSP)
-!$OMP& REDUCTION(+:WTOTA,WTOTM,WTOTI,WTOTPH,WTOTP,
-!$OMP&             ETOTA,ETOTM,ETOTI,ETOTPH,XMCP)
+!$OMP& REDUCTION(+:WTOTA,WTOTM,WTOTI,WTOTPH,WTOTP,WTOTE,
+!$OMP&             ETOTA,ETOTM,ETOTI,ETOTPH,ETOTP,EELFI,XMCP,
+!$OMP&             PPATI,PPMLI,PPIOI,PPPHTI,
+!$OMP&             EPATI,EPMLI,EPIOI,EPPHTI,EPPLI,
+!$OMP&             PAATI,PAMLI,PAIOI,PRFAAI,PRFAMI,PRFAII,
+!$OMP&             ESTIMV,ESTIMS)
 !$OMP& PRIVATE(I,J,IN,ISPC,INODES,ISEED_IPTSI,IDUMRAN)
 !$OMP& PRIVATE(SECND1,SECND2,SECDEL)
 #endif

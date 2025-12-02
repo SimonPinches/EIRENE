@@ -59,7 +59,9 @@ cdr  aug. 20: code safeties from ITER branch
       PUBLIC :: EIRENE_REFLC0, EIRENE_REFLC1,
      .          EIRENE_REFLEC_REINIT,
 cym will be removed once the parallel zone encompasses the code
-     .          IREDUC, FREDUC, EREDUC
+     .          IREDUC, FREDUC, EREDUC,
+     .          ZIDED, ZENGY, ZRANGE, ZDE, ZDEL, ZR, ZIDE,
+     .          E0AV, QUOTR, QUOTE
 cym cccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       REAL(DP), SAVE, ALLOCATABLE :: EREDUC(:,:), FREDUC(:,:)

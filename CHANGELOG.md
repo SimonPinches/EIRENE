@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin and D. Reiter - SOLPS_bug_fixes - c48fbe409b1784d12aa47dfb07c4d26d207b747f
+## X. Bonnin and D. Reiter - SOLPS_bug_fixes - c01f1442296c38c0dafaa426afe2863ae79182ff
 
 ### Based on V1.2.0 (develop - b0027581a7c95e4fc92671f7a354b6c556eacb23)
 
 ** Changes **
 
+- OpenMP fix for MARLOWE reflection model
 - Do not close the master log output file to avoid problems with coupled runs
 - Added some input safeties
 - Corrected output in SOLPS-ITER interface for EMISS, EMISSMOL, EDISSML, and SRCML arrays

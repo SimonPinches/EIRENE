@@ -51,6 +51,10 @@ c     ym copyin does not work for allocatable pointer arrrays
      ,                                 BXSTOR(:,:),BXSTORV(:)
       LOGICAL, TARGET, ALLOCATABLE :: BLCMSOU(:,:)
       REAL(DP), DIMENSION(28,0:11) :: BETH,BQ,BM2M1,BETF
+      REAL(DP), DIMENSION(12,12) :: BZIDED,BZIDE
+      REAL(DP), DIMENSION(0:12) :: BZENGY,BZRANGE,BZR,BE0AV
+      REAL(DP), DIMENSION(0:11) :: BQUOTR,BQUOTE
+      REAL(DP), DIMENSION(12) :: BZDE,BZDEL
       REAL(DP), DIMENSION(28) :: BES
 #endif
 
@@ -179,6 +183,16 @@ c     ym copyin does not work for allocatable pointer arrrays
       ALLOCATE (EREDUC(NSPZ,0:NLIMPS))
       ALLOCATE (FREDUC(NSPZ,0:NLIMPS))
       ALLOCATE (IREDUC(NSPZ,0:NLIMPS))
+      ALLOCATE (ZIDED(12,12))
+      ALLOCATE (ZRANGE(0:12))
+      ALLOCATE (ZIDE(12,12))
+      ALLOCATE (ZENGY(0:12))
+      ALLOCATE (QUOTE(0:11))
+      ALLOCATE (QUOTR(0:11))
+      ALLOCATE (E0AV(0:12))
+      ALLOCATE (ZR(0:12))
+      ALLOCATE (ZDEL(12))
+      ALLOCATE (ZDE(12))
 
       AllOCATE (IIND(NRTAL))
       ALLOCATE (XSTOR(MSTOR1,MSTOR2))
@@ -343,6 +357,16 @@ c     ym make sure the clast variables do not take exotic values
       DEALLOCATE (EREDUC)
       DEALLOCATE (FREDUC)
       DEALLOCATE (IREDUC)
+      DEALLOCATE (ZRANGE)
+      DEALLOCATE (ZIDED)
+      DEALLOCATE (ZENGY)
+      DEALLOCATE (QUOTE)
+      DEALLOCATE (QUOTR)
+      DEALLOCATE (ZIDE)
+      DEALLOCATE (ZDEL)
+      DEALLOCATE (E0AV)
+      DEALLOCATE (ZDE)
+      DEALLOCATE (ZR)
 
       DEALLOCATE (XSTOR)
       DEALLOCATE (XSTORV)
@@ -393,6 +417,16 @@ c     ym make sure the clast variables do not take exotic values
       BXSTOR=XSTOR
       ALLOCATE (BXSTORV(NSTORV))
       BXSTORV=XSTORV
+      BZRANGE=ZRANGE
+      BQUOTR=QUOTR
+      BQUOTE=QUOTE
+      BZIDED=ZIDED
+      BZENGY=ZENGY
+      BZIDE=ZIDE
+      BZDEL=ZDEL
+      BE0AV=E0AV
+      BZDE=ZDE
+      BZR=ZR
       ! New for complete threading
       BISTRA=ISTRA
       BETH=ETH
@@ -417,6 +451,16 @@ c     ym make sure the clast variables do not take exotic values
       LCMSOU=BLCMSOU
       XSTOR=BXSTOR
       XSTORV=BXSTORV
+      ZRANGE=BZRANGE
+      QUOTR=BQUOTR
+      QUOTE=BQUOTE
+      ZIDED=BZIDED
+      ZENGY=BZENGY
+      ZIDE=BZIDE
+      ZDEL=BZDEL
+      E0AV=BE0AV
+      ZDE=BZDE
+      ZR=BZR
 !      RCGRID=BRCGRID
 !     New for complete threading
       ISTRA=BISTRA
