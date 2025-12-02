@@ -10,6 +10,7 @@ c april06:  restriction to iphot.eq.isp in case of los-radiances
 c
 cdr aug.16:  to be done: psig: allocatable, psig(0,nspi), NSPI depends on NCHTAL option
 c            Option NCHTAL=4 is unfinished. print warning and return
+cdr apr.24:  Now removed, code kept in folder "unfinished businesses"
 cdr nov.16:  avoid reading strata, in case of single stratum runs (NSTRAI=1)
 c            set default ncheni=1 for nchtal=2 already in calling routine,
 c            to avoid that chords are erroneously turned off there.
@@ -72,56 +73,20 @@ C
       INTEGER :: IISTR
       REAL(DP), ALLOCATABLE, SAVE :: PSIG(:)
       REAL(DP) :: C1(3),C2(3),
-     .            BUFFER(NCHOR,NCHEN),ESTART(NCHOR),ENDFIT(NCHOR),
-     .            FP1(6), FP2(6), DUM(9)
+     .            BUFFER(NCHOR,NCHEN),ESTART(NCHOR),ENDFIT(NCHOR)
       REAL(DP) :: ZE1, ZE2, ZSCALE, ZZ, EIRENE_SLOPE, STEIG, PMI, PMA,
-     .            XMI, XMAX, XMIN, ZSI, TIMAX, ZE, SUMM, ADD, FAC32,
-     .            TEF, DEF, DE, TE, ZDS, RATE, CHKSUM,
-     .            SUMMT, ADDT, XMA,
-     .            RC1MIN, RC1MAX, RC2MIN, RC2MAX
-      REAL(DP) :: EIRENE_FTABRC1
+     .            XMI, XMAX, XMIN, ZSI, TIMAX, ZE, SUMM, ADD,
+     .            SUMMT, ADDT, XMA
+      REAL(DP) :: EIRENE_FTABRC1, BU0, RXYQ
       EXTERNAL :: EIRENE_FTABRC1, EIRENE_SLOPE
-      EXTERNAL :: EIRENE_DBL_POLY, EIRENE_EXIT_OWN,
-     .            EIRENE_MASAGE, EIRENE_MASJ1,
-     .            EIRENE_MAXMN2, EIRENE_RSTRT, EIRENE_SYMET
+      EXTERNAL :: EIRENE_RSTRT, EIRENE_SYMET, EIRENE_MAXMN2,
+     .            EIRENE_EXIT_OWN, EIRENE_MASAGE, EIRENE_MASJ1
       INTEGER :: I1, I2, IN, I, IS, NAC2, NBC2, ICHRD, IPVOT, NCHNI,
-     .           IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR, IZ,
-     .           KREC, IRRC, MAXREC, IFLAG, ISPC,
-     .           ICELL, ND_3, ND_5, ND_10,
-     .           JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
+     .           IFIRST, JEN, NSPI, ISTR, ICOUNT, KK, IR,
+     .           KREC, IRRC, MAXREC, IFLAG,
+     .           ND_3, ND_5, ND_10
       INTEGER, SAVE :: MX_COMPO, ND
       LOGICAL :: NLVL(0:NSTRAI),LCHOR
-      CHARACTER(8) :: FILNAM
-      CHARACTER(4) :: H123
-      CHARACTER(9) :: REAC
-      CHARACTER(3) :: CRC
-      CHARACTER(2) :: ELNAME
-      TYPE(CELL_INFO), POINTER :: FIRST, CUR
-
-      INTERFACE
-        SUBROUTINE EIRENE_SLREAC (IR, FILNAM, H123, REAC, CRC,
-     .             RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
-     .             RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .             ELNAME, IZ1, BUNDLING,
-     .             IROW_ESC, ICOL_ESC, POP_ESC,
-     .             IFTFL, NCOEF, COEF)
-        USE EIRMOD_PRECISION
-        INTEGER,      INTENT(IN) :: IR, IZ1
-        INTEGER,      INTENT(IN), OPTIONAL :: IROW_ESC, ICOL_ESC,
-     .                                        IFTFL, NCOEF
-        REAL(DP),     INTENT(IN), OPTIONAL :: POP_ESC
-        REAL(DP),     INTENT(IN), OPTIONAL :: COEF(9)
-        CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: BUNDLING
-        CHARACTER(8), INTENT(IN) :: FILNAM
-        CHARACTER(4), INTENT(IN) :: H123
-        CHARACTER(LEN=*), INTENT(IN) :: REAC
-        CHARACTER(2), INTENT(IN) :: ELNAME
-        CHARACTER(3), INTENT(IN) :: CRC
-        INTEGER,  INTENT(IN OUT) :: JFEX1MN, JFEX1MX, JFEX2MN, JFEX2MX
-        REAL(DP), INTENT(IN OUT) :: RC1MIN, RC1MAX, FP1(6),
-     .                              RC2MIN, RC2MAX, FP2(6)
-        END SUBROUTINE EIRENE_SLREAC
-      END INTERFACE
 
 C
       ISTRA=IISTR
@@ -187,109 +152,6 @@ C  NOTHING TO BE DONE
 C  STEP 1 DONE
 
 
-cdr  intermediate part,
-cdr  proprietary option only. nchtal=4 option is not ready.
-cdr  complain and then return to calling program
-!  INTEGRATE SPECTRA COLLECTED IN THE CELLS ALONG THE LINE OF SIGHT
-
-      IF ((NCHTAL(ICHORI) == 4) .AND. NLSTCHR(ICHORI)) THEN
-
-        if (.not.associated(traj(ichori)%trj%cells)) then
-           write (iunout,*) 'WARNING FROM MODULE: DIAGNO'
-           write (iunout,*) 'error in SGNAL, NCHTAL=4'
-           write (iunout,*) 'no proper spectra found for NCHORI'
-           call EIRENE_MASJ1('NCHORI= ',NCHORI)
-           write (iunout,*) 'OPTION NOT READY, RETURN'
-           return
-        end if
-C
-        first => traj(ichori)%trj%cells
-        cur => first
-C
-CDR : this next part is not generally valid, nor ready to use.
-cdr : an attempt had been made, apparently, to use velocity-resolved
-cdr : neutral distributions (the velocity component along the line of sight),
-cdr : then to turn that into a Doppler-broadened line shape of the Ba-alpha line
-
-        write (iunout,*) 'WARNING FROM MODULE: DIAGNO'
-        write (iunout,*) 'error in proprietary section NCHTAL=4'
-        write (iunout,*) 'OPTION NOT READY, RETURN'
-        return
-
-C
-C  RADIATIVE TRANSITION RATES (1/S)
-C  BALMER ALPHA, only coupling to ground state atoms.
-        FAC32=4.410E7
-
-        FILNAM='AMJUEL  '
-        H123='H.12'
-        CRC='OT '
-        FP1 = 0._DP
-        RC1MIN = -HUGE(1._DP)
-        RC1MAX =  HUGE(1._DP)
-        JFEX1MN = 0
-        JFEX1MX = 0
-        FP2 = 0._DP
-        RC2MIN = -HUGE(1._DP)
-        RC2MAX =  HUGE(1._DP)
-        JFEX2MN = 0
-        JFEX2MX = 0
-C
-        ELNAME = 'H '
-        IZ=0
-C
-C  H(n=3)/H(n=1) component  (currently no further components available)
-        REAC='2.1.5a   '
-        REACDAT(NREACI+1)%LOTH = .FALSE.
-        CALL EIRENE_SLREAC(NREACI+1, FILNAM, H123, REAC, CRC,
-     .              RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
-     .              RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .              ELNAME, IZ)
-
-        chksum = 0._dp
-        do
-          ispc = cur%no_spect
-          icell = cur%no_cell
-          zds = cur%flight
-
-          IF (NSTGRD(ICELL) > 0) GOTO 500
-
-          IF (LGVAC(ICELL,NPLS+1)) GOTO 500
-
-          TE=TEIN(ICELL)
-          DE=DEIN(ICELL)
-
-          DEF=LOG(DE*1.D-8)
-          TEF=LOG(TE)
-
-          call EIRENE_dbl_poly(REACDAT(NREACI+1)%OTH%POLY%DBLPOL,
-     .                         TEF, DEF, RATE, DUM,
-     .                         RC1MIN, RC1MAX, FP1, JFEX1MN, JFEX1MX,
-     .                         RC2MIN, RC2MAX, FP2, JFEX2MN, JFEX2MX,
-     .                         TRCAMD)
-
-          rate = exp(rate)
-
-          fuffer(ichori,1:ncheni) = fuffer(ichori,1:ncheni) +
-     .                              zds * rate * FAC32 /(4.*PIA) *
-     .                              estiml(ispc)%spc(1:ncheni)
-
-          chksum = chksum + zds * rate * FAC32 /(4.*PIA) *
-     .                      estiml(ispc)%spcs
-
-  500     continue
-          cur => cur%nextc
-!pb associated with two arguments tests if both arguments point to the same target
-          if (associated(cur,first)) exit
-        end do
-
-        write (iunout,*) ' chord ', ichori
-        write (iunout,*) ' integral along chord calculated from '
-        write (iunout,*) ' spectra in the cells '
-        write (iunout,*) ' integral ',chksum
-        return
-
-      END IF  !  END OF UNFINISHED NCHTAL=4 OPTION
 
 C  STEP 2
 C
@@ -651,7 +513,8 @@ C   NUMBER OF POINTS FOR FITTING
         TILINE(ICHORI)=0.
       ELSE
 C  FITTED RESULT
-        STEIG=EIRENE_SLOPE(IN,ICHORI,I1,ENERGY,BUFFER,NCHOR,NCHNI)
+        STEIG=EIRENE_SLOPE(IN,ICHORI,I1,ENERGY,BUFFER,NCHOR,NCHNI,
+     .                     BU0,RXYQ)
         IF (STEIG.GE.0.) THEN
           TILINE(ICHORI)=0.
         ELSE

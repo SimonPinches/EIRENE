@@ -14,6 +14,16 @@
 # Changelog of EIRENE repository:
 ---
 
+## X. Bonnin - SOLPS_DR_changes -
+
+### Based on SOLPS_coupling - db157c759dbe59d340df6a0aca48200c1c024fe4
+
+** Changes **
+
+- Code clean-up from D. Reiter and new arguments in EIRENE_SLOPE
+
+---
+
 ## X. Bonnin - SOLPS_coupling - 37fb1f2f592d4d15ccdfe3ec68894c09b4d7e5dc
 
 ### Based on SOLPS_bug_fixes - 765b12f7f7ab978e8340d215d330ec49c6c5417b

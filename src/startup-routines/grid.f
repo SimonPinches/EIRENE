@@ -1042,34 +1042,6 @@ C
           NLJ=NLIM+ISTS
           SAREA(NLJ)=0.
         ENDDO
-!        DO I=1,NTRII
-!          DO J=1,3
-!            IECKE2 = J+1
-!            IF (IECKE2 .EQ. 4) IECKE2 = 1
-!            ISTS=ABS(INMTI(J,I))
-!            IF (ISTS .GT. NLIM) THEN
-C  SEITE J VON DREIECK I GEHOERT ZUM RAND ISTS
-!              XX1=XTRIAN(NECKE(J,I))
-!              YY1=YTRIAN(NECKE(J,I))
-!              XX2=XTRIAN(NECKE(IECKE2,I))
-!              YY2=YTRIAN(NECKE(IECKE2,I))
-!              DSD=((XX1-XX2)**2+(YY1-YY2)**2)**0.5
-!              IF (NLTRA) THEN
-!                XX1=XX1+RMTOR
-!                XX2=XX2+RMTOR
-!                COM=0.5*(XX1+XX2)
-!                DSD=DSD*COM*2.*PIA
-!              ELSE
-!                DSD=DSD*ZDF
-!              ENDIF
-!              IF (NLMPGS.GT.NLIMPS) THEN
-!                MSURFG=NLIM+NSTS+INSPAT(J,I)
-!                SAREA(MSURFG)=DSD
-!              END IF
-!              SAREA(ISTS)=SAREA(ISTS)+DSD
-!            ENDIF
-!          ENDDO
-!        ENDDO
 
         ALLOCATE (VISITED(0:3,0:NTRI))
         VISITED = .FALSE.
