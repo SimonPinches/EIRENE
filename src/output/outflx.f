@@ -73,7 +73,7 @@ C
      .          SUMMEA, SUMMEPH, SUMMTPH, SUMMPH, SUMPH, EN
       REAL(DP) :: TTSPTA, TTSPTM, TTSPTI, TTSPTPH, TTSPTP, TTSPT
       INTEGER :: NR, NP, NT, MSURFG, J, NCELL, NTOTAL, N1, N2, N3, I,
-     .           ITRII, IPLGN, ISPR, ITEXT, ISTS, NFTI, NFTE, NTCO,
+     .           ITRII, IPLGN, ISPR, ITEXT, ISTS, NFTI, NFTE,
      .           K, ITALS, IADS, IALS, IION, IPLS, IATM, N,
      .           IMOL, IPHOT, ISPC, IOUT, ISF, IE, IT, ILIM, ID,
      .           IRA, IRE, IPA, IPE, IS
@@ -95,6 +95,7 @@ C
       LOGICAL :: PRINTED(NLIMPS)
       CHARACTER(8) :: TEXTA(NADS), TEXTL(NALS)
       CHARACTER(10) :: TEXTYP(0:4)
+      CHARACTER(8) :: UNITINT(1:3), UNITOUT
       EXTERNAL :: EIRENE_INTVOL, EIRENE_PRTTLS, EIRENE_LEER,
      .            EIRENE_MASAGE, EIRENE_MASBOX, EIRENE_MASR1,
      .            EIRENE_MASYR1
@@ -127,6 +128,9 @@ C
 C
         ITEXT=0
         I=NPRSRF(ISPR)
+cdr remove disabled additional surfaces from printout
+cdr All tallies are empty at these surfaces anyway
+        if (i.le.nlim .and. iliin(i) == 0) cycle
         CALL EIRENE_LEER(2)
         IF (IGJUM0(I).NE.0) THEN
 C  CHECK, IF SURFACE "I" IS STILL THERE AS ONE SIDE OF A TRIANGLE
@@ -168,6 +172,7 @@ C  SPATIAL RESOLUTION ON NON-DEFAULT STANDARD SURFACE?
 C
           ITALS=NPRTLS(ISPR)
           IF (ITALS.LE.0.OR.ITALS.GT.NTALS) GOTO 11
+          IF (.not.LIVTALS(ITALS)) GOTO 11
           NFTI=1
           NFTE=NFSTWI(ITALS)
           IF (NSPEZS(ISPR,1).GT.0) THEN
@@ -325,6 +330,12 @@ C  SPECTRA
           TEXTYP(3) = 'TEST IONS '
           TEXTYP(4) = 'BULK IONS '
 
+cdr units of energy integrated totals
+          UNITINT(1)= '(AMP)   '
+          UNITINT(2)= '(WATT)  '
+          UNITINT(3)= '(DYN)   '
+          UNITOUT   = '(?)     '
+
           IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
 
           DO ISPC=1,NADSPC
@@ -334,6 +345,7 @@ C  SPECTRA
               WRITE (IOUT,*)
               WRITE (IOUT,*) ' SPECTRUM CALCULATED FOR SURFACE ',I
               IT = ESTIML(ISPC)%ISPCTYP
+              UNITOUT=UNITINT(IT)
               IF (IT == 1) THEN
                 WRITE (IOUT,'(A,A)') ' TYPE OF SPECTRUM : ',
      .                            'PARTICLE FLUX IN AMP'

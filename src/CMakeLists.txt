@@ -93,8 +93,8 @@ if(LibJSON)
     message(STATUS " Found user defined JSON modules. ")
     set(jsonfortran_INCLUDE_DIRS ${JSON_MODULES})
   else()
-    message(FATAL_ERROR "JSON Modules not found at " ${JSON_MODULES}
-      "The -DJSON_MODULES variable must be set to the directory containing JSON Modules.")
+    message(STATUS "JSON Modules not found at " ${JSON_MODULES})
+    message(FATAL_ERROR "The -DJSON_MODULES variable must be set to the directory containing JSON Modules.")
   endif()
 else()
   if(DEFINED ENV{JSONF_LIB_DIR})
@@ -153,8 +153,8 @@ if(jsonfortran_FOUND)
   message(STATUS " JSON_MODULES path " ${jsonfortran_INCLUDE_DIRS} )
   include_directories(${jsonfortran_INCLUDE_DIRS})
 else()
-  message(FATAL_ERROR "JSON library not found. "
-    "Use cmake -DLibJSON=\"<directory>\" to set it.")
+  message(STATUS "JSON library not found. ")
+  message(FATAL_ERROR "Use cmake -DLibJSON=\"<directory>\" to set it.")
 endif()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -256,6 +256,8 @@ C
 cdr LMULPL=TRUE: enforce multiple Ti and V..IN, due to BGK reactions (virt. backgrounds)
       LMULPL = .FALSE.
 C
+      CALL EIRENE_LEER(2)
+C
 C  READ TEXT DESCRIBING THE RUN, 100--199
 C
       READ (IUNIN,'(A72)') TXTRUN
@@ -423,7 +425,7 @@ C         Reserved for default, see below
       CALL EIRENE_LEER(1)
       IF (NMODE.NE.0) THEN
         CALL EIRENE_MASAGE
-     .  ('       EIRENE READS ADDITIONAL DATA FROM FILE')
+     .  ('       EIRENE EXPECTS ADDITIONAL DATA. EXTERNAL CODE')
         CALL EIRENE_MASAGE
      .  ('       INTERFACING ROUTINE INFCOP IS CALLED')
         CALL EIRENE_MASAGE
@@ -496,6 +498,10 @@ cdr  i.e. store only virtual background npls_fix+1,nplsi
 cdr  as well as some A&M data for iteration with these species.
         NFILEL = NFILEL - 5
         NLSHRT13 = .TRUE.
+        write (iunout,*) 'Switch to short version of FORT.13'
+        write (iunout,*) 'Flag NFILEL reset to ',NFILEL
+      ELSEIF (NFILEL.GT.0) THEN
+        write (iunout,*) 'Use Long version of FORT.13, NFILEL= ',NFILEL
       END IF
       SELECT CASE (NFILEL)
 cdr  write field particle parameters, A&M data, and primary source data
@@ -1842,7 +1848,7 @@ C
       END IF
       IREAD=0
       WRITE (iunout,*)
-     . '*** 4D. NEUTRAL PHOTONS SPECIES CARDS, NPHOTI SPECIES'
+     . '*** 4D. PHOTONS SPECIES CARDS, NPHOTI SPECIES'
       READ (IUNIN,*) NPHOTI
       WRITE (iunout,*) '       NPHOTI= ',NPHOTI
       CALL EIRENE_LEER(1)
@@ -3748,6 +3754,8 @@ cdr  (tally label, units, species) assigned in subr. emissivity.f.
 
 cdr  check if such emissivity tallies are defined:
 cdr  Search for 'DEFINE LINES' in next card
+      CALL EIRENE_MASAGE
+     .  ('*** 12A. DATA FOR EMISSIVITY PROFILES (ADDV)  ')
       ULINE=ZEILE
       CALL EIRENE_UPPERCASE(ULINE)
 cdr  careful: slightly different from find_param
@@ -3776,10 +3784,12 @@ cdr read volumetric emission profile data
             READ (IUNIN,'(A80)') ZEILE
             write (IUNOUT,'(A80)') ZEILE
           END DO
+          IREAD=1
 cdr  further below, a particular emission profile is identified
 cdr  (e.g. for a chord ichori) either by its name  (and ch_line%...)
 cdr  or, if that fails, by its energy (and EMIN1 flag)
           READ (ZEILE,'(A80)') EMIS_LINES(ILINE)%LINE_NAME
+          write (IUNOUT,*) 'EMISSIVITY NAME ',trim(ZEILE)
           IREAD=0
           READ (IUNIN,6666) NUM_COMPO
           READ (IUNIN,6664) EMIS_LINES(ILINE)%EINSTEIN,
@@ -3886,7 +3896,7 @@ cdr read from block "12.0", no default emissivities are set at all.
 
 c  June 18: new: end of new code, further modifications below, for NCHTAL=2 option
       CALL EIRENE_MASAGE
-     .  ('*** 12A. DATA FOR LINES OF SIGHT              ')
+     .  ('*** 12B. DATA FOR LINES OF SIGHT              ')
       IF (IREAD == 0) READ (IUNIN,'(A80)') ZEILE
       READ (ZEILE,6666) NCHORI,NCHENI
       WRITE (iunout,*) '       NCHORI= ',NCHORI

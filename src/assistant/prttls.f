@@ -13,7 +13,9 @@ C  IFLAG= 2: ADDITIONALLY: 2D AVERAGES
 C  IFLAG= 3: ADDITIONALLY: 3D PROFILES
 C  IFLAG> 3: ONLY FULL PROFILES, NO AVERAGES
 C
-      USE EIRMOD_PRECISION
+C  IFILE> 0: WRITE FULL TALLY ONTO STREAM FORT.IFILE
+C
+      USE EIRMOD_PRECISION  ! istream(nstream)
       USE EIRMOD_PARMMOD
       USE EIRMOD_COMPRT, ONLY: IUNOUT
       IMPLICIT NONE
@@ -31,16 +33,17 @@ C
       EXTERNAL :: EIRENE_LEER
 
       DATA TL/72*'='/
+C  ISTREAM: BLOCK A FEW RESERVED OUTPUT STREAMS.
       SAVE
 
       CALL EIRENE_LEER(3)
-      WRITE (iunout,*) TL
-      WRITE (iunout,*) TL
-      WRITE (iunout,*) 'TALLY:   ',T1
-      WRITE (iunout,*) 'SPECIES: ',T2
-      WRITE (iunout,*) 'UNITS:   ',T3
-      WRITE (iunout,*) TL
-      WRITE (iunout,*) TL
+      WRITE (iunout,'(72A1)') TL
+      WRITE (iunout,'(72A1)') TL
+      WRITE (iunout,'(A9,A72)') 'TALLY:   ',T1
+      WRITE (iunout,'(A9,A24)') 'SPECIES: ',T2
+      WRITE (iunout,'(A9,A24)') 'UNITS:   ',T3
+      WRITE (iunout,'(72A1)') TL
+      WRITE (iunout,'(72A1)') TL
       CALL EIRENE_LEER(1)
 
 C..................................................................

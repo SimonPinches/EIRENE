@@ -14,12 +14,13 @@
 # Changelog of EIRENE repository:
 ---
 
-## X. Bonnin and D. Reiter - SOLPS_bug_fixes - First GitHub attempt
+## X. Bonnin and D. Reiter - SOLPS_bug_fixes - 0ca5dc0d82eed4af98af24699aa515db7dea4f51
 
 ### Based on V1.2.0 (develop - b0027581a7c95e4fc92671f7a354b6c556eacb23)
 
 ** Changes **
 
+- Corrected units for spectra output + added message about NFILEL and fort.13 format + adapted output formats
 - Corrected comments and typos in printout statements
 - Removed trailing whitespaces and alignment corrections
 - Minor code clean-up

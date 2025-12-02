@@ -47,6 +47,7 @@ cdr   OPEN (UNIT=IOUT,FILE='spectra.out')
 cdr units of energy integrated totals
       UNITINT(1)= '(AMP)   '
       UNITINT(2)= '(WATT)  '
+      UNITINT(3)= '(DYN)   '
       UNITOUT   = '(?)     '
 
       IADTYP(0:4) = (/ 0, NSPH, NSPA, NSPAM, NSPAMI /)
@@ -80,11 +81,11 @@ cdr  this option apparently does not exist yet, in update_spectrum
 
           IF (IT == 1) THEN
             WRITE (IOUT,'(A,A)') ' TYPE OF SPECTRUM : ',
-     .                'INCIDENT PARTICLE FLUX IN AMP/BIN(EV)   '
+     .                'INCIDENT PARTICLE FLUX IN AMP/(EV)   '
             UNITOUT=UNITINT(1)
           ELSE IF (IT == 2) THEN
             WRITE (IOUT,'(A,A)') ' TYPE OF SPECTRUM : ',
-     .                'INCIDENT ENERGY FLUX IN WATT/BIN(EV)    '
+     .                'INCIDENT ENERGY FLUX IN WATT/(EV)    '
             UNITOUT=UNITINT(2)
           END IF
 
@@ -99,13 +100,13 @@ cdr  "cell-based spectra", scoring cell (coarse grid)
           END IF
           IF (IT == 1) THEN
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
-     .        'SPECTRAL PARTICLE DENSITY IN #/CM**3/BIN(EV)   '
+     .        'SPECTRAL PARTICLE DENSITY IN #/CM**3/(EV)   '
           ELSEIF (IT == 2) THEN
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
-     .        'SPECTRAL ENERGY DENSITY IN EV/CM**3/BIN(EV)    '
+     .        'SPECTRAL ENERGY DENSITY IN EV/CM**3/(EV)    '
           ELSEIF (IT == 3) THEN
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
-     .        'SPECTRAL MOMENTUM DENSITY IN (G*CM/S)/CM**3/BIN(EV)    '
+     .        'SPECTRAL MOMENTUM DENSITY IN (G*CM/S)/CM**3/(EV)    '
           END IF
 
         ELSE IF (ESTIML(ISPC)%ISRFCLL == 2) THEN
@@ -121,13 +122,13 @@ cdr  otherwise: identical code as above
 
           IF (IT == 1) THEN
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
-     .        'SPECTRAL PARTICLE DENSITY IN #/CM**3/BIN(EV)   '
+     .        'SPECTRAL PARTICLE DENSITY IN #/CM**3/(EV)   '
           ELSEIF (IT == 2) THEN
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
-     .        'SPECTRAL ENERGY DENSITY IN EV/CM**3/BIN(EV)    '
+     .        'SPECTRAL ENERGY DENSITY IN EV/CM**3/(EV)    '
           ELSEIF (IT == 3) THEN
             WRITE (iunout,'(A20,A)') ' TYPE OF SPECTRUM : ',
-     .        'SPECTRAL MOMENTUM DENSITY IN (G*CM/S)/CM**3/BIN(EV)    '
+     .        'SPECTRAL MOMENTUM DENSITY IN (G*CM/S)/CM**3/(EV)    '
           END IF
         END IF
 c................................................................
@@ -156,7 +157,7 @@ c................................................................
      .         ESTIML(ISPC)%SPCMAX
           WRITE (IOUT,'(A)') ' LINEAR SPACING'
         END IF
-        WRITE (IOUT,'(A20,4x,I6)') ' NUMBER OF BINS     ',
+        WRITE (IOUT,'(A16,4x,I6)') ' NUMBER OF BINS ',
      .         ESTIML(ISPC)%NSPC
         CALL EIRENE_LEER(1)
 C  HEADER DONE.
@@ -171,7 +172,7 @@ C  FORMATTED PRINTOUT OF SPECTRA STARTS HERE
           IF (NSIGI_SPC == 0) THEN
 C  STANDARD DEVIATION IS NOT AVAILABLE
             WRITE (IOUT,'(A6,3A12)') '  BIN ',
-     .                  '  B-LEFT    ','  B-RIGHT   ','  FLUX/BIN  '
+     .                  '  B-LEFT(EV)',' B-RIGHT(EV)','    TALLY/EV'
             DO IE=IINI,IEND
 C  DEAL WITH ENERGY BIN NO. IE
 C  central energy bin value
@@ -207,7 +208,7 @@ c
 C  STANDARD DEVIATION IS AVAILABLE
 C
             WRITE (IOUT,'(A6,3A12,A14)') '  BIN ',
-     .                  '  B-LEFT    ','  B-RIGHT   ','  FLUX/BIN  ',
+     .                  '  B-LEFT(EV)',' B-RIGHT(EV)','    TALLY/EV',
      .                  '  STD.DEV. (%)'
             DO IE=IINI,IEND
 C  DEAL WITH ENERGY BIN NO. IE
