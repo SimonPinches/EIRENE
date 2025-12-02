@@ -14,6 +14,16 @@
 # Changelog of EIRENE repository:
 ---
 
+## X. Bonnin - SOLPS_nprll_wrstrt
+
+### Based on SOLPS_vector_tallies - bd537444943622e1e37d50acb55e18aadb999e01
+
+** Changes **
+
+- Removed condition to not write WRSTRT files for EMBARRASSINGLY PARALLEL option
+
+---
+
 ## X. Bonnin - SOLPS_vector_tallies
 
 ### Based on SOLPS_DR_changes - 7f59f4c18f601a0a35a33d85866f2d5a486f4ef1
