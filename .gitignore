@@ -45,6 +45,7 @@ SGIirix*/
 sun*/
 T3E*/
 unicos*/
+src/assistant/version.f
 
 # files produced by scripts
 grep.lis
