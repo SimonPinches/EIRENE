@@ -553,7 +553,7 @@ ifneq (${MOD},o)
 	@echo '# 5b' >> ${OBJDIR}/dependencies
 endif
 
-listobj: DIMENSIONS ${OBJDIR}/dependencies
+listobj: DIMENSIONS local
 	@rm -f ${OBJDIR}/LISTOBJ ; touch ${OBJDIR}/LISTOBJ ; l="OBJS =" ; \
 	for d in `echo "$(FPATH)" | tr : \ `; do \
 		l="$$l `(cd $$d > /dev/null; echo *.f)`"; \
