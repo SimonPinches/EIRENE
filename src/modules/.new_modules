@@ -1,0 +1,4 @@
+## When changing the list of modules for the Eirene source code,
+## add a note in this file to trigger the rebuild of dependencies
+----------------------------------------------------------
+- Initial commit
