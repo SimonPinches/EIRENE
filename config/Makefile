@@ -553,7 +553,7 @@ ifneq (${MOD},o)
 	@echo '# 5b' >> ${OBJDIR}/dependencies
 endif
 
-listobj: DIMENSIONS local
+listobj: DIMENSIONS ${SRCDIR}/assistant/version.f local
 	@rm -f ${OBJDIR}/LISTOBJ ; touch ${OBJDIR}/LISTOBJ ; l="OBJS =" ; \
 	for d in `echo "$(FPATH)" | tr : \ `; do \
 		l="$$l `(cd $$d > /dev/null; echo *.f)`"; \
@@ -605,7 +605,18 @@ tags:
 
 ${OBJDIR}/LISTOBJ: listobj
 
+ifndef NO_CMAKE
 VERSION: ${SRCDIR}/git_version_Eirene.h
+else
+VERSION: ${SRCDIR}/git_version_Eirene.h ${SRCDIR}/assistant/version.f
+
+${SRCDIR}/assistant/version.f: ${SRCDIR}/cmake/version.f.in ${MAKES}
+	git_description=`git describe --tags --dirty --always | cut -c 1-32` ; \
+	git_branch=`git branch --show-current` ; \
+	git_date=`git show -s --format="%ci"` ; \
+	git_hash=`git show -s --format="%H"` ; \
+	cat ${SRCDIR}/cmake/version.f.in | sed -e 's:@git_description@:${git_description}:' -e 's:@git_date@:${git_date}:' -e 's:@git_hash@:${git_hash}:' -e 's:@git_branch@:${git_branch}:' > ${SRCDIR}/assistant/version.f
+endif
 
 ${SRCDIR}/git_version_Eirene.h: force
 	@echo "      character*32 :: git_version_Eirene =" > ${SRCDIR}/git_version_new.h
