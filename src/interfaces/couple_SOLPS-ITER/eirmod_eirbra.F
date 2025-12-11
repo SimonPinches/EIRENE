@@ -20,7 +20,7 @@ csw
      R SEE(:,:,:),   SEI(:,:,:)
 cdjm Jan2017
       REAL(DP), PUBLIC, ALLOCATABLE, SAVE ::
-     R SNE_PAEL(:,:,:), SNE_PMEL(:,:,:),
+     R SNE_PAEL(:,:,:), SNE_PMEL(:,:,:), SNE_PIEL(:,:,:),
      R SNA_PAAT(:,:,:,:), SNA_PMAT(:,:,:,:),
      R SNA_PIAT(:,:,:,:), SNA_PAML(:,:,:,:),
      R SNA_PMML(:,:,:,:), SNA_PIML(:,:,:,:),
@@ -330,6 +330,8 @@ cdjm Jan2017
       call mpi_bcast (sne_pael,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
       call mpi_bcast (sne_pmel,inum,MPI_DOUBLE_PRECISION,
+     .                0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast (sne_piel,inum,MPI_DOUBLE_PRECISION,
      .                0,MPI_COMM_WORLD,ierr)
 cdjm Jan2017
       call mpi_bcast (see_eael,inum,MPI_DOUBLE_PRECISION,

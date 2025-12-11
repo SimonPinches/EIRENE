@@ -4979,7 +4979,8 @@ cdr  account for vol.rec electron energy loss
      .                               PAEL(INC)*VOLTAL(INC)*FLX_EIR
               IF (LPMEL) SNE_PMEL(IX,IY,ISTRAI)=SNE_PMEL(IX,IY,ISTRAI)+
      .                               PMEL(INC)*VOLTAL(INC)*FLX_EIR
-cdr  LPIEL ... SNE_PIEL ?
+              IF (LPIEL) SNE_PIEL(IX,IY,ISTRAI)=SNE_PIEL(IX,IY,ISTRAI)+
+     .                               PIEL(INC)*VOLTAL(INC)*FLX_EIR
               IF (LEAEL) SEE_EAEL(IX,IY,ISTRAI)=SEE_EAEL(IX,IY,ISTRAI)+
      .                               EAEL(INC)*VOLTAL(INC)*ELCHA
               IF (LEMEL) SEE_EMEL(IX,IY,ISTRAI)=SEE_EMEL(IX,IY,ISTRAI)+
@@ -6747,6 +6748,8 @@ cdjm Jan2017
       call mpi_send(sne_pael(0,0,istrr), size(sne_pael(:,:,istrr)),
      &         MPI_DOUBLE_PRECISION, irank, istrr, MPI_COMM_WORLD, ier)
       call mpi_send(sne_pmel(0,0,istrr), size(sne_pmel(:,:,istrr)),
+     &         MPI_DOUBLE_PRECISION, irank, istrr, MPI_COMM_WORLD, ier)
+      call mpi_send(sne_piel(0,0,istrr), size(sne_piel(:,:,istrr)),
      &         MPI_DOUBLE_PRECISION, irank, istrr, MPI_COMM_WORLD, ier)
 cdjm Jan2017
       call mpi_send(see_eael(0,0,istrr), size(see_eael(:,:,istrr)),
