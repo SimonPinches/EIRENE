@@ -3778,6 +3778,7 @@ csw 20mar2013
          sni(:,:,:,istrai) = 0.d0
          sne_pael(:,:,istrai) = 0.d0 !djm Jan2017
          sne_pmel(:,:,istrai) = 0.d0
+         sne_piel(:,:,istrai) = 0.d0
          sna_paat(:,:,:,istrai) = 0.d0 !djm Jan2017
          sna_pmat(:,:,:,istrai) = 0.d0
          sna_piat(:,:,:,istrai) = 0.d0
@@ -3847,6 +3848,7 @@ C
             SEE(IX,IY,ISTRAI)=0.
             SNE_PAEL(IX,IY,ISTRAI)=0. !djm Jan2017
             SNE_PMEL(IX,IY,ISTRAI)=0.
+            SNE_PIEL(IX,IY,ISTRAI)=0.
             SEE_EAEL(IX,IY,ISTRAI)=0. !djm Jan2017
             SEE_EMEL(IX,IY,ISTRAI)=0.
             SEE_EIEL(IX,IY,ISTRAI)=0.
@@ -4945,6 +4947,9 @@ c
                 IF (LPMEL) SNE_PMEL(IX,IY,ISTRAI)=
      .                     SNE_PMEL(IX,IY,ISTRAI)+
      .                                 PMEL(INC)*VOLTAL(INC)*FLX_EIR
+                IF (LPIEL) SNE_PIEL(IX,IY,ISTRAI)=
+     .                     SNE_PIEL(IX,IY,ISTRAI)+
+     .                                 PIEL(INC)*VOLTAL(INC)*FLX_EIR
                 IF (LEAEL) SEE_EAEL(IX,IY,ISTRAI)=
      .                     SEE_EAEL(IX,IY,ISTRAI)+
      .                                 EAEL(INC)*VOLTAL(INC)*ELCHA
@@ -5244,6 +5249,7 @@ C
 cdjm Jan2017
               SNE_PAEL(IX,IY,ISTRAI)=SNE_PAEL(IX,IY,ISTRAI)*SCALN(0)
               SNE_PMEL(IX,IY,ISTRAI)=SNE_PMEL(IX,IY,ISTRAI)*SCALN(0)
+              SNE_PIEL(IX,IY,ISTRAI)=SNE_PIEL(IX,IY,ISTRAI)*SCALN(0)
 cdjm Jan2017
               SEE_EAEL(IX,IY,ISTRAI)=SEE_EAEL(IX,IY,ISTRAI)*SCALN(0)
               SEE_EMEL(IX,IY,ISTRAI)=SEE_EMEL(IX,IY,ISTRAI)*SCALN(0)
@@ -5426,6 +5432,7 @@ C
 cdjm Jan2017
               SNE_PAEL(IX,IY,ISTRAI)=SNE_PAEL(IX,IY,ISTRAI)*FLXI
               SNE_PMEL(IX,IY,ISTRAI)=SNE_PMEL(IX,IY,ISTRAI)*FLXI
+              SNE_PIEL(IX,IY,ISTRAI)=SNE_PIEL(IX,IY,ISTRAI)*FLXI
 cdjm Jan2017
               SEE_EAEL(IX,IY,ISTRAI)=SEE_EAEL(IX,IY,ISTRAI)*FLXI
               SEE_EMEL(IX,IY,ISTRAI)=SEE_EMEL(IX,IY,ISTRAI)*FLXI
@@ -5570,6 +5577,8 @@ cdjm Jan2017
         CALL EIRENE_INDMPI (SNE_PAEL,DUMMY,NDX,NDY,1  ,NDXA,NDYA,1   ,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
         CALL EIRENE_INDMPI (SNE_PMEL,DUMMY,NDX,NDY,1  ,NDXA,NDYA,1   ,
+     .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
+        CALL EIRENE_INDMPI (SNE_PIEL,DUMMY,NDX,NDY,1  ,NDXA,NDYA,1   ,
      .               NCUTB,NCUTL,NPOINT,NPPLG,NSTRA,ISTRAI)
 cdjm Jan2017
         CALL EIRENE_INDMPI (SEE_EAEL,DUMMY,NDX,NDY,1  ,NDXA,NDYA,1   ,
@@ -6579,6 +6588,9 @@ cdjm Jan2017
      &              MPI_DOUBLE_PRECISION, irank, istrr,
      &              MPI_COMM_WORLD, MPI_STATUS_IGNORE, ier)
       call mpi_recv(sne_pmel(0,0,istrr), size(sne_pmel(:,:,istrr)),
+     &              MPI_DOUBLE_PRECISION, irank, istrr,
+     &              MPI_COMM_WORLD, MPI_STATUS_IGNORE, ier)
+      call mpi_recv(sne_piel(0,0,istrr), size(sne_piel(:,:,istrr)),
      &              MPI_DOUBLE_PRECISION, irank, istrr,
      &              MPI_COMM_WORLD, MPI_STATUS_IGNORE, ier)
 cdjm Jan2017
