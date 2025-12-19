@@ -24,11 +24,12 @@ if(dlength GREATER desc_length)
   set(git_description "${git_description}...)")
 endif()
 
-set(git_ignore_command 
-    git update-index --assume-unchanged @PROJECT_SOURCE_DIR@/assistant/version.f)
-execute_process(COMMAND ${GIT_EXECUTABLE} ${git_ignore_command} 
-                WORKING_DIRECTORY @PROJECT_SOURCE_DIR@/..)
+# No longer needed as the version.f file is ignored
+# set(git_ignore_command
+#     git update-index --assume-unchanged @PROJECT_SOURCE_DIR@/assistant/version.f)
+# execute_process(COMMAND ${GIT_EXECUTABLE} ${git_ignore_command}
+#                 WORKING_DIRECTORY @PROJECT_SOURCE_DIR@/..)
 
 # Configures the version output.
-configure_file(@PROJECT_SOURCE_DIR@/cmake/version.f.in 
+configure_file(@PROJECT_SOURCE_DIR@/cmake/version.f.in
                @PROJECT_SOURCE_DIR@/assistant/version.f)

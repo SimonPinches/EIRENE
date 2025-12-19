@@ -309,7 +309,9 @@ endif()
 # relative path. Relative path is stored in variable 'fortran_dirs'.
 message(STATUS "Detecting fortran files (*.[fF]/*.[fF]90) in subdirectories of "
                ${PROJECT_SOURCE_DIR})
-file(TOUCH ${PROJECT_SOURCE_DIR}/assistant/version.f)
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/assistant/version.f")
+  file(TOUCH ${PROJECT_SOURCE_DIR}/assistant/version.f)
+endif()
 file(GLOB_RECURSE fortran_files RELATIVE ${PROJECT_SOURCE_DIR}
      ${PROJECT_SOURCE_DIR}/*.[fF]
      ${PROJECT_SOURCE_DIR}/*.[fF]90)
