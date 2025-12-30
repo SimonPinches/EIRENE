@@ -1,6 +1,5 @@
       module eirmod_cvarusr
 
-      USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
 
       IMPLICIT NONE

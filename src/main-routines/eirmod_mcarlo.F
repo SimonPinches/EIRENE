@@ -1543,7 +1543,7 @@ C
             CALL EIRENE_SCALE_DEVIATION(ISTRA, ZWW, ZW, ZVOLNT, ZVOLWT,
      .                                  ZVOLIN, ZVOLIW, SCLTAL, N1MX)
 C
-  950     CONTINUE
+  950       CONTINUE
 
             IESTR=ISTRA
 C
@@ -1875,7 +1875,7 @@ C
         WRITE (111+ifoff,*) 'LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT ',
      .                 LOGATM,LOGION,LOGMOL,LOGPLS,LOGPHOT
 #endif
-        IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
+        IF (TRCFLE) WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
         IRC=2
         ALLOCATE (OUTAU(NOUTAU))
         CALL EIRENE_WRITE_COUTAU (OUTAU, IUNOUT)
@@ -1887,7 +1887,7 @@ C
         end do
 #endif
         DEALLOCATE (OUTAU)
-        IF (TRCFLE)   WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
+        IF (TRCFLE) WRITE (iunout,*) 'WRITE 11  IRC= ',IRC
 
       ELSEIF (NFILEN.EQ.2.OR.NFILEN.EQ.7) THEN
 cdr  in this case the entire MC calculation has been skipped ("recall option" only)

@@ -3819,17 +3819,19 @@ C
 C
 C  SCALE SURFACE SOURCES PER UNIT FLUX, FOR OTHER SOURCES USE
 C  EIRENE SCALINGS
-        IF (ISTRAI.LE.NTARGI.AND.WTOTP(0,ISTRAI).NE.0.) THEN
+        IF (ISTRAI.LE.NTARGI.AND.NLPLS(ISTRAI)) THEN
+          IF (WTOTP(0,ISTRAI).NE.0.) THEN
 C  FLUX FROM EIRENE TO PLASMA CODE: NEGATIVE
-          FLX=-WTOTP(0,ISTRAI)
-          FLXI=1./FLX
-          FLXEIR(ISTRAI)=1._DP
-        ELSEIF (ISTRAI.LE.NTARGI.AND.WTOTP(0,ISTRAI).EQ.0.) THEN
-          WRITE (iunout,*) 'NO PLASMA FLUX FROM STRATUM NO. ISTRAI= ',
-     .                      ISTRAI
-          WRITE (iunout,*)
+            FLX=-WTOTP(0,ISTRAI)
+            FLXI=1./FLX
+            FLXEIR(ISTRAI)=1._DP
+          ELSE
+            WRITE (iunout,*)
+     .       'NO PLASMA FLUX FROM STRATUM NO. ISTRAI= ',ISTRAI
+            WRITE (iunout,*)
      .       'NO DATA RETURNED TO PLASMA CODE FOR THIS STRATUM'
-          GOTO 7999
+            GOTO 7999
+          ENDIF
         ELSEIF (ISTRAI.GT.NTARGI) THEN
           FLXI=1.
 
@@ -4500,9 +4502,6 @@ cdr  test particle may have scored on a finer mesh (lcoarse=.false)
 
         DO IFL=1,NFLA
 
-cdr  fill bulk particle source rate sni(...ifl) from all contributing
-cdr  test particle sources papl,pmpl,pipl,pphpl,pppl(...,ipls)
-cdr  test particle may have scored on a finer mesh (lcoarse=.false)
           CHPS(IFL)=0.
           SNIS(IFL)=0.
           CHMOS(IFL)=0.

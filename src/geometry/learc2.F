@@ -49,15 +49,12 @@ C
      .          VY1(:,:),WY1(:,:),WX1(:,:),DWY(:,:),HELP(:,:),
      .          D12(:,:),D14(:,:),D32(:,:),D34(:,:)
       EXTERNAL :: EIRENE_MASAGE, EIRENE_MASR2
-!pb      SAVE
-!     DATA IFIRST /0/
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(IFIRST,X1,Y1,X2,Y2,X3,Y3,X4,Y4,TX,TY,UX,UY,
 !$OMP&    DET,VY1,WY1,WX1,DWY,HELP,D12,D14,D32,D34)
 #endif
 
-csw 04aug08
       if(np .lt. 0) then
         if(allocated(x1)) then
           DEALLOCATE (X1)
@@ -87,7 +84,6 @@ csw 04aug08
         EIRENE_LEARC2 = -1
         return
       endif
-csw
 C
       IF (IFIRST .EQ. 0) THEN
 

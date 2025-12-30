@@ -1554,6 +1554,7 @@ C
 !$OMP END CRITICAL
 #endif
           ENDIF
+
         CASE (4)
 C
 C  PRIMARY BULK IONS?   500  ---  599
@@ -2423,7 +2424,7 @@ C  VOLUME TALLIES FOR TEST SECONDARIES FROM INITIAL BULK PARTICLES
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                 EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
+                EPAT(NCELLT)=EPAT(NCELLT)+E0*WEIGHT
               ENDIF
               LAST_EVENT%ISPEZ = IATM
             CASE (2)
@@ -2438,7 +2439,7 @@ C  VOLUME TALLIES FOR TEST SECONDARIES FROM INITIAL BULK PARTICLES
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                 EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
+                EPML(NCELLT)=EPML(NCELLT)+E0*WEIGHT
               ENDIF
               LAST_EVENT%ISPEZ = IMOL
             CASE (3)
@@ -2447,13 +2448,13 @@ C  VOLUME TALLIES FOR TEST SECONDARIES FROM INITIAL BULK PARTICLES
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                 PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
+                PPIO(IION,NCELLT)=PPIO(IION,NCELLT)+WEIGHT
               ENDIF
               IF (LEPIO) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                 EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
+                EPIO(NCELLT)=EPIO(NCELLT)+E0*WEIGHT
               ENDIF
               LAST_EVENT%ISPEZ = IION
             CASE (0)
@@ -2462,13 +2463,13 @@ C  VOLUME TALLIES FOR TEST SECONDARIES FROM INITIAL BULK PARTICLES
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                 PPPHT(IPHOT,NCELLT)=PPPHT(IPHOT,NCELLT)+WEIGHT
+                PPPHT(IPHOT,NCELLT)=PPPHT(IPHOT,NCELLT)+WEIGHT
               ENDIF
               IF (LEPPHT) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                 EPPHT(NCELLT)=EPPHT(NCELLT)+E0*WEIGHT
+                EPPHT(NCELLT)=EPPHT(NCELLT)+E0*WEIGHT
               ENDIF
               LAST_EVENT%ISPEZ = IPHOT
           END SELECT
@@ -2495,7 +2496,7 @@ C  TALLIES FOR BULK-SECONDARIES (IF ANY)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-               PPPL(IPLS_B2,NCELLT)=PPPL(IPLS_B2,NCELLT)+
+              PPPL(IPLS_B2,NCELLT)=PPPL(IPLS_B2,NCELLT)+
      .                                      WEIGHT_B2
             ENDIF
             IF (LEPPL) THEN

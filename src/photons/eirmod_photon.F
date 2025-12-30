@@ -32,7 +32,7 @@ cdr jan 18: note: ph_xsectp is still there.
 cdr         But corresponds to what would be called XSTPH?,
 cdr         (what is XSTRC?)
 cdr nov 18: notational cleanup: nrot -> nrph. nnrot  is now obsolete.
-cdr now 20: remove alloc_xsectph, all variables now in comxs
+cdr nov 20: remove alloc_xsectph, all variables now in comxs
 cdr
 !................................................................................
 

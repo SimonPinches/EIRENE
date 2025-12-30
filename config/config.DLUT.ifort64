@@ -1,0 +1,34 @@
+# Test whether necessary variables are set
+
+# DEFINES += -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF -DNO_SAVE
+
+CPP     = -/lib/cpp -C -traditional -ffreestanding
+
+MPI_FC ?= mpiifort
+ifdef SOLPS_MPI
+ FC     = ${MPI_FC}
+else
+ ifdef USE_IMPGYRO
+  FC    = ${MPI_FC}
+ endif
+endif
+
+ifndef SOLPS_DEBUG
+ FCOPTS += -O3
+ CFLAGS += -O3
+endif
+
+ifdef LD_GR
+ifdef LD_GKS
+ifdef GLI_HOME
+GKS     = ${LD_GR} ${LD_GKS} -lX11 -lXt
+endif
+endif
+endif
+
+LDLIBS  = -L/usr/local/lib -L/usr/X11R6/lib64
+
+#!!!Local Variables:
+#!!! mode: Makefile
+#!!! End:
+

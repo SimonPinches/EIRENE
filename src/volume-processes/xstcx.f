@@ -218,7 +218,6 @@ C  2.D)
 
 cdr NEND has apparently become entirely obsolete. Maybe for ftabcx3?
 
-
 C  2.B) RATE COEFFICIENT(TI, FIXED E0, E.G. E0=0)
       IF (EIRENE_IDEZ(MODCLF(KK),3,5).EQ.1) THEN
 C       NEND=1

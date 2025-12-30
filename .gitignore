@@ -36,6 +36,7 @@ local/
 *.error
 
 # files produced by the Makefile
+Makefile
 LISTOBJ
 TAGS
 linux.*/
@@ -46,6 +47,7 @@ sun*/
 T3E*/
 unicos*/
 src/assistant/version.f
+!config/Makefile
 
 # files produced by scripts
 grep.lis

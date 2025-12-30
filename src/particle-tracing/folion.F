@@ -27,7 +27,7 @@ C         WG. COLL EST. ON 1ST FLIGHT AFTER BIRTH.
 C  Sept 05: also vel=velpar before call  to ...col  routines.
 !PB 12.01.06: calls to UPDATE_SPECTRUM introduced for cell-based spectra
 !PB 18.04.06: xstorv=0 in "vacuum region" added
-!DR  4.08.06: check v_par=0, otherwise stop trajectory (lable 992)
+!DR  4.08.06: check v_par=0, otherwise stop trajectory (label 992)
 !DR 10.08.06: cut-off Ti with T_vac for collision frequency, for
 !             ion tracing in vacuum region
 !PB 28.09.06: sg corrected for levgeo=4 and levgeo=5
@@ -138,9 +138,10 @@ C
       use eirmod_upcusr
 
       IMPLICIT NONE
-
-C     REAL(DP) :: a,aa,aaa
+cdr  for testing coulomb collision frequencies
+c     REAL(DP) :: a,aa,aaa
 c     REAL(DP) :: fnueqi,fnueqi_1,fnueqi_2
+
       REAL(DP) :: CFLAG(7,MSTOR0)
       REAL(DP) :: AX(2), DIST
       REAL(DP) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
@@ -676,7 +677,7 @@ C
         LCART=.TRUE.
       ENDIF
 C
-  213 CONTINUE
+  213 CONTINUE   ! EXIT FROM NCOU LOOP DUE TO COLLISION AT JCOL=JJ
       NCOUS=NCOU
       NCOU=JJ
 

@@ -719,22 +719,17 @@ C  SET DRIFT ENERGY (EV)
         DO J=1,NSBOX
           DO IPLS=1,NPLSI
             IPLSV=MPLSV(IPLS)
-            IF (NLDRFT) THEN
-C
-              IF (INDPRO(4) == 8) THEN
-                IF(IPLS.EQ.1) THEN
-                  EDRIFT(IPLS,J)=CVRSSP(IPLS)*EIRENE_VDION(J)**2
-                ELSE
-C                 WRITE(iunout,*)'WARNING PLASMA_DERIV: IPLS>1 NO DRIFT!'
-                  EDRIFT(IPLS,J)=0._DP
-                END IF
+            IF (INDPRO(4) == 8) THEN
+              IF(IPLS.EQ.1) THEN
+                EDRIFT(IPLS,J)=CVRSSP(IPLS)*EIRENE_VDION(J)**2
               ELSE
-                EDRIFT(IPLS,J)=CVRSSP(IPLS)*
-     .              (VXIN(IPLSV,J)**2+VYIN(IPLSV,J)**2+VZIN(IPLSV,J)**2)
+C               WRITE(iunout,*)'WARNING PLASMA_DERIV: IPLS>1 NO DRIFT!'
+                EDRIFT(IPLS,J)=0._DP
               END IF
             ELSE
-              EDRIFT(IPLS,J)=0._DP
-            ENDIF
+              EDRIFT(IPLS,J)=CVRSSP(IPLS)*
+     .              (VXIN(IPLSV,J)**2+VYIN(IPLSV,J)**2+VZIN(IPLSV,J)**2)
+            END IF
           END DO
         END DO
       ELSEIF (LEDRIFT .AND. .NOT. NLDRFT) THEN
@@ -834,6 +829,7 @@ C                        BUT PERHAPS FOR NEUTRAL BACKGROUND
           LGVAC(J,0)   =LGVAC(J,0).AND.LGVAC(J,IPLS)
  5106   CONTINUE
  5103 CONTINUE
+
       IF (LEVGEO.EQ.3) THEN
 cdr set vacuum flags in polygonal grid cut cells (if any)
         DO 5161 I=1,NPPLG-1

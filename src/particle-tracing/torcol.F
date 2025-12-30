@@ -1,3 +1,4 @@
+cdr  Mar. 24: safety added: MASURF=0, for surface tallies
 C
       SUBROUTINE EIRENE_TORCOL(IRET)
 
@@ -65,6 +66,7 @@ C
       PHI = ZSURF(MTSURF)
 C
       IF (LEVGEO.EQ.3.OR.(LEVGEO.EQ.2.AND.NLPOL)) THEN
+cdr find index ipolg on polygonal ring  no. NRCELL
         IF (NRCELL.GT.0)
      .  NN=EIRENE_LEARC1(X0,Y0,Z0,IPOLG,NRCELL,NRCELL,.FALSE.,.FALSE.,
      .                           NPANU,'TORCOL 1')
@@ -83,6 +85,7 @@ C
       IF (.NOT.NLTOR) THEN
 C
         MSURF=0
+        MASURF=0
         colflag = .true.
         IRET = 1
         RETURN
@@ -91,6 +94,7 @@ C
 C  NLTOR=TRUE:
 C
         MSURF=0
+        MASURF=0
         IF (NRCELL.GT.0) NTCELL=NNTCLL
         ISTS=INMP3I(IRCELL,IPCELL,MTSURF)
         IF (ISTS.EQ.0) THEN

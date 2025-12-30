@@ -184,7 +184,9 @@ C
 C  REFLECT ESCAPING ATOMS OR IONS
 C  INPUT:
 C       ILREF = 1  DATABASE REFLECTION MODEL, W.ECKSTEIN, D.B.HEIFETZ,
-C                  IPP 9/59 (1986)
+C                  IPP 9/59 (1986). ROSENBLATT TRANSFORM.
+C                  Description of usage of the tables: incorrect in IPP 9/59
+C                  Correct description in www.eirene.de, (eirene_classic), before 2019
 C       ILREF = 2  MODIFIED BEHRISCH MATRIX, R. BEHRISCH, ERICE SUMMER
 C                  SCHOOL 1976
 C       ILREF = 9  USER-SUPPLIED REFLECTION MODEL, CALL: REFUSR

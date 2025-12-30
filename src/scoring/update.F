@@ -188,19 +188,17 @@ C  FOR STANDARD DEVIATION: INDICATE CELLS THAT HAVE BEEN MET BY THE PRESENT MC H
 C
 C  PARTICLE, MOMENTUM AND ENERGY DENSITY ESTIMATORS
 C
-
         IF (LEDENX) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-           EDENX(IRD)=EDENX(IRD)+WTRE0
+          EDENX(IRD)=EDENX(IRD)+WTRE0
         ENDIF
-
         IF (LPDENX) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-           PDENX(IRD)=PDENX(IRD)+WTR
+          PDENX(IRD)=PDENX(IRD)+WTR
         ENDIF
         IF (LEDENX.OR.LPDENX)
      .      LMETSP(NMETOFF+IXSPZ)=.TRUE.
@@ -211,21 +209,18 @@ C
 #endif
           VXDENX(IRD)=VXDENX(IRD)+WTRV*VELX
         ENDIF
-
         IF (LVYDENX) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
           VYDENX(IRD)=VYDENX(IRD)+WTRV*VELY
         ENDIF
-
         IF (LVZDENX) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
           VZDENX(IRD)=VZDENX(IRD)+WTRV*VELZ
         ENDIF
-
         IF (LVXDENX.OR.LVYDENX.OR.LVZDENX)
      .      LMETSP(NMETOFF+IXSPZ)=.TRUE.
 C
@@ -274,7 +269,7 @@ C
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-          EXX(IRD)      =EXX(IRD)      -WTRSIG*E0
+          EXX(IRD)=EXX(IRD)-WTRSIG*E0
         ENDIF
 C
 C..........................................................................
@@ -1102,21 +1097,18 @@ C
             ELSE
 C  TRACKLENGH ESTIMATOR: HEAVY (AND BULK) PARTICLE ENERGY LOSS/GAIN RATES
 C
-
               IF (LEXAT) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
                 EXAT(IRD)=EXAT(IRD)+WTRSIG*ESIGEI(IREI,1)
               ENDIF
-
               IF (LEXML) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
                 EXML(IRD)=EXML(IRD)+WTRSIG*ESIGEI(IREI,2)
               ENDIF
-
               IF (LEXIO) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
@@ -1479,7 +1471,7 @@ C
         IF (LMXPL_VEC) THEN
 cdr  cartesian components BX,BY,BZ of Bpar, Bper, Bdia
           CALL EIRENE_BFIELD (IRDO, X0, Y0, Z0,
-     .                              BX, BY, BZ, BF,.FALSE.)
+     .                              BX, BY, BZ, BF, .FALSE.)
 
           DO IPL=1,NPLSI
             IF (INDPRO(4) == 8) THEN

@@ -210,6 +210,7 @@ cdr
 cdr  binning according to value of parameter EB
               EB = E0
               IF (ESTIML(ISPC)%IDIREC > 0) THEN
+cdr project velocity to a particular direction, and energy-resolve then
                 SPCVX = ESTIML(ISPC)%SPCVX
                 SPCVY = ESTIML(ISPC)%SPCVY
                 SPCVZ = ESTIML(ISPC)%SPCVZ

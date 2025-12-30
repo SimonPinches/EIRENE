@@ -42,11 +42,6 @@ C     (MODULE: COMPRT.F)
 c
 c
 c
-c
-c
-c
-c
-C
 C  ON INPUT:
 C     ITYP=0 OR ITYP=1 OR ITYP=2
 C     IC_ION = 0  NEWBORN NEUTRAL PARTICLE, OR CONTINUATION FROM TEST ION FULL TRACK
@@ -261,7 +256,7 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
                  IF (IRET .EQ. 2) GOTO 380
               ENDIF
             case (4)
-!dr NLIM already added in ISTS ?
+!dr NLIM is already added in ISTS
               ISTS=ABS(INMTI(IPOLGN,MRSURF))
               MSURFG=INSPAT(IPOLGN,MRSURF)
               IF (ILIIN(ISTS) .NE. 0) THEN
@@ -270,7 +265,7 @@ C  PREPARE CELL NUMBERS FOR FIRST FLIGHT
                  IF (IRET .EQ. 2) GOTO 380
               ENDIF
             case (5)
-!dr NLIM already added in ISTS ?
+!dr is NLIM already added in ISTS ?
               ISTS=ABS(INMTIT(IPOLGN,MRSURF))
 C             MSURFG= ??
               IF (ILIIN(ISTS) .NE. 0) THEN
@@ -377,7 +372,7 @@ C                            REFRESH MFP SAMPLING
       ZTST=1.D30
       ZT=0.0
 C
-  110 CONTINUE
+  110 CONTINUE  ! restart here after cond. exp. estimator
 
       NCOU=1
       NUPC(1)=0
@@ -688,9 +683,10 @@ C  ESCAPE AT 3RD GRID SURFACE (Z OR TOROIDAL) MTSURF
           ENDIF
         ENDIF
 C
-C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE: MRSURF
+C  ESCAPE AT GRID SURFACE BUILT FROM TRIANGLE SIDES IN X-Y PLANE:
+C                         TRIANGLE NO. MRSURF
       case (4)
-!dr NLIM already added in ISTS ?
+!dr NLIM is already added in ISTS
         ISTS=ABS(INMTI(IPOLGN,MRSURF))
         IF (NLRAD.AND.ISTS.NE.0) THEN
           SG=SIGN(1._DP,VELX*PTRIX(IPOLGN,MRSURF)+
@@ -752,6 +748,9 @@ C  ESCAPE TO GRID SURFACE ON USER-DEFINED GEOMETRY BLOCK: MRSURF
           ENDIF
         ENDIF
       end select
+CDR  ISTS=0 OR IRET=0
+C
+C  CONTINUE TRACK IN NEXT CELL
 C
       NRCELL=NRCELL+NINCX
       IF (NRCELL.GT.NR1STM) GOTO 990
@@ -955,7 +954,6 @@ c     PR= cond. exp probability to reach this surface. PR=1. by default
 C
 C  UPDATE EFFLUXES ONTO SURFACE AND REFLECT PARTICLE
 C
-!pb   CALL EIRENE_ESCAPE(PPR,SG,*100,*104,*512)
       CALL EIRENE_ESCAPE(PPR,SG,IRET)
       IF (IRET == 1) GOTO 100
       IF (IRET == 2) GOTO 104

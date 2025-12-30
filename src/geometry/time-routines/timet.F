@@ -539,7 +539,7 @@ C 1200 CONTINUE
       NNTCLL=IPERID
       Z01=Z001
       X01=X001
-C  IN CASE ZRAD=1.D30, IS NEXT STATEMENT IS NONSENSE, BUT CORRECTED
+C  IN CASE ZRAD=1.D30, THIS NEXT STATEMENT IS NONSENSE, BUT CORRECTED
 C                      FOR IN SUBR. STDCOL, WHICH MUST BE CALLED NEXT
 C                      FOR A POLOIDAL SURFACE (OTHERWISE: ERROR EXIT)
       PHI=PHI0+ATAN2(Z01,X01)
@@ -550,7 +550,7 @@ C                      FOR A POLOIDAL SURFACE (OTHERWISE: ERROR EXIT)
 #endif
       RETURN
 C
-C  PARTICLE LEAVES CELL IN POSITIVE DIRECTION, REDUCE ZRAD
+C  PARTICLE LEAVES CELL IN POSITIVE Z DIRECTION, REDUCE ZRAD
 C
  1300 CONTINUE
 C
@@ -569,6 +569,8 @@ C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
 !pb          X01=X01-VELX*EPS10
           z01_cell = x01*tanal
           Z01=Z01-z01_cell*EPS10
+cdr  this new z01 may not fit to z001 and zrad anymore,
+cdr  neither to phi, phi0
           NERR=NERR+1
           GOTO 1010
         ENDIF
@@ -577,7 +579,7 @@ C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
         RETURN
       ENDIF
 
-C  a valid flight time F has been found
+C  a valid reduced flight time F has been found
       X01=X01+F*VELX
       Z01=TANAL*X01
       PHI=PHI0+ZHALF
@@ -614,7 +616,7 @@ C
 #endif
       RETURN
 C
-C  PARTICLE LEAVES CELL IN NEGATIVE DIRECTION, REDUCE ZRAD
+C  PARTICLE LEAVES CELL IN NEGATIVE Z-DIRECTION, REDUCE ZRAD
 C
  1100 CONTINUE
 C
@@ -641,6 +643,8 @@ C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
 !pb          X01=X01-VELX*EPS10
           z01_cell = x01*tanal
           Z01=Z01+z01_cell*EPS10
+cdr  this new z01 may not fit to z001 and zrad anymore,
+cdr  neither to phi, phi0
           NERR=NERR+1
           GOTO 1010
         ENDIF
@@ -649,7 +653,7 @@ C  PARTICLE ACCIDENTALLY ON A TOROIDAL SURFACE?
         RETURN
       ENDIF
 
-C  a valid flight time F has been found
+C  a valid reduced flight time F has been found
       X01=X01+F*VELX
       Z01=-TANAL*X01
       PHI=PHI0-ZHALF

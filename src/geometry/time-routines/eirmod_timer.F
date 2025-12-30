@@ -4,7 +4,8 @@ C icts introduced,
 !pb  22.03.07: LEVGEO=6 --> LEVGEO=10
 cdr   may 17:  commenting. tbd: commenting in particular of tetrahedra-grid part.
 cdr  march 18: variable LHITP (meaning analogue as in timep.F). Had another name
-cdr            before, which had caused confusion with another variable in interfacing routines
+cdr            before, which had caused confusion with another
+cdr            variable in interfacing routines
 C
 C  FULL EIRENE GEOMETRY BLOCK  (GEO3D)
 C
@@ -1597,7 +1598,7 @@ C
 #endif
         PT=1.D30
         NINCX=0
-C  DURCHSUCHE NACHBARDREIECK
+C  CHECK NEIGHBORING TETRAHEDRON
         IF (NLSRFX) THEN
           IZELL=NTBAR(IPOLG,NRCELL)
           IPOLGO=NTSEITE(IPOLG,NRCELL)

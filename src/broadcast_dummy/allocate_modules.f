@@ -1,3 +1,9 @@
+c     memory allocation for additional processors
+
+!pb  15.05.20  allocation is now done in the broadcast routines
+!pb            directly in the modules
+!pb            allocations triggered here belong to modules with no
+!pb            broadcasting routine
 
       SUBROUTINE EIRENE_ALLOCATE_MODULES
       USE EIRMOD_PARMMOD

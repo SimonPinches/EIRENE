@@ -90,19 +90,20 @@ C
       IMPLICIT NONE
 
 cym variable defined in the module removed from the list
-      REAL(DP):: TORL(NSTEP,NGITT), FL, EIRENE_STEP, GAMMA, CUR,
+      REAL(DP):: TORL(NSTEP,NGITT), FL, GAMMA, CUR,
      .           RANDIF,
-     .           DELR, TESH, CTHETA, DELRR, CS, EIRENE_STEP0,
-     .           V_MEAN, ZZ
+     .           DELR, TESH, CTHETA, DELRR, CS, V_MEAN, ZZ,
+     .           EIRENE_STEP0, EIRENE_STEP
 cym end
       REAL(DP):: FLX(NPLS),EKFLX(NPLS),ESHFLX(NPLS),
      .           DISH(NPLS),VPSH(NPLS),ZISH(NPLS)
       INTEGER :: ISPZD(NPLS), ISP, ISPZ
       INTEGER :: ISTRAI, IERROR, ISRFS, ISOR, ISORFL, INDSRF, ISTR, ISR,
-     .           NL3J, NL2J, NL1J, IP, ISTS, IT, KAN, JPLS, ITET,
-     .           KEN, K, NBIN, NSMX, NANZ, IS, ITRI,
+     .           NL3J, NL2J, NL1J, IP, ISTS, IT, KAN, KEN,
+     .           JATM, JMOL, JPLS, JSPZ,
+     .           K, NBIN, NSMX, NANZ, IS, ITRI, ITET,
      .           ISGRD1, IS2, ISGRD2,
-     .           ISGRD3, INS, JATM, JMOL, JSPZ,
+     .           ISGRD3, INS,
      .           MSTEP(NSTEP),MMSTEP(NSTEP)
       INTEGER, EXTERNAL :: EIRENE_IDEZ
       EXTERNAL :: EIRENE_MASPRM, EIRENE_MASJ2R, EIRENE_MASJR2,
