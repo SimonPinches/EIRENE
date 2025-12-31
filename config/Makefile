@@ -122,6 +122,10 @@ ifdef USE_B25
     INCLUDE += -I${B2SRC}/include
   endif
 endif
+GIT_DESCRIPTION=$(shell git describe --tags --dirty --always | cut -c 1-32 )
+GIT_BRANCH=$(shell git branch --show-current )
+GIT_DATE=$(shell git show -s --format="%ci" )
+GIT_HASH=$(shell git show -s --format="%H" )
 
 ifdef USE_B25
 EIRENE_DEFINES += ${USE_B25}
@@ -608,11 +612,7 @@ ${OBJDIR}/LISTOBJ: listobj
 VERSION: ${SRCDIR}/git_version_Eirene.h ${SRCDIR}/assistant/version.f
 
 ${SRCDIR}/assistant/version.f: ${SRCDIR}/cmake/version.f.in ${MAKES}
-	git_description=`git describe --tags --dirty --always | cut -c 1-32` ; \
-	git_branch=`git branch --show-current` ; \
-	git_date=`git show -s --format="%ci"` ; \
-	git_hash=`git show -s --format="%H"` ; \
-	cat ${SRCDIR}/cmake/version.f.in | sed -e 's:@git_description@:${git_description}:' -e 's:@git_date@:${git_date}:' -e 's:@git_hash@:${git_hash}:' -e 's:@git_branch@:${git_branch}:' > ${SRCDIR}/assistant/version.f
+	cat ${SRCDIR}/cmake/version.f.in | sed -e 's|@git_description@|${GIT_DESCRIPTION}|' -e 's|@git_date@|${GIT_DATE}|' -e 's|@git_hash@|${GIT_HASH}|' -e 's|@git_branch@|${GIT_BRANCH}|' > ${SRCDIR}/assistant/version.f
 
 ${SRCDIR}/git_version_Eirene.h: force
 	@echo "      character*32 :: git_version_Eirene =" > ${SRCDIR}/git_version_new.h
@@ -676,9 +676,9 @@ ifdef NO_MPI
 	echo 'MPI_VERSION=0' > ${OBJDIR}/mpiversion.mk
 else
 	printf "use mpi\ninteger OPEN_MPI\nWRITE(*,fmt='(A12,I1)') 'MPI_VERSION=', MPI_VERSION\nWRITE(*,fmt='(A9)') 'MPI_MOD=1'\nif (OPEN_MPI.ne.0) WRITE(*,fmt='(A10)') 'OPEN_MPI=1'\nEND\n" > ${OBJDIR}/mpi_version.f90
-	( ${FC} ${FCOPTS} ${INCLUDE} -o ${OBJDIR}/mpi_version ${OBJDIR}/mpi_version.f90 ${LD_MPI} && ( ${OBJDIR}/mpi_version | tail -n3 ) || \
+	( ${MPI_FC} ${FCOPTS} ${INCLUDE} -o ${OBJDIR}/mpi_version ${OBJDIR}/mpi_version.f90 ${LD_MPI} && ( ${OBJDIR}/mpi_version | tail -n3 ) || \
 	( printf "include 'mpif.h'\nWRITE(*,fmt='(A12,I1)') 'MPI_VERSION=', MPI_VERSION\nWRITE(*,fmt='(A9)') 'MPI_MOD=0'\nEND\n" > ${OBJDIR}/mpi_version.f90 ; \
-	( ${FC} ${FCOPTS} ${INCLUDE} -o ${OBJDIR}/mpi_version ${OBJDIR}/mpi_version.f90 ${LD_MPI} && ( ${OBJDIR}/mpi_version | tail -n2 ) || ( echo MPI_VERSION=0 ; echo MPI_MOD=0 ) ) ) ) > ${OBJDIR}/mpiversion.mk
+	( ${MPI_FC} ${FCOPTS} ${INCLUDE} -o ${OBJDIR}/mpi_version ${OBJDIR}/mpi_version.f90 ${LD_MPI} && ( ${OBJDIR}/mpi_version | tail -n2 ) || ( echo MPI_VERSION=0 ; echo MPI_MOD=0 ) ) ) ) > ${OBJDIR}/mpiversion.mk 2> /dev/null
 endif
 
 echo:
