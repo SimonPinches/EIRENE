@@ -105,8 +105,8 @@ cdr  Totals (outau, fort.11) are still on storage.
      .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSIGI_SPC,TRCFLE)
+     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,NSIGI_SPC,
+     .             TRCFLE)
           IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
             CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))
@@ -119,8 +119,8 @@ cdr  Totals (outau, fort.11) are still on storage.
      .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSIGI_SPC,TRCFLE)
+     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,NSIGI_SPC,
+     .             TRCFLE)
           IF (NLSYMP(ISTRA).OR.NLSYMT(ISTRA)) THEN
             CALL EIRENE_SYMET(ESTIMV,NVOLTL,NRTAL,NR1TAL,NP2TAL,NT3TAL,
      .               NLSYMP(ISTRA),NLSYMT(ISTRA))

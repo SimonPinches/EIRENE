@@ -700,7 +700,7 @@ C
 C  FLUID LIMIT, CX, AND SAME SPECIES
             IF (NGENX.LT.0) THEN
               IF (NNEW.EQ.NOLD) THEN
-                FP=VELO/SIGVCX(IRCX)  !mfp
+                FP=VELO/SIGVCX(IRCX)  ! M.F.P.
                 FLTEST=FP/DIST
                 IF (FLTEST.LT.FDLMCX(IRCX)) THEN
                   CALL EIRENE_GENLIM_POST(WEIGHT,E0*WEIGHT,NNEW)

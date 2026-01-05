@@ -1,3 +1,8 @@
+cdr Oct.20:  currently this routine should not be called.
+cdr          BGK tallies are not needed.
+cdr          It will become active again (with modifications)
+cdr          when velocity-dependent relaxation rates come in.
+
       MODULE EIRMOD_UPTBGK
       IMPLICIT NONE
       PRIVATE

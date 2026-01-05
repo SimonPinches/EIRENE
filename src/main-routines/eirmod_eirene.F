@@ -126,14 +126,6 @@ C
 
       IMPLICIT NONE
 
-#ifdef WINDOWS
-      interface
-        subroutine ioflush
-!DIR$attributes c, alias: 'ioflush_' :: ioflush
-        end subroutine
-      end interface
-#endif
-
       REAL(DP), INTENT(IN) :: DT
       LOGICAL, INTENT(IN) :: NLMODE, NLLAST, MPI_INITIALIZE
       INTEGER, INTENT(IN) :: ITNR
@@ -296,14 +288,6 @@ C
 !     ENTRY EIRENE_EIRENE_COUPLE (NLLAST,ITNR,MPI_INITIALIZE)
       SUBROUTINE EIRENE_EIRENE_COUPLE (NLLAST,ITNR,MPI_INITIALIZE)
       IMPLICIT NONE
-
-#ifdef WINDOWS
-      interface
-        subroutine ioflush
-!DIR$attributes c, alias: 'ioflush_' :: ioflush
-        end subroutine
-      end interface
-#endif
 
       LOGICAL, INTENT(IN) :: NLLAST, MPI_INITIALIZE
       INTEGER, INTENT(IN) :: ITNR

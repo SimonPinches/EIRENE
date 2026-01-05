@@ -32,7 +32,6 @@
 !$OMP&     ICOS,NN,NTNEW,MASRFS)
 #endif
 
-
       CONTAINS
 
 !pb  05.10.06: option for single-sided switching of additional surfaces introduced
@@ -452,7 +451,7 @@ C  DO NOT UPDATE FLUXES (SET WEIGHT=0.D0)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-             SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
+            SPUMP(ISPZ,MSURFG)=SPUMP(ISPZ,MSURFG)+WEIGHT
           ENDIF
         END IF
         IF (LSPUMP) LMETSPW(ISPZ) = .TRUE.

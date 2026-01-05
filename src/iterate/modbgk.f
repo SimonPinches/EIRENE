@@ -155,8 +155,8 @@ C  NOTHING TO BE DONE, DATA ARE ALREADY FOR "SUM OVER STRATA"
      .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSIGI_SPC,TRCFLE)
+     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,NSIGI_SPC,
+     .             TRCFLE)
       ELSE
         WRITE (iunout,*) 'ERROR IN MODBGK: DATA FOR STRATUM ISTRA= ',
      .                    ISTRA

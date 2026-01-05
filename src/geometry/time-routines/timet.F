@@ -520,6 +520,7 @@ C
             X001=X01
           ENDIF
         ELSE
+cdr  abs(vely)=1, hence: velx=velz=0 here
           ITT=0
           Z001=Z01
           X001=X01

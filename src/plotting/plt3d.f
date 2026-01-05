@@ -49,7 +49,7 @@ C  3D GEOMETRY (AND TRAJECTORY) PLOT
      .           IA, IAN, IEN, ISSTD, IBA, NJZ, J, JJ, IPZ,
      .           IP, I, NINNE, NZAD, NIN, MERK2, IPR, IB, MERK,
      .           IJZ, JP, IPRT, ibp, ibz
-      LOGICAL :: PLABLE(NLIM), LPERID(NLIM), LSYMET(NLIM),
+      LOGICAL :: PLABLE(NLIM), LSYMET(NLIM),
      .           LERR1, LERR2, LSAVE, PLT1, PLT2, PLT3
       TYPE(PPOINT), POINTER :: CUR
       EXTERNAL :: EIRENE_CONE, EIRENE_CTQUA, EIRENE_ELLIPSOID,
@@ -213,7 +213,6 @@ C                       SURFACE
                 ENDIF
                 CYCLE
               ELSE
-                LPERID(J)=.TRUE.
                 NJZ=0
                 DO 50 IPZ=1,IPLTS(3)
                   IF (IPLAS(3,IPZ).LT.IPLES(3,IPZ)) THEN
@@ -243,7 +242,6 @@ C                       SURFACE
               NJZ=1
               ILT(1)=ILTOR(J)
               LSYMET(J)=.FALSE.
-              LPERID(J)=.FALSE.
               IF (TRCPLT) THEN
                 WRITE (iunout,*) 'PLOT ADD. SURFACE NO. ',J
               ENDIF

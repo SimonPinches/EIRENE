@@ -91,13 +91,13 @@ c
      .            TII, TBCX, TBEI, TBPI, TBEL, TBRC,
      .            ELEI, EPCX, EPEL, ELRC,
 cdr  functions for 'on the fly' evaluation of A&M data
-     .          EIRENE_FEELEI1,
-     .          EIRENE_FEELRC1,
-     .          EIRENE_FEPLCX3, EIRENE_FEPLEL3,
-     .          EIRENE_FTABCX3, EIRENE_FTABPI3,
-     .          EIRENE_FTABEI1, EIRENE_FTABRC1,
-     .          EIRENE_FTABEL3,
-     .          EIRENE_RATE_COEFF
+     .            EIRENE_FEELEI1,
+     .            EIRENE_FEELRC1,
+     .            EIRENE_FEPLCX3, EIRENE_FEPLEL3,
+     .            EIRENE_FTABCX3, EIRENE_FTABPI3,
+     .            EIRENE_FTABEI1, EIRENE_FTABRC1,
+     .            EIRENE_FTABEL3,
+     .            EIRENE_RATE_COEFF
       REAL(DP),PARAMETER :: EMIN = 0.1003_DP  ! hard coded cut-off for
                                         ! EBEAM parameter in H.3 fits
       INTEGER :: NS,NA,IAIN,MM,KK,ND2,

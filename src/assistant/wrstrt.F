@@ -22,8 +22,8 @@ cpb  Dec. 2017: remove type SPECT_ARRAY, not needed in Fortran 2003
      .                  IESTM1,IESTM2,IESTM3,
      .                  TALLYV,TALLYS,TALLYL,
      .                  ISDVI1,STAT1,ISDVI2,STAT2,
-     .                  ISDVC1,SIGC,ISDVC2,SIGCS,
-     .                  ISPCI,TRCFLE)
+     .                  ISDVC1,SIGC,ISDVC2,SIGCS,ISPCI,
+     .                  TRCFLE)
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD, ONLY: EIRENE_SPECTRUM, IFOFF
@@ -301,8 +301,8 @@ C
      .            IESTM1,IESTM2,IESTM3,
      .            TALLYV,TALLYS,TALLYL,
      .            ISDVI1,STAT1,ISDVI2,STAT2,
-     .            ISDVC1,SIGC,ISDVC2,SIGCS,
-     .            ISPCI,TRCFLE)
+     .            ISDVC1,SIGC,ISDVC2,SIGCS,ISPCI,
+     .            TRCFLE)
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD, ONLY: EIRENE_SPECTRUM, IFOFF
       USE EIRMOD_COMPRT, ONLY: IUNOUT

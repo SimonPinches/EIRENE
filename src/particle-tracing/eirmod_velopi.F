@@ -26,7 +26,6 @@
      .            VXN, VYN, VZN, VN,
      .            VXDR, VYDR, VZDR, ZARGX, ZARGY, ZARGZ,
      .            ELMIN, ELMAX, CPI, ELAB, ELLAB, VRQ, VR, TEST
-ctk      REAL(DP), EXTERNAL :: RANF_EIRENE
       INTEGER :: ISPZI, ISPZM, ISPZA
       INTEGER :: ICOUNT, JJ, IREAC
 

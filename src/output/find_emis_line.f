@@ -144,16 +144,16 @@ C  NOTHING TO BE DONE
      .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSIGI_SPC,TRCFLE)
+     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,NSIGI_SPC,
+     .             TRCFLE)
       ELSEIF ((NFILEN.EQ.6.OR.NFILEN.EQ.7).AND.ISTR.EQ.0) THEN
         IESTR=ISTR
         CALL EIRENE_RSTRT(ISTR,NSTRAI,
      .             NESTM1,NESTM2,NADSPC,
      .             ESTIMV,ESTIMS,ESTIML,
      .             NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .             NSIGI_SPC,TRCFLE)
+     .             NSDVC1,SIGMAC,NSDVC2,SGMCS,NSIGI_SPC,
+     .             TRCFLE)
       ELSE
         WRITE (IUNOUT,*) 'ERROR IN FIND_EMIS_LINE: ' //
      .                   'DATA FOR STRATUM ISTRA= ', ISTR

@@ -60,14 +60,14 @@ cdr  Write the newly defined tallies ADDV onto stream fort.10, fort.11, stratum 
       integer, intent(in) :: istr, lstart, lend, icall
       integer :: i, j, k, iline,
      .           iads, iadv, isp(3), itp(3), iratio, irc,
-     .           irc_rat(2), icell, ncelc, ndens, idens, icount
+     .           irc_rat(2), icell, ncelc, ndens, idens
       real(dp) :: density(3), sigadd, add, powalf, powalfs,
      .            einstein, trans_en, DE, TE, TEF, DEF, popcf,
      .            EIRENE_OTHER_RATE_COEFF,
      .            ratio1, ratio2, fpop_esc
       REAL(DP) :: DUMMY(NRTAL)
       REAL(DP), ALLOCATABLE :: OUTAU(:)
-
+      logical :: lwrite
       CHARACTER(6) :: CISTRA
       character(len=80) :: ctest2
       EXTERNAL :: EIRENE_FTCRI, EIRENE_INTTAL, EIRENE_WRSTRT,
@@ -132,6 +132,7 @@ cdr run over contributions: density models, isotopes, QSS states
             irc_rat = emis_lines(i)%compo(j)%contrib(k)%irc_rat
 
             ndens = count(itp >= 0)
+            lwrite = .true.
 
 !  account for pop_esc
             fpop_esc = 1._dp
@@ -144,7 +145,6 @@ cdr  e.g. for both effective rate coefficients and line emission densities
               fpop_esc = reacdat(irc)%oth%crm%pop_esc
             end if
 
-            ICOUNT=0
             DO ICELL=1,NSBOX
 C
 C  LOCAL BACKGROUND DATA ARE IN CELL ICELL
@@ -178,7 +178,7 @@ C
                     density(idens) = dein(icell)
                   case default
                     density(idens) = 0._dp
-                    if (TRCSIG .AND. ICOUNT.EQ.0) then
+                    if (lwrite) then
                       write (iunout,*) ' ERROR IN EMISSIVITY'
                       write (iunout,*)
      .                  ' WRONG PARTICLE TYPE SPECIFIED FOR'
@@ -187,7 +187,7 @@ C
                       write (iunout,*) ' component ',j,
      .                   emis_lines(i)%compo(j)%compo_name
                       write (iunout,*) ' contribution ',k
-                      ICOUNT=1
+                      lwrite = .false.
                     end if
                 end select
               end do
@@ -305,8 +305,8 @@ C  WRITE ON STREAM 10 DATA FOR STRATUM NO. ISTR
      .              NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .              NSIGI_SPC,TRCFLE)
+     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,NSIGI_SPC,
+     .              TRCFLE)
 C
 C  WRITE ON STREAM 11 (TOTALS, SUMMED OVER GRID) FOR STRATUM NO. ISTR
         IRC=2
@@ -323,8 +323,8 @@ C  WRITE ON STREAM 10 ONLY DATA FOR SUM OVER STRATA
      .              NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .              NSIGI_SPC,TRCFLE)
+     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,NSIGI_SPC,
+     .              TRCFLE)
 C
 C  WRITE ON STREAM 11 (TOTALS, SUMMED OVER GRID) ONLY DATA FOR SUM OVER STRATA
         IRC=2

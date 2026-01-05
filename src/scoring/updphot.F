@@ -263,7 +263,7 @@ cdr This perfectly cancels the source rate. This is an "idle" Monte Carlo partic
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-            EPHPHT(IRD)      =EPHPHT(IRD)      -WTRSIG*E0
+            EPHPHT(IRD)=EPHPHT(IRD)-WTRSIG*E0
           ENDIF
         END IF
 C

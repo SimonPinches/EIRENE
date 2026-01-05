@@ -2433,7 +2433,7 @@ C  VOLUME TALLIES FOR TEST SECONDARIES FROM INITIAL BULK PARTICLES
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                 PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
+                PPML(IMOL,NCELLT)=PPML(IMOL,NCELLT)+WEIGHT
               ENDIF
               IF (LEPML) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
@@ -2492,7 +2492,7 @@ C  TALLIES FOR BULK-SECONDARIES (IF ANY)
             ENDIF
           ELSEIF (ITYP_B2.EQ.4) THEN
             LOGPLS(IPLS_B2,ISTRA)=.TRUE.
-            IF (LPPPL)THEN
+            IF (LPPPL) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif

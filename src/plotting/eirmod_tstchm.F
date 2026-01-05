@@ -55,7 +55,7 @@ C
       INTEGER, INTENT(OUT) :: IINDEX
       REAL(DP) :: XS(2),YS(2)
       REAL(DP) :: TBDXN, TBDYN, TEST, T,
-     .          TIME, TESTX, TESTY
+     .            TIME, TESTX, TESTY
       INTEGER :: IT
 
 C

@@ -63,12 +63,12 @@ C  ONLY THE SPUTTERED FLUX IS SCORED
         SPTTOT(MSURF) = SPTTOT(MSURF) + WGH
       ENDIF
       IF (MSURFG.GT.0) THEN
-         IF (LSPTTOT) THEN
+        IF (LSPTTOT) THEN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-           SPTTOT(MSURFG) = SPTTOT(MSURFG) + WGH
-         ENDIF
+          SPTTOT(MSURFG) = SPTTOT(MSURFG) + WGH
+        ENDIF
       ENDIF
 C  AT THIS PLACE: NEW ITYP AND NEW SPECIES INDEX NOT NECESSARILY KNOWN
       SELECT CASE (ITOLD)
@@ -84,29 +84,29 @@ C  AT THIS PLACE: NEW ITYP AND NEW SPECIES INDEX NOT NECESSARILY KNOWN
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-           sptatot(msurf)  = sptatot(msurf)  + wgh
+          sptatot(msurf)  = sptatot(msurf)  + wgh
         endif
       CASE (2)
         if (lsptmtot) then
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-           sptmtot(msurf)  = sptmtot(msurf)  + wgh
+          sptmtot(msurf)  = sptmtot(msurf)  + wgh
         endif
       CASE (3)
         if (lsptitot) then
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-           sptitot(msurf)  = sptitot(msurf)  + wgh
+          sptitot(msurf)  = sptitot(msurf)  + wgh
         endif
       CASE (4)
-         if (lsptpltot) then
+        if (lsptpltot) then
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-            sptpltot(msurf) = sptpltot(msurf) + wgh
-         endif
+          sptpltot(msurf) = sptpltot(msurf) + wgh
+        endif
       END SELECT
 
       IF (IND.EQ.1) RETURN

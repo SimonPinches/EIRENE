@@ -37,7 +37,6 @@ C      REAL(DP) :: ELB
 !$OMP& cxs,vr,vrq,elmax,elmin,icount,jj,ireac)
 #endif
 
-
       CONTAINS
 
 !pb  100107: SUBROUTINE VELOCX_REINIT added for reinitialization of EIRENE
@@ -177,7 +176,6 @@ c
           endif
         enddo
 
-!pb!$OMP CRITICAL
         IF (JJ.NE.1 .AND. JJ.NE.1000) THEN
 cdr  maximum found
           elab=elmin+(JJ-1)/999.*(elmax-elmin)

@@ -478,7 +478,7 @@ cdr
       NFSTPI(94)=1
       NFSTPI(95)=1
       NFSTPI(96)=1
-c  grad BV_VEC:  strictly: a 3x3 dyadic now
+c  grad BV_VEC: strictly: a 3x3 dyadic now
       NFSTPI(97)=3*NPLSI
       NFSTPI(98)=3*NPLSI
       NFSTPI(99)=3*NPLSI

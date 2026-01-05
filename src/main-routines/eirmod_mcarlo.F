@@ -1584,8 +1584,8 @@ cdr npesta is the master processor for stratum no ISTRA
      .              NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .              NSIGI_SPC,TRCFLE)
+     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,NSIGI_SPC,
+     .              TRCFLE)
               endif
             ENDIF
 C
@@ -1745,8 +1745,8 @@ C  STRATA
      .              NESTM1,NESTM2,NADSPC,
      .              ESTIMV,ESTIMS,ESTIML,
      .              NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .              NSIGI_SPC,TRCFLE)
+     .              NSDVC1,SIGMAC,NSDVC2,SGMCS,NSIGI_SPC,
+     .              TRCFLE)
         ENDIF
 #if ( defined(USE_EXT_OPENMP) && !defined(USE_OPENMP) )
 !$OMP END MASTER
@@ -1844,8 +1844,7 @@ cdr spectrum tally variances are already in ESTIML
      .                NESTM1,NESTM2,NADSPC,
      .                ESTIMV,ESTIMS,ESTIML,
      .                NSDVI1,SDVI1,NSDVI2,SDVI2,
-     .                NSDVC1,SIGMAC,NSDVC2,SGMCS,
-     .                NSIGI_SPC,
+     .                NSDVC1,SIGMAC,NSDVC2,SGMCS,NSIGI_SPC,
      .                TRCFLE)
         ENDIF
       ENDIF ! NSMSTRA == 1

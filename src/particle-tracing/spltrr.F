@@ -108,7 +108,7 @@ C
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
 #endif
-       CALL EIRENE_CHCTRC(X0,Y0,Z0,16,9)
+        CALL EIRENE_CHCTRC(X0,Y0,Z0,16,9)
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP END CRITICAL
 #endif

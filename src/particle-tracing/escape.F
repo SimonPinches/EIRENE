@@ -863,9 +863,9 @@ cdr  for additional surface tallies: this is treated as re-emitted flux.
         IRET = 2
         RETURN
 C
-C  ... OR: PERFECT SPECULAR REFLECTION
+C  ... OR: PERFECT SPECULAR REFLECTION, MIRROR,
 C
-      ELSEIF (ILIIN(MSURF).EQ.3) THEN
+      ELSEIF (ILIIN(MSURF).EQ.3) THEN   ! (and here: .not ltrans)
 cdr  why no call to update_surface for emitted fluxes?
 cdr  Because already done above, under: if (iliin=3 and not ltransp)
         COSI2=-2.*(VELX*CRTX+VELY*CRTY+VELZ*CRTZ)

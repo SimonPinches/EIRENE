@@ -259,6 +259,7 @@ C  TOROIDAL SURFACE
               IRE = IRPTE(ISTS,1)
               IPA = IRPTA(ISTS,2)
               IPE = IRPTE(ISTS,2)
+C  TRIANGULAR GRID
             case (4)
               sum1 = 0._dp
               nt =  surf_trian_ordered(i)%numtr
