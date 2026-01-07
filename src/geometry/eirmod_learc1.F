@@ -1,7 +1,12 @@
+cdr  oct. 23 : case: LEVGEO=4
+cdr            remove misleading warnings (e.g. when NLTEST = TRUE),
+cdr            for particles on surface.
+cdr            In those cases 2 triangles found are ok.
+
       MODULE EIRMOD_LEARC1
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
-      USE EIRMOD_COMPRT, ONLY: IUNOUT
+      USE EIRMOD_COMPRT, ONLY: IUNOUT, NLSRFX
       USE EIRMOD_CGRID
       USE EIRMOD_CGEOM
       USE EIRMOD_CCONA
@@ -336,7 +341,8 @@ C  CELL I ALREADY TESTED BEFORE ?
      .          MIN(ABS(D(1,2)),ABS(D(2,2)),ABS(D(3,2))).LT.EPDXDY)))
      .   THEN
           CONTINUE ! POINT ON BOUNDARY BETWEEN TWO TRIANGLES
-        ELSEIF (INUM.GT.1) THEN
+        ELSEIF ((INUM.GT.1 .AND. .NOT.NLSRFX) .OR.
+     .          (INUM.GT.2 .AND. NLSRFX)) THEN
           CALL EIRENE_MASAGE('WARNING FROM LEARC1, INUM.GT.1')
           CALL EIRENE_MASR2 ('X,Y             ',X,Y)
           WRITE (iunout,*) 'LEARC1 CALLED FROM SUBR. ',TEXT

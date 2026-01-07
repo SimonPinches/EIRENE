@@ -148,7 +148,7 @@ C
 !$OMP MASTER
 #endif
       IF (MPI_INITIALIZE) THEN
-         CALL EIRENE_MPI_INIT(IER)
+        CALL EIRENE_MPI_INIT(IER)
       ENDIF
 #if ( defined(USE_EXT_OPENMP) && defined(USE_OPENMP) )
       WRITE(*,*) 'Cannot run Eirene with both '//

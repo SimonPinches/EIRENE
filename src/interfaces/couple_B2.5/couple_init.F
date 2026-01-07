@@ -13,6 +13,7 @@ C
 
       character(20) :: outname
       character(6) :: outpos
+      external :: ioflush_usr
 
       if (my_pe.ne.0) then
 
@@ -26,11 +27,7 @@ C
 
         CALL EIRENE_OPENFILE (UNIT=IUNOUT, FILE=OUTNAME,
      .        ACCESS='SEQUENTIAL', FORM='FORMATTED', POSITION=OUTPOS)
-cpg #ifdef WINDOWS
-cpg DIR$attributes c, alias: 'ioflush_' :: ioflush
-cpg #endif
         call ioflush_usr
-cpg end
 
       end if
       return

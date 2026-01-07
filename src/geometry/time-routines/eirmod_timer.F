@@ -33,47 +33,13 @@ C
       private
 
       PUBLIC :: EIRENE_TIMER
-cym
-!      REAL(DP),SAVE :: SIG1, SIG2, DET, XMU, XETA, AX, AY, V,
-!     .          TIMTET,
-!     .          ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
-!     .          S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
-!     .          ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
-!     .          ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
-!     .          Y0TEST, ZA, T, V1, ESURF,
-!     .          XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI
-!      INTEGER,SAVE :: IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
-!     .           EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
-!     .           ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
-!     .           ISTS, MMSURF, J, K, I, JPOL,
-!     .           MPOL, IPOLGO, IP, ICELLR, MSAVE, ITRI,
-!     .     ISTS_CELL, ISD, nclpb, icts
       INTEGER, SAVE :: ITFRST = 0, ICALL = 0
 
       INTEGER, ALLOCATABLE, SAVE :: ITRINO(:), ISIDNO(:)
       INTEGER, SAVE :: NSTS_CELL
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
-!$OMP THREADPRIVATE (ICALL, ITFRST,
-!$OMP& ITRINO, ISIDNO, NSTS_CELL)
-
-!!$OMP THREADPRIVATE (
-!!$OMP& SIG1, SIG2, DET, XMU, XETA, AX, AY, V,TIMTET,
-!!$OMP& ZZ, RICHTY, HELP, TM, RICHTX, YY, XX, S3, TIMT, TIM,
-!!$OMP& S2, A1, A2, A3, B1, B2, B3, S1, V2, V3, ZR, ZEP1,
-!!$OMP& ZSQRT, PS, VELYQ, XX0, VVELX, VELXQ, ZT1, ZT2, YVY,
-!!$OMP& ZC1, DXA, TST, XA, ZB2, ZAB, ZAB2, ZB, Z0TEST,
-!!$OMP& Y0TEST, ZA, T, V1, ESURF,
-!!$OMP& XTEST, YTEST, X0SURF, DSRF, Y0Q, T1, T2, T3, T4, PNORMI,
-!!$OMP& IRICH, ITSIDE,
-!!$OMP& IZELLO, NTIMT, IOB, I1, I2, ISW, KAN, KEN,
-!!$OMP& EIRENE_ILLZ, IHELP, IZELL, NTMS, MXSF, NTMZ, NRMSRF,
-!!$OMP& ICOS, IERR, IRS, NEWCEL, ITET, IT, IL, IS, NRI, MS, IR,
-!!$OMP& ICALL, ITFRST, ISTS, MMSURF, J, K, I, JPOL,
-!!$OMP& MPOL, IPOLGO, IP, ICELLR, MSAVE, ITRI,
-!!$OMP& ISTS_CELL, ISD, nclpb, icts,
-!!$OMP& ITRINO, ISIDNO, NSTS_CELL)
+!$OMP THREADPRIVATE (ICALL, ITFRST, ITRINO, ISIDNO, NSTS_CELL)
 #endif
-cpg      SAVE
 
       CONTAINS
 
@@ -1272,9 +1238,11 @@ C
       END IF
       IPOLGN=NTIM(NRCELL)
       ISTS=ABS(INMTI(IPOLGN,NRCELL))
+
+c  on internal grid surface: ISTS=0. Set nrcell increment
       IF (ISTS.EQ.0) THEN
-c  on internal grid surface: ISTS=0
         NINCX=NCHBAR(IPOLGN,NRCELL)-NRCELL
+C  on non-default surface: ISTS .NE. 0
       ELSEIF (ISTS.GT.0.AND.
      .        ISTS.LE.NLIM+NSTSI) THEN
 C  on non-default surface (add. or. std.): ISTS=INMTI(IPOLGN,NRCELL)

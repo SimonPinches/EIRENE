@@ -4,35 +4,31 @@ C
 
       subroutine eirene_couple_init_output
 
-       use EIRMOD_CPES, only: MY_PE, NPRS
-       use EIRMOD_COMPRT, only: IUNOUT
-       use EIRMOD_PARMMOD, only: LOUTAPP
-       use EIRMOD_OPENFILE, only: EIRENE_OPENFILE
+      use EIRMOD_CPES, only: MY_PE, NPRS
+      use EIRMOD_COMPRT, only: IUNOUT
+      use EIRMOD_PARMMOD, only: LOUTAPP
+      use EIRMOD_OPENFILE, only: EIRENE_OPENFILE
 
-       implicit none
-
+      implicit none
 
       character(20) :: outname
       character(6) :: outpos
+      external :: ioflush_usr
 
       if (NPRS > 1) IUNOUT = 7
       if (my_pe.ne.0) then
 
         OUTNAME='output.'
-        write (OUTNAME(8:),'(I4.4)') MY_PE
-        if ( LOUTAPP ) THEN
+        WRITE (OUTNAME(8:),'(I4.4)') MY_PE
+        IF ( LOUTAPP ) THEN
           OUTPOS='APPEND'
-        else
+        ELSE
           OUTPOS='ASIS'
-        end if
+        END IF
 
-        CALL EIRENE_OPENFILE (IUNOUT, FILE=OUTNAME,
+        CALL EIRENE_OPENFILE (IUNIT=IUNOUT, FILE=OUTNAME,
      .        ACCESS='SEQUENTIAL', FORM='FORMATTED', POSITION=OUTPOS)
-cpg #ifdef WINDOWS
-cpg DIR$attributes c, alias: 'ioflush_' :: ioflush
-cpg #endif
         call ioflush_usr
-cpg end
 
       end if
       return

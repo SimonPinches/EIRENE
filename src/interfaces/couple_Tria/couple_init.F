@@ -13,9 +13,9 @@ C
 
       character(20) :: outname
       character(6) :: outpos
+      external :: ioflush_usr
 
       if (NPRS > 1) IUNOUT = 7
-
       if (my_pe.ne.0) then
 
         OUTNAME='output.'
@@ -26,13 +26,9 @@ C
           OUTPOS='ASIS'
         END IF
 
-        CALL EIRENE_OPENFILE (IUNIT=IUNOUT, FILE=OUTNAME,
+        CALL EIRENE_OPENFILE (IUNOUT, FILE=OUTNAME,
      .        ACCESS='SEQUENTIAL', FORM='FORMATTED', POSITION=OUTPOS)
-cpg #ifdef WINDOWS
-cpg DIR$attributes c, alias: 'ioflush_' :: ioflush
-cpg #endif
         call ioflush_usr
-cpg end
 
       end if
       return
@@ -41,9 +37,11 @@ cpg end
 
 
       subroutine eirene_couple_alloc
-      return
+      use eirmod_parmmod, only : nmol,nion,npls
+
       end subroutine eirene_couple_alloc
 
       subroutine eirene_couple_post_input
-      return
+      use eirmod_precision
+
       end subroutine eirene_couple_post_input

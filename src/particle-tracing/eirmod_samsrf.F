@@ -90,7 +90,7 @@ C
       IMPLICIT NONE
 
 cym variable defined in the module removed from the list
-      REAL(DP):: TORL(NSTEP,NGITT), FL, GAMMA, CUR,
+      REAL(DP):: TORL(NSTEP,NGITT), GAMMA, CUR,
      .           RANDIF,
      .           DELR, TESH, CTHETA, DELRR, CS, V_MEAN, ZZ,
      .           EIRENE_STEP0, EIRENE_STEP

@@ -250,36 +250,36 @@ C
           write (cisp,'(I0)') isp
           FNAME = 'outtal_'//trim(cital)//'_'//trim(cisp)//'_STDV'
 
-        IF (LFIRST) THEN
-          OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',
-     .          ACCESS='SEQUENTIAL')
-        ELSE
-          OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',
-     .          ACCESS='SEQUENTIAL',POSITION='APPEND')
-        END IF
+          IF (LFIRST) THEN
+            OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',
+     .            ACCESS='SEQUENTIAL')
+          ELSE
+            OPEN (UNIT=IOUT,FILE=FNAME,FORM='FORMATTED',
+     .            ACCESS='SEQUENTIAL',POSITION='APPEND')
+          END IF
 
-        WRITE (IOUT,'(A)')
+          WRITE (IOUT,'(A)')
      .    '+++++++++++++++++++++++++++++++++++++++++++++++++'
-        WRITE (IOUT,'(A,I6)') 'ISTRA = ',ISTRA
-        WRITE (IOUT,'(A)')
+          WRITE (IOUT,'(A,I6)') 'ISTRA = ',ISTRA
+          WRITE (IOUT,'(A)')
      .    '+++++++++++++++++++++++++++++++++++++++++++++++++'
 
 cdr  feb.22: special treatment for vectorial output tallies mapl_vec, mmpl_vec,....
 cdr          "species index" may be just a particular vector component instead.
-        if (ital.ge.97 .and. ital.le.100) then
-          WRITE (IOUT,'(A)') TXTTAL(isp,ITAL)
-        else
+          if (ital.ge.97 .and. ital.le.100) then
+            WRITE (IOUT,'(A)') TXTTAL(isp,ITAL)
+          else
 cdr  tally name is the same for all "species"
-          WRITE (IOUT,'(A)') TXTTAL(1,ITAL)
-        endif
-        WRITE (IOUT,'(A,I10)') 'NCELLS:   ',NSBOX
-        WRITE (IOUT,'(A,I10)') 'NSPECIES: ',1
-        WRITE (IOUT,'(A)') 'SPECIES'
-        WRITE (IOUT,FORMA) TRIM(TXTSPC(ISP,ITAL))
-        WRITE (IOUT,'(A)') 'UNITS'
-        WRITE (IOUT,FORMA) TRIM(TXTUNT(ISP,ITAL))
+            WRITE (IOUT,'(A)') TXTTAL(1,ITAL)
+          endif
+          WRITE (IOUT,'(A,I10)') 'NCELLS:   ',NSBOX
+          WRITE (IOUT,'(A,I10)') 'NSPECIES: ',1
+          WRITE (IOUT,'(A)') 'SPECIES'
+          WRITE (IOUT,FORMA) TRIM(TXTSPC(ISP,ITAL))
+          WRITE (IOUT,'(A)') 'UNITS'
+          WRITE (IOUT,FORMA) TRIM(TXTUNT(ISP,ITAL))
 
-        WRITE (IOUT,'(A)') 'SDV OF TOTAL (%) '
+          WRITE (IOUT,'(A)') 'SDV OF TOTAL (%) '
           WRITE (IOUT,'(A)') 'TOTAL'
           WRITE (IOUT,FORME2) SMEAN
           WRITE (IOUT,'(A)') 'MEAN'

@@ -92,8 +92,6 @@ C
       REAL(DP) :: XG10A(10),XG10B(10)
       REAL(DP) :: SUM, F, X
 
-cym      DATA IFIRST1 /0/
-cym CHECK THIS
       integer :: ifirst1=0
 C
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
@@ -102,11 +100,6 @@ C
 !$OMP&       SUM, F, X,
 !$OMP&       IFIRST1)
 #endif
-
-cym      integer :: icll
-cym !$OMP THREADPRIVATE(icll)
-
-cym      SAVE
 
       CONTAINS
 

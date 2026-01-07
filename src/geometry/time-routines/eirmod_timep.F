@@ -21,37 +21,6 @@ C
 !$OMP THREADPRIVATE(ZRADS)
 #endif
 
-!      REAL(DP) :: HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
-!     .          Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
-!     .          TWIN1, XT, Y000, TSS, X0T, Y0T,
-!     .          DYZR
-!      INTEGER :: IANP, I, IENP, JHELP, ISW, JJC, J1,
-!     .           NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
-!     .           I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
-!     .           IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
-cym     .           EIRENE_LEARCA, EIRENE_LEARC2,
-!     .           NJC, ITEST, JSH, NN ,IN, itc
-
-cdr logicals for intersection with poloidal surfaces
-!      LOGICAL :: LHITP0
-!      LOGICAL :: lnincz
-
-#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
-!!$OMP THREADPRIVATE(HELP, GS, GC, F, XNEN, DUM, SUM, BB, DY, X0TEST,
-!!$OMP&  Y0TEST, V1, V2, T1, ZRADS, ZRD, WIN1, X000, Z0T,
-!!$OMP&  TWIN1, XT, Y000, TSS, X0T, Y0T,
-!!$OMP&  DYZR,
-!!$OMP&  IANP, I, IENP, JHELP, ISW, JJC, J1,
-!!$OMP&  NRCLLP, LHELP, J2, INCY, JN, ICOU, NYSAVE, NHELP,
-!!$OMP&  I1, MPTEST, IR, IRSAVE, NCOUPE, ISTS,
-!!$OMP&  IADD, ICOUT, NCPEN, IPOLGS, NCPAN, J,
-!!$OMP&  NJC, ITEST, JSH, NN ,IN, itc,
-!!$OMP&  LHITP0, lnincz)
-#endif
-
-cym is this really useful ?
-!      SAVE
-
       contains
 
       SUBROUTINE EIRENE_TIMEP (ZRAD)
