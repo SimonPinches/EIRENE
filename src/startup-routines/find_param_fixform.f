@@ -66,7 +66,7 @@ C
       USE EIRMOD_CTRCEI, ONLY: TRCAMD, TRCINT, NVOLPR, NSURPR,
      .                         EIRENE_ALLOC_CTRCEI
       USE EIRMOD_CINIT, ONLY: CASENAME, DBFNAME, DBHANDLE, NDBNAMES,
-     .                        INDPRO2_SAVE,
+     .                        INDPRO2_SAVE, INDSRC,
      .                        EIRENE_INIT_CINIT
       USE EIRMOD_JSON, ONLY : NOPTIM_IN, NRTAL_IN, NSMSTRA_IN,
      .                        INDPRO_IN, NSTRAI_IN, NTIME_IN,
@@ -75,7 +75,6 @@ C
 
       INTEGER :: INDGRD(3), INDPRO(12), IDUM(12)
       INTEGER :: IDUMMY(2), NDUMM1, NDUMM2
-      INTEGER, ALLOCATABLE :: INDSRC(:)
       INTEGER :: NFR, ISOR, NSRFSI, NRADD,
      .           NREACI,
      .           NSTSI, NLIMI, NVOLPL, NSP, ICO,
@@ -921,7 +920,6 @@ cdr  here NSTEP is set to the largest step function number specified on SORIND
         READ (IUNIN,*)
 C
       END DO
-      DEALLOCATE (INDSRC)
       IF (NTIME.GE.1) NSTRAI = NSTRAI + 1
       NSTRA = MAX(NSTRA,NSTRAI)
 
@@ -1384,6 +1382,7 @@ C
         NCPVI=0
         CALL EIRENE_IF0PRM(IUNIN)
       ENDIF
+      DEALLOCATE (INDSRC)
 
 cdr  some parameters may have gotten changed in IF0PRM, case-specific
       NAIN = MAX(NAIN,NAINI)

@@ -118,7 +118,7 @@ C
               IRCX=LGACX(IATM,IACX,0)
               IPLS=LGACX(IATM,IACX,1)
               IF (LGVAC(IRD,IPLS)) GOTO 52
-              IPLSTI= MPLSTI(IPLS)
+              IPLSTI=MPLSTI(IPLS)
               EEION=1.5*TIIN(IPLSTI,IRD)
               IF (LEDRIFT) EEION=EEION+EDRIFT(IPLS,IRD)
               WTRSIG=WTR*SIGVCX(IRCX)/DIIN(IPLS,IRD)

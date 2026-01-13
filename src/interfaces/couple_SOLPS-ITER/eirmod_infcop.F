@@ -4749,9 +4749,9 @@ cdjm Jan2017
      .                           MIPL_VEC(JPLS,INC)*VOLTAL(INC)*
      .                           1.D-5*FLX_EIR
                   SMO_MPPL(IX,IY,IFL,ISTRAI)=SMO_MPPL(IX,IY,IFL,ISTRAI)+
-     .                                       MPPL_COP(JPLS,INC)*
-     .                                       VOLTAL(INC)*
-     .                                       1.D-5*FLX_EIR
+     .                           MPPL_COP(JPLS,INC)*
+     .                           VOLTAL(INC)*
+     .                           1.D-5*FLX_EIR
 cdr:  totals, these now include MPPL contribution (from mppl_cop)
                 ENDIF  ! LCOARSE OPTION
 

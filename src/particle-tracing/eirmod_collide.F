@@ -746,7 +746,7 @@ C  pre-collision estimator, iold, nold, iplso
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
 #endif
-                PXPL(IPLSO,NCELL) =PXPL(IPLSO,NCELL)-WEIGHT
+                PXPL(IPLSO,NCELL)=PXPL(IPLSO,NCELL)-WEIGHT
                 LMETSP(NSPAMI+IPLSO)=.TRUE.
                 IF (LSCX) THEN
 #if ( !defined(G95) && !defined(LEGACYCOMP) )

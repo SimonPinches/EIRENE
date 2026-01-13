@@ -36,15 +36,19 @@ C
      .                        XSTORV2(NSTORV,N2ND+N3RD), WV
 
       REAL(DP) :: WTRSIG, EEION, DIST, WTR
-      INTEGER :: IRD, IRDD, ICOU, IACX, IRCX, IPLSTI
-      INTEGER :: NMTSP, IFIRST
+      INTEGER :: IRD, IFIRST,
+     .           IRCX, ICOU, IACX, IRDD, IPLSTI
+      INTEGER :: NMTSP
 
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(WTRSIG,EEION,DIST,WTR,
 !$OMP&              IRD,IFIRST,
 !$OMP&              IRCX,ICOU,IACX,IRDD,IPLSTI,
 !$OMP&              NMTSP)
+#endif
 
 CDR
+!     INTEGER :: I, IP, IR
 !     REAL(DP), ALLOCATABLE, SAVE ::
 !    .         VPX(:),    VPY(:),    VRX(:),    VRY(:)
 CDR
@@ -114,11 +118,13 @@ C
               IRCX=LGACX(IATM,IACX,0)
               IPLS=LGACX(IATM,IACX,1)
               IF (LGVAC(IRD,IPLS)) GOTO 52
-              IPLSTI= MPLSTI(IPLS)
+              IPLSTI=MPLSTI(IPLS)
               EEION=1.5*TIIN(IPLSTI,IRD)
               IF (LEDRIFT) EEION=EEION+EDRIFT(IPLS,IRD)
               WTRSIG=WTR*SIGVCX(IRCX)/DIIN(IPLS,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP ATOMIC
+#endif
               COPV(IPLS,IRDD)=COPV(IPLS,IRDD)+WTRSIG*(E0/EEION-1.)
               LMETSP(NMTSP+IPLS)=.TRUE.
    52       CONTINUE
@@ -140,4 +146,4 @@ C
       ENDIF
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_UPTCOP

@@ -81,7 +81,7 @@
 
       !flux_save
       real(DP), save, public, allocatable :: flux_save(:)
-      logical, save, public :: flux_saved=.false.
+      logical, save, public :: flux_saved = .false.
 
 !pb 27012016
 ! flag indicating if subroutine iniusr is called from B2.5

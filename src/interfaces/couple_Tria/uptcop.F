@@ -35,14 +35,20 @@ C
       REAL(DP), INTENT(IN) :: XSTOR2(MSTOR1,MSTOR2,N2ND+N3RD),
      .                        XSTORV2(NSTORV,N2ND+N3RD), WV
 
-      REAL(DP) :: P, WTRSIG, EEION, V0_PARB, PARMOM_0, DIST, WTR
-      INTEGER :: IAEL, IREL, IPL2, IAEI, IRDS, IBGK, IICX, IIEI, IIEL,
-     .           IMEL, IPL1, I, IPL, IIO, IRD, IP, IR, IML, IAT, IFIRST,
-     .           IRCX, IADD, ICOU, IACX, IRDD, IMCX, IMEI, IPLSTI,
-     .           IPLSV, IPLV
-      INTEGER, SAVE :: NMTSP
+      REAL(DP) :: WTRSIG, EEION, DIST, WTR
+      INTEGER :: IRD, IFIRST,
+     .           IRCX, ICOU, IACX, IRDD, IPLSTI
+      INTEGER :: NMTSP
+
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP THREADPRIVATE(WTRSIG,EEION,DIST,WTR,
+!$OMP&              IRD,IFIRST,
+!$OMP&              IRCX,ICOU,IACX,IRDD,IPLSTI,
+!$OMP&              NMTSP)
+#endif
 
 CDR
+!     INTEGER :: I, IP, IR
 !     REAL(DP), ALLOCATABLE, SAVE ::
 !    .         VPX(:),    VPY(:),    VRX(:),    VRY(:)
 CDR
@@ -116,6 +122,9 @@ C
               EEION=1.5*TIIN(IPLSTI,IRD)
               IF (LEDRIFT) EEION=EEION+EDRIFT(IPLS,IRD)
               WTRSIG=WTR*SIGVCX(IRCX)/DIIN(IPLS,IRD)
+#if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC
+#endif
               COPV(IPLS,IRDD)=COPV(IPLS,IRDD)+WTRSIG*(E0/EEION-1.)
               LMETSP(NMTSP+IPLS)=.TRUE.
    52       CONTINUE
@@ -137,4 +146,4 @@ C
       ENDIF
 C
       RETURN
-      END
+      END SUBROUTINE EIRENE_UPTCOP

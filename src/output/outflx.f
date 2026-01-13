@@ -274,7 +274,6 @@ C  TRIANGULAR GRID
               N1=NT+1
               N2=1
               N3=1
-
               IRA = 1
               IRE = N1
               IPA = 1

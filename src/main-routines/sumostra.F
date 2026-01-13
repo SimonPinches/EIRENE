@@ -11,6 +11,7 @@ C
       USE EIRMOD_CAI, ONLY: XMCT
       USE EIRMOD_COMUSR
       USE EIRMOD_COUTAU
+      USE EIRMOD_CSPEZ
       USE EIRMOD_CLOGAU
 
       IMPLICIT NONE
@@ -79,6 +80,7 @@ C
       END IF
 #endif
       DO 1101 IMOL=0,NMOLI
+        if (.not.logmol(imol,istra)) cycle
         PPMLI (IMOL,0)=PPMLI (IMOL,0)+PPMLI (IMOL,ISTRA)
         WTOTM (IMOL,0)=WTOTM (IMOL,0)+WTOTM (IMOL,ISTRA)
         PDENMI(IMOL,0)=PDENMI(IMOL,0)+PDENMI(IMOL,ISTRA)
@@ -243,6 +245,7 @@ C
       END IF
 #endif
       DO 1102 IATM=0,NATMI
+        if (.not.logatm(iatm,istra)) cycle
         PPATI (IATM,0)=PPATI (IATM,0)+PPATI (IATM,ISTRA)
         WTOTA (IATM,0)=WTOTA (IATM,0)+WTOTA (IATM,ISTRA)
         PDENAI(IATM,0)=PDENAI(IATM,0)+PDENAI(IATM,ISTRA)
@@ -407,6 +410,7 @@ C
       END IF
 #endif
       DO 1103 IION=0,NIONI
+        if (.not.logion(iion,istra)) cycle
         PPIOI (IION,0)=PPIOI (IION,0)+PPIOI (IION,ISTRA)
         EELFI (IION,0)=EELFI (IION,0)+EELFI (IION,ISTRA)
         WTOTI (IION,0)=WTOTI (IION,0)+WTOTI (IION,ISTRA)
@@ -572,6 +576,7 @@ C
       END IF
 #endif
       DO IPHOT=0,NPHOTI
+        if (.not.logphot(iphot,istra)) cycle
         PPPHTI  (IPHOT,0)=PPPHTI  (IPHOT,0)+PPPHTI  (IPHOT,ISTRA)
         WTOTPH  (IPHOT,0)=WTOTPH  (IPHOT,0)+WTOTPH  (IPHOT,ISTRA)
         PDENPHI (IPHOT,0)=PDENPHI (IPHOT,0)+PDENPHI (IPHOT,ISTRA)
@@ -727,6 +732,7 @@ C
       END IF
 #endif
       DO 1104 IPLS=0,NPLSI
+        if (.not.logpls(ipls,istra)) cycle
         WTOTP (IPLS,0)=WTOTP (IPLS,0)+WTOTP (IPLS,ISTRA)
 
         PPPLI (IPLS,0)=PPPLI (IPLS,0)+PPPLI (IPLS,ISTRA)
