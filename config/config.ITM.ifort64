@@ -1,7 +1,7 @@
 # Test whether necessary variables are set
-GLI_HOME  ?= /pfs/work/g2dpc/SOLPS-ITER/gks
-GR_ROOT   ?= /pfs/work/g2dpc/SOLPS-ITER/gr
-LD_GR     ?= -L${GR_ROOT} -lgr
+GLI_HOME  ?= ${EBROOTGLI}
+GR_ROOT   ?= ${EBROOTGR}
+LD_GR     ?= -L${GR_ROOT}/lib -lgr
 LD_GKS    ?= -L${GLI_HOME} -lgks -lgfortran
 
 # DEFINES += -DRECL_UNITS_PER_DOUBLE=8 -DNO_F01AAF -DNO_SAVE
