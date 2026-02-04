@@ -3,7 +3,7 @@ C  21.01.06: photon background for test atoms: removed
 C  18.04.06: test ions and atoms: synchronized
 C            bug fix: V0_para --> parmom_0 for elastic momentum source
 C                                 contribution from atoms.
-C  10.01.07: parallel momentum exchange tallies MAPL_VEC, MMPL_VEC, MIPL_VEC
+C  10.01.07: momentum exchange tallies MAPL_VEC, MMPL_VEC, MIPL_VEC
 C            included as default EIRENE tallies.
 C            Before these tallies have been updated in problem
 C            specific section UPTCOP, as COPV tallies.

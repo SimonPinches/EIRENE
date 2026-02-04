@@ -31,7 +31,6 @@ cdr  via iterative loops or stepping.
       USE EIRMOD_COMSOU
       USE EIRMOD_COMSPL
       USE EIRMOD_COMSIG
-      USE EIRMOD_COMXS
       USE EIRMOD_CLGIN
       USE EIRMOD_COUTAU
       USE EIRMOD_CSPEI
@@ -291,7 +290,7 @@ C
 C  INITIALIZE SUBR. REFLEC AND SPUTER
       CALL EIRENE_REFLC0
       TIM2=EIRENE_SECOND_OWN()
-      IF (TRCTIM) write (iunout,*) 'CPU time for reflec0 ', tim2-tim1
+      IF (TRCTIM) write (iunout,*) 'CPU time for reflc0 ', tim2-tim1
       tim1 = tim2
       IF (NPHOT > 0) THEN
         CALL EIRENE_REFLC0_PHOTON

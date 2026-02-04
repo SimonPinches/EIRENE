@@ -11,10 +11,10 @@
 
       implicit none
 
-      class(json_core),intent(inout) :: json
-      type(json_value),pointer, intent(inout) :: this
-      type(json_value),pointer :: trgs, trg, flds, fld, prts, prt
-      type(json_value),pointer :: intls, intl, ottls, ottl
+      class(json_core), intent(inout) :: json
+      type(json_value), pointer, intent(inout) :: this
+      type(json_value), pointer :: trgs, trg, flds, fld, prts, prt
+      type(json_value), pointer :: intls, intl, ottls, ottl
       integer :: i, j
 
       call json%add(this,'LSYMET',lsymet)

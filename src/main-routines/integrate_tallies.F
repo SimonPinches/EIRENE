@@ -1175,7 +1175,7 @@ cdr plus EAPL, EMPL, EIPL, EPHPL, EPPL energy sources
             END DO
 #endif
           END IF
-         END IF
+        END IF
 
         IF (LEIPL) THEN
           DUMMY(1:NSBOX_TAL) = EIPL(IPLS,1:NSBOX_TAL)

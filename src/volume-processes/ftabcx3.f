@@ -68,7 +68,7 @@ c  input parameters for rate_coeff: ln(Ti) only
 
       elseif (modc.eq.3) then
 c  input parameters for rate_coeff: ln(Ti), ln(ne)
-c  isotopic shift included in TII  (hence: incorrectly also in Te)
+c  isotopic shift included in TII (hence: incorrectly also in Te)
         iflg=1
         TBCX = EIRENE_RATE_COEFF(KK,K,TII,PLS,.TRUE.,IFLG)*
      .       FACRCX(IRCX,1)

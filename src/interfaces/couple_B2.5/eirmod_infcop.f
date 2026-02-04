@@ -180,7 +180,7 @@ C
      .           ISTRAI, IRRC, K, IR, IIRC, ICPV, I34,
      .           NREC11, NEM, ISTR,
      .           IXI, IXE, IPLSTI, IPLSV, IPLV, ISP,
-     .           imf, ixm1,iym1,
+     .           imf, ixm1, iym1,
      .           MINSPEZ, MAXSPEZ,
      .           js, iunin_save
 
@@ -189,7 +189,6 @@ C
 C
       LOGICAL, SAVE :: LSHORT, LSTOP, LTEST, LSTP3,
      .                 LNONREC_SY,LNONREC_NY,LNONREC_WX,LNONREC_EX
-     .                ,LCOARSE
 
       LOGICAL, ALLOCATABLE, SAVE :: LLCUT(:)
 

@@ -326,7 +326,6 @@ c
       REAL(DP), ALLOCATABLE, save :: uuba(:,:,:), upba(:,:,:)
       REAL(DP), ALLOCATABLE, save :: uubh(:,:,:), upbh(:,:,:)
 
-
       INTEGER, ALLOCATABLE, SAVE :: IHELP(:)
 C
       CHARACTER(10) :: CHR
@@ -460,8 +459,6 @@ C
           CALL EIRENE_READ14_JSON(jtrees(js),blks(14)%p)
         ENDIF
       ENDIF
-C
-
 C
 C READING BLOCK 14 FROM FORMATTED INPUT FILE (IUNIN) FINISHED
 C
@@ -1823,8 +1820,8 @@ C IF READING IN OLD FORMAT DOES NOT WORK, THEN TRY THE NEW ONE
                WRITE(IUNOUT,*) 'IPLS, IPLSV,IPLSTI ',IPLS,IPLSV,IPLSTI
             ENDIF
 
-            IPLSTI= MPLSTI(IPLS)
-            IPLSV= MPLSV(IPLS)
+            IPLSTI=MPLSTI(IPLS)
+            IPLSV=MPLSV(IPLS)
             DIINTF(IPLS,:)=DIIN(IPLS,:)
             VXINTF(IPLSV,:)=VXIN(IPLSV,:)
             VYINTF(IPLSV,:)=VYIN(IPLSV,:)

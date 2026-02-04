@@ -262,7 +262,7 @@ C  TOROIDAL SURFACE
 C  TRIANGULAR GRID
             case (4)
               sum1 = 0._dp
-              nt =  surf_trian_ordered(i)%numtr
+              nt = surf_trian_ordered(i)%numtr
               do j = 1, nt
                  it = surf_trian_ordered(i)%itrias(j)
                  is = surf_trian_ordered(i)%itrisi(j)

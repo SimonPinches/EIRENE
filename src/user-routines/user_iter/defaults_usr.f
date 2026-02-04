@@ -2,8 +2,8 @@
 
       use eirmod_parmmod
 cpg
-      use eirmod_cinit , only : MASTER_PATH
-      use eirmod_cpes , only : STRATEGY_DEFAULT, NPRLL_DEFAULT,
+      use eirmod_cinit, only : MASTER_PATH
+      use eirmod_cpes, only : STRATEGY_DEFAULT, NPRLL_DEFAULT,
      .                         STRATEGY_BALANCED
 cpg
       implicit none

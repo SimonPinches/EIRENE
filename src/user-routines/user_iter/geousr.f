@@ -153,7 +153,7 @@ C
         ELSE
           WRITE (iunout,*) 'WRONG POINT NUMBER IN ADDUSR'
           WRITE (iunout,*) 'INPUT LINE READING'
-          WRITE (iunout,'(5I6)') NAS,IPUNKT,NSSIR,NSSIP
+          WRITE (iunout,'(4I6)') NAS,IPUNKT,NSSIR,NSSIP
           WRITE (iunout,*) 'IS IGNORED'
         ENDIF
       ENDDO

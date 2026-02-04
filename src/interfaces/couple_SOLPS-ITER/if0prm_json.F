@@ -35,9 +35,9 @@ c  also set: NDX,NDY,NFL, NDXP, NDYP
 
       IMPLICIT NONE
 
-      class(json_core),intent(inout) :: json
+      class(json_core), intent(inout) :: json
       type(json_value), pointer, intent(in) :: p
-      type(json_value), pointer :: pflds, pfld,ptrgs, ptrg, prts, prt
+      type(json_value), pointer :: pflds, pfld, ptrgs, ptrg, prts, prt
 
       INTEGER :: NFLA, NCUTB, NCUTL, NDXA, NDYA, IPL, NTARGI, IT, IPRT,
      .           NAINB, NAOTB, ITRG,
@@ -67,7 +67,7 @@ C  READ INPUT BLOCK 14
         call json%get_child(pflds,ipl,pfld)
         call json%get(pfld,'IFLB',ifl,found)
         call json%get(pfld,'BMASS',bm,found)
-        call json%get(pfld,'LKIND',lkp,found)
+        call json%get(pfld,'LKINDP',lkp,found)
         if (ifl .gt. 0) then
           if (lkp .gt. 0) then
             lkindp(ipl) = lkp
@@ -85,7 +85,10 @@ C  READ INPUT BLOCK 14
             end if
           end if
         end if
+        nullify(pfld)
       END DO
+      nullify(pflds)
+
 C  GRID SIZE IN 2D PLASMA FLUID CODE
       call json%get(p,'NDXA',ndxa,found)
       call json%get(p,'NDYA',ndya,found)

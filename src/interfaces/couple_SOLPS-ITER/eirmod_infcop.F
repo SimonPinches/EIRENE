@@ -844,7 +844,7 @@ C
       ALLOCATE(XNMTI_BUF(NTRII*3),YNMTI_BUF(NTRII*3),TNMTI_BUF(NTRII*3))
 
       ICOG = 0
-      DO ISTS=1,NSTSI
+      DO ISTS = 1, NSTSI
 
 C  FIRST: RADIAL SURFACES
 
@@ -1048,77 +1048,21 @@ C  THE SURFACE
  1112             TX=XTRIAN(NECKE(ISC,ITRI))
                   TY=YTRIAN(NECKE(ISC,ITRI))
 
-                  if(.true.) then
-                    l1=eirene_point_on_interval(tx,ty,p1(1,i),p1(2,i),
-     .                                                p2(1,i),p2(2,i))
-                    TX=XTRIAN(NECKE(ISC2,ITRI))
-                    TY=YTRIAN(NECKE(ISC2,ITRI))
-                    l2=eirene_point_on_interval(tx,ty,p1(1,i),p1(2,i),
-     .                                                p2(1,i),p2(2,i))
-                    if(l1 .and. l2) then
-                      IGJUM0(I)=1
-                      ICOG=ICOG+1
-                      INSPAT(ISCS,ITRI)=ICOG
-                      INMTI(ISCS,ITRI)=I
-                      IF (LCHKQUD)
-     .                IREVERS(ISCS,ITRI)=
+                  l1=eirene_point_on_interval(tx,ty,p1(1,i),p1(2,i),
+     .                                              p2(1,i),p2(2,i))
+                  TX=XTRIAN(NECKE(ISC2,ITRI))
+                  TY=YTRIAN(NECKE(ISC2,ITRI))
+                  l2=eirene_point_on_interval(tx,ty,p1(1,i),p1(2,i),
+     .                                              p2(1,i),p2(2,i))
+                  if(l1 .and. l2) then
+                    IGJUM0(I)=1
+                    ICOG=ICOG+1
+                    INSPAT(ISCS,ITRI)=ICOG
+                    INMTI(ISCS,ITRI)=I
+                    IF (LCHKQUD)
+     .               IREVERS(ISCS,ITRI)=
      .                  NINT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
      .                                  PY*VTRIY(ISCS,ITRI)))
-                    endif
-                  else
-
-                  IF (ABS(VSX).GT.ABS(VSY)) THEN
-                    XMUE=(TX-PX)/VSX
-                    IF (XMUE.GE.-1.D-5 .AND. XMUE.LE.1.+1.D-5) THEN
-                      TEST=(TY-PY-XMUE*VSY)/VS
-!pb                      IF (ABS(TEST).LT.1.D-5) THEN
-                      IF (ABS(TEST).LT.1.D-4) THEN
-                        IF (ICOU.EQ.2) THEN
-C  TAKE CORRESPONDING ADDITIONAL SURFACE "I" OUT
-C  AND REPLACE IT BY NON-DEFAULT STD. SURFACE
-                          IGJUM0(I)=1
-                          ICOG=ICOG+1
-                          INSPAT(ISCS,ITRI)=ICOG
-                          INMTI(ISCS,ITRI)=I
-                          IF (LCHKQUD)
-     .                    IREVERS(ISCS,ITRI)=
-     .                      NINT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
-     .                                      PY*VTRIY(ISCS,ITRI)))
-                          GOTO 1111
-                        ELSE
-                          ICOU=2
-                          ISC=ISC2
-                          GOTO 1112
-                        ENDIF
-                      ENDIF
-                    ENDIF
-                  ELSE
-                    XMUE=(TY-PY)/VSY
-                    IF (XMUE.GE.-1.D-5 .AND. XMUE.LE.1.+1.D-5) THEN
-                      TEST=(TX-PX-XMUE*VSX)/VS
-!pb                      IF (ABS(TEST).LT.1.D-5) THEN
-                      IF (ABS(TEST).LT.1.D-4) THEN
-                        IF (ICOU.EQ.2) THEN
-C  TAKE CORRESPONDING ADDITIONAL SURFACE "I" OUT
-C  AND REPLACE IT BY NON-DEFAULT STD. SURFACE
-                          IGJUM0(I)=1
-                          ICOG=ICOG+1
-                          INSPAT(ISCS,ITRI)=ICOG
-                          INMTI(ISCS,ITRI)=I
-                          IF (LCHKQUD)
-     .                    IREVERS(ISCS,ITRI)=
-     .                      NINT(SIGN(1._DP,PX*VTRIX(ISCS,ITRI)+
-     .                                      PY*VTRIY(ISCS,ITRI)))
-                          GOTO 1111
-                        ELSE
-                          ICOU=2
-                          ISC=ISC2
-                          GOTO 1112
-                        ENDIF
-                      ENDIF
-                    ENDIF
-                  ENDIF
-
                   endif
 
                 ENDIF
@@ -1429,8 +1373,9 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
      .                            LOLD31
        IF (.NOT.NLTRIMESH) NLTRIMESH=LDUMMY
        IF (TRCINT) THEN
-        WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL = ',
-     .                     LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL
+        WRITE (iunout,*)
+     .   ' LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL = ',
+     .     LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL
         WRITE (iunout,*) ' LOLD31 = ',
      .                     LOLD31
        END IF
@@ -1464,9 +1409,8 @@ cdr tally RRB should be redundant?
        DO IPL=1,NPLSI
          READ (IUNIN,'(2I6,2E12.4,I6)')
      -     I,IFLB(IPL),FCTE(IPL),BMASS(IPL),L
-cdr  prepare for particle balance rescaling options? AK?
          if(iflb(ipl) .gt. 0) lkindp(ipl) = l
-         IF (TRCINT) WRITE (iunout,'(2I6,2ES12.4,I6)')
+         IF (TRCINT) WRITE (iunout,'(2I6,1P,2ES12.4,I6)')
      .     IPL,IFLB(IPL),FCTE(IPL),BMASS(IPL),L
          if(iflb(ipl) .gt. 0) then
            NFLB=NFLB+1
@@ -1632,7 +1576,7 @@ C
 
        IMPLICIT NONE
 
-       class(json_core),intent(inout) :: json
+       class(json_core), intent(inout) :: json
        type(json_value), pointer, intent(in) :: me
        type(json_value), pointer :: pflds, pfld, ptrgs, ptrg,
      .                             prts, prt, padds, padd
@@ -1657,8 +1601,9 @@ C  SAVE INPUT DATA OF BLOCK 14 FOR SHORT CYCLE ON COMMON CCOUPL
        call json%get(me,'LSPRCL',lsprcl,found)
        call json%get(me,'LOLD31',lold31,found)
        IF (TRCINT)
-     .  WRITE (iunout,*) ' LSYMET,LBALAN,LCOARSE,NLTRIMESH,LOLD31 = ',
-     .                     LSYMET,LBALAN,LCOARSE,NLTRIMESH,LOLD31
+     .  WRITE (iunout,*)
+     .   ' LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL,LOLD31 = ',
+     .     LSYMET,LBALAN,LCOARSE,NLTRIMESH,LSPRCL,LOLD31
 
        call json%get(me,'NFLA',nfla,found)
        call json%get(me,'NCUTB',ncutb,found)
@@ -3209,10 +3154,11 @@ C  TORL: TOROIDAL LENGTH (CM) AT TARGET SEGMENT IY: CENTER OF GRAVITY
             IPLSV=MPLSV(JPLS)
             ELSTEP(JPLS,ITARG,IG)=0.
             TISTEP(IPLSTI,ITARG,IG) = TIB(IX,NPBC)*T
-C  DISTEP: ZONE-CENTERED DENSITY IN BOUNDARY ZONE (EV)
+C  DISTEP: ZONE-CENTERED DENSITY IN BOUNDARY ZONE
             IFL=IFLB(JPLS)
             IF (IFL.LE.0.OR.IFL.GT.NFLA) GOTO 3023
             DISTEP(JPLS,ITARG,IG)=DNIB(IX,NPBC,IFL)*D(JPLS)
+C  ZISTEP: ZONE-CENTERED CHARGE IN BOUNDARY ZONE
             IF (ZIB(IX,NPBC,IFL).NE.ZVAC) THEN
               ZISTEP(JPLS,ITARG,IG)=ZIB(IX,NPBC,IFL)
             ELSE
@@ -3720,7 +3666,7 @@ csw 14jul2011
         ALLOCATE (FLXEIR(NSTRA))
 
         CALL EIRENE_ALLOC_BRASPOI
-        CALL EIRENE_ALLOC_EIRBRA(NDX, NDY, NFL, NATM, NMOL, NION, NSTRA)
+        CALL EIRENE_ALLOC_EIRBRA(NDX,NDY,NFL,NATM,NMOL,NION,NSTRA)
 C
         RESSNI = 0._DP
         RESSMO = 0._DP
@@ -4801,7 +4747,6 @@ cdr  no need to add mppl_cop contribution here, because this is exact (MC noise 
             END IF
           END DO ! JPLS LOOP
         END DO ! IFL LOOP
-
 C
         DO JATM=1,NATM
           DO IX=1,NDXA
@@ -5263,6 +5208,7 @@ cdjm Jan2017
               SEI_EPPL(IX,IY,ISTRAI)=SEI_EPPL(IX,IY,ISTRAI)*SCALN(0)
  7552       CONTINUE
  7555     CONTINUE
+
           DO 7556 IFL=1,NFLA
             DO 7553 IX=0,NDXA+1
               DO 7554 IY=0,NDYA+1

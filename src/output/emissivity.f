@@ -113,7 +113,7 @@ cdr run over components
         do j = 1, emis_lines(i)%num_compo
 cdr  iadv: tally number on ADDV
           iadv = emis_lines(i)%compo(j)%iadv
-cdr  irc:  emissivity line   reaction label, as read from block 4
+cdr  irc:  emissivity line reaction label, as read from block 4
 cdr        or set from default_emissivity.f
           irc  = emis_lines(i)%compo(j)%irc
 c

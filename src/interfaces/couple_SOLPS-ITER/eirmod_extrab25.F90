@@ -50,9 +50,6 @@
 !pb      ! eirpbls globals
 !pb      integer, save, allocatable, public :: lkindp(:), lkindm(:), lkindi(:)
 
-!PB      !c*** ionization potentials for consistency with B2.5 moved to
-!pb      subroutine EIRENE_INIT_EION
-
       ! srfprvls
       integer, save, public :: nsrfcls
       integer, save, public, allocatable :: msrfcls(:), lsrfcls(:,:)

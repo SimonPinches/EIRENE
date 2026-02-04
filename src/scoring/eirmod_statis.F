@@ -146,9 +146,9 @@ C
       LOGICAL, INTENT(IN) :: LP, LT
 C
 cym      REAL(DP) :: SAV, SD1S, SD1, SD2S
-cym      INTEGER :: NR1, NP2, NT3, I, J, IRU, IGS, IC, IIN, INP, IGF, ITL,
-cym     .           ISCO, IGE, IGI, NSYM, NSYH, J1, J2, IR, IP, IG, IT,
-cym     .           ICO, ISCO2, ITL2, ISCO1, ITL1
+cym      INTEGER :: NR1, NP2, NT3, J, IRU, IGS, INP, IGF, ITL,
+cym     .           ISCO, IGE, IGI, NSYM, NSYH, J1, J2,
+cym     .           ISCO2, ITL2, ISCO1, ITL1
       INTEGER, SAVE :: I, IC, ICO, IG, IIN, IR, IS, IP, IT
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE( I, IC, ICO, IG, IIN, IR, IS, IP, IT )

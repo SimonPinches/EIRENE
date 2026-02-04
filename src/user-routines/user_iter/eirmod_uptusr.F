@@ -60,6 +60,13 @@ CDR  PROVIDE A RADIAL UNIT VECTOR PER CELL
 CDR  VRX,VRY NEEDED FOR PROJECTING PARTICLE VELOCITIES
 CDR  SAME FOR POLOIDAL UNIT VECTOR VPX,VPY
 C
+        if (.not.allocated(plnxtri)) then
+          call eirene_masage('radial and poloidal unit vectors not')
+          call eirene_masage('available in uptusr')
+          call eirene_masage('no velocity components scored')
+          return
+        endif
+
         if(allocated(vpx)) deallocate(vpx,vpy,vrx,vry)
         ALLOCATE (VPX(NRAD))
         ALLOCATE (VPY(NRAD))
@@ -93,6 +100,7 @@ csw added for B2.5 coupling (ank_mods in eirene_mc.F of B2.5)
 csw so-called 'STANDARD' option in SOLPS4.3 user/uptusr.f from Vlad
 csw 21oct2011
 csw
+      if (.not.allocated(plnxtri)) return
 C
 C  WV=WEIGHT/VEL
 C

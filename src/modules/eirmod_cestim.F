@@ -1580,7 +1580,6 @@ C
         NTS_PHPH=> NTSAR(19)
         NTS_PPH => NTSAR(20)
 
-
         NTWSAR = 0
         NTWS_AA  => NTWSAR(1)
         NTWS_AM  => NTWSAR(2)

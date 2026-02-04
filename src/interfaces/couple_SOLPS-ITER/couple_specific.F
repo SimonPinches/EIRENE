@@ -1424,6 +1424,7 @@ C=======================================================================
       SUBROUTINE EIRENE_PLASM(KARD,NDIMX,NDIMY,NDIMF,N,M,NF,DUMMY)
 
       USE EIRMOD_PRECISION
+
       IMPLICIT NONE
 
       INTEGER, INTENT(IN) :: KARD, NDIMX, NDIMY, NDIMF, N, M, NF

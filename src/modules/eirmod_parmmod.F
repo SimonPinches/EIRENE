@@ -771,7 +771,7 @@ c
       NLIMPS      = INT_PARM( 79)
       NLMPGS      = INT_PARM( 80)
 
-C     NCPV        = INT_PARM( 81)  !dr  out, NCOP eliminted, only NCPV retained.
+C     NCPV        = INT_PARM( 81)  !dr  out, NCOP eliminated, only NCPV retained.
       NBGV        = INT_PARM( 82)
       NBMAX       = INT_PARM( 83)
       NPTAL       = INT_PARM( 84)

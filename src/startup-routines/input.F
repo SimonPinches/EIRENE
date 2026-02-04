@@ -479,10 +479,17 @@ C  COPY USER SPECIFIC DATA TO FILE user_data.input
           ELSE
             IF (IO == 0) THEN
               JL = JL + 1
-              IF (JL == 1 .AND. IUSROUT == 0) THEN
+              IF (JL == 1) THEN
                 IUSR = -9999
-                CALL EIRENE_OPENFILE(IUSR,FILE='user_data.input',
+                IF (IUSROUT == 0) THEN
+                  CALL EIRENE_OPENFILE(IUSR,FILE='user_data.input',
      .               FORM='FORMATTED',ACCESS='SEQUENTIAL')
+                ELSE ! trick to avoid a compiler error
+                  CLOSE(IUSROUT)
+                  CALL EIRENE_OPENFILE(IUSR,FILE='user_data.input',
+     .               FORM='FORMATTED',ACCESS='SEQUENTIAL',
+     .               STATUS='OLD',POSITION='APPEND')
+                END IF
                 IUSROUT = IUSR
               END IF
               WRITE (IUSROUT,'(A)') TRIM(ZEILE)

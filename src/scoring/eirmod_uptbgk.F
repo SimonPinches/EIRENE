@@ -139,7 +139,7 @@ cdr              from obsolete old (vel. indep.) procedure still.
           IUPD2=(IBGK_SP-1)*3+2
           IUPD3=(IBGK_SP-1)*3+3
 cym these are all shared variables updated with private TXT & ITP
-cym atomic  not usable with strings ?
+cym atomic not usable with strings ?
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP CRITICAL
 #endif
