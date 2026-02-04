@@ -45,6 +45,7 @@ CDR
       INTEGER, SAVE :: IFIRST, IA0, IA1, IA2, IA3, IA4
       integer :: icou
       real(dp) :: wtr,vr,vp,dist
+      external :: eirene_masage
 
 #if ( defined(USE_OPENMP) || defined(USE_EXT_OPENMP) )
 !$OMP THREADPRIVATE(VPX,VPY,VRX,VRY,IFIRST,IA0,IA1,IA2,IA3,IA4)

@@ -48,6 +48,7 @@ cdr  via iterative loops or stepping.
 #ifdef USE_OPENMP
 #ifndef USE_EXT_OPENMP
 cym these variables need copyin
+      USE EIRMOD_COMXS, ONLY: XSTOR, XSTORV
       USE EIRMOD_SPUTER, ONLY: ETH, Q, M2M1, ES, ETF
       USE EIRMOD_SAMVOL, ONLY: FREC, VSOURC, VSMXI, RQ21, PS21, ASIMP,
      .                         ISOURC, ICMX, IFREC, LPLSSR, LATSSR

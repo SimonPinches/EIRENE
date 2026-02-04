@@ -285,7 +285,7 @@ C
       INTEGER :: JS
 #endif
       REAL(DP) :: PX, PY, TX, TY, VS, VT,
-     R            VSX, VSY, VTX, VTY, VPRO, XMUE, TEST,
+     R            VSX, VSY, VTX, VTY, VPRO,
      R            ALE, ALW, ALN, ALS, ALX, AL
       REAL(DP) :: DUMMY(0:NDXP,0:NDYP)
 C
@@ -1045,7 +1045,7 @@ C  THE SURFACE
                   PY=P1(2,I)
                   ICOU=1
                   ISC=ISC1
- 1112             TX=XTRIAN(NECKE(ISC,ITRI))
+                  TX=XTRIAN(NECKE(ISC,ITRI))
                   TY=YTRIAN(NECKE(ISC,ITRI))
 
                   l1=eirene_point_on_interval(tx,ty,p1(1,i),p1(2,i),
