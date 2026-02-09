@@ -677,11 +677,11 @@ cpb.......................................
       END DO
 
 C  FIND START OF NEXT INPUT BLOCK: 4D
+      WRITE (iunout,*)
+     .  '*** 4D. PHOTONS SPECIES CARDS, NPHOTI SPECIES '
       READ (IUNIN,'(A72)') ZEILE
       NPHOTI=0
       IF (ZEILE(1:3) == '***') GOTO 500
-      WRITE (iunout,*)
-     .  '*** 4D. PHOTONS SPECIES CARDS, NPHOTI SPECIES '
       READ (IUNIN,*) NPHOTI
       NPHOT = MAX(NPHOT,NPHOTI)
 
@@ -891,7 +891,7 @@ cpb  We imply implicitly that the numbering of step functions is in ascending or
         IF (INDSRC(ISTRA) == 6) CYCLE
 C * ZEILE...: STRATUM NAME
         READ (IUNIN,'(A72)') ZEILE
-        WRITE (IUNOUT,'(A1,A72)') ' ',ZEILE
+        WRITE (IUNOUT,'(A1,A)') ' ',TRIM(ZEILE)
         READ (IUNIN,*)
         READ (IUNIN,*)
         READ (IUNIN,*)

@@ -52,7 +52,7 @@
       END DO
 
       READ (ZEILE,*) NRKNOT
-      WRITE(IUNOUT,*) 'NRKNOT = ',NRKNOT
+      WRITE(IUNOUT,*) 'NRKNOT      = ',NRKNOT
       NKNOT=NRKNOT
       CLOSE (UNIT=IUNCO)
 
@@ -64,7 +64,7 @@
       READ (ZEILE,*) NTRII
       NTRI=NTRII+1
       NR1ST=NTRI
-      WRITE(IUNOUT,*) 'NTRII =  ',NTRII
+      WRITE(IUNOUT,*) 'NTRII       =  ',NTRII
       CLOSE (UNIT=IUNEL)
 
       ZEILE='*   '

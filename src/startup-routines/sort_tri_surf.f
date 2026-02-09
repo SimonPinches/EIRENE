@@ -51,7 +51,7 @@
       inew = 0
       srf%bglt(1) = 0._dp
 
- 100  continue
+  100 continue
 
 !  identify starting point
       if (nsingle > 0) then

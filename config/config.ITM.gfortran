@@ -24,6 +24,7 @@ CFLAGS    = -fcheck=all
 endif
 
 GKS       = ${LD_GR} ${LD_GKS} -lX11 -lXt
+JSON_INC  = -I/gw/swimas/software/json-fortran/8.5.2-GCC-13.2.0/include
 
 LDLIBS    = -L/usr/local/lib
 

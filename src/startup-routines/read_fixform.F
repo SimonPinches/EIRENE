@@ -264,13 +264,10 @@ C
 cdr LMULPL=TRUE: enforce multiple Ti and V..IN, due to BGK reactions (virt. backgrounds)
       LMULPL = .FALSE.
 C
-      CALL EIRENE_LEER(2)
-C
 C  READ TEXT DESCRIBING THE RUN, 100--199
 C
       READ (IUNIN,'(A72)') TXTRUN
       WRITE (iunout,'(1X,A)') trim(TXTRUN)
-      CALL EIRENE_LEER(1)
   109 READ (IUNIN,'(A72)') ZEILE
       IF (ZEILE(1:1).EQ.'*') THEN
         IF (ZEILE(1:3).NE.'***') THEN

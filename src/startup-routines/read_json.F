@@ -44,7 +44,11 @@ C
       USE EIRMOD_PRESSURELOOP
 
 #ifndef NO_JSON
-      USE EIRMOD_CPES, ONLY: NPRS, NLIDENT
+      USE EIRMOD_CPES, ONLY: NPRS, NLIDENT,
+     >    STRATEGY_UNDEFINED, STRATEGY_EMBARRASS,
+     >    STRATEGY_ORIGINAL, STRATEGY_APCAS,
+     >    STRATEGY_BALANCED, STRATEGY_IMPROVED,
+     >    INPUT_DISTRIBUTION_STRATEGY
       USE EIRMOD_TIMEA, ONLY: EIRENE_TIMEA0
       USE EIRMOD_SECOND_OWN, ONLY: EIRENE_SECOND_OWN
       USE EIRMOD_IOUSR, ONLY: EIRENE_READ_BLOCK_11_USR
@@ -162,7 +166,6 @@ C
       TIME0=0.
       NSNVI=0
       NTMSTP=1
-
 
       LMULPL = .FALSE.
 #ifndef NO_JSON
@@ -348,7 +351,7 @@ cdr     CALL EIRENE_SETUP_HYDKIN_REACTIONS(HYDKIN_DEFAULT,CADAPT)
      .                               1,len_trim(cdbf))
             ldbread(ifile) = .true.
             WRITE (IUNOUT,'(2A)') 'PATH SET FOR FILE ',dbhandle(ifile)
-            WRITE (IUNOUT,'(2A)') 'PATH = ',dbfname(ifile)
+            WRITE (IUNOUT,'(2A)') 'PATH = ',trim(dbfname(ifile))
           ELSE
             WRITE (IUNOUT,*) ' WRONG NAME FOR DATABASE ENTERED'
             WRITE (IUNOUT,*) ' DATABASE DEFINITION FOR ',
@@ -370,23 +373,44 @@ C  READING OF INPUT BLOCK 1 DONE
       CALL EIRENE_LEER(2)
       CALL EIRENE_MASAGE('*** 1. DATA FOR OPERATING MODE')
       CALL EIRENE_LEER(1)
-      CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
-      SELECT CASE( NPRLL )
+      IF (NPRS > 1) THEN
+        CALL EIRENE_MASAGE('       PARALLELISATION MODE:')
+        SELECT CASE( NPRLL )
         CASE( -1 )
           CALL EIRENE_MASAGE('       MPI USER-DEFINED')
+          CALL EIRENE_MASAGE('       WILL BE SELECTED FROM END OF FILE')
+          input_distribution_strategy = STRATEGY_UNDEFINED
 C       CASE( 0 )
 C         Reserved for default, see below
         CASE( 1 )
           CALL EIRENE_MASAGE('       MPI PROPORTIONAL ALLOCATION')
+          CALL EIRENE_MASAGE('       UNLESS OVERWRITTEN AT END OF FILE')
+          input_distribution_strategy = STRATEGY_ORIGINAL
+        CASE( 2 )
+          CALL EIRENE_MASAGE('       MPI APCAS STRATEGY')
+          CALL EIRENE_MASAGE('       ALL PEs CALCULATE ALL STRATA')
+          CALL EIRENE_MASAGE('       UNLESS OVERWRITTEN AT END OF FILE')
+          input_distribution_strategy = STRATEGY_APCAS
+        CASE( 3 )
+          CALL EIRENE_MASAGE('       MPI BALANCED ALLOCATION')
+          CALL EIRENE_MASAGE('       UNLESS OVERWRITTEN AT END OF FILE')
+          input_distribution_strategy = STRATEGY_BALANCED
+        CASE( 4 )
+          CALL EIRENE_MASAGE('       MPI IMPROVED ALLOCATION')
+          CALL EIRENE_MASAGE('       UNLESS OVERWRITTEN AT END OF FILE')
+          input_distribution_strategy = STRATEGY_IMPROVED
         CASE DEFAULT
           CALL EIRENE_MASAGE('       MPI "EMBARRASSINGLY PARALLEL"')
+          CALL EIRENE_MASAGE('       UNLESS OVERWRITTEN AT END OF FILE')
+          input_distribution_strategy = STRATEGY_EMBARRASS
           NPRLL = 0
-      END SELECT
+        END SELECT
+      END IF
       WRITE (IUNOUT,*) '       NUMBER OF PROCESSES NPRS= ',NPRS
       CALL EIRENE_LEER(1)
       IF (NMODE.NE.0) THEN
         CALL EIRENE_MASAGE
-     .  ('       EIRENE READS ADDITIONAL DATA FROM FILE')
+     .  ('       EIRENE EXPECTS ADDITIONAL DATA. EXTERNAL CODE')
         CALL EIRENE_MASAGE
      .  ('       INTERFACING ROUTINE INFCOP IS CALLED')
         CALL EIRENE_MASAGE
@@ -414,7 +438,7 @@ C         Reserved for default, see below
      .  ('       INTERFACING ROUTINE INFCOP IS NOT CALLED')
       ENDIF
       CALL EIRENE_LEER(1)
-      WRITE (iunout,*) '       EIRENE ASSUMES A TOTAL CPUTIME'
+      WRITE (iunout,*) '       EIRENE ASSUMES A TOTAL CPU TIME'
       WRITE (iunout,*) '       OF ',NTCPU,' SECONDS'
       CALL EIRENE_LEER(1)
 
@@ -461,8 +485,8 @@ C         Reserved for default, see below
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       EIRENE SAVES ONLY PLASMA DATA,'
             WRITE (iunout,*) '       STARTING FROM SPECIES NUMBER'
-            WRITE (iunout,*) '       NFLA+1 (COUPLING VARIABLE, BLOCK'
-            WRITE (iunout,*) '       14),'
+            WRITE (iunout,*) '       NPLS_FIX+1 (COUPLING'
+            WRITE (iunout,*) '       VARIABLE, BLOCK 14),'
           ELSE
             WRITE (iunout,*) '       EIRENE SAVES PLASMA DATA, A&M DATA'
             WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
@@ -473,8 +497,8 @@ C         Reserved for default, see below
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
             WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
-            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
-            WRITE (iunout,*) '       BLOCK 14),'
+            WRITE (iunout,*) '       NUMBER NPLS_FIX+1 (COUPLING'
+            WRITE (iunout,*) '       VARIABLE, BLOCK 14),'
           ELSE
             WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA'
             WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
@@ -484,8 +508,8 @@ C         Reserved for default, see below
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
             WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
-            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
-            WRITE (iunout,*) '       BLOCK 14),'
+            WRITE (iunout,*) '       NUMBER NPLS_FIX+1 (COUPLING'
+            WRITE (iunout,*) '       VARIABLE, BLOCK 14),'
           ELSE
             WRITE (iunout,*) '       EIRENE READS PLASMA, A&M DATA'
             WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
@@ -493,7 +517,7 @@ C         Reserved for default, see below
           WRITE (iunout,*) '       FROM FILE FT13 AND'
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       SAVES ONLY PLASMA DATA, STARTING'
-            WRITE (iunout,*) '       FROM SPECIES NUMBER NFLA+1,'
+            WRITE (iunout,*) '       FROM SPECIES NUMBER NPLS_FIX+1,'
           ELSE
             WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
             WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
@@ -504,15 +528,15 @@ C         Reserved for default, see below
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       EIRENE READS (AND EXPECTS) ONLY'
             WRITE (iunout,*) '       PLASMA DATA, STARTING FROM SPECIES'
-            WRITE (iunout,*) '       NUMBER NFLA+1 (COUPLING VARIABLE,'
-            WRITE (iunout,*) '       BLOCK 14),'
+            WRITE (iunout,*) '       NUMBER NPLS_FIX+1 (COUPLING'
+            WRITE (iunout,*) '       VARIABLE, BLOCK 14),'
           ELSE
             WRITE (iunout,*) '       EIRENE READS PLASMA AND A&M DATA'
           END IF
           WRITE (iunout,*) '       FROM FILE FT13 AND'
           IF (NLSHRT13) THEN
             WRITE (iunout,*) '       SAVES ONLY PLASMA DATA, STARTING'
-            WRITE (iunout,*) '       FROM SPECIES NUMBER NFLA+1,'
+            WRITE (iunout,*) '       FROM SPECIES NUMBER NPLS_FIX+1,'
           ELSE
             WRITE (iunout,*) '       SAVES PLASMA DATA, A&M DATA'
             WRITE (iunout,*) '       AND SOURCE DISTRIBUTION DATA'
@@ -595,10 +619,10 @@ C         Reserved for default, see below
       CALL EIRENE_LEER(1)
       IF (NTIME.GE.1) THEN
         WRITE (iunout,*) '       EIRENE RUN IN TIME DEP. MODE.'
-        WRITE (iunout,*) '       TIME-CYCLES: ',ITIMV,' TO ',NTIME
+        WRITE (iunout,*) '       TIME CYCLES: ',ITIMV,' TO ',NTIME
         WRITE (iunout,*)
      .    '       SUBROUTINE "TMSUSR" IS CALLED AFTER EACH'
-        WRITE (iunout,*) '       TIME-CYCLE'
+        WRITE (iunout,*) '       TIME CYCLE'
       ELSE
         WRITE (iunout,*) '       EIRENE RUN IN STATIONARY MODE'
       ENDIF
@@ -1891,10 +1915,12 @@ C
 C
 C  READ NEUTRAL PHOTONS SPECIES CARDS
 C
-      WRITE (iunout,*)
-     . '*** 4D. NEUTRAL PHOTONS SPECIES CARDS, NPHOTI SPECIES'
-      WRITE (iunout,*) '       NPHOTI= ',NPHOTI
-      CALL EIRENE_LEER(1)
+      IF (NPHOTI.GT.0) THEN
+        WRITE (iunout,*)
+     .   '*** 4D. NEUTRAL PHOTONS SPECIES CARDS, NPHOTI SPECIES'
+        WRITE (iunout,*) '       NPHOTI= ',NPHOTI
+        CALL EIRENE_LEER(1)
+      END IF
 
       ityp = 0
       call eirene_read_block_4abcd
@@ -2299,6 +2325,7 @@ c         DENSLIM(JPLS)=10**(MAXEXPONENT(DENSLIM(JPLS))-1)
         END IF
         WRITE(iunout,*) TEXTS(ISPZ), DENSLIM(JPLS)
       END DO
+      CALL EIRENE_LEER(1)
 
       deallocate (lknd)
       deallocate (jdnsl)
@@ -2390,6 +2417,7 @@ cdr  only one common profile for all NPLS species?
         NPLSTI = 1
         LRDMLTI=.FALSE.
       ENDIF
+      WRITE (iunout,*) '      NPLSTI= ',NPLSTI
 
       IF ((NPLS > 1) .AND. (NPLSTI == 1) .AND.
      .    (LMULPL .OR. ((NPLS_FIX > 0) .AND. (NPLS_FIX /= NPLSI))
@@ -2397,13 +2425,14 @@ cdr  only one common profile for all NPLS species?
         CALL EIRENE_LEER(1)
         WRITE (IUNOUT,*) 'WARNING !'
         WRITE (IUNOUT,*) 'TIIN STORAGE PROVIDED FOR ONE SPECIES ONLY ',
-     .                   'DUE TO INDPRO(2) < 0'
+     .                   'DUE TO INDPRO(2) > 10'
         WRITE (IUNOUT,*) 'STORAGE FOR TIIN OVERWRITTEN ',
-     .                   'BECAUSE BGK REACTIONS PRESENT'
+     .                   'BECAUSE BGK REACTIONS PRESENT ',
+     .                   'OR DENSITY MODEL ',FORT//'13',' WAS FOUND'
         LRDMLTI=.FALSE.         !  read only one common Ti card,
                                 !  despite storage for NPLS Ti profiles.
         NPLSTI = NPLSI
-        WRITE (IUNOUT,*) ' NPLSTI = ',NPLSTI
+        WRITE (IUNOUT,*) '      NPLSTI = ',NPLSTI
         CALL EIRENE_LEER(1)
 c     ELSE
 c  read one Ti card for each of the NPLS Ti profiles
@@ -4226,7 +4255,7 @@ CPB  ACTIVATE SPECIES-RESOLVED CPU CONSUMPTION OPTION
          WRITE (iunout,*) ' NVOLPR, NVLPR ', NVOLPR, NVLPR
          CALL EIRENE_EXIT_OWN(1)
       ENDIF
-      WRITE (iunout,*) '        NVOLPR= ',NVOLPR
+      WRITE (iunout,*) '       NVOLPR= ',NVOLPR
 
       call json%get_child(p,'OUT_VOL_TAL',tals,foundt)
       if (foundt) then
@@ -4265,7 +4294,7 @@ cdr  output stream for particular tallies: allow only ntlv>=70
          CALL EIRENE_EXIT_OWN(1)
       ENDIF
 C
-      WRITE (iunout,*) '        NSURPR= ',NSURPR
+      WRITE (iunout,*) '       NSURPR= ',NSURPR
 
       call json%get_child(p,'SRF_OUTPUT',srfs,founds)
       if (founds) then
@@ -4449,7 +4478,7 @@ C  PARTICLE HISTORY PLOTS IN 2D OR 3D GEOMETRY PLOTS
 ! block 11 c, plots of tallies
 
       call json%get(p,'NVOLPL',nvolpl,found)
-      WRITE (iunout,*) '        NVOLPL= ',NVOLPL
+      WRITE (iunout,*) '       NVOLPL= ',NVOLPL
       CALL EIRENE_LEER(1)
 C
       IF (NVOLPL.GT.NPTAL)
@@ -4648,7 +4677,10 @@ C  READ DATA FOR DIAGNOSTIC MODULE
 C
       CALL EIRENE_MASAGE('*** 12. DATA FOR DIAGNOSTIC MODULE')
 
-c June 18: new: more general option for definition of emission lines (in NCHTAL=2 option)
+c June 18: new: more general option for definition of emission profiles
+cdr        in ADDV tally. Can e.g. be used in line of sight NCHTAL=2 option,
+cdr        or for general additional output.
+cdr  Based on population coefficients, QSS ratios, etc already read in block 4.
 
 cdr  read further atomic/molecular data: population coefficients, QSS ratios, etc
 cdr       needed for setting up volumetric line emissivity profiles
@@ -4656,10 +4688,13 @@ cdr       as further add. tally ADDV (additional to those already defined in blo
 cdr       The ADDV tallies may then be used for line of sight integration, along
 cdr       the CHORDS defined further below.
 cdr  Distinct from the other addv tallies from block 10a these
-cdr  further addv tallies (beyond NADVI) are currently apparently neither
-cdr  scaled, averaged, integrated, nor do they have text (units, species) assigned.
+cdr  further ADDV tallies (beyond NADVI) have their text
+cdr  (tally label, units, species) assigned in subr. emissivity.f.
 
-cdr  check if such emissivity tallies are defined: search for 'DEFINE LINES' in next card
+cdr  check if such emissivity tallies are defined:
+cdr  Search for 'DEFINE LINES' in next card
+      CALL EIRENE_MASAGE
+     .  ('*** 12A. DATA FOR EMISSIVITY PROFILES (ADDV)  ')
       NLEMIS = .FALSE.
       LDEF_LINES = .FALSE.
 
@@ -4862,7 +4897,7 @@ cdr read from block "12.0", no default emissivities are set at all.
 
 c  June 18: new:  end of new code, further modifications below, for NCHTAL=2 option
       CALL EIRENE_MASAGE
-     .  ('*** 12A. DATA FOR LINES OF SIGHT              ')
+     .  ('*** 12B. DATA FOR LINES OF SIGHT              ')
 
       call json%get(p,'NCHORI',nchori,found)
       call json%get(p,'NCHENI',ncheni,found)
@@ -5018,10 +5053,10 @@ C  NO TIME HORIZON DEFINED, DESPITE NLERG=.TRUE.
 C  THEREFORE: SET A DEFAULT TIME HORIZON HERE
         NPRNLI=100
         IF (NTIME.EQ.0) NTIME=1
-        WRITE (iunout,*) '        NPRNLI= ',NPRNLI,
+        WRITE (iunout,*) '       NPRNLI= ',NPRNLI,
      .                   ' (MODIFIED DUE TO NLERG)'
       ELSE
-        WRITE (iunout,*) '        NPRNLI= ',NPRNLI
+        WRITE (iunout,*) '       NPRNLI= ',NPRNLI
       ENDIF
       CALL EIRENE_LEER(1)
 
@@ -5208,6 +5243,7 @@ C  also set NAINI, NCOPII, NCOPIE there
 !pb  .                    NAINI, NCOPII, NCOPIE, NCPVI
         write (iunout,*) 'NAINI, NCOPIE, NCPVI ',
      .                    NAINI, NCOPIE, NCPVI
+        CALL EIRENE_LEER(1)
       END IF
 #endif
       RETURN
@@ -5243,7 +5279,10 @@ C  also set NAINI, NCOPII, NCOPIE there
 
       if (associated(p)) then
         call json%get(p,'STRATEGY',txt,found)
-        if (found) strategy(1:len_trim(txt)) = trim(txt)
+        if (found) then
+          CALL EIRENE_MASAGE('*** INFORMATION_FOR_MPI')
+          strategy(1:len_trim(txt)) = trim(txt)
+        endif
         deallocate(txt)
       end if
 
