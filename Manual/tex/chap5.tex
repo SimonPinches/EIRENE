@@ -44,10 +44,16 @@ the locations with -DLibJSON and -DJSON\_MODULES:
 
 In order to enable OPENMP also add -DOPENMP=ON to the cmake line. In order to use MPI replace gfortran with an MPI compile command such as mpif90. If using the OpenMPI library, it is best to add -DOPEN\_MPI=1 to the build options. You can also replace gfortran with the intel compiler ifort. You can also add -DCMAKE\_BUILD\_TYPE=DEBUG for a debug build.
 
-This will generate a default EIRENE library libEIRENE.a in eirene/libRelease with the Dummy interface and default user-routines, where -j enables multi threaded compilation. EIRENE can also be compiled with different user interfaces. To compile for SOLPS-ITER
+This will generate a default EIRENE library libEIRENE.a in eirene/libRelease with the Dummy interface and default user-routines, where -j enables multi threaded compilation. EIRENE can also be compiled with different user interfaces. To compile for the structured SOLPS-ITER code
 
 \begin{lstlisting}[language=bash,columns=fullflexible]
   > FC=gfortran cmake -DEIRENE_INTERFACE=SOLPS-ITER \
+  -DEIRENE_USER-ROUTINES=iter ../src
+\end{lstlisting}
+
+For the Wide Grids SOLPS-ITER version
+\begin{lstlisting}[language=bash,columns=fullflexible]
+  > FC=gfortran cmake -DEIRENE_INTERFACE=SOLPS_WG \
   -DEIRENE_USER-ROUTINES=iter ../src
 \end{lstlisting}
 

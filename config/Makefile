@@ -19,6 +19,21 @@ SRCLOCAL=${SRCEIR}/src.local
 ifdef USE_B25
 B2SRC=${SOLPSTOP}/modules/B2.5/src
 endif
+ifdef SOLPSTOP
+SOLPS_MINOR_VERSION = $(shell ( cd ${SOLPSTOP} ; git describe --tags --dirty --always | cut -d '.' -f 2 ) )
+ifeq ($(shell test ${SOLPS_MINOR_VERSION} -ge 2; echo $$?),0)
+INTDIR ?= ${SRCDIR}/interfaces/couple_SOLPS_WG
+else
+INTDIR ?= ${SRCDIR}/interfaces/couple_SOLPS-ITER
+endif
+else
+ifndef INTDIR
+$(warning Need to choose an interface directory!)
+$(warning Set it with the command:)
+$(warning setenv INTDIR ${SRCDIR}/interfaces/couple_[Name-of-interface])
+$(error Interface directory not defined!)
+endif
+endif
 
 MAKES = ${SRCEIR}/config/Makefile ${SRCEIR}/config/compile ${SRCEIR}/config/config.${HOST_NAME}.${COMPILER}
 DEFINES = ${EIRENE_DEFINES} ${SOLPS_CPP}
@@ -162,7 +177,7 @@ else
 FPATH=${SRCDIR}/broadcast_dummy
 INCLUDE+=-I${SRCDIR}/broadcast_dummy
 endif
-FPATH+=:${SRCLOCAL}:${SRCDIR}/modules:${SRCDIR}/photons:${SRCDIR}/assistant:${SRCDIR}/interfaces/couple_SOLPS-ITER:${SRCDIR}/diagno:${SRCDIR}/file-handling:${SRCDIR}/geometry:${SRCDIR}/iterate:${SRCDIR}/main-routines:${SRCDIR}/mathematics:${SRCDIR}/output:${SRCDIR}/particle-tracing:${SRCDIR}/plotting:${SRCDIR}/sampling:${SRCDIR}/scoring:${SRCDIR}/startup-routines:${SRCDIR}/surface-processes:${SRCDIR}/user-routines/user_iter:${SRCDIR}/volume-processes:${SRCDIR}/tetrahedra
+FPATH+=:${SRCLOCAL}:${SRCDIR}/modules:${SRCDIR}/photons:${SRCDIR}/assistant:${INTDIR}:${SRCDIR}/diagno:${SRCDIR}/file-handling:${SRCDIR}/geometry:${SRCDIR}/iterate:${SRCDIR}/main-routines:${SRCDIR}/mathematics:${SRCDIR}/output:${SRCDIR}/particle-tracing:${SRCDIR}/plotting:${SRCDIR}/sampling:${SRCDIR}/scoring:${SRCDIR}/startup-routines:${SRCDIR}/surface-processes:${SRCDIR}/user-routines/user_iter:${SRCDIR}/volume-processes:${SRCDIR}/tetrahedra
 FFPATH=${SRCDIR}/geometry/time-routines
 NOGPATH:=${FPATH}:${FFPATH}
 ifdef USE_B25
@@ -172,8 +187,8 @@ ifndef LD_GR
 FPATH+=:${SRCDIR}/grsoft-dummy
 endif
 endif
-F90PATH=${SRCDIR}/interfaces/couple_SOLPS-ITER:${SRCDIR}/broadcast:${SRCDIR}/modules
-FF90PATH=${SRCDIR}/interfaces/couple_SOLPS-ITER:${SRCDIR}/broadcast:${SRCDIR}/modules
+F90PATH=${INTDIR}:${SRCDIR}/broadcast:${SRCDIR}/modules
+FF90PATH=${INTDIR}:${SRCDIR}/broadcast:${SRCDIR}/modules
 VPATH=${FPATH}:${FFPATH}:${F90PATH}
 
 include ${OBJDIR}/LISTOBJ
@@ -203,7 +218,7 @@ all: dirs local links VERSION $(OBJDIR)/${PROG} ${OBJDIR}/${PROGX}
 
 ifeq (${USE_DIMENSIONS},1)
 DIMENSIONS:
-	@ln -sf ${DIMSDIR}/b2mod_dimensions.F ${SRCDIR}/interfaces/couple_SOLPS-ITER/
+	@ln -sf ${DIMSDIR}/b2mod_dimensions.F ${INTDIR}
 ifneq (${MOD},o)
 ${OBJDIR}/eirmod_extrab25.${MOD}: ${OBJDIR}/b2mod_dimensions.${MOD}
 endif
@@ -537,23 +552,23 @@ depend: ${SRCLOCAL}/eirlocal.f ${OBJSF:.o=.f} ${OBJSFF:.o=.F} ${OBJSF90:.o=.f90}
         sed 's,: ${SOLPSTOP},: $${SOLPSTOP},' > ${OBJDIR}/dependencies
 	@echo '# 1' >> ${OBJDIR}/dependencies
 ifneq (${MOD},o)
-	@`which makedepend` -p'$${OBJDIR}/' ${DEFINES} -f- ${INCLUDE} ${SRCDIR}/*/eirmod_*.f ${SRCDIR}/*/eirmod_*.[fF]90 ${SRCDIR}/interfaces/couple_SOLPS-ITER/eirmod_*.[fF] ${SRCDIR}/interfaces/couple_SOLPS-ITER/eirmod_*.[fF]90 -o.${MOD} | \
+	@`which makedepend` -p'$${OBJDIR}/' ${DEFINES} -f- ${INCLUDE} ${SRCDIR}/*/eirmod_*.f ${SRCDIR}/*/eirmod_*.[fF]90 ${INTDIR}/eirmod_*.[fF] ${INTDIR}/eirmod_*.[fF]90 -o.${MOD} | \
 	sed 's,^$${OBJDIR}/[^ ][^ ]*/,\$${OBJDIR}/,' | \
         sed 's,: ${SOLPSTOP},: $${SOLPSTOP},' >> ${OBJDIR}/dependencies
 	@echo '# 2' >> ${OBJDIR}/dependencies
 endif
 	@egrep -aiH '^[ 	]+use ' ${SRCDIR}/*/*.[fF] ${SRCDIR}/*/*.[fF]90 | grep -v 'IGNORE' | tr , ' '  |  awk '{sub(/\.f:|\.F:|\.f90:|\.F90:/,".o:",$$1); sub("^.*/","$${OBJDIR}/",$$1); print $$1,"$${OBJDIR}/"tolower($$3)".${MOD}"}' >> ${OBJDIR}/dependencies
 	@echo '# 3a' >> ${OBJDIR}/dependencies
-	@egrep -aiH '^[ 	]+use ' ${SRCDIR}/interfaces/couple_SOLPS-ITER/*.[fF] ${SRCDIR}/interfaces/couple_SOLPS-ITER/*.[fF]90 ${SRCDIR}/user-routines/user_iter/*.[fF] ${SRCDIR}/geometry/time-routines/*.F | grep -v 'IGNORE' | tr , ' '  | awk '{sub(/\.f:|\.F:|\.f90:|\.F90:/,".o:",$$1);sub("^.*/","$${OBJDIR}/",$$1); print $$1,"$${OBJDIR}/"tolower($$3)".${MOD}"}' >> ${OBJDIR}/dependencies
+	@egrep -aiH '^[ 	]+use ' ${INTDIR}/*.[fF] ${INTDIR}/*.[fF]90 ${SRCDIR}/user-routines/user_iter/*.[fF] ${SRCDIR}/geometry/time-routines/*.F | grep -v 'IGNORE' | tr , ' '  | awk '{sub(/\.f:|\.F:|\.f90:|\.F90:/,".o:",$$1);sub("^.*/","$${OBJDIR}/",$$1); print $$1,"$${OBJDIR}/"tolower($$3)".${MOD}"}' >> ${OBJDIR}/dependencies
 	@echo '# 4a' >> ${OBJDIR}/dependencies
-	@egrep -aiH -m 1 '^[ 	]*module ' ${SRCDIR}/*/*.[fF] ${SRCDIR}/*/*.[fF]90 ${SRCDIR}/interfaces/couple_SOLPS-ITER/*.[Ff] ${SRCDIR}/interfaces/couple_SOLPS-ITER/*.[Ff]90 ${SRCDIR}/user-routines/user_iter/*.[fF] ${SRCDIR}/geometry/time-routines/*.F | sed 's/:module/: module/' | tr , ' ' | awk '{sub(/\.f:|\.F:|\.f90:|\.F90:/,".o", $$1); sub("^.*/","$${OBJDIR}/",$$1); sub(",","",$$3); print "$${OBJDIR}/" tolower($$3) ".${MOD}:", $$1;}' >> ${OBJDIR}/dependencies
+	@egrep -aiH -m 1 '^[ 	]*module ' ${SRCDIR}/*/*.[fF] ${SRCDIR}/*/*.[fF]90 ${INTDIR}/*.[Ff] ${INTDIR}/*.[Ff]90 ${SRCDIR}/user-routines/user_iter/*.[fF] ${SRCDIR}/geometry/time-routines/*.F | sed 's/:module/: module/' | tr , ' ' | awk '{sub(/\.f:|\.F:|\.f90:|\.F90:/,".o", $$1); sub("^.*/","$${OBJDIR}/",$$1); sub(",","",$$3); print "$${OBJDIR}/" tolower($$3) ".${MOD}:", $$1;}' >> ${OBJDIR}/dependencies
 	@echo '# 5a' >> ${OBJDIR}/dependencies
 ifneq (${MOD},o)
 	@egrep -aiH '^[ 	]+use ' ${SRCDIR}/*/*.[fF] ${SRCDIR}/*/*.[fF]90 | grep -v 'IGNORE' | tr , ' '  |  awk '{sub(/\.f:|\.F:|\.f90:|\.F90:/,".o:",$$1); sub("^.*/","$${OBJDIR}/",$$1); print $$1,"$${OBJDIR}/"tolower($$3)".o"}' >> ${OBJDIR}/dependencies
 	@echo '# 3b' >> ${OBJDIR}/dependencies
-	@egrep -aiH '^[ 	]+use ' ${SRCDIR}/interfaces/couple_SOLPS-ITER/*.[fF] ${SRCDIR}/interfaces/couple_SOLPS-ITER/*.[fF]90 ${SRCDIR}/user-routines/user_iter/*.[fF] ${SRCDIR}/geometry/time-routines/*.F | grep -v 'IGNORE' | tr , ' '  | awk '{sub(/\.f:|\.F:|\.f90:|\.F90:/,".o:",$$1);sub("^.*/","$${OBJDIR}/",$$1); print $$1,"$${OBJDIR}/"tolower($$3)".o"}' >> ${OBJDIR}/dependencies
+	@egrep -aiH '^[ 	]+use ' ${INTDIR}/*.[fF] ${INTDIR}/*.[fF]90 ${SRCDIR}/user-routines/user_iter/*.[fF] ${SRCDIR}/geometry/time-routines/*.F | grep -v 'IGNORE' | tr , ' '  | awk '{sub(/\.f:|\.F:|\.f90:|\.F90:/,".o:",$$1);sub("^.*/","$${OBJDIR}/",$$1); print $$1,"$${OBJDIR}/"tolower($$3)".o"}' >> ${OBJDIR}/dependencies
 	@echo '# 4b' >> ${OBJDIR}/dependencies
-	@egrep -aiH '^[ 	]+use ' ${SRCDIR}/interfaces/couple_SOLPS-ITER/eirmod_*.[fF] ${SRCDIR}/interfaces/couple_SOLPS-ITER/eirmod_*.[fF]90 ${SRCDIR}/*/eirmod_*.[fF] ${SRCDIR}/*/eirmod_*.[Ff]90 | grep -v 'IGNORE' | tr , ' '  | awk '{sub(/\.f:|\.F:|\.f90:|\.F90:/,".${MOD}:",$$1);sub("^.*/","$${OBJDIR}/",$$1); print $$1,"$${OBJDIR}/"tolower($$3)".${MOD}"}' >> ${OBJDIR}/dependencies
+	@egrep -aiH '^[ 	]+use ' ${INTDIR}/eirmod_*.[fF] ${INTDIR}/eirmod_*.[fF]90 ${SRCDIR}/*/eirmod_*.[fF] ${SRCDIR}/*/eirmod_*.[Ff]90 | grep -v 'IGNORE' | tr , ' '  | awk '{sub(/\.f:|\.F:|\.f90:|\.F90:/,".${MOD}:",$$1);sub("^.*/","$${OBJDIR}/",$$1); print $$1,"$${OBJDIR}/"tolower($$3)".${MOD}"}' >> ${OBJDIR}/dependencies
 	@echo '# 5b' >> ${OBJDIR}/dependencies
 endif
 
@@ -605,7 +620,7 @@ listobj: DIMENSIONS ${SRCDIR}/assistant/version.f local
 	echo "$$lll" | eval sed "$$E" >> ${OBJDIR}/LISTOBJ
 
 tags:
-	rm -f ${SRCEIR}/TAGS ; ${MAKETAGS} ${SRCEIR}/TAGS ${SRCLOCAL}/*.[fF] ${SRCDIR}/*/*.[Ffc] ${SRCDIR}/*/*.[Ff]90 ${SRCDIR}/*/*/*.[Ff]90 ${SRCDIR}/interfaces/couple_SOLPS-ITER/*.[fF] ${SRCDIR}/user-routines/user_iter/*.[fF] ${SRCDIR}/geometry/time-routines/*.F ${SRCEIR}/Manual/eirene.tex ${SRCEIR}/Manual/tex/*.tex || touch ${SRCEIR}/TAGS
+	rm -f ${SRCEIR}/TAGS ; ${MAKETAGS} ${SRCEIR}/TAGS ${SRCLOCAL}/*.[fF] ${SRCDIR}/*/*.[Ff] ${SRCDIR}/*/*.[Ff]90 ${SRCDIR}/*/*/*.[Ff]90 ${INTDIR}/*.[fF] ${SRCDIR}/user-routines/user_iter/*.[fF] ${SRCDIR}/geometry/time-routines/*.F ${SRCEIR}/Manual/eirene.tex ${SRCEIR}/Manual/tex/*.tex || touch ${SRCEIR}/TAGS
 
 ${OBJDIR}/LISTOBJ: listobj
 

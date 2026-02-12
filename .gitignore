@@ -11,6 +11,7 @@ Database/H2VIBR
 Database/HYDHEL
 Database/METHAN*
 src/interfaces/couple_SOLPS-ITER/b2mod_dimensions.F
+src/interfaces/couple_SOLPS_WG/b2mod_dimensions.F
 
 # files ignored in git repository
 git_version.h

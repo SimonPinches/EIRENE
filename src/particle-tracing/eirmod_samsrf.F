@@ -30,6 +30,7 @@ c  eirene_samsf2:  deallocate temporary arrays
       USE EIRMOD_RANF, ONLY: RANF_EIRENE
       USE EIRMOD_SAMUSR, ONLY: EIRENE_SAMUSR_INIT, EIRENE_SAMUSR
       USE EIRMOD_SHEATH, ONLY: EIRENE_SHEATH
+      USE EIRMOD_COMXS, ONLY: L_MACRO
 
       IMPLICIT NONE
       PRIVATE
@@ -82,6 +83,11 @@ cdr         This may (and did) cause
 cdr         wrong physics and even code crashes when used with atm, mol or test ion
 cdr         sources with step function distributions, e.g. gas puffs.
 c   sep 22: Addressed the issue above for step functions related to atoms and molecules
+cnh nov 23: The solution of the issue above gave problems for the hybrid fluid-kinetic model
+c           where particles are transferred from the fluid atom to the kinetic atom
+c           population and sent into the void regions. Hence, the fix is not done for an
+c           atomic source in combination with the hybrid model (L_macro > 0). Hence, issues
+c           will still be present for some multi-species gas puffs with the hybrid model.
 C
       SUBROUTINE EIRENE_SAMSF0
 
@@ -1750,7 +1756,7 @@ C  TAKE BACKGROUND MEDIUM DATA AT PLACE OF BIRTH FROM STEP FUNCTION ISTEP
             IPLSTI=MPLSTI(JPLS)
             IPLSV=MPLSV(JPLS)
           ELSE IF (NLATM(ISTRA)) THEN
-            IF (JPLS.GT.NATMI) CYCLE
+            IF (JPLS.GT.NATMI.AND.L_MACRO.LT.EPS12) CYCLE
             IPLSTI=JPLS
             IPLSV=JPLS
           ELSE IF (NLMOL(ISTRA)) THEN

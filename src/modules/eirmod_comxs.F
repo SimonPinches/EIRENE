@@ -61,6 +61,7 @@ cdr            remove redundant flags: JEREAEI  (UNUSED)
 cdr jun   22:  add splitting post-collision secondaries
 cdr            at selected collision processes.
 cdr            So far: tested for CX
+cnh nov   23:  add macroscopic length scale L_MACRO for hybrid fluid-kinetic model
 
       USE EIRMOD_PRECISION
       USE EIRMOD_PARMMOD
@@ -378,6 +379,9 @@ cdr           Remove POINTER attribute, use ALLOCATABLE instead
       INTEGER, PUBLIC, SAVE :: MAXSPC(0:4)
 
       INTEGER, ALLOCATABLE, PUBLIC, SAVE :: M_HCOL(:)
+
+cnh  macroscopic length scale
+      REAL(DP), PUBLIC, SAVE :: L_MACRO
 
       CONTAINS
 
@@ -1389,6 +1393,9 @@ c  ditto, for upper limit value of 2nd parameter in 2-parameter fits or tables
 
         NHCOL_STORE = 0
         M_HCOL = 0
+
+cnh
+        L_MACRO = 0.0_DP
 
       ELSE IF (ICAL == 2) THEN
 
@@ -3105,6 +3112,8 @@ cdr something for the internal CRM options, of blocks 4,12 here: H_Colrad.
       CALL MPI_BCAST (NHCOL_STORE,1,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
       CALL MPI_BCAST (M_HCOL,NREAC,MPI_INTEGER,0,MPI_COMM_WORLD,ier)
 
+cnh macroscopic length scale
+      CALL MPI_BCAST (L_MACRO,1,MPI_REAL8,0,MPI_COMM_WORLD,ier)
       CALL MPI_BARRIER(MPI_COMM_WORLD,ier)
 
       RETURN

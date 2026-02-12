@@ -14,6 +14,30 @@
 # Changelog of EIRENE repository:
 ---
 
+## X. Bonnin - SOLPS_wide_grids
+
+### Based on SOLPS_event_limit - 99e131dfef3a448d0ccb512459f1a55bf211c6fd
+
+** Changes **
+
+- Added SOLPS_WG interface directory for SOLPS-ITER Wide Grids code version
+- Automatic detection of SOLPS-ITER version for traditional Makefile
+- Automatic build of version.f file
+- Made output from JSON and fixed format input file more consistent
+- Bug fix for write-up of user_data.input file when there are trailing lines in the input.dat file
+- Bug fix for reading LKINDP in JSON formatted input
+- Added SNE_PIEL output for SOLPS-ITER balances
+- Added L_MACRO quantity in COMXS module to govern condensation for hybrid fluid-kinetic model
+- Added IFCTRI array in CTRIG module to store triangle faces for SOLPS-ITER Wide Grids interface
+- Removed misleading warning in LEARC1 when particles are on surface
+- Made file extensions consistent across user and interface directories
+- Updated configuration files for traditional compilation
+- Expanded comments
+- Output prettifying
+- Minor code clean-up
+
+---
+
 ## X. Bonnin and A. Pshenov - SOLPS_event_limit
 
 ### Based on SOLPS_nprll_wrstrt - f5dcd68af8af6fdc736b93f159a1a9cf71d75a6d

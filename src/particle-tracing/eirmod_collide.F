@@ -698,11 +698,23 @@ C  GENERATION LIMIT, CX, AND SAME SPECIES
             ENDIF
 C
 C  FLUID LIMIT, CX, AND SAME SPECIES
+C  POSSIBILITY TO TRANSITION FROM KINETIC TO FLUID POPULATION
             IF (NGENX.LT.0) THEN
               IF (NNEW.EQ.NOLD) THEN
+C  DETERMINE IF CONDENSATION SHOULD HAPPEN
                 FP=VELO/SIGVCX(IRCX)  ! M.F.P.
-                FLTEST=FP/DIST
+                IF (L_MACRO.GT.0.0_DP) THEN
+                  ! L_MACRO: MACROSCOPIC LENGTH SCALE.
+                  ! FOR NOW THIS IS A FIXED SCALAR VALUE.
+                  ! CAN BE CHANGED TO A LOCAL VALUE LATER ON.
+                  FLTEST=FP/L_MACRO
+                ELSE
+                  ! PREVIOUS (NON-SOLPS) APPROACH
+                  FLTEST=FP/DIST
+                ENDIF
                 IF (FLTEST.LT.FDLMCX(IRCX)) THEN
+                  ! KN IS SMALLER THAN USER-DEFINED
+                  ! TRANSITION THRESHOLD -> CONDENSATION
                   CALL EIRENE_GENLIM_POST(WEIGHT,E0*WEIGHT,NNEW)
                   RETURN
                 ENDIF
