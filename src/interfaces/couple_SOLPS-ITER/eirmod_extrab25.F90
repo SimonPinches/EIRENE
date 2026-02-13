@@ -128,7 +128,7 @@
       implicit none
       character*4, intent(in) :: edition
       !c*** label for fort.44 file
-      character*32 :: get_Eir_hash
+      character*40 :: get_Eir_hash
       external get_Eir_hash
       external eirene_neutr
 
@@ -146,7 +146,7 @@
       write (iunout,*) 'nred ',nred
       OPEN (UNIT=44,FILE=trim(FILENAME),ACCESS='SEQUENTIAL',FORM='FORMATTED') ! added 19980603 dpc
       rewind (44)
-      WRITE(44,'(i4,2x,i4,2x,i8,2x,a32)') ndxa-nred,ndya,jvft44,get_Eir_hash()
+      WRITE(44,'(i4,2x,i4,2x,i8,2x,a40)') ndxa-nred,ndya,jvft44,get_Eir_hash()
       if (jvft44.ge.20240311) then
         write(44,'(i4,2x,i4,2x,i4,2x,i4)') natmi,nmoli,nioni,nfla
       else
@@ -479,7 +479,7 @@
         write (iunout,*) 'Writing ',trim(filename)
         OPEN (UNIT=44,FILE=trim(filename),ACCESS='SEQUENTIAL',FORM='FORMATTED')
         rewind (44)
-        WRITE(44,'(i4,2x,i4,2x,i8,2x,a32)') ndxa-nred,ndya,jvft44,get_Eir_hash()
+        WRITE(44,'(i4,2x,i4,2x,i8,2x,a40)') ndxa-nred,ndya,jvft44,get_Eir_hash()
         write(44,'(e16.8)') aver_frac
         write(44,'(i4)') nfla
         call write_title(44,'wldnek_aver(0)',nlimps)
@@ -561,7 +561,7 @@
         OPEN (UNIT=46,FILE=trim(FILENAME),ACCESS='SEQUENTIAL',FORM='FORMATTED')
         rewind (46)
 
-        write(46,'(i6,2x,i8,2x,a32)') ntrii, jvft46, get_Eir_hash()
+        write(46,'(i6,2x,i8,2x,a40)') ntrii, jvft46, get_Eir_hash()
         write(46,'(i4,2x,i4,2x,i4)') natmi, nmoli, nioni
         do jatm=1,natmi
           write(46,*) texts(jatm+nsph)
@@ -703,7 +703,7 @@
           write (iunout,*) 'Writing ',trim(filename)
           OPEN (UNIT=46,FILE=trim(filename),ACCESS='SEQUENTIAL',FORM='FORMATTED')
           rewind (46)
-          write(46,'(2x,i8,2x,a32)') jvft46, get_Eir_hash()
+          write(46,'(2x,i8,2x,a40)') jvft46, get_Eir_hash()
           write(46,'(e16.8)') aver_frac46
           write(46,'(i6)') ntrii
           if (lpdena) then

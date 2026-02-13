@@ -15,7 +15,7 @@ if(length GREATER max_length)
 endif()
 
 # Maximum length of description name
-set(desc_length 32)
+set(desc_length 40)
 
 # Shorten description name to maximum declared length
 string(LENGTH @git_description@ dlength)

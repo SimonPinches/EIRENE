@@ -141,7 +141,7 @@ ifdef USE_B25
     INCLUDE += -I${B2SRC}/include
   endif
 endif
-GIT_DESCRIPTION=$(shell git describe --tags --dirty --always | cut -c 1-32 )
+GIT_DESCRIPTION=$(shell git describe --tags --dirty --always | cut -c 1-40 )
 GIT_BRANCH=$(shell git branch --show-current )
 GIT_DATE=$(shell git show -s --format="%ci" )
 GIT_HASH=$(shell git show -s --format="%H" )

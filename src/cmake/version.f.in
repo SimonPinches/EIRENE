@@ -27,7 +27,7 @@ C> usual output unit.
 
       function get_Eir_hash()
       implicit none
-      character*32 get_Eir_hash
+      character*40 get_Eir_hash
 
       get_Eir_hash = '@git_description@'
 
