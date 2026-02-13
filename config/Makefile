@@ -19,20 +19,24 @@ SRCLOCAL=${SRCEIR}/src.local
 ifdef USE_B25
 B2SRC=${SOLPSTOP}/modules/B2.5/src
 endif
-ifdef SOLPSTOP
-SOLPS_MINOR_VERSION = $(shell ( cd ${SOLPSTOP} ; git describe --tags --dirty --always | cut -d '.' -f 2 ) )
-ifeq ($(shell test ${SOLPS_MINOR_VERSION} -ge 2; echo $$?),0)
-INTDIR ?= ${SRCDIR}/interfaces/couple_SOLPS_WG
-else
-INTDIR ?= ${SRCDIR}/interfaces/couple_SOLPS-ITER
-endif
-else
 ifndef INTDIR
-$(warning Need to choose an interface directory!)
-$(warning Set it with the command:)
-$(warning setenv INTDIR ${SRCDIR}/interfaces/couple_[Name-of-interface])
-$(error Interface directory not defined!)
-endif
+ ifdef SOLPSTOP
+  SOLPS_MINOR_VERSION = $(shell ( cd ${SOLPSTOP} ; git describe --tags --dirty --always | cut -d '.' -f 2 ) )
+  ifeq ($(shell test ${SOLPS_MINOR_VERSION} -ge 2; echo $$?),0)
+   INTDIR ?= ${SRCDIR}/interfaces/couple_SOLPS_WG
+   $(warning Assuming SOLPS_WG interface.)
+  else
+   INTDIR ?= ${SRCDIR}/interfaces/couple_SOLPS-ITER
+   $(warning Assuming SOLPS-ITER interface.)
+  endif
+ else
+  $(warning Need to choose an interface directory!)
+  $(warning Set it with the command:)
+  $(warning setenv INTDIR ${SRCDIR}/interfaces/couple_[Name-of-interface])
+  $(error Interface directory not defined!)
+ endif
+else
+ $(warning Using ${INTDIR} for the interface directory.)
 endif
 
 MAKES = ${SRCEIR}/config/Makefile ${SRCEIR}/config/compile ${SRCEIR}/config/config.${HOST_NAME}.${COMPILER}

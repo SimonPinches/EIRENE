@@ -561,6 +561,9 @@ else()
 endif()
 
 # Adds optional local dependencies
+if (DIMENSIONS_MODULE)
+set_source_files_properties(${PROJECT_SOURCE_DIR}/interfaces/couple_${EIRENE_INTERFACE}/eirmod_extrab25.F PROPERTIES OBJECT_DEPENDS ${LOCAL_OBJDIR}/interfaces/couple_${EIRENE_INTERFACE}/b2mod_dimensions.F.mod)
+endif()
 if(EXISTS "${PROJECT_SOURCE_DIR}/../src.local/CMakeLists.txt")
   string(APPEND LOCAL_OBJDIR "${PROJECT_BINARY_DIR}/CMakeFiles/EIRENE.dir")
   include(${PROJECT_SOURCE_DIR}/../src.local/CMakeLists.txt)
