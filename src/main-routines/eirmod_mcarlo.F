@@ -509,6 +509,9 @@ c  to ensure: ALL particles from census are re-launched, one by one (not: by sam
 !tf          IF (ISTRA.EQ.NSTRAI-1) THEN
 C  TOTAL STORAGE STILL AVAILABLE ON NEW CENSUS
 C  AFTER ONE TO ONE RESTART FROM OLD CENSUS IS COMPLETED
+#if ( defined(USE_OPENMP) && !defined(USE_EXT_OPENMP) )
+!$OMP ATOMIC WRITE
+#endif
         NPTTOT=NPRNLI-IPRNLI
 C  REDEFINE NPTS ACCORDING TO XTIM(ISTRA)
         CALL EIRENE_LEER(2)
