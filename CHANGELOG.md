@@ -156,7 +156,7 @@ New_EIRENE_Version=1.2.0
 1. EIRENE is now under the dual license:
    - EIRENE Public Licence - "EPL" (see EPL.md) provided by the Forschungszentrum Juelich GmbH (FZJ)
    - and Creative Commons Public License "CC BY-NC-ND 4.0" (see CC_BY-NC-ND.md file and its pdf-converted version)
-   The user is bound by at least one of those licenses - at the own choince. The EPL allows research purposed development including creating an own developer community and even providing limiterd commercial services within the boudaries regulated by the EPL, however it requirs registration at www.eirene.de/EPL
+   The user is bound by at least one of those licenses - at their own choice. The EPL allows research purposed development including creating an own developer community and even providing limited commercial services within the boudaries regulated by the EPL, however it requires registration at www.eirene.de/EPL
 2. Minor bugfixes to EIRENE Database.
    - amjuel.tex (Reaction 2.7.14:  e + N_2^+ -> N + N)
    - AMMONX_Arrh-elast.tex (Reaction 14s: e + N2 -> N + N + e)
@@ -221,11 +221,11 @@ New_EIRENE_Version=1.1.1
 ** Changes **
 
 - In subroutine DBG_PRINTOUT use correct dimensions NPLSTI and NPLSV when calculating averages of TIIN, VXIN, VYIN, VZIN as those are the species limits of these tallies.
-- In timedependent calculations it is necessary to rescale the flux stored on the time boundary when changing the timestep. The rescalad flux needs to be used for FLXCEN as well.
-  - Set FLXCEN to rescaled flux when changing timestep size in time dependent mode.
-- In EIRENE_OUTFLX for triangular meshes not based on an underlying structured grid printing of spatially resolved surface tallies was not done correctly. This issues has been fixed.
+- In time-dependent calculations it is necessary to rescale the flux stored on the time boundary when changing the timestep. The rescaled flux needs to be used for FLXCEN as well.
+- Set FLXCEN to rescaled flux when changing timestep size in time-dependent mode.
+- In EIRENE_OUTFLX for triangular meshes not based on an underlying structured grid printing of spatially resolved surface tallies was not done correctly. This issue has been fixed.
 - Additionally an option to order the triangle faces belonging to one spatially resolved surface into a continuous surface has been added (NFLAGS > 10). A table holding information such as coordinates of the start and endpoints of the triangle faces, the arc length along the surface and the surface tally for all requested species will be printed. Produce a sorted list of triangle edges for spatially resolved surfaces and use it in the output
-  - For triangular meshes the NFLAGS flag has been extended. Here NFLAGS > 10 triggers the production of an additional table holding information about the spatially resolved surface namely start and end points of the triangle edges forming the surface, the arc length along the surface and the values of the surface tally for the requested species.
+- For triangular meshes the NFLAGS flag has been extended. Here NFLAGS > 10 triggers the production of an additional table holding information about the spatially resolved surface namely start and end points of the triangle edges forming the surface, the arc length along the surface and the values of the surface tally for the requested species.
 
 ---
 
