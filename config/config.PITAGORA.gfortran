@@ -25,7 +25,7 @@ endif
 
 GKS       = ${LD_GR} ${LD_GKS} -lX11 -lXt
 
-LDLIBS    = -L/usr/local/lib -L/usr/X11R6/lib
+LDLIBS    = -L/usr/local/lib -L/usr/lib64
 
 ifdef SOLPS_MPI
 LDLIBS   += ${LD_MPI}
