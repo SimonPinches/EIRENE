@@ -1,14 +1,14 @@
 # Test whether necessary variables are set
 GLI_HOME ?= /pitagora/pub/userexternal/dcoster0/SOLPS-ITER/${COMPILER}/gks
 GR_ROOT  ?= /pitagora/pub/userexternal/dcoster0/SOLPS-ITER/${COMPILER}/gr
-MPDIR    ?= ${INTELMPI_HOME}
+MPDIR    ?= ${OPENMPI_HOME}
 LD_GKS   ?= -L${GLI_HOME} -lgks -lgfortran
 LD_GR    ?= -L${GR_ROOT} -lgr
-LD_MPI   ?= -L${MPDIR}/lib64 -lmpi -lmpigf
+LD_MPI   ?= -L${MPDIR}/lib64 -lmpi 
 
 CPP       = /lib/cpp -traditional
 
-MPI_FC   ?= mpif90
+MPI_FC   ?= mpifort
 ifdef SOLPS_MPI
 FC        = ${MPI_FC}
 else
