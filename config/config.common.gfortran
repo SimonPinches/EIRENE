@@ -58,4 +58,3 @@ OBJDEST   = -J${OBJDIR} -o $@
 #!!!Local Variables:
 #!!! mode: Makefile
 #!!! End:
-

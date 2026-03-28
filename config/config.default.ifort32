@@ -53,4 +53,3 @@ COMPILE  = ${FC} -c ${FFLAGS} ${INCMOD}${OBJDIR}
 #!!!Local Variables:
 #!!! mode: Makefile
 #!!! End:
-

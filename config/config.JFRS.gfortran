@@ -43,4 +43,3 @@ COMPILE   = ${FC} -c ${FCOPTS} ${INCMOD}${OBJDIR}
 #!!!Local Variables:
 #!!! mode: Makefile
 #!!! End:
-
