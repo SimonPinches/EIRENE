@@ -222,8 +222,10 @@ if (B25_EIRENE)
     add_definitions(-DDIMENSIONS_MODULE)
     if(EXISTS "$ENV{SOLPSTOP}/modules/B2.5/src/modules.local/b2mod_dimensions.F")
       include_directories($ENV{SOLPSTOP}/modules/B2.5/src/modules.local)
+      set(B2MOD_DIMENSIONS_SRC "$ENV{SOLPSTOP}/modules/B2.5/src/modules.local/b2mod_dimensions.F")
     else()
       include_directories($ENV{SOLPSTOP}/modules/B2.5/src/modules)
+      set(B2MOD_DIMENSIONS_SRC "$ENV{SOLPSTOP}/modules/B2.5/src/modules/b2mod_dimensions.F")
     endif()
   endif()
   set(GR-DUMMY_LIBRARY_NAME "gr_dummy" CACHE STRING "GR-DUMMY library name")
@@ -484,6 +486,17 @@ add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
 
 if(B25_EIRENE)
   add_library(GR-DUMMY ${src_grsoft-dummy})
+  # When coupling to B2.5 with the DIMENSIONS_MODULE pragma, b2mod_dimensions.F
+  # (owned by B2.5) must be compiled as part of the EIRENE library so that the
+  # .mod file is available to eirmod_extrab25.F90 in this same build directory.
+  # Without this, the build relies on a stale .mod produced by a prior Carre or
+  # B2.5 build, which is fragile and breaks clean builds.
+  if(DIMENSIONS_MODULE AND B2MOD_DIMENSIONS_SRC)
+    target_sources(EIRENE PRIVATE ${B2MOD_DIMENSIONS_SRC})
+    set_source_files_properties(
+      ${PROJECT_SOURCE_DIR}/interfaces/couple_${EIRENE_INTERFACE}/eirmod_extrab25.F90
+      PROPERTIES OBJECT_DEPENDS ${B2MOD_DIMENSIONS_SRC})
+  endif()
 endif()
 
 if( NOT B25_EIRENE )
