@@ -489,9 +489,11 @@ if(B25_EIRENE)
   # When coupling to B2.5 with the DIMENSIONS_MODULE pragma, b2mod_dimensions.F
   # (owned by B2.5) must be compiled as part of the EIRENE library so that the
   # .mod file is available to eirmod_extrab25.F90 in this same build directory.
-  # Without this, the build relies on a stale .mod produced by a prior Carre or
-  # B2.5 build, which is fragile and breaks clean builds.
   if(DIMENSIONS_MODULE AND B2MOD_DIMENSIONS_SRC)
+    get_target_property(_eirene_sources EIRENE SOURCES)
+    list(REMOVE_ITEM _eirene_sources
+      ${PROJECT_SOURCE_DIR}/interfaces/couple_${EIRENE_INTERFACE}/b2mod_dimensions.F)
+    set_target_properties(EIRENE PROPERTIES SOURCES "${_eirene_sources}")
     target_sources(EIRENE PRIVATE ${B2MOD_DIMENSIONS_SRC})
     set_source_files_properties(
       ${PROJECT_SOURCE_DIR}/interfaces/couple_${EIRENE_INTERFACE}/eirmod_extrab25.F90
