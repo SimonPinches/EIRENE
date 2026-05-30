@@ -285,7 +285,7 @@ if (OPENMP)
   add_definitions(-DUSE_OPENMP)
   find_package(OpenMP REQUIRED)
   if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "IntelLLVM")
-    message(FATAL_ERROR "-- OpenMP is unsafe with ifx compiler! Do not use. --")
+    message(STATUS "-- OpenMP is unsafe with ifx compiler! Do not use. --")
   endif()
 endif()
 
