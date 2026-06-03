@@ -18,6 +18,8 @@ ifneq (,$(findstring ifx,${FC}))
       else
         FC = ifort
       endif
+    else
+      $(error Intel compiler ifx is incompatible with OpenMP usage!)
     endif
   endif
 endif
@@ -47,12 +49,17 @@ ifndef COMPILER_REDEF
   CFLAGS += -g
  endif
  ifdef SOLPS_OPENMP
-  ifeq ($(shell test ${COMPILER_MAJOR_VERSION} -ge 15; echo $$?),0)
-   FCOPTS += -qopenmp
-   LDOPTS += -qopenmp
+  ifeq ($(shell test ${COMPILER_MAJOR_VERSION} -ge 2023; echo $$?),0)
+   FPOPTS += -fiopenmp
+   LPOPTS += -fiopenmp
   else
-   FCOPTS += -openmp
-   LDOPTS += -openmp
+   ifeq ($(shell test ${COMPILER_MAJOR_VERSION} -ge 15; echo $$?),0)
+    FCOPTS += -qopenmp
+    LDOPTS += -qopenmp
+   else
+    FCOPTS += -openmp
+    LDOPTS += -openmp
+   endif
   endif
  endif
  ifdef SOLPS_DEBUG
