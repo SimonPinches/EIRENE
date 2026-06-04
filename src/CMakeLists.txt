@@ -313,9 +313,18 @@ endif()
 # relative path. Relative path is stored in variable 'fortran_dirs'.
 message(STATUS "Detecting fortran files (*.[fF]/*.[fF]90) in subdirectories of "
                ${PROJECT_SOURCE_DIR})
-if(NOT EXISTS "${PROJECT_SOURCE_DIR}/assistant/version.f")
-  file(TOUCH ${PROJECT_SOURCE_DIR}/assistant/version.f)
+# The git-version source (version.f) is generated per build into this build's
+# own binary directory (see the 'version' custom target below) rather than into
+# the shared source tree.  Generating it under PROJECT_SOURCE_DIR caused a
+# parallel-build race: 'make -jN all' configures two CMake build trees that
+# share this same source directory (the standalone Eirene executable and the
+# B2.5-coupled EIRENE library), and both would write and compile
+# assistant/version.f concurrently, corrupting the build.
+set(EIRENE_VERSION_F ${PROJECT_BINARY_DIR}/version.f)
+if(NOT EXISTS "${EIRENE_VERSION_F}")
+  file(TOUCH ${EIRENE_VERSION_F})
 endif()
+set_source_files_properties(${EIRENE_VERSION_F} PROPERTIES GENERATED TRUE)
 file(GLOB_RECURSE fortran_files RELATIVE ${PROJECT_SOURCE_DIR}
      ${PROJECT_SOURCE_DIR}/*.[fF]
      ${PROJECT_SOURCE_DIR}/*.[fF]90)
@@ -333,6 +342,11 @@ foreach(fortran_dir ${fortran_dirs})
   file(GLOB src_${fortran_dir} ${PROJECT_SOURCE_DIR}/${fortran_dir}/*.[fF]
                                ${PROJECT_SOURCE_DIR}/${fortran_dir}/*.[fF]90)
 endforeach()
+
+# version.f is now generated into the build dir (EIRENE_VERSION_F) and added to
+# the EIRENE target explicitly below; drop any stale source-tree copy left by an
+# older layout or by a traditional (NO_CMAKE) build so it is not compiled twice.
+list(REMOVE_ITEM src_assistant ${PROJECT_SOURCE_DIR}/assistant/version.f)
 
 # Remove program file to be able to add it separately if required.
 list(GET src_main-routines 0 fortran_file)
@@ -501,7 +515,7 @@ else()
 endif()
 
 # Adds EIRENE library to the project.
-add_library(EIRENE ${src_assistant} ${src_broadcast} ${src_diagno}
+add_library(EIRENE ${src_assistant} ${EIRENE_VERSION_F} ${src_broadcast} ${src_diagno}
                    ${src_file-handling} ${src_function_modules} ${src_geometry}
                    ${src_geometry/time-routines} ${src_interface/x}
                    ${src_iterate} ${src_main-routines} ${src_mathematics}
