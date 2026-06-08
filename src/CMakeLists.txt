@@ -280,7 +280,7 @@ endif()
 # Add option to enable OpenMP with the parallel region defined in eirmod_mcarlo.
 option(OPENMP "Build for use with internal parallel region" OFF)
 if (OPENMP)
-  cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+  cmake_minimum_required(VERSION 3.1...3.10 FATAL_ERROR)
   message(STATUS "-- Adding USE_OPENMP flag...")
   add_definitions(-DUSE_OPENMP)
   find_package(OpenMP REQUIRED)
