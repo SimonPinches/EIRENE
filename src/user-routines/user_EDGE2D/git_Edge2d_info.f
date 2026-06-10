@@ -47,7 +47,6 @@ C***********************************************************************
       implicit none
       INTEGER, intent(in) :: LOUT
 C
-      INTEGER :: LENSTR
       CHARACTER :: CSTR*70
 
 C
@@ -58,7 +57,7 @@ C
      &  __GITREPOSITORY
       CSTR=__GITSHAKEY
       if (__GITSTATUSSTRING.eq."modyf") then
-        CSTR=CSTR(1:LENSTR(CSTR))//" ( + uncommitted changes !! )"
+        CSTR=CSTR(1:LEN_TRIM(CSTR))//" ( + uncommitted changes !! )"
       ENDIF
       WRITE(LOUT,"(a,a)") " EIRENE SHA1-key       : ",CSTR
 
