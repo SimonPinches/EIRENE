@@ -16,14 +16,14 @@
       PUBLIC :: EIRENE_UPCUSR, EIRENE_upcusr_reinit
 
 cswx 24sep07
-      logical, save :: lfirst=.false.
+      logical,save :: lfirst=.false.
       integer, save :: num=0,eirene_nbirth,eirene_njetto
-      real*8, save :: delang
+      real*8,save :: delang
       character(len=256), save :: eirene_fbirth,eirene_ftransfer,
      &     eirene_fstoreneutflux
 
-      real*8, allocatable, save :: rdata(:,:)
-      integer, allocatable, save :: idata(:,:)
+      real*8, allocatable,save :: rdata(:,:)
+      integer, allocatable,save :: idata(:,:)
 
       CONTAINS
 
@@ -150,7 +150,7 @@ cswx
 
       SUBROUTINE EIRENE_upcusr_reinit
       IMPLICIT NONE
-      INTEGER :: I
+      INTEGER :: I,J
 
       if(lfirst) then
         lfirst=.false.
