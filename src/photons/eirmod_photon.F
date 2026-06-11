@@ -1897,7 +1897,7 @@ c  next: part with imag. fadeeva function
       z1  = cmplx(-a, -1._dp,dp) * aa
 !pb      zz  = cdsqrt(b*z1) *(0._dp,1._dp)
       zz  = sqrt(b*z1) *(0._dp,1._dp)
-      fad = EIRENE_ph_faddeeva2(real(zz,DP),real(aimag(zz),DP),icell,0)
+      fad = EIRENE_ph_faddeeva2(zz%RE, zz%IM, icell, 0)
 
 !pb      sz1 = z1*cdsqrt(z1)
       sz1 = z1*sqrt(z1)
