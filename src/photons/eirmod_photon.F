@@ -1846,26 +1846,6 @@ cdr         =3 Rayleigh-Jeans limit E << kT
       cres=EIRENE_ph_humlik(x,y)/(dnd*sqrt(pia))
       return
       end function EIRENE_ph_faddeeva
-c
-      complex(dp) function EIRENE_ph_faddeeva2(x,y,icell,ipl)
-     .  result(cres)
-      implicit none
-      real(dp), intent(in) :: x,y
-      integer, intent(in) :: icell,ipl
-      real(dp) :: u,v
-      logical :: flag
-      external :: eirene_exit_own
-
-      call EIRENE_ph_wofz(x,y,u,v,flag)
-      if(flag) then
-         write(iunout,*) 'PHOTON MODULE EIRMOD_(PH_FADDEEVA2):'
-         write(iunout,*) '   flag=',flag
-         call EIRENE_exit_own(1)
-      endif
-! kind parameter added for better precision
-      cres=cmplx(u,v,dp)
-      return
-      end function EIRENE_ph_faddeeva2
 
       real(dp) function EIRENE_ph_lorvdw(dx,fwhm,shift,dvdw,
      .                            icell) result(res)
@@ -1907,6 +1887,29 @@ c  next: part with imag. fadeeva function
       res=res+rvdw
 
       return
+
+      CONTAINS
+
+      complex(dp) function EIRENE_ph_faddeeva2(x,y,icell,ipl)
+     .  result(cres)
+      implicit none
+      real(dp), intent(in) :: x,y
+      integer, intent(in) :: icell,ipl
+      real(dp) :: u,v
+      logical :: flag
+      external :: eirene_exit_own
+
+      call EIRENE_ph_wofz(x,y,u,v,flag)
+      if(flag) then
+         write(iunout,*) 'PHOTON MODULE EIRMOD_(PH_FADDEEVA2):'
+         write(iunout,*) '   flag=',flag
+         call EIRENE_exit_own(1)
+      endif
+! kind parameter added for better precision
+      cres=cmplx(u,v,dp)
+      return
+      end function EIRENE_ph_faddeeva2
+
       end function EIRENE_ph_lorvdw
 
 c...............................................................................
