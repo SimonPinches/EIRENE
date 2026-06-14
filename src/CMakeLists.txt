@@ -687,12 +687,16 @@ endif()
 find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
+  # Use a per-build doc directory rather than the shared builds/doc: during a
+  # parallel build the standalone, nox and coupled Eirene configures run
+  # concurrently and would otherwise race on a single shared Doxyfile output.
+  file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/doc)
   configure_file(${PROJECT_SOURCE_DIR}/cmake/Doxyfile.in
-                 ${PROJECT_BINARY_DIR}/../doc/Doxyfile @ONLY)
+                 ${PROJECT_BINARY_DIR}/doc/Doxyfile @ONLY)
 
   add_custom_target(doc
                    ${DOXYGEN_EXECUTABLE} Doxyfile
-                   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/../doc
+                   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doc
                    COMMENT "Generating documentation with Doxygen" VERBATIM)
 
   message(STATUS "-----------------------------------------------------")
